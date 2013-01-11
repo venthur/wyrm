@@ -7,6 +7,7 @@ import re
 
 import numpy as np
 from matplotlib import pyplot as plt
+import scipy as sp
 from scipy import signal
 
 logging.basicConfig(level=logging.NOTSET)
@@ -111,6 +112,50 @@ def filter_bp(data, fs, low, high):
     butter_ord = 4
     b, a = signal.butter(butter_ord, [low / fs_n, high / fs_n], btype='band')
     return signal.lfilter(b, a, data, axis=0)
+
+
+def calculate_csp(class1, class2):
+    """Calculate the Common Spatial Pattern for... XXX
+
+    Parameter:
+        class: (channels, time, trials)
+
+    See: http://en.wikipedia.org/wiki/Common_spatial_pattern
+
+    Returns: the weight vector for the channels?
+
+    """
+    # sven's super simple matlab code
+    # function [W, A, lambda] = my_csp(X1, X2)
+    #     % compute covariance matrices of the two classes
+    #     C1 = compute_Covariance_Matrix(X1);
+    #     C2 = compute_Covariance_Matrix(X2);
+    #     % solution of CSP objective via generalized eigenvalue problem
+    #     [W, D] = eig(C1-C2, C1+C2);
+    #     % make sure the eigenvalues and eigenvectors are sorted correctly
+    #     [lambda, sort_idx] = sort(diag(D), 'descend');
+    #     W = W(:,sort_idx);
+    #     A = inv(W)';
+
+    n_channels = class1.shape[2]
+    # TODO compute x1, x2
+    x1 = class1.swapaxes(1, 2)
+    x1 = x1.reshape(-1, n_channels)
+    x2 = class2.swapaxes(1, 2)
+    x2 = x2.reshape(-1, n_channels)
+    # compute covariance matrices of the two classes
+    c1 = np.cov(x1.transpose())
+    c2 = np.cov(x2.transpose())
+    # solution of csp objective via generalized eigenvalue problem
+    d, v = sp.linalg.eig(c1-c2, c1+c2)
+    # make sure the eigenvalues and -vectors are correctly sorted
+    indx = np.argsort(np.diag(d))
+    # reverse
+    indx = indx[::-1]
+    d = d.take(indx)
+    v = v.take(indx)
+    a = sp.linalg.inv(v)
+    return v, a, d
 
 
 if __name__ == '__main__':
