@@ -118,7 +118,7 @@ def calculate_csp(class1, class2):
     """Calculate the Common Spatial Pattern for... XXX
 
     Parameter:
-        class: (channels, time, trials)
+        class: trials, time, channels
 
     See: http://en.wikipedia.org/wiki/Common_spatial_pattern
 
@@ -138,23 +138,24 @@ def calculate_csp(class1, class2):
     #     A = inv(W)';
 
     n_channels = class1.shape[2]
-    # TODO compute x1, x2
-    x1 = class1.swapaxes(1, 2)
-    x1 = x1.reshape(-1, n_channels)
-    x2 = class2.swapaxes(1, 2)
-    x2 = x2.reshape(-1, n_channels)
+    # we need a matrix of the form (observations, channels) so we stack trials
+    # and time per channel together
+    x1 = class1.reshape(-1, n_channels)
+    x2 = class2.reshape(-1, n_channels)
     # compute covariance matrices of the two classes
     c1 = np.cov(x1.transpose())
     c2 = np.cov(x2.transpose())
     # solution of csp objective via generalized eigenvalue problem
+    # in matlab the signature is v, d = eig(a, b)
     d, v = sp.linalg.eig(c1-c2, c1+c2)
+    d = d.real
     # make sure the eigenvalues and -vectors are correctly sorted
-    indx = np.argsort(np.diag(d))
+    indx = np.argsort(d)
     # reverse
     indx = indx[::-1]
     d = d.take(indx)
-    v = v.take(indx)
-    a = sp.linalg.inv(v)
+    v = v.take(indx, axis=1)
+    a = sp.linalg.inv(v).transpose()
     return v, a, d
 
 
