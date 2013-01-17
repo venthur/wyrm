@@ -13,6 +13,6 @@ For a complete BCI system written in Python use Wyrm together with
 [Mushu][mushu] and [Pyff][pyff]. Mushu is a BCI signal acquisition and Pyff a
 BCI feedback and -stimulus framework.
 
-    [pyff]: http://github.com/venthur/pyff
-    [mushu]: http://github.com/venthur/mushu
+  [pyff]: http://github.com/venthur/pyff
+  [mushu]: http://github.com/venthur/mushu
 
