@@ -115,14 +115,42 @@ def filter_bp(data, fs, low, high):
 
 
 def calculate_csp(class1, class2):
-    """Calculate the Common Spatial Pattern for... XXX
+    """Calculate the Common Spatial Pattern (CSP) for two classes.
 
-    Parameter:
-        class: trials, time, channels
+    Example:
+        Calculate the CSP for two classes:
 
-    See: http://en.wikipedia.org/wiki/Common_spatial_pattern
+        >>> w, a, d = calculate_csp(c1, c2)
 
-    Returns: the weight vector for the channels?
+        Take the first two and the last two columns of the sorted filter:
+
+        >>> w = w[:, (0, 1, -2, -1)]
+
+        Apply the new filter to your data d of the form (time, channels)
+
+        >>> filtered = np.dot(d, w)
+
+        You'll probably want to get the log-variance along the time axis
+
+        >>> filtered = np.log(np.var(filtered, 0))
+
+        This should result in four numbers (one for each channel).
+
+    Args:
+        class1: A matrix of the form (trials, time, channels) representing
+            class 1.
+        class2: A matrix of the form (trials, time, channels) representing the
+            second class.
+
+    Returns:
+        A tuple (v, a, d). You should use the columns of the matrices.
+
+        v: The sorted spacial filter.
+        a: The sorted spacial pattern.
+        d: The variances of the components.
+
+    See:
+        http://en.wikipedia.org/wiki/Common_spatial_pattern
 
     """
     # sven's super simple matlab code
