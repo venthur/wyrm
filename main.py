@@ -9,6 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import scipy as sp
 from scipy import signal
+from sklearn.lda import LDA
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger('foo')
@@ -89,7 +90,7 @@ def plot_channels(data, n_channels):
 def segmentation(data, mrk, start, end):
     data2 = []
     for i in mrk:
-        i_start, i_end = i-start, i+end
+        i_start, i_end = i+start, i+end
         chunk = data[i_start:i_end]
         data2.append(chunk)
     return np.array(data2)
@@ -187,12 +188,26 @@ def calculate_csp(class1, class2):
     return v, a, d
 
 
+# TODO: use that method
+def moving_average(data, ws):
+    window = numpy.ones(ws) / float(ws)
+    return np.convolve(data, window, 'same')
+
+
 if __name__ == '__main__':
     # load data
     logger.debug('Loading raw data...')
     #raw_data, mrk, channels, fs = load_brain_vision_data('data/online_leitstand2011smaVPlab.vhdr')
     raw_data, mrk, channels, fs = load_brain_vision_data('data/OnlineTrainFileVPfaz.vhdr')
     n_channels = len(channels)
+
+    # remove unneeded channels
+    raw_data = np.delete(raw_data, [0, 3, 6], 1)
+    channels.pop(6)
+    channels.pop(3)
+    channels.pop(0)
+    n_channels = len(channels)
+
     # band pass filter the data
     data = filter_bp(raw_data, fs, 0.5, 30)
     # subsampling
@@ -205,27 +220,53 @@ if __name__ == '__main__':
     dev = [x for x, y in mrk if y in ['S %i' % i for i in range(12, 17)]]
 
     # segmentation [-200 800]
-    data_std = segmentation(data, std, 20, 80)
+    data_std = segmentation(data, std, 25, 35)
     std_avg = np.average(data_std, axis=0)
-    data_dev = segmentation(data, dev, 20, 80)
+    data_dev = segmentation(data, dev, 25, 35)
     dev_avg = np.average(data_dev, axis=0)
-    print dev_avg.shape
-
+    w, a, d = calculate_csp(data_std, data_dev)
+    plt.imshow(w)
+    plt.show()
+    # questions so far:
+    # - what do we have now csp-filter or patterns?
+    # - how to apply?
+    # w filter
+    # a patterns (columns again!)
+    # sven approved!
+    w = w[:, (0, 1, -2, -1)]
+    # dot(i, w) for i -> time x channels
 
     # preliminary ml code from interactive console:
-    from sklearn.lda import LDA
-    train = [i.ravel() for i in data_std[:50]]
-    train2 = [i.ravel() for i in data_dev[:50]]
+    TEST_I = 100
+
+    # WONG!
+    # CSP is not for ERP data but motor imagery.
+
+    train = [np.var(np.dot(i, w), 0).ravel() for i in data_std[:TEST_I]]
+    train2 = [np.var(np.dot(i, w), 0).ravel() for i in data_dev[:TEST_I]]
+    print data_std.shape
+    print 'training shape:', train[0].shape
     train = np.append(train, train2, 0)
-    labels = [0]*50 + [1]*50
+    labels = [0]*TEST_I + [1]*TEST_I
+    clf = LDA()
     clf.fit(train, labels)
-    test_std = clf.predict([i.ravel() for i in data_std[50:]])
-    test_dev = clf.predict([i.ravel() for i in data_dev[50:]])
+    #test_std = clf.predict([np.dot(i, w).ravel() for i in data_std[TEST_I:]])
+    #test_std = np.abs(test_std - 1)
+    #test_dev = clf.predict([np.dot(i, w).ravel() for i in data_dev[TEST_I:]])
+
+    #result = np.append(test_std, test_dev)
+    l = len(data_std[TEST_I:])
+    l2 = len(data_dev[TEST_I:])
+    #tmp = [np.dot(i, w).ravel() for i in data_std[TEST_I:]]
+    tmp = [np.var(np.dot(i, w), 0).ravel() for i in data_std[TEST_I:]]
+    tmp2 = [np.var(np.dot(i, w), 0).ravel() for i in data_dev[TEST_I:]]
+    tmp = np.append(tmp, tmp2, 0)
+    print "Mean LDA accuracy: ", clf.score(tmp, np.append(np.zeros(l), np.ones(l2)))
 
 
     # plotting
-    plot_channels(std_avg, n_channels)
-    plot_channels(dev_avg, n_channels)
+    #plot_channels(std_avg, n_channels)
+    #plot_channels(dev_avg, n_channels)
 
     #ax2 = plt.subplot(212, sharex=ax1, sharey=ax1)
     #ax2.plot(c2)
