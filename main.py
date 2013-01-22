@@ -225,14 +225,6 @@ if __name__ == '__main__':
     data_dev = segmentation(data, dev, 25, 35)
     dev_avg = np.average(data_dev, axis=0)
     w, a, d = calculate_csp(data_std, data_dev)
-    plt.imshow(w)
-    plt.show()
-    # questions so far:
-    # - what do we have now csp-filter or patterns?
-    # - how to apply?
-    # w filter
-    # a patterns (columns again!)
-    # sven approved!
     w = w[:, (0, 1, -2, -1)]
     # dot(i, w) for i -> time x channels
 
@@ -241,11 +233,19 @@ if __name__ == '__main__':
 
     # WONG!
     # CSP is not for ERP data but motor imagery.
+    # apply csp and log-var to data
+    data_std = [np.dot(i, w) for i in data_std]
+    data_std = np.array(data_std)
+    data_std = np.var(data_std, 1)
+    data_std = np.log(data_std)
 
-    train = [np.var(np.dot(i, w), 0).ravel() for i in data_std[:TEST_I]]
-    train2 = [np.var(np.dot(i, w), 0).ravel() for i in data_dev[:TEST_I]]
-    print data_std.shape
-    print 'training shape:', train[0].shape
+    data_dev = [np.dot(i, w) for i in data_dev]
+    data_dev = np.array(data_dev)
+    data_dev = np.var(data_dev, 1)
+    data_dev = np.log(data_dev)
+
+    train = data_std[:TEST_I]
+    train2 = data_dev[:TEST_I]
     train = np.append(train, train2, 0)
     labels = [0]*TEST_I + [1]*TEST_I
     clf = LDA()
@@ -258,8 +258,8 @@ if __name__ == '__main__':
     l = len(data_std[TEST_I:])
     l2 = len(data_dev[TEST_I:])
     #tmp = [np.dot(i, w).ravel() for i in data_std[TEST_I:]]
-    tmp = [np.var(np.dot(i, w), 0).ravel() for i in data_std[TEST_I:]]
-    tmp2 = [np.var(np.dot(i, w), 0).ravel() for i in data_dev[TEST_I:]]
+    tmp = data_std[TEST_I:]
+    tmp2 = data_dev[TEST_I:]
     tmp = np.append(tmp, tmp2, 0)
     print "Mean LDA accuracy: ", clf.score(tmp, np.append(np.zeros(l), np.ones(l2)))
 
