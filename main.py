@@ -229,7 +229,8 @@ if __name__ == '__main__':
     # dot(i, w) for i -> time x channels
 
     # preliminary ml code from interactive console:
-    TEST_I = 100
+    TEST_STD_I = 500
+    TEST_DEV_I = 100
 
     # WONG!
     # CSP is not for ERP data but motor imagery.
@@ -244,22 +245,23 @@ if __name__ == '__main__':
     data_dev = np.var(data_dev, 1)
     data_dev = np.log(data_dev)
 
-    train = data_std[:TEST_I]
-    train2 = data_dev[:TEST_I]
+    train = data_std[:TEST_STD_I]
+    train2 = data_dev[:TEST_DEV_I]
     train = np.append(train, train2, 0)
-    labels = [0]*TEST_I + [1]*TEST_I
+    labels = [0]*TEST_STD_I + [1]*TEST_DEV_I
     clf = LDA()
     clf.fit(train, labels)
-    #test_std = clf.predict([np.dot(i, w).ravel() for i in data_std[TEST_I:]])
-    #test_std = np.abs(test_std - 1)
-    #test_dev = clf.predict([np.dot(i, w).ravel() for i in data_dev[TEST_I:]])
 
-    #result = np.append(test_std, test_dev)
-    l = len(data_std[TEST_I:])
-    l2 = len(data_dev[TEST_I:])
-    #tmp = [np.dot(i, w).ravel() for i in data_std[TEST_I:]]
-    tmp = data_std[TEST_I:]
-    tmp2 = data_dev[TEST_I:]
+    test_std = clf.predict(data_std[TEST_STD_I:])
+    test_std = np.abs(test_std - 1)
+    test_dev = clf.predict(data_dev[TEST_DEV_I:])
+    result = np.append(test_std, test_dev)
+    print sum(result) / float(len(result))
+
+    l = len(data_std[TEST_STD_I:])
+    l2 = len(data_dev[TEST_DEV_I:])
+    tmp = data_std[TEST_STD_I:]
+    tmp2 = data_dev[TEST_DEV_I:]
     tmp = np.append(tmp, tmp2, 0)
     print "Mean LDA accuracy: ", clf.score(tmp, np.append(np.zeros(l), np.ones(l2)))
 
