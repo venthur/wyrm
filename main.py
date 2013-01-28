@@ -227,21 +227,21 @@ if __name__ == '__main__':
     data_std = segmentation(data, std, 25, 35)
     std_avg = np.average(data_std, axis=0)
     data_dev = segmentation(data, dev, 25, 35)
-    dev_avg = np.average(data_dev[:TEST_STD_I], axis=0)
-    w, a, d = calculate_csp(data_std[:TEST_DEV_I], data_dev)
-    w = w[:, (0, 1, -2, -1)]
+    #dev_avg = np.average(data_dev[:TEST_STD_I], axis=0)
+    #w, a, d = calculate_csp(data_std[:TEST_DEV_I], data_dev)
+    #w = w[:, (0, 1, -2, -1)]
     # dot(i, w) for i -> time x channels
 
     # WONG!
     # CSP is not for ERP data but motor imagery.
     # apply csp and log-var to data
-    data_std = [np.dot(i, w) for i in data_std]
-    data_std = np.array(data_std)
+    #data_std = [np.dot(i, w) for i in data_std]
+    #data_std = np.array(data_std)
     data_std = np.var(data_std, 1)
     data_std = np.log(data_std)
 
-    data_dev = [np.dot(i, w) for i in data_dev]
-    data_dev = np.array(data_dev)
+    #data_dev = [np.dot(i, w) for i in data_dev]
+    #data_dev = np.array(data_dev)
     data_dev = np.var(data_dev, 1)
     data_dev = np.log(data_dev)
 
