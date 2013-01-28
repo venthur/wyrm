@@ -219,18 +219,18 @@ if __name__ == '__main__':
     std = [x for x, y in mrk if y in ['S  %i' % i for i in range(2, 7)]]
     dev = [x for x, y in mrk if y in ['S %i' % i for i in range(12, 17)]]
 
+    # preliminary ml code from interactive console:
+    TEST_STD_I = 500
+    TEST_DEV_I = 100
+
     # segmentation [-200 800]
     data_std = segmentation(data, std, 25, 35)
     std_avg = np.average(data_std, axis=0)
     data_dev = segmentation(data, dev, 25, 35)
-    dev_avg = np.average(data_dev, axis=0)
-    w, a, d = calculate_csp(data_std, data_dev)
+    dev_avg = np.average(data_dev[:TEST_STD_I], axis=0)
+    w, a, d = calculate_csp(data_std[:TEST_DEV_I], data_dev)
     w = w[:, (0, 1, -2, -1)]
     # dot(i, w) for i -> time x channels
-
-    # preliminary ml code from interactive console:
-    TEST_STD_I = 500
-    TEST_DEV_I = 100
 
     # WONG!
     # CSP is not for ERP data but motor imagery.
