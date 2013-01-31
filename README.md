@@ -6,6 +6,25 @@ very early stage of development and thus a fast moving target -- you should
 not use it yet.
 
 
+Using it
+========
+
+Installation
+------------
+
+Use distutils to install Wyrm into your PYTHONPATH:
+
+
+    $ git clone http://github.com/venthur/wyrm
+    $ cd wyrm
+    $ python setyp.py install --user
+
+Running it
+----------
+
+Plase refer the the examples in wyrm/examples.
+
+
 Related Software
 ================
 
