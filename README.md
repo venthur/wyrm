@@ -12,12 +12,14 @@ Using it
 Installation
 ------------
 
-Use distutils to install Wyrm into your PYTHONPATH:
+Use distutils to install Wyrm into your `PYTHONPATH`:
 
 
-    $ git clone http://github.com/venthur/wyrm
-    $ cd wyrm
-    $ python setyp.py install --user
+```bash
+$ git clone http://github.com/venthur/wyrm
+$ cd wyrm
+$ python setyp.py install --user
+```
 
 Running it
 ----------
