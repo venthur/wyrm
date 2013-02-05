@@ -15,6 +15,7 @@ from scipy import signal
 from sklearn.lda import LDA
 
 from wyrm import misc
+from wyrm import plot
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger('Auditory ERP')
@@ -54,9 +55,11 @@ if __name__ == '__main__':
     std_avg = np.average(data_std, axis=0)
     data_dev = misc.segmentation(data, dev, 25, 35)
     #dev_avg = np.average(data_dev[:TEST_STD_I], axis=0)
-    #w, a, d = misc.calculate_csp(data_std[:TEST_DEV_I], data_dev)
-    #w = w[:, (0, 1, -2, -1)]
+    w, a, d = misc.calculate_csp(data_std[:TEST_DEV_I], data_dev)
+    w = w[:, (0, 1, -2, -1)]
     # dot(i, w) for i -> time x channels
+    plot.plot_scalp(w[:,0], channels)
+    plt.show()
 
     # WONG!
     # CSP is not for ERP data but motor imagery.
