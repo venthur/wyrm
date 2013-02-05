@@ -13,6 +13,8 @@ def plot_scalp(v, channel):
     """Plot the values v for channel `channel` on a scalp."""
 
     channelpos = [tts.channels[c] for c in channel]
+    # stereographic projection
+    # TODO: check if that is correct or needs improvement
     x = [-i/(-1.0-j) for i, _, j in channelpos]
     y = [-i/(-1.0-j) for _, i, j in channelpos]
     z = v
