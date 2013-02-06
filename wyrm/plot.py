@@ -15,10 +15,9 @@ def plot_scalp(v, channel):
     """Plot the values v for channel `channel` on a scalp."""
 
     channelpos = [tts.channels[c] for c in channel]
-    # stereographic projection
-    # TODO: check if that is correct or needs improvement
-    x = [-i/(-1.0-j) for i, _, j in channelpos]
-    y = [-i/(-1.0-j) for _, i, j in channelpos]
+    points = [_calculate_stereographic_projection(i) for i in channelpos]
+    x = [i[0] for i in points]
+    y = [i[1] for i in points]
     z = v
     X, Y, Z = _interpolate_2d(x, y, z)
     fig = plt.figure()
@@ -38,6 +37,31 @@ def plot_scalp(v, channel):
     for i in zip(channel, zip(x,y)):
         plt.annotate(i[0], i[1])
     plt.show()
+
+
+def _calculate_stereographic_projection(p):
+    """Calculate the stereographic projection.
+
+    Given a unit sphere with radius `r = 1` and center at the origin. Project
+    the point `p = (x, y, z)` from the sphere's South pole (0, 0, -1) on a
+    plane on the sphere's North pole (0, 0, 1).
+
+    The formula is:
+
+        P' = P * (2r / (r + z))
+
+    Arguments:
+        p: The point to be projected in cartesian coordinates.
+
+    Returns:
+        [x, y]: the projected point on the plane.
+
+    """
+    # P' = P * (2r / r + z)
+    mu = 1 / (1 + p[2])
+    x = p[0] * mu
+    y = p[1] * mu
+    return x, y
 
 
 def _interpolate_2d(x, y, z):
