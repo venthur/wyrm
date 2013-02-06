@@ -70,7 +70,8 @@ def _interpolate_2d(x, y, z):
     X = np.linspace(min(x), max(x))
     Y = np.linspace(min(y), max(y))
     X, Y = np.meshgrid(X, Y)
-    f = interpolate.interp2d(x, y, z)
-    #f = interpolate.LinearNDInterpolator(zip(x, y), z)
-    Z = f(X[0, :], Y[:, 0])
+    #f = interpolate.interp2d(x, y, z)
+    #Z = f(X[0, :], Y[:, 0])
+    f = interpolate.LinearNDInterpolator(zip(x, y), z)
+    Z = f(X, Y)
     return X, Y, Z
