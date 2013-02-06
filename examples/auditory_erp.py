@@ -58,7 +58,15 @@ if __name__ == '__main__':
     w, a, d = misc.calculate_csp(data_std[:TEST_DEV_I], data_dev)
     w = w[:, (0, 1, -2, -1)]
     # dot(i, w) for i -> time x channels
+    # plot the filter
     plot.plot_scalp(w[:,0], channels)
+    plot.plot_scalp(a[:,0], channels)
+    # plot the pattern
+    # TODO: check if this is really the pattern
+    plot.plot_scalp(w[:,-1], channels)
+    plot.plot_scalp(a[:,-1], channels)
+
+
     plt.show()
 
     # WONG!
