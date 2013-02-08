@@ -11,6 +11,12 @@ from wyrm.plot import _interpolate_2d
 class TestInterpolate2d(unittest.TestCase):
 
     def test_max(self):
+        """Make sure the interpolation does not lead to interpolated values
+        bigger than the maximum provided by the points.
+
+        This particularly happens when doing interpolation with splines.
+
+        """
         x = [1, 2, 1, 2, 3]
         y = [1, 1, 2, 2, 3]
         z = [10, 10, 10, 10, 2]
