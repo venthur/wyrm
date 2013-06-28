@@ -23,7 +23,9 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Wyrm alpha documentation" href="../index.html" /> 
+    <link rel="top" title="Wyrm alpha documentation" href="../index.html" />
+    <link rel="up" title="wyrm" href="modules.html" />
+    <link rel="prev" title="wyrm" href="modules.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +37,11 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="modules.html" title="wyrm"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="modules.html" accesskey="U">wyrm</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -62,11 +68,11 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
 </pre></div>
 </div>
-<p>Apply the new filter to your data d of the form (time, channels)</p>
+<p>Apply the new filter to your data d of the form (time, channels):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You&#8217;ll probably want to get the log-variance along the time axis</p>
+<p>You&#8217;ll probably want to get the log-variance along the time axis:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -147,6 +153,9 @@ d: The variances of the components.</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">wyrm</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/api/wyrm.txt"
@@ -178,7 +187,11 @@ d: The variances of the components.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="modules.html" title="wyrm"
+             >previous</a> |</li>
+        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="modules.html" >wyrm</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
