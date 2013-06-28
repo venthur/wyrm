@@ -21,6 +21,13 @@ $ cd wyrm
 $ python setyp.py install --user
 ```
 
+Online Documentation
+--------------------
+
+Online documentation is available [here][wyrmdoc].
+
+  [wyrmdoc]: http://venthur.github.io/wyrm
+
 Running it
 ----------
 
