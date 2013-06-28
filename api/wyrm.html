@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wyrm Package &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="wyrm-package">
+<h1>wyrm Package<a class="headerlink" href="#wyrm-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-wyrm.misc">
+<span id="misc-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">misc</span></tt> Module<a class="headerlink" href="#module-wyrm.misc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="wyrm.misc.calculate_csp">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">calculate_csp</tt><big>(</big><em>class1</em>, <em>class2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#calculate_csp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.calculate_csp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Common Spatial Pattern (CSP) for two classes.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><p class="first">Calculate the CSP for two classes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_csp</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Take the first two and the last two columns of the sorted filter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Apply the new filter to your data d of the form (time, channels)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You&#8217;ll probably want to get the log-variance along the time axis</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="last">This should result in four numbers (one for each channel).</p>
+</dd>
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>class1: A matrix of the form (trials, time, channels) representing</dt>
+<dd>class 1.</dd>
+<dt>class2: A matrix of the form (trials, time, channels) representing the</dt>
+<dd>second class.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">A tuple (v, a, d). You should use the columns of the matrices.</p>
+<p class="last">v: The sorted spacial filter.
+a: The sorted spacial pattern.
+d: The variances of the components.</p>
+</dd>
+<dt>See:</dt>
+<dd><a class="reference external" href="http://en.wikipedia.org/wiki/Common_spatial_pattern">http://en.wikipedia.org/wiki/Common_spatial_pattern</a></dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.filter_bp">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">filter_bp</tt><big>(</big><em>data</em>, <em>fs</em>, <em>low</em>, <em>high</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#filter_bp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.filter_bp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.load_brain_vision_data">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">load_brain_vision_data</tt><big>(</big><em>vhdr</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#load_brain_vision_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.load_brain_vision_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.moving_average">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">moving_average</tt><big>(</big><em>data</em>, <em>ws</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#moving_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.moving_average" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.plot_channels">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">plot_channels</tt><big>(</big><em>data</em>, <em>n_channels</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#plot_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.plot_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.segmentation">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">segmentation</tt><big>(</big><em>data</em>, <em>mrk</em>, <em>start</em>, <em>end</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#segmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.segmentation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-wyrm.plot">
+<span id="plot-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">plot</span></tt> Module<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="wyrm.plot.plot_scalp">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channel</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the values v for channel <cite>channel</cite> on a scalp.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-wyrm.tentensystem">
+<span id="tentensystem-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">tentensystem</span></tt> Module<a class="headerlink" href="#module-wyrm.tentensystem" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">wyrm Package</a><ul>
+<li><a class="reference internal" href="#module-wyrm.misc"><tt class="docutils literal"><span class="pre">misc</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-wyrm.plot"><tt class="docutils literal"><span class="pre">plot</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-wyrm.tentensystem"><tt class="docutils literal"><span class="pre">tentensystem</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/wyrm.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+wyrm Package
+============
+
+:mod:`misc` Module
+------------------
+
+.. automodule:: wyrm.misc
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`plot` Module
+------------------
+
+.. automodule:: wyrm.plot
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`tentensystem` Module
+--------------------------
+
+.. automodule:: wyrm.tentensystem
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

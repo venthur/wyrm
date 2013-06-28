@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wyrm.misc &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wyrm.misc</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+
+
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="kn">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">from</span> <span class="nn">sklearn.lda</span> <span class="kn">import</span> <span class="n">LDA</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_brain_vision_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.misc.load_brain_vision_data">[docs]</a><span class="k">def</span> <span class="nf">load_brain_vision_data</span><span class="p">(</span><span class="n">vhdr</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Loading Brain Vision Data Exchange Header File&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="n">fdata</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">fh</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">fdata</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;;&#39;</span><span class="p">),</span> <span class="n">fdata</span><span class="p">)</span>
+    <span class="n">fdata</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fdata</span><span class="p">)</span>
+    <span class="c"># check for the correct file version:</span>
+    <span class="k">assert</span> <span class="n">fdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;1.0&#39;</span><span class="p">)</span>
+    <span class="c"># read all data into a dict where the key is the stanza of the file</span>
+    <span class="n">file_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;]&#39;</span><span class="p">):</span>
+            <span class="n">current_stanza</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">file_dict</span><span class="p">[</span><span class="n">current_stanza</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_dict</span><span class="p">[</span><span class="n">current_stanza</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="c"># translate known stanzas from simple list of strings to a dict</span>
+    <span class="k">for</span> <span class="n">stanza</span> <span class="ow">in</span> <span class="s">&#39;Common Infos&#39;</span><span class="p">,</span> <span class="s">&#39;Binary Infos&#39;</span><span class="p">,</span> <span class="s">&#39;Channel Infos&#39;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">stanza</span><span class="p">)</span>
+        <span class="n">file_dict</span><span class="p">[</span><span class="n">stanza</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_dict</span><span class="p">[</span><span class="n">stanza</span><span class="p">]}</span>
+    <span class="c"># now file_dict contains the parsed data from the vhdr file</span>
+    <span class="c"># load the rest</span>
+    <span class="n">data_f</span> <span class="o">=</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;DataFile&#39;</span><span class="p">]</span>
+    <span class="n">marker_f</span> <span class="o">=</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;MarkerFile&#39;</span><span class="p">]</span>
+    <span class="n">data_f</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">vhdr</span><span class="p">),</span> <span class="n">data_f</span><span class="p">])</span>
+    <span class="n">marker_f</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">vhdr</span><span class="p">),</span> <span class="n">marker_f</span><span class="p">])</span>
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;NumberOfChannels&#39;</span><span class="p">])</span>
+    <span class="n">sampling_interval_microseconds</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;SamplingInterval&#39;</span><span class="p">])</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">sampling_interval_microseconds</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Channel Infos&#39;</span><span class="p">][</span><span class="s">&#39;Ch</span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)]</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">channels</span><span class="p">)</span>
+    <span class="c"># some assumptions about the data...</span>
+    <span class="k">assert</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;DataFormat&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;BINARY&#39;</span>
+    <span class="k">assert</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;DataOrientation&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;MULTIPLEXED&#39;</span>
+    <span class="k">assert</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Binary Infos&#39;</span><span class="p">][</span><span class="s">&#39;BinaryFormat&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;INT_16&#39;</span>
+    <span class="k">print</span> <span class="n">fs</span><span class="p">,</span> <span class="n">n_channels</span>
+    <span class="k">print</span> <span class="n">marker_f</span>
+    <span class="k">print</span> <span class="n">data_f</span>
+    <span class="k">print</span> <span class="n">channels</span>
+    <span class="c"># load EEG data</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Loading EEG Data.&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">data_f</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+    <span class="c"># load marker</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Loading Marker.&#39;</span><span class="p">)</span>
+    <span class="n">regexp</span> <span class="o">=</span> <span class="s">r&#39;^Mk(?P&lt;mrk_nr&gt;[0-9]*)=.*,(?P&lt;mrk_descr&gt;.*),(?P&lt;mrk_pos&gt;[0-9]*),[0-9]*,[0-9]*$&#39;</span>
+    <span class="n">mrk</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">marker_f</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">mrk_pos</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;mrk_pos&#39;</span><span class="p">)</span>
+            <span class="n">mrk_descr</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;mrk_descr&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mrk_descr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">mrk</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">mrk_pos</span><span class="p">,</span> <span class="n">mrk_descr</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">mrk</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">fs</span>
+
+</div>
+<div class="viewcode-block" id="plot_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.misc.plot_channels">[docs]</a><span class="k">def</span> <span class="nf">plot_channels</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_channels</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_channels</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">channels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="segmentation"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.misc.segmentation">[docs]</a><span class="k">def</span> <span class="nf">segmentation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mrk</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+    <span class="n">data2</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mrk</span><span class="p">:</span>
+        <span class="n">i_start</span><span class="p">,</span> <span class="n">i_end</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="n">start</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="n">end</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span><span class="p">]</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="filter_bp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.misc.filter_bp">[docs]</a><span class="k">def</span> <span class="nf">filter_bp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
+    <span class="c"># band pass filter the data</span>
+    <span class="n">fs_n</span> <span class="o">=</span> <span class="n">fs</span> <span class="o">*</span> <span class="mf">0.5</span>
+    <span class="c">#logger.debug(&#39;Calculating butter order...&#39;)</span>
+    <span class="c">#butter_ord, f_butter = signal.buttord(ws=[(low - .1) / fs_n, (high + .1) / fs_n],</span>
+    <span class="c">#                                      wp=[low / fs_n, high / fs_n],</span>
+    <span class="c">#                                      gpass=0.1,</span>
+    <span class="c">#                                      gstop=3.0</span>
+    <span class="c">#                                      )</span>
+
+    <span class="c">#logger.debug(&quot;{ord} {fbutter} {low} {high}&quot;.format(**{&#39;ord&#39;: butter_ord,</span>
+    <span class="c">#                                                      &#39;fbutter&#39;: f_butter,</span>
+    <span class="c">#                                                      &#39;low&#39;: low / fs_n,</span>
+    <span class="c">#                                                      &#39;high&#39;: high / fs_n}))</span>
+    <span class="n">butter_ord</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">low</span> <span class="o">/</span> <span class="n">fs_n</span><span class="p">,</span> <span class="n">high</span> <span class="o">/</span> <span class="n">fs_n</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="calculate_csp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.misc.calculate_csp">[docs]</a><span class="k">def</span> <span class="nf">calculate_csp</span><span class="p">(</span><span class="n">class1</span><span class="p">,</span> <span class="n">class2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the Common Spatial Pattern (CSP) for two classes.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        Calculate the CSP for two classes:</span>
+
+<span class="sd">        &gt;&gt;&gt; w, a, d = calculate_csp(c1, c2)</span>
+
+<span class="sd">        Take the first two and the last two columns of the sorted filter:</span>
+
+<span class="sd">        &gt;&gt;&gt; w = w[:, (0, 1, -2, -1)]</span>
+
+<span class="sd">        Apply the new filter to your data d of the form (time, channels)</span>
+
+<span class="sd">        &gt;&gt;&gt; filtered = np.dot(d, w)</span>
+
+<span class="sd">        You&#39;ll probably want to get the log-variance along the time axis</span>
+
+<span class="sd">        &gt;&gt;&gt; filtered = np.log(np.var(filtered, 0))</span>
+
+<span class="sd">        This should result in four numbers (one for each channel).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        class1: A matrix of the form (trials, time, channels) representing</span>
+<span class="sd">            class 1.</span>
+<span class="sd">        class2: A matrix of the form (trials, time, channels) representing the</span>
+<span class="sd">            second class.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple (v, a, d). You should use the columns of the matrices.</span>
+
+<span class="sd">        v: The sorted spacial filter.</span>
+<span class="sd">        a: The sorted spacial pattern.</span>
+<span class="sd">        d: The variances of the components.</span>
+
+<span class="sd">    See:</span>
+<span class="sd">        http://en.wikipedia.org/wiki/Common_spatial_pattern</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># sven&#39;s super simple matlab code</span>
+    <span class="c"># function [W, A, lambda] = my_csp(X1, X2)</span>
+    <span class="c">#     % compute covariance matrices of the two classes</span>
+    <span class="c">#     C1 = compute_Covariance_Matrix(X1);</span>
+    <span class="c">#     C2 = compute_Covariance_Matrix(X2);</span>
+    <span class="c">#     % solution of CSP objective via generalized eigenvalue problem</span>
+    <span class="c">#     [W, D] = eig(C1-C2, C1+C2);</span>
+    <span class="c">#     % make sure the eigenvalues and eigenvectors are sorted correctly</span>
+    <span class="c">#     [lambda, sort_idx] = sort(diag(D), &#39;descend&#39;);</span>
+    <span class="c">#     W = W(:,sort_idx);</span>
+    <span class="c">#     A = inv(W)&#39;;</span>
+
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="n">class1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c"># we need a matrix of the form (observations, channels) so we stack trials</span>
+    <span class="c"># and time per channel together</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">class1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">class2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+    <span class="c"># compute covariance matrices of the two classes</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x2</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="c"># solution of csp objective via generalized eigenvalue problem</span>
+    <span class="c"># in matlab the signature is v, d = eig(a, b)</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">c1</span><span class="o">-</span><span class="n">c2</span><span class="p">,</span> <span class="n">c1</span><span class="o">+</span><span class="n">c2</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">real</span>
+    <span class="c"># make sure the eigenvalues and -vectors are correctly sorted</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="c"># reverse</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="n">indx</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indx</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span>
+
+
+<span class="c"># TODO: use that method</span></div>
+<div class="viewcode-block" id="moving_average"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.misc.moving_average">[docs]</a><span class="k">def</span> <span class="nf">moving_average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ws</span><span class="p">):</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="s">&#39;same&#39;</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
