@@ -119,21 +119,21 @@ def calculate_csp(class1, class2):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
 
     Example:
-        Calculate the CSP for two classes:
+        Calculate the CSP for two classes::
 
-        >>> w, a, d = calculate_csp(c1, c2)
+            >>> w, a, d = calculate_csp(c1, c2)
 
-        Take the first two and the last two columns of the sorted filter:
+        Take the first two and the last two columns of the sorted filter::
 
-        >>> w = w[:, (0, 1, -2, -1)]
+            >>> w = w[:, (0, 1, -2, -1)]
 
-        Apply the new filter to your data d of the form (time, channels)
+        Apply the new filter to your data d of the form (time, channels)::
 
-        >>> filtered = np.dot(d, w)
+            >>> filtered = np.dot(d, w)
 
-        You'll probably want to get the log-variance along the time axis
+        You'll probably want to get the log-variance along the time axis::
 
-        >>> filtered = np.log(np.var(filtered, 0))
+            >>> filtered = np.log(np.var(filtered, 0))
 
         This should result in four numbers (one for each channel).
 

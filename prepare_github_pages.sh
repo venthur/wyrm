@@ -9,4 +9,5 @@ cd $GH_PAGES
 git checkout gh-pages
 rm -rf *
 cp -r ../doc/_build/html/* .
+touch .nojekyll
 
