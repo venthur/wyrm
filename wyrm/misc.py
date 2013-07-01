@@ -138,17 +138,23 @@ def calculate_csp(class1, class2):
         This should result in four numbers (one for each channel).
 
     Args:
-        class1: A matrix of the form (trials, time, channels) representing
+        class1:
+            A matrix of the form (trials, time, channels) representing
             class 1.
-        class2: A matrix of the form (trials, time, channels) representing the
-            second class.
+        class2:
+            A matrix of the form (trials, time, channels) representing
+            the second class.
 
     Returns:
-        A tuple (v, a, d). You should use the columns of the matrices.
+        A tuple (v, a, d). You should use the columns of the matrices, where
 
-        v: The sorted spacial filter.
-        a: The sorted spacial pattern.
-        d: The variances of the components.
+        v:
+            The sorted spacial filters.
+        a:
+            The sorted spacial patterns (i.e. column x of a represents
+            the pattern of column x of v.
+        d:
+            The variances of the components.
 
     See:
         http://en.wikipedia.org/wiki/Common_spatial_pattern
