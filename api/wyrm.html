@@ -80,17 +80,25 @@
 </dd>
 <dt>Args:</dt>
 <dd><dl class="first last docutils">
-<dt>class1: A matrix of the form (trials, time, channels) representing</dt>
-<dd>class 1.</dd>
-<dt>class2: A matrix of the form (trials, time, channels) representing the</dt>
-<dd>second class.</dd>
+<dt>class1:</dt>
+<dd>A matrix of the form (trials, time, channels) representing
+class 1.</dd>
+<dt>class2:</dt>
+<dd>A matrix of the form (trials, time, channels) representing
+the second class.</dd>
 </dl>
 </dd>
 <dt>Returns:</dt>
-<dd><p class="first">A tuple (v, a, d). You should use the columns of the matrices.</p>
-<p class="last">v: The sorted spacial filter.
-a: The sorted spacial pattern.
-d: The variances of the components.</p>
+<dd><p class="first">A tuple (v, a, d). You should use the columns of the matrices, where</p>
+<dl class="last docutils">
+<dt>v:</dt>
+<dd>The sorted spacial filters.</dd>
+<dt>a:</dt>
+<dd>The sorted spacial patterns (i.e. column x of a represents
+the pattern of column x of v.</dd>
+<dt>d:</dt>
+<dd>The variances of the components.</dd>
+</dl>
 </dd>
 <dt>See:</dt>
 <dd><a class="reference external" href="http://en.wikipedia.org/wiki/Common_spatial_pattern">http://en.wikipedia.org/wiki/Common_spatial_pattern</a></dd>
@@ -125,6 +133,37 @@ d: The variances of the components.</p>
 </div>
 <div class="section" id="module-wyrm.plot">
 <span id="plot-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">plot</span></tt> Module<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="wyrm.plot.calculate_stereographic_projection">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">calculate_stereographic_projection</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#wyrm.plot.calculate_stereographic_projection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the stereographic projection.</p>
+<p>Given a unit sphere with radius <cite>r = 1</cite> and center at the origin. Project
+the point <cite>p = (x, y, z)</cite> from the sphere&#8217;s South pole (0, 0, -1) on a
+plane on the sphere&#8217;s North pole (0, 0, 1).</p>
+<p>The formula is:</p>
+<blockquote>
+<div>P&#8217; = P * (2r / (r + z))</div></blockquote>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd>p: The point to be projected in cartesian coordinates.</dd>
+<dt>Returns:</dt>
+<dd>[x, y]: the projected point on the plane.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.interpolate_2d">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">interpolate_2d</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="headerlink" href="#wyrm.plot.interpolate_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate missing points on a plane.</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd>x, y, z: 1d arrays defining points like p[x, y] = z</dd>
+<dt>Returns:</dt>
+<dd>X, Y, Z, where Z is a 2d array [min(x)..max(x), [min(y)..max(y)] with
+the interpolated values as values.</dd>
+</dl>
+</dd></dl>
+
 <dl class="function">
 <dt id="wyrm.plot.plot_scalp">
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channel</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
