@@ -57,19 +57,18 @@ if __name__ == '__main__':
     #dev_avg = np.average(data_dev[:TEST_STD_I], axis=0)
     w, a, d = misc.calculate_csp(data_std[:TEST_DEV_I], data_dev)
     w = w[:, (0, 1, -2, -1)]
-    # dot(i, w) for i -> time x channels
-    # plot the filter
-    plot.plot_scalp(w[:,0], channels)
-    plot.plot_scalp(a[:,0], channels)
     # plot the pattern
     # TODO: check if this is really the pattern
-    plot.plot_scalp(w[:,-1], channels)
-    plot.plot_scalp(a[:,-1], channels)
+    ii = 0
+    for i in 0, 1, -2, -1:
+        ii += 1
+        plt.subplot('22%d' %  ii)
+        plot.plot_scalp(a[:, i], channels)
 
 
     plt.show()
 
-    # WONG!
+    # WRONG!
     # CSP is not for ERP data but motor imagery.
     # apply csp and log-var to data
     #data_std = [np.dot(i, w) for i in data_std]
