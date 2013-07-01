@@ -15,11 +15,11 @@ def plot_scalp(v, channel):
     """Plot the values v for channel `channel` on a scalp."""
 
     channelpos = [tts.channels[c] for c in channel]
-    points = [_calculate_stereographic_projection(i) for i in channelpos]
+    points = [calculate_stereographic_projection(i) for i in channelpos]
     x = [i[0] for i in points]
     y = [i[1] for i in points]
     z = v
-    X, Y, Z = _interpolate_2d(x, y, z)
+    X, Y, Z = interpolate_2d(x, y, z)
     plt.contour(X, Y, Z, 20)
     plt.contourf(X, Y, Z, 20)
     #plt.clabel(im)
@@ -28,10 +28,10 @@ def plot_scalp(v, channel):
     plt.plot(x, y, 'bo')
     for i in zip(channel, zip(x,y)):
         plt.annotate(i[0], i[1])
-    plt.show()
+    #plt.show()
 
 
-def _calculate_stereographic_projection(p):
+def calculate_stereographic_projection(p):
     """Calculate the stereographic projection.
 
     Given a unit sphere with radius `r = 1` and center at the origin. Project
@@ -56,7 +56,7 @@ def _calculate_stereographic_projection(p):
     return x, y
 
 
-def _interpolate_2d(x, y, z):
+def interpolate_2d(x, y, z):
     """Interpolate missing points on a plane.
 
     Arguments:
