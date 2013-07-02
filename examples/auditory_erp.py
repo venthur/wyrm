@@ -3,6 +3,7 @@
 
 """Example Auditory ERP analysis."""
 
+from __future__ import division
 
 import logging
 
@@ -87,7 +88,7 @@ if __name__ == '__main__':
     test_std = np.abs(test_std - 1)
     test_dev = clf.predict(data_dev[TEST_DEV_I:])
     result = np.append(test_std, test_dev)
-    print sum(result) / float(len(result))
+    print sum(result) / len(result)
 
     l = len(data_std[TEST_STD_I:])
     l2 = len(data_dev[TEST_DEV_I:])
