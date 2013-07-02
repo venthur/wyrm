@@ -4,14 +4,10 @@
 """Example Auditory ERP analysis."""
 
 
-from os import path
 import logging
-import re
 
 import numpy as np
 from matplotlib import pyplot as plt
-import scipy as sp
-from scipy import signal
 from sklearn.lda import LDA
 
 from wyrm import misc
@@ -36,7 +32,7 @@ if __name__ == '__main__':
     n_channels = len(channels)
 
     # band pass filter the data
-    data = misc.filter_bp(raw_data, fs, 0.5, 30)
+    data = misc.filter_bp(raw_data, fs, 8, 12)
     # subsampling
     data = data[::10, :]
     del raw_data
@@ -62,9 +58,8 @@ if __name__ == '__main__':
     ii = 0
     for i in 0, 1, -2, -1:
         ii += 1
-        plt.subplot('22%d' %  ii)
+        plt.subplot('22%d' % ii)
         plot.plot_scalp(a[:, i], channels)
-
 
     plt.show()
 
