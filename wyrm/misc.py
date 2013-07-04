@@ -15,6 +15,101 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger('foo')
 
 
+"""
+Three Kinds of EEG Data
+-----------------------
+
+1. Raw: A numpy array (time x channel)
+
+2. Continous Data: An object holding raw data together with meta information,
+like the sampling frequency, channel and the marker
+
+3. Epoched Data: An object holding a list of Continous Data
+"""
+
+class Cnt(object):
+
+    def __init__(self, data, fs, channel, marker):
+        self.data = data
+        self.fs = fs
+        self.channel = np.array(channel)
+        self.marker = marker
+        # TODO: should we make some sanity checks here?
+
+    # Should this class only be a wrapper for the raw data + meta info?
+    # Should it provide its own methods for removing channels, resampling, etc
+    # or should this be done by mushu library methods?
+
+
+class Epo(object):
+
+    def __init__(self, data):
+        self.data = data
+
+
+def select_channels(cnt, regexp_list, invert=False):
+    """Select channels from data.
+
+    The matching is case-insensitive and locale-aware (as in re.IGNORECASE and
+    re.LOCALE). The regular expression always has to match the whole channel
+    name string
+
+    Arguments:
+        cnt: Continuous data
+
+        regexp_list: Array of regular expressions
+            The regular expressions provided, are used directly by Python's
+            :mod:`re` module, so all regular expressions which are understood
+            by this module are allowed.
+
+            Internally the :func:`re.match` method is used, additionally to
+            check for a match (which also matches substrings), it is also
+            checked if the whole string matched the pattern.
+
+        invert: Boolean (default=False)
+            If True the selection is inverted. Instead of selecting specific
+            channels, you are removing the channels.
+
+    Returns:
+        A copy of the continuous data with the channels, matched by the list of
+        regular expressions.
+
+    Example:
+
+        Select all channels Matching 'af.*' or 'fc.*'
+
+        >>> cnt_new = select_channels(cnt, ['af.*', 'fc.*'])
+
+        Remove all channels Matching 'emg.*' or 'eog.*'
+
+        >>> cnt_new = select_channels(cnt, ['emg.*', 'eog.*'], invert=True)
+
+        Even if you only provide one Regular expression, it has to be in an
+        array:
+
+        >>> cnt_new = select_channels(cnt, ['af.*'])
+
+    See also:
+
+        Python's :mod:`re` module for more information about regular
+        expressions.
+
+    """
+    chan_mask = np.array([False for i in range(len(cnt.channel))])
+    for c_idx, c in enumerate(cnt.channel):
+        for regexp in regexp_list:
+            m = re.match(regexp, c, re.IGNORECASE | re.LOCALE)
+            if m and m.group() == c:
+                chan_mask[c_idx] = True
+                # no need to look any further for matches for this channel
+                break
+    if invert:
+        chan_mask = ~chan_mask
+    data = cnt.data[:,chan_mask]
+    channel = cnt.channel[chan_mask]
+    return Cnt(data, cnt.fs, channel, cnt.marker)
+
+
 def load_brain_vision_data(vhdr):
     logger.debug('Loading Brain Vision Data Exchange Header File')
     with open(vhdr) as fh:
