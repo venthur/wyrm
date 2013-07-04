@@ -54,6 +54,18 @@
 <h1>wyrm Package<a class="headerlink" href="#wyrm-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-wyrm.misc">
 <span id="misc-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">misc</span></tt> Module<a class="headerlink" href="#module-wyrm.misc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wyrm.misc.Cnt">
+<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Cnt</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channel</em>, <em>marker</em><big>)</big><a class="headerlink" href="#wyrm.misc.Cnt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wyrm.misc.Epo">
+<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Epo</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#wyrm.misc.Epo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
 <dl class="function">
 <dt id="wyrm.misc.calculate_csp">
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">calculate_csp</tt><big>(</big><em>class1</em>, <em>class2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#calculate_csp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.calculate_csp" title="Permalink to this definition">¶</a></dt>
@@ -115,6 +127,19 @@ the pattern of column x of v.</dd>
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">load_brain_vision_data</tt><big>(</big><em>vhdr</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#load_brain_vision_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.load_brain_vision_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="data">
+<dt id="wyrm.misc.logger">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">logger</tt><em class="property"> = &lt;logging.Logger object at 0x3f4aad0&gt;</em><a class="headerlink" href="#wyrm.misc.logger" title="Permalink to this definition">¶</a></dt>
+<dd><ol class="arabic simple">
+<li>Raw: A numpy array (time x channel)</li>
+</ol>
+<p>2. Continous Data: An object holding raw data together with meta information,
+like the sampling frequency, channel and the marker</p>
+<ol class="arabic simple" start="3">
+<li>Epoched Data: An object holding a list of Continous Data</li>
+</ol>
+</dd></dl>
+
 <dl class="function">
 <dt id="wyrm.misc.moving_average">
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">moving_average</tt><big>(</big><em>data</em>, <em>ws</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#moving_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.moving_average" title="Permalink to this definition">¶</a></dt>
@@ -129,6 +154,56 @@ the pattern of column x of v.</dd>
 <dt id="wyrm.misc.segmentation">
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">segmentation</tt><big>(</big><em>data</em>, <em>mrk</em>, <em>start</em>, <em>end</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#segmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.segmentation" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.select_channels">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">select_channels</tt><big>(</big><em>cnt</em>, <em>regexp_list</em>, <em>invert=False</em><big>)</big><a class="headerlink" href="#wyrm.misc.select_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select channels from data.</p>
+<p>The matching is case-insensitive and locale-aware (as in re.IGNORECASE and
+re.LOCALE). The regular expression always has to match the whole channel
+name string</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">cnt: Continuous data</p>
+<dl class="last docutils">
+<dt>regexp_list: Array of regular expressions</dt>
+<dd><p class="first">The regular expressions provided, are used directly by Python&#8217;s
+<a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt></a> module, so all regular expressions which are understood
+by this module are allowed.</p>
+<p class="last">Internally the <a class="reference external" href="http://docs.python.org/library/re.html#re.match" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">re.match()</span></tt></a> method is used, additionally to
+check for a match (which also matches substrings), it is also
+checked if the whole string matched the pattern.</p>
+</dd>
+<dt>invert: Boolean (default=False)</dt>
+<dd>If True the selection is inverted. Instead of selecting specific
+channels, you are removing the channels.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>A copy of the continuous data with the channels, matched by the list of
+regular expressions.</dd>
+</dl>
+<p>Example:</p>
+<blockquote>
+<div><p>Select all channels Matching &#8216;af.*&#8217; or &#8216;fc.*&#8217;</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt_new</span> <span class="o">=</span> <span class="n">select_channels</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;af.*&#39;</span><span class="p">,</span> <span class="s">&#39;fc.*&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Remove all channels Matching &#8216;emg.*&#8217; or &#8216;eog.*&#8217;</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt_new</span> <span class="o">=</span> <span class="n">select_channels</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;emg.*&#39;</span><span class="p">,</span> <span class="s">&#39;eog.*&#39;</span><span class="p">],</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Even if you only provide one Regular expression, it has to be in an
+array:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt_new</span> <span class="o">=</span> <span class="n">select_channels</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;af.*&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>See also:</p>
+<blockquote>
+<div>Python&#8217;s <a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt></a> module for more information about regular
+expressions.</div></blockquote>
+</dd></dl>
 
 </div>
 <div class="section" id="module-wyrm.plot">
