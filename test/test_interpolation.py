@@ -5,7 +5,7 @@ import unittest
 
 import numpy as np
 
-from wyrm.plot import _interpolate_2d
+from wyrm.plot import interpolate_2d
 
 
 class TestInterpolate2d(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestInterpolate2d(unittest.TestCase):
         x = [1, 2, 1, 2, 3]
         y = [1, 1, 2, 2, 3]
         z = [10, 10, 10, 10, 2]
-        _, _, Z = _interpolate_2d(x, y, z)
+        _, _, Z = interpolate_2d(x, y, z)
         self.assertAlmostEqual(np.nanmax(Z), 10.)
 
 
