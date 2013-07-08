@@ -58,6 +58,57 @@
 <dt id="wyrm.misc.Cnt">
 <em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Cnt</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channel</em>, <em>marker</em><big>)</big><a class="headerlink" href="#wyrm.misc.Cnt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Continuous Data Object.</p>
+<p>This object represents a stream of continuous EEG data. It is
+defined by the raw EEG data (samples x channels), the sampling
+frequency, the channel names and the marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray (time, channel)</p>
+<blockquote>
+<div><p>The raw EEG data in a 2 dimensional nd array (sample, channel)</p>
+</div></blockquote>
+<p><strong>fs</strong> : float</p>
+<blockquote>
+<div><p>The sampling frequency</p>
+</div></blockquote>
+<p><strong>channel</strong> : array of strings</p>
+<blockquote>
+<div><p>The channel names in the same order as they appear in <cite>data</cite></p>
+</div></blockquote>
+<p class="last"><strong>marker</strong> : array of ???</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="30%" />
+<col width="63%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>data</td>
+<td>numpy array (samples x channels)</td>
+<td>Defines the raw EEG data.</td>
+</tr>
+<tr class="row-even"><td>fs</td>
+<td>float</td>
+<td>The sampling frequency of the given data set</td>
+</tr>
+<tr class="row-odd"><td>channel</td>
+<td>numpy array of strings</td>
+<td>The names of the channels in the same order as they appear in data</td>
+</tr>
+<tr class="row-even"><td>marker</td>
+<td>???</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
@@ -70,9 +121,44 @@
 <dt id="wyrm.misc.calculate_csp">
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">calculate_csp</tt><big>(</big><em>class1</em>, <em>class2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#calculate_csp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.calculate_csp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Common Spatial Pattern (CSP) for two classes.</p>
-<dl class="docutils">
-<dt>Example:</dt>
-<dd><p class="first">Calculate the CSP for two classes:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>class1 :</strong> :</p>
+<blockquote>
+<div><p>A matrix of the form (trials, time, channels) representing class 1.</p>
+</div></blockquote>
+<p><strong>class2 :</strong> :</p>
+<blockquote>
+<div><p>A matrix of the form (trials, time, channels) representing the second
+class.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>A tuple (v, a, d). You should use the columns of the matrices, where</strong> :</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>v:</dt>
+<dd><p class="first last">The sorted spacial filters.</p>
+</dd>
+<dt>a:</dt>
+<dd><p class="first last">The sorted spacial patterns (i.e. column x of a represents
+the pattern of column x of v.</p>
+</dd>
+<dt>d:</dt>
+<dd><p class="first last">The variances of the components.</p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Common_spatial_pattern">http://en.wikipedia.org/wiki/Common_spatial_pattern</a></p>
+<p class="rubric">Examples</p>
+<p>Calculate the CSP for two classes:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_csp</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -88,33 +174,7 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
-<p class="last">This should result in four numbers (one for each channel).</p>
-</dd>
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>class1:</dt>
-<dd>A matrix of the form (trials, time, channels) representing
-class 1.</dd>
-<dt>class2:</dt>
-<dd>A matrix of the form (trials, time, channels) representing
-the second class.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><p class="first">A tuple (v, a, d). You should use the columns of the matrices, where</p>
-<dl class="last docutils">
-<dt>v:</dt>
-<dd>The sorted spacial filters.</dd>
-<dt>a:</dt>
-<dd>The sorted spacial patterns (i.e. column x of a represents
-the pattern of column x of v.</dd>
-<dt>d:</dt>
-<dd>The variances of the components.</dd>
-</dl>
-</dd>
-<dt>See:</dt>
-<dd><a class="reference external" href="http://en.wikipedia.org/wiki/Common_spatial_pattern">http://en.wikipedia.org/wiki/Common_spatial_pattern</a></dd>
-</dl>
+<p>This should result in four numbers (one for each channel).</p>
 </dd></dl>
 
 <dl class="function">
@@ -125,20 +185,33 @@ the pattern of column x of v.</dd>
 <dl class="function">
 <dt id="wyrm.misc.load_brain_vision_data">
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">load_brain_vision_data</tt><big>(</big><em>vhdr</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#load_brain_vision_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.load_brain_vision_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Load Brain Vision data from a file.</p>
+<p>This methods loads the continuous EEG data, the channel names, sampling
+frequency and the marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>vhdr</strong> : str</p>
+<blockquote>
+<div><p>Path to a VHDR file</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> :</p>
+<blockquote class="last">
+<div><p>Continuous Data.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="data">
 <dt id="wyrm.misc.logger">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">logger</tt><em class="property"> = &lt;logging.Logger object at 0x3f4aad0&gt;</em><a class="headerlink" href="#wyrm.misc.logger" title="Permalink to this definition">¶</a></dt>
-<dd><ol class="arabic simple">
-<li>Raw: A numpy array (time x channel)</li>
-</ol>
-<p>2. Continous Data: An object holding raw data together with meta information,
-like the sampling frequency, channel and the marker</p>
-<ol class="arabic simple" start="3">
-<li>Epoched Data: An object holding a list of Continous Data</li>
-</ol>
-</dd></dl>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">logger</tt><em class="property"> = &lt;logging.Logger object at 0x4f9d110&gt;</em><a class="headerlink" href="#wyrm.misc.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="wyrm.misc.moving_average">
@@ -162,30 +235,45 @@ like the sampling frequency, channel and the marker</p>
 <p>The matching is case-insensitive and locale-aware (as in re.IGNORECASE and
 re.LOCALE). The regular expression always has to match the whole channel
 name string</p>
-<dl class="docutils">
-<dt>Arguments:</dt>
-<dd><p class="first">cnt: Continuous data</p>
-<dl class="last docutils">
-<dt>regexp_list: Array of regular expressions</dt>
-<dd><p class="first">The regular expressions provided, are used directly by Python&#8217;s
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Continuous data</p>
+<p><strong>regexp_list</strong> : Array of regular expressions</p>
+<blockquote>
+<div><p>The regular expressions provided, are used directly by Python&#8217;s
 <a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt></a> module, so all regular expressions which are understood
 by this module are allowed.</p>
-<p class="last">Internally the <a class="reference external" href="http://docs.python.org/library/re.html#re.match" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">re.match()</span></tt></a> method is used, additionally to
+<p>Internally the <a class="reference external" href="http://docs.python.org/library/re.html#re.match" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">re.match()</span></tt></a> method is used, additionally to
 check for a match (which also matches substrings), it is also
 checked if the whole string matched the pattern.</p>
-</dd>
-<dt>invert: Boolean (default=False)</dt>
-<dd>If True the selection is inverted. Instead of selecting specific
-channels, you are removing the channels.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>A copy of the continuous data with the channels, matched by the list of
-regular expressions.</dd>
-</dl>
-<p>Example:</p>
+</div></blockquote>
+<p><strong>invert</strong> : Boolean (default=False)</p>
 <blockquote>
-<div><p>Select all channels Matching &#8216;af.*&#8217; or &#8216;fc.*&#8217;</p>
+<div><p>If True the selection is inverted. Instead of selecting specific
+channels, you are removing the channels.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> :</p>
+<blockquote class="last">
+<div><p>A copy of the continuous data with the channels, matched by the list of
+regular expressions.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-obj docutils literal"><span class="pre">re</span></tt></a></dt>
+<dd>Python&#8217;s Regular Expression module for more information about regular expressions.</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<p>Select all channels Matching &#8216;af.*&#8217; or &#8216;fc.*&#8217;</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt_new</span> <span class="o">=</span> <span class="n">select_channels</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;af.*&#39;</span><span class="p">,</span> <span class="s">&#39;fc.*&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -198,11 +286,6 @@ array:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt_new</span> <span class="o">=</span> <span class="n">select_channels</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;af.*&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-</div></blockquote>
-<p>See also:</p>
-<blockquote>
-<div>Python&#8217;s <a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt></a> module for more information about regular
-expressions.</div></blockquote>
 </dd></dl>
 
 </div>
