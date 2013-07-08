@@ -12,7 +12,7 @@ from scipy import signal
 from sklearn.lda import LDA
 
 logging.basicConfig(level=logging.NOTSET)
-logger = logging.getLogger('foo')
+logger = logging.getLogger(__name__)
 
 
 """
