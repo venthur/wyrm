@@ -24,11 +24,40 @@ Three Kinds of EEG Data
 2. Continous Data: An object holding raw data together with meta information,
 like the sampling frequency, channel and the marker
 
-3. Epoched Data: An object holding a list of Continous Data
+3. Epoched Data: An object holding a list of Continuous Data
 """
 
 class Cnt(object):
+    """Continuous Data Object.
 
+    This object represents a stream of continuous EEG data. It is
+    defined by the raw EEG data (samples x channels), the sampling
+    frequency, the channel names and the marker.
+
+    Parameters
+    ----------
+    data : ndarray (time, channel)
+        The raw EEG data in a 2 dimensional nd array (sample, channel)
+    fs : float
+        The sampling frequency
+    channel : array of strings
+        The channel names in the same order as they appear in `data`
+    marker : array of ???
+
+    Attributes
+    ----------
+    data : numpy array (samples x channels)
+        Defines the raw EEG data.
+
+    fs : float
+        The sampling frequency of the given data set
+
+    channel : numpy array of strings
+        The names of the channels in the same order as they appear in data
+
+    marker : ???
+
+    """
     def __init__(self, data, fs, channel, marker):
         self.data = data
         self.fs = fs
@@ -54,47 +83,51 @@ def select_channels(cnt, regexp_list, invert=False):
     re.LOCALE). The regular expression always has to match the whole channel
     name string
 
-    Arguments:
-        cnt: Continuous data
+    Parameters
+    ----------
+    cnt : Continuous data
 
-        regexp_list: Array of regular expressions
-            The regular expressions provided, are used directly by Python's
-            :mod:`re` module, so all regular expressions which are understood
-            by this module are allowed.
+    regexp_list : Array of regular expressions
+        The regular expressions provided, are used directly by Python's
+        :mod:`re` module, so all regular expressions which are understood
+        by this module are allowed.
 
-            Internally the :func:`re.match` method is used, additionally to
-            check for a match (which also matches substrings), it is also
-            checked if the whole string matched the pattern.
+        Internally the :func:`re.match` method is used, additionally to
+        check for a match (which also matches substrings), it is also
+        checked if the whole string matched the pattern.
 
-        invert: Boolean (default=False)
-            If True the selection is inverted. Instead of selecting specific
-            channels, you are removing the channels.
+    invert : Boolean (default=False)
+        If True the selection is inverted. Instead of selecting specific
+        channels, you are removing the channels.
 
-    Returns:
+    Returns
+    -------
+    cnt
         A copy of the continuous data with the channels, matched by the list of
         regular expressions.
 
-    Example:
+    Examples
+    --------
+    Select all channels Matching 'af.*' or 'fc.*'
 
-        Select all channels Matching 'af.*' or 'fc.*'
+    >>> cnt_new = select_channels(cnt, ['af.*', 'fc.*'])
 
-        >>> cnt_new = select_channels(cnt, ['af.*', 'fc.*'])
+    Remove all channels Matching 'emg.*' or 'eog.*'
 
-        Remove all channels Matching 'emg.*' or 'eog.*'
+    >>> cnt_new = select_channels(cnt, ['emg.*', 'eog.*'], invert=True)
 
-        >>> cnt_new = select_channels(cnt, ['emg.*', 'eog.*'], invert=True)
+    Even if you only provide one Regular expression, it has to be in an
+    array:
 
-        Even if you only provide one Regular expression, it has to be in an
-        array:
+    >>> cnt_new = select_channels(cnt, ['af.*'])
 
-        >>> cnt_new = select_channels(cnt, ['af.*'])
-
-    See also:
-
-        Python's :mod:`re` module for more information about regular
+    See Also
+    --------
+    re : Python's Regular Expression module for more information about regular
         expressions.
 
     """
+    # TODO: make it work with epos
     chan_mask = np.array([False for i in range(len(cnt.channel))])
     for c_idx, c in enumerate(cnt.channel):
         for regexp in regexp_list:
@@ -111,6 +144,22 @@ def select_channels(cnt, regexp_list, invert=False):
 
 
 def load_brain_vision_data(vhdr):
+    """Load Brain Vision data from a file.
+
+    This methods loads the continuous EEG data, the channel names, sampling
+    frequency and the marker.
+
+    Parameters
+    ----------
+    vhdr : str
+        Path to a VHDR file
+
+    Returns
+    -------
+    cnt
+        Continuous Data.
+
+    """
     logger.debug('Loading Brain Vision Data Exchange Header File')
     with open(vhdr) as fh:
         fdata = map(str.strip, fh.readlines())
@@ -213,35 +262,37 @@ def filter_bp(data, fs, low, high):
 def calculate_csp(class1, class2):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
 
-    Example:
-        Calculate the CSP for two classes::
+    Examples
+    --------
+    Calculate the CSP for two classes::
 
-            >>> w, a, d = calculate_csp(c1, c2)
+    >>> w, a, d = calculate_csp(c1, c2)
 
-        Take the first two and the last two columns of the sorted filter::
+    Take the first two and the last two columns of the sorted filter::
 
-            >>> w = w[:, (0, 1, -2, -1)]
+    >>> w = w[:, (0, 1, -2, -1)]
 
-        Apply the new filter to your data d of the form (time, channels)::
+    Apply the new filter to your data d of the form (time, channels)::
 
-            >>> filtered = np.dot(d, w)
+    >>> filtered = np.dot(d, w)
 
-        You'll probably want to get the log-variance along the time axis::
+    You'll probably want to get the log-variance along the time axis::
 
-            >>> filtered = np.log(np.var(filtered, 0))
+    >>> filtered = np.log(np.var(filtered, 0))
 
-        This should result in four numbers (one for each channel).
+    This should result in four numbers (one for each channel).
 
-    Args:
-        class1:
-            A matrix of the form (trials, time, channels) representing
-            class 1.
-        class2:
-            A matrix of the form (trials, time, channels) representing
-            the second class.
+    Parameters
+    ----------
+    class1 :
+        A matrix of the form (trials, time, channels) representing class 1.
+    class2 :
+        A matrix of the form (trials, time, channels) representing the second
+        class.
 
-    Returns:
-        A tuple (v, a, d). You should use the columns of the matrices, where
+    Returns
+    -------
+    A tuple (v, a, d). You should use the columns of the matrices, where
 
         v:
             The sorted spacial filters.
@@ -251,8 +302,9 @@ def calculate_csp(class1, class2):
         d:
             The variances of the components.
 
-    See:
-        http://en.wikipedia.org/wiki/Common_spatial_pattern
+    References
+    ----------
+    http://en.wikipedia.org/wiki/Common_spatial_pattern
 
     """
     # sven's super simple matlab code
