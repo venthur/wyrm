@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 
+from __future__ import division
+
 from os import path
 import logging
 import re
@@ -9,7 +11,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 import scipy as sp
 from scipy import signal
-from sklearn.lda import LDA
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
