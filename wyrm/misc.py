@@ -65,16 +65,44 @@ class Cnt(object):
         self.channel = np.array(channel)
         self.marker = marker
         # TODO: should we make some sanity checks here?
-
     # Should this class only be a wrapper for the raw data + meta info?
     # Should it provide its own methods for removing channels, resampling, etc
     # or should this be done by mushu library methods?
 
 
 class Epo(object):
+    """Epoched data object.
 
-    def __init__(self, data):
+    An Epoch represents a list of Continuous data.
+
+
+    Parameters
+    ----------
+    data : ndarray (epoch, sample, channel)
+        The raw, epoched EEG data in a 3 dimensional ndarray (epoch,
+        sample, channel)
+    fs : float
+        The sampling frequency
+    channel : array of strings
+        The channel names in the same order as they appear in `data`
+    marker : ???
+        Not defined yet!
+    classes : array
+        A 1 dimensional array, each entry represents the class for the
+        respective epoch in `data`. The value is also the index of
+        `class_names` for a human readable description of the class.
+    class_names : array of strings
+        The human readable class names. The indices of the classes in
+        `class_names` match the values in `classes`.
+
+    """
+    def __init__(self, data, fs, channel, marker, classes, class_names):
         self.data = data
+        self.fs = fs
+        self.channel = np.array(channel)
+        self.marker = marker
+        self.classes = classes
+        self.class_names = class_names
 
 
 def select_channels(cnt, regexp_list, invert=False):
@@ -239,6 +267,61 @@ def segmentation(data, mrk, start, end):
         chunk = data[i_start:i_end]
         data2.append(chunk)
     return np.array(data2)
+
+def cnt_to_epo(cnt, marker_def, ival):
+    """
+
+    Parameters
+    ----------
+    cnt : Continuous data object
+    marker_def : dict
+        The keys are class names, the values are lists of markers
+    ival : [int, int]
+        The interval in milliseconds to cut around the markers. I.e. to
+        get the interval starting with the marker plus the remaining
+        100ms define the interval like [0, 100].
+
+        To get 200ms before the marker until 100ms after the marker do:
+        [-200, 100]
+
+        Only negative or positive values are possible (i.e. [-500, -100])
+
+    Returns
+    -------
+    epo
+        The resulting epoched data.
+
+
+    Examples
+    --------
+
+    >>> # Define the markers belonging to class 1 and 2
+    >>> md = {'class 1': ['S1', 'S2'],
+    ...       'class 2': ['S3', 'S4']
+    ...      }
+    >>> # Epoch the data -500ms and +700ms around the markers defined in
+    >>> # md
+    >>> epo = cnt_to_epo(cnt, md, [-500, 700])
+
+    """
+    assert ival[0] <= ival[1]
+    # calculate the number of samples, given the fs of the cnt
+    factor = cnt.fs / 1000
+    start, stop = [i * factor for i in ival]
+    data = []
+    classes = []
+    class_names = sorted(marker_def.keys())
+    for pos, m in cnt.marker:
+        pos = int(pos)
+        for class_idx, classname in enumerate(class_names):
+            if m in marker_def[classname]:
+                chunk = cnt.data[pos+start: pos+stop]
+                data.append(chunk)
+                classes.append(class_idx)
+    # convert the array of cnts into an (epo, time, channel) array
+    data = np.array(data)
+    epo = Epo(data, cnt.fs, cnt.channel, cnt.marker, classes, class_names)
+    return epo
 
 
 def filter_bp(data, fs, low, high):
