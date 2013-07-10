@@ -19,14 +19,14 @@ class TestSelectChannels(unittest.TestCase):
         """Selecting channels with an array of regexes."""
         channels = self.cnt.data.copy()
         self.cnt = select_channels(self.cnt, ['ca.*', 'cc1'])
-        np.testing.assert_array_equal(self.cnt.channel,  np.array(['ca1', 'ca2', 'cc1']))
+        np.testing.assert_array_equal(self.cnt.channels,  np.array(['ca1', 'ca2', 'cc1']))
         np.testing.assert_array_equal(self.cnt.data, channels[:, np.array([0, 1, -1])])
 
     def test_select_channels_inverse(self):
         """Removing channels with an array of regexes."""
         channels = self.cnt.data.copy()
         self.cnt = select_channels(self.cnt, ['ca.*', 'cc1'], invert=True)
-        np.testing.assert_array_equal(self.cnt.channel,  np.array(['cb1', 'cb2']))
+        np.testing.assert_array_equal(self.cnt.channels,  np.array(['cb1', 'cb2']))
         np.testing.assert_array_equal(self.cnt.data, channels[:, np.array([2, 3])])
 
 

@@ -16,17 +16,17 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
 
-"""
-Three Kinds of EEG Data
------------------------
 
-1. Raw: A numpy array (time x channel)
+#Three Kinds of EEG Data
+#-----------------------
+#
+#1. Raw: A numpy array (time x channel)
+#
+#2. Continous Data: An object holding raw data together with meta information,
+#like the sampling frequency, channel and the marker
+#
+#3. Epoched Data: An object holding a list of Continuous Data
 
-2. Continous Data: An object holding raw data together with meta information,
-like the sampling frequency, channel and the marker
-
-3. Epoched Data: An object holding a list of Continuous Data
-"""
 
 class Cnt(object):
     """Continuous Data Object.
@@ -41,29 +41,26 @@ class Cnt(object):
         The raw EEG data in a 2 dimensional nd array (sample, channel)
     fs : float
         The sampling frequency
-    channel : array of strings
+    channels : array of strings
         The channel names in the same order as they appear in `data`
-    marker : array of ???
+    markers : array of ???
 
     Attributes
     ----------
     data : numpy array (samples x channels)
         Defines the raw EEG data.
-
     fs : float
         The sampling frequency of the given data set
-
-    channel : numpy array of strings
+    channels : numpy array of strings
         The names of the channels in the same order as they appear in data
-
-    marker : ???
+    markers: ???
 
     """
-    def __init__(self, data, fs, channel, marker):
+    def __init__(self, data, fs, channels, markers):
         self.data = data
         self.fs = fs
-        self.channel = np.array(channel)
-        self.marker = marker
+        self.channels= np.array(channels)
+        self.markers= markers
         # TODO: should we make some sanity checks here?
     # Should this class only be a wrapper for the raw data + meta info?
     # Should it provide its own methods for removing channels, resampling, etc
@@ -83,9 +80,9 @@ class Epo(object):
         sample, channel)
     fs : float
         The sampling frequency
-    channel : array of strings
+    channels : array of strings
         The channel names in the same order as they appear in `data`
-    marker : ???
+    markers : ???
         Not defined yet!
     classes : array
         A 1 dimensional array, each entry represents the class for the
@@ -95,12 +92,31 @@ class Epo(object):
         The human readable class names. The indices of the classes in
         `class_names` match the values in `classes`.
 
+
+    Attributes
+    ----------
+    data : ndarray (epoch, sample, channel)
+        The raw and epoched EEG data: (epochs, samples, channels).
+    fs : float
+        The sampling frequency
+    channels : array of strings
+        The channel names in the same order as they appear in `data`
+    markers : NOT DEFINED YET
+        Not defined yet!
+    classes : list
+        A 1 dimensional array, each entry represents the class for the
+        respective epoch in `data`. The value is also the index of
+        `class_names` for a human readable description of the class.
+    class_names : array of strings
+        The human readable class names. The indices of the classes in
+        `class_names` match the values in `classes`.
+
     """
-    def __init__(self, data, fs, channel, marker, classes, class_names):
+    def __init__(self, data, fs, channels, markers, classes, class_names):
         self.data = data
         self.fs = fs
-        self.channel = np.array(channel)
-        self.marker = marker
+        self.channels = np.array(channels)
+        self.markers = markers
         self.classes = classes
         self.class_names = class_names
 
@@ -157,8 +173,8 @@ def select_channels(cnt, regexp_list, invert=False):
 
     """
     # TODO: make it work with epos
-    chan_mask = np.array([False for i in range(len(cnt.channel))])
-    for c_idx, c in enumerate(cnt.channel):
+    chan_mask = np.array([False for i in range(len(cnt.channels))])
+    for c_idx, c in enumerate(cnt.channels):
         for regexp in regexp_list:
             m = re.match(regexp, c, re.IGNORECASE | re.LOCALE)
             if m and m.group() == c:
@@ -168,8 +184,8 @@ def select_channels(cnt, regexp_list, invert=False):
     if invert:
         chan_mask = ~chan_mask
     data = cnt.data[:,chan_mask]
-    channel = cnt.channel[chan_mask]
-    return Cnt(data, cnt.fs, channel, cnt.marker)
+    channels = cnt.channels[chan_mask]
+    return Cnt(data, cnt.fs, channels, cnt.markers)
 
 
 def load_brain_vision_data(vhdr):
@@ -311,7 +327,7 @@ def cnt_to_epo(cnt, marker_def, ival):
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
-    for pos, m in cnt.marker:
+    for pos, m in cnt.markers:
         pos = int(pos)
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
@@ -320,7 +336,7 @@ def cnt_to_epo(cnt, marker_def, ival):
                 classes.append(class_idx)
     # convert the array of cnts into an (epo, time, channel) array
     data = np.array(data)
-    epo = Epo(data, cnt.fs, cnt.channel, cnt.marker, classes, class_names)
+    epo = Epo(data, cnt.fs, cnt.channels, cnt.markers, classes, class_names)
     return epo
 
 
@@ -368,9 +384,9 @@ def calculate_csp(class1, class2):
 
     Parameters
     ----------
-    class1 :
+    class1
         A matrix of the form (trials, time, channels) representing class 1.
-    class2 :
+    class2
         A matrix of the form (trials, time, channels) representing the second
         class.
 

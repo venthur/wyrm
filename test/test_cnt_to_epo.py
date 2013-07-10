@@ -25,7 +25,7 @@ class TestCntToEpo(unittest.TestCase):
         epo = cnt_to_epo(cnt, mrk_def, [-400, 400])
         # test if basic info was transferred from cnt
         self.assertEqual(fs, epo.fs)
-        self.assertEqual(channels, list(epo.channel))
+        self.assertEqual(channels, list(epo.channels))
         # test if the actual data is correct
         self.assertEqual(list(epo.classes), [0, 1, 1])
         self.assertEqual(epo.class_names, ['class 1', 'class 2'])

@@ -42,6 +42,12 @@ if __name__ == '__main__':
     # segmentation
     std = [x for x, y in mrk if y in ['S  %i' % i for i in range(2, 7)]]
     dev = [x for x, y in mrk if y in ['S %i' % i for i in range(12, 17)]]
+    # alternatively:
+    # >>> marker_def = {'std': ['S  %i' % i for i in range (2, 7)],
+    #                   'dev': ['S %i' % i for i in range(12, 17)]
+    #                  }
+    epo = cnt_to_epo(cnt, marker_dev, [-250, 250])
+
 
     # preliminary ml code from interactive console:
     TEST_STD_I = 500
