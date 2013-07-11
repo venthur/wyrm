@@ -372,7 +372,7 @@ def filter_bp(data, fs, low, high):
 def subsample(cnt, factor):
     """Subsample the data by factor `factor`.
 
-    This method subsamples by taking every `factor`th element starting
+    This method subsamples by taking every `factor` th element starting
     with the first one.
 
     Note that this method does not low-pass filter the data before
