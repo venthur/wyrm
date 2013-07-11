@@ -277,7 +277,7 @@ def load_brain_vision_data(vhdr):
             mrk_pos = match.group('mrk_pos')
             mrk_descr = match.group('mrk_descr')
             if len(mrk_descr) > 1:
-                mrk.append([mrk_pos, mrk_descr])
+                mrk.append([int(mrk_pos), mrk_descr])
     return data, mrk, channels, fs
 
 
