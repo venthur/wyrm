@@ -281,17 +281,17 @@ def load_brain_vision_data(vhdr):
     return data, mrk, channels, fs
 
 
-def plot_channels(data, n_channels):
+def plot_channels(cnt):
     ax = []
-    for i in range(n_channels):
+    n_channels = len(cnt.channels)
+    for i, chan in enumerate(cnt.channels):
         if i == 0:
             a = plt.subplot(10, n_channels / 10 + 1, i + 1)
         else:
             a = plt.subplot(10, n_channels / 10 + 1, i + 1, sharex=ax[0], sharey=ax[0])
         ax.append(a)
-        a.plot(data[:, i])
-        a.set_title(channels[i])
-
+        a.plot(cnt.data[:, i])
+        a.set_title(chan)
 
 
 def cnt_to_epo(cnt, marker_def, ival):
