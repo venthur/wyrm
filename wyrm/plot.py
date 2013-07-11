@@ -34,19 +34,23 @@ def plot_scalp(v, channel):
 def calculate_stereographic_projection(p):
     """Calculate the stereographic projection.
 
-    Given a unit sphere with radius `r = 1` and center at the origin. Project
-    the point `p = (x, y, z)` from the sphere's South pole (0, 0, -1) on a
-    plane on the sphere's North pole (0, 0, 1).
+    Given a unit sphere with radius `r = 1` and center at the origin.
+    Project the point `p = (x, y, z)` from the sphere's South pole (0,
+    0, -1) on a plane on the sphere's North pole (0, 0, 1).
 
     The formula is:
 
         P' = P * (2r / (r + z))
 
-    Arguments:
-        p: The point to be projected in cartesian coordinates.
+    Parameters
+    ----------
+        p : [float, float]
+            The point to be projected in cartesian coordinates.
 
-    Returns:
-        [x, y]: the projected point on the plane.
+    Returns
+    -------
+    x, y : float, float
+        The projected point on the plane.
 
     """
     # P' = P * (2r / r + z)
@@ -59,12 +63,16 @@ def calculate_stereographic_projection(p):
 def interpolate_2d(x, y, z):
     """Interpolate missing points on a plane.
 
-    Arguments:
-        x, y, z: 1d arrays defining points like p[x, y] = z
+    Parameters
+    ----------
+    x, y, z : equally long lists of floats
+        1d arrays defining points like p[x, y] = z
 
-    Returns:
-        X, Y, Z, where Z is a 2d array [min(x)..max(x), [min(y)..max(y)] with
-        the interpolated values as values.
+    Returns
+    -------
+    X, Y, Z : 1d array, 1d array, 2d array
+        `Z` is a 2d array `[min(x)..max(x), [min(y)..max(y)]` with the
+        interpolated values as values.
 
     """
     X = np.linspace(min(x), max(x))
