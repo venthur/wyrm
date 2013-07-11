@@ -66,12 +66,12 @@ class Cnt(object):
     # Should it provide its own methods for removing channels, resampling, etc
     # or should this be done by mushu library methods?
 
-
 class Epo(object):
     """Epoched data object.
 
-    An Epoch represents a list of Continuous data.
-
+    An Epoch represents a list of Continuous data. Each element `i` of
+    an Epoch is assigned to a class `c = classes[i]` of the name
+    `classname[c]`.
 
     Parameters
     ----------
