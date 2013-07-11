@@ -494,4 +494,34 @@ def calculate_csp(class1, class2):
     return v, a, d
 
 
+def calculate_classwise_average(epo):
+    """Calculate the classwise average.
+
+    This method calculates the average continuous per class for all
+    classes defined in the `epo`. In other words, if you have two
+    different classes, with many continuous data per class, this method
+    will calculate the average time course for each class and channel.
+
+    Parameters
+    ----------
+    epo : Epo
+
+    Returns
+    -------
+    Epo
+        An Epo object holding a continuous per class.
+
+    """
+    data = []
+    classes = []
+    classnames = []
+    for i, classname in enumerate(epo.class_names):
+        avg = np.average(epo.data[epo.classes == i], axis=0)
+        classes.append(i)
+        classnames.append(classname)
+        data.append(avg)
+    classes = np.array(classes)
+    data = np.array(data)
+    return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames)
+
 
