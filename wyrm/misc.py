@@ -293,13 +293,6 @@ def plot_channels(data, n_channels):
         a.set_title(channels[i])
 
 
-def segmentation(data, mrk, start, end):
-    data2 = []
-    for i in mrk:
-        i_start, i_end = i+start, i+end
-        chunk = data[i_start:i_end]
-        data2.append(chunk)
-    return np.array(data2)
 
 def cnt_to_epo(cnt, marker_def, ival):
     """
