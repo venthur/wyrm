@@ -458,8 +458,4 @@ def calculate_csp(class1, class2):
     return v, a, d
 
 
-# TODO: use that method
-def moving_average(data, ws):
-    window = numpy.ones(ws) / float(ws)
-    return np.convolve(data, window, 'same')
 
