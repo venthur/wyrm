@@ -117,7 +117,7 @@ class Epo(object):
         self.fs = fs
         self.channels = np.array(channels)
         self.markers = markers
-        self.classes = classes
+        self.classes = np.array(classes)
         self.class_names = class_names
 
 
