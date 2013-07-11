@@ -350,9 +350,9 @@ def cnt_to_epo(cnt, marker_def, ival):
     return epo
 
 
-def filter_bp(data, fs, low, high):
+def band_pass(cnt, low, high):
     # band pass filter the data
-    fs_n = fs * 0.5
+    fs_n = cnt.fs * 0.5
     #logger.debug('Calculating butter order...')
     #butter_ord, f_butter = signal.buttord(ws=[(low - .1) / fs_n, (high + .1) / fs_n],
     #                                      wp=[low / fs_n, high / fs_n],
@@ -366,7 +366,8 @@ def filter_bp(data, fs, low, high):
     #                                                      'high': high / fs_n}))
     butter_ord = 4
     b, a = signal.butter(butter_ord, [low / fs_n, high / fs_n], btype='band')
-    return signal.lfilter(b, a, data, axis=0)
+    data = signal.lfilter(b, a, cnt.data, axis=-2)
+    return Cnt(data, cnt.fs, cnt.channels, cnt.markers)
 
 
 def subsample(cnt, factor):
