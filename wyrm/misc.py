@@ -376,6 +376,49 @@ def filter_bp(data, fs, low, high):
     return signal.lfilter(b, a, data, axis=0)
 
 
+def subsample(cnt, factor):
+    """Subsample the data by factor `factor`.
+
+    This method subsamples by taking every `factor`th element starting
+    with the first one.
+
+    Note that this method does not low-pass filter the data before
+    sub-sampling.
+
+    Parameters
+    ----------
+    cnt : Cnt
+    factor : int
+
+    Returns
+    -------
+    Cnt
+
+    See Also
+    --------
+    band_pass
+
+    Examples
+    --------
+
+    Load some EEG data with 1kHz, bandpass filter it and downsample it
+    by 10 so the resulting sampling frequency is 100Hz.
+
+    >>> cnt = load_brain_vision_data('some/path')
+    >>> cnt.fs
+    1000.0
+    >>> cnt = band_pass(cnt, 8, 40)
+    >>> cnt = subsample(cnt, 10)
+    >>> cnt.fs
+    100.0
+
+    """
+    data = cnt.data[..., ::factor, :]
+    fs = cnt.fs / factor
+    markers = map(lambda x: [int(x[0] / factor), x[1]], cnt.markers)
+    return Cnt(data, fs, cnt.channels, markers)
+
+    
 def calculate_csp(class1, class2):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
 
