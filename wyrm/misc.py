@@ -260,10 +260,6 @@ def load_brain_vision_data(vhdr):
     assert file_dict['Common Infos']['DataFormat'] == 'BINARY'
     assert file_dict['Common Infos']['DataOrientation'] == 'MULTIPLEXED'
     assert file_dict['Binary Infos']['BinaryFormat'] == 'INT_16'
-    print fs, n_channels
-    print marker_f
-    print data_f
-    print channels
     # load EEG data
     logger.debug('Loading EEG Data.')
     data = np.fromfile(data_f, np.int16)
