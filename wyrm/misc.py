@@ -511,6 +511,20 @@ def calculate_classwise_average(epo):
     Epo
         An Epo object holding a continuous per class.
 
+    Examples
+    --------
+
+    Split existing continuous data into two classes and calculate the
+    average continuous for each class.
+
+    >>> mrk_def = {'std': ['S %2i' % i for i in range(2, 7)],
+    ...            'dev': ['S %2i' % i for i in range(12, 17)]
+    ...           }
+    >>> epo = misc.cnt_to_epo(cnt, mrk_def, [0, 660])
+    >>> avg_epo = calculate_classwise_average(epo)
+    >>> plot(avg_epo.data[0])
+    >>> plot(avg_epo.data[1])
+
     """
     data = []
     classes = []
