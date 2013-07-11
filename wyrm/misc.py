@@ -540,3 +540,10 @@ def calculate_classwise_average(epo):
     return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames)
 
 
+def correct_for_baseline(epo, ival):
+    factor = epo.fs / 1000
+    start, stop = [i * factor for i in ival]
+    ivals = epo.data[:, start:stop ,:]
+    averages = np.average(ivals, axis=1)
+    data = epo.data - averages[:, np.newaxis, :]
+    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names)
