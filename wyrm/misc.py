@@ -278,7 +278,7 @@ def load_brain_vision_data(vhdr):
             mrk_descr = match.group('mrk_descr')
             if len(mrk_descr) > 1:
                 mrk.append([int(mrk_pos), mrk_descr])
-    return data, mrk, channels, fs
+    return Cnt(data, fs, channels, mrk)
 
 
 def plot_channels(cnt):
