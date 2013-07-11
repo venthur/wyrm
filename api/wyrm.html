@@ -56,7 +56,7 @@
 <span id="misc-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">misc</span></tt> Module<a class="headerlink" href="#module-wyrm.misc" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wyrm.misc.Cnt">
-<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Cnt</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channel</em>, <em>marker</em><big>)</big><a class="headerlink" href="#wyrm.misc.Cnt" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Cnt</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em><big>)</big><a class="headerlink" href="#wyrm.misc.Cnt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Continuous Data Object.</p>
 <p>This object represents a stream of continuous EEG data. It is
@@ -74,11 +74,11 @@ frequency, the channel names and the marker.</p>
 <blockquote>
 <div><p>The sampling frequency</p>
 </div></blockquote>
-<p><strong>channel</strong> : array of strings</p>
+<p><strong>channels</strong> : array of strings</p>
 <blockquote>
 <div><p>The channel names in the same order as they appear in <cite>data</cite></p>
 </div></blockquote>
-<p class="last"><strong>marker</strong> : array of ???</p>
+<p class="last"><strong>markers</strong> : array of ???</p>
 </td>
 </tr>
 </tbody>
@@ -86,9 +86,9 @@ frequency, the channel names and the marker.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="7%" />
-<col width="30%" />
-<col width="63%" />
+<col width="11%" />
+<col width="29%" />
+<col width="60%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>data</td>
@@ -99,12 +99,12 @@ frequency, the channel names and the marker.</p>
 <td>float</td>
 <td>The sampling frequency of the given data set</td>
 </tr>
-<tr class="row-odd"><td>channel</td>
+<tr class="row-odd"><td>channels</td>
 <td>numpy array of strings</td>
 <td>The names of the channels in the same order as they appear in data</td>
 </tr>
-<tr class="row-even"><td>marker</td>
-<td>???</td>
+<tr class="row-even"><td>markers: ???</td>
+<td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
@@ -113,8 +113,127 @@ frequency, the channel names and the marker.</p>
 
 <dl class="class">
 <dt id="wyrm.misc.Epo">
-<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Epo</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#wyrm.misc.Epo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Epo</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em>, <em>classes</em>, <em>class_names</em><big>)</big><a class="headerlink" href="#wyrm.misc.Epo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Epoched data object.</p>
+<p>An Epoch represents a list of Continuous data. Each element <cite>i</cite> of
+an Epoch is assigned to a class <cite>c = classes[i]</cite> of the name
+<cite>classname[c]</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray (epoch, sample, channel)</p>
+<blockquote>
+<div><p>The raw, epoched EEG data in a 3 dimensional ndarray (epoch,
+sample, channel)</p>
+</div></blockquote>
+<p><strong>fs</strong> : float</p>
+<blockquote>
+<div><p>The sampling frequency</p>
+</div></blockquote>
+<p><strong>channels</strong> : array of strings</p>
+<blockquote>
+<div><p>The channel names in the same order as they appear in <cite>data</cite></p>
+</div></blockquote>
+<p><strong>markers</strong> : ???</p>
+<blockquote>
+<div><p>Not defined yet!</p>
+</div></blockquote>
+<p><strong>classes</strong> : array</p>
+<blockquote>
+<div><p>A 1 dimensional array, each entry represents the class for the
+respective epoch in <cite>data</cite>. The value is also the index of
+<cite>class_names</cite> for a human readable description of the class.</p>
+</div></blockquote>
+<p><strong>class_names</strong> : array of strings</p>
+<blockquote class="last">
+<div><p>The human readable class names. The indices of the classes in
+<cite>class_names</cite> match the values in <cite>classes</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="30%" />
+<col width="59%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>data</td>
+<td>ndarray (epoch, sample, channel)</td>
+<td>The raw and epoched EEG data: (epochs, samples, channels).</td>
+</tr>
+<tr class="row-even"><td>fs</td>
+<td>float</td>
+<td>The sampling frequency</td>
+</tr>
+<tr class="row-odd"><td>channels</td>
+<td>array of strings</td>
+<td>The channel names in the same order as they appear in <cite>data</cite></td>
+</tr>
+<tr class="row-even"><td>markers</td>
+<td>NOT DEFINED YET</td>
+<td>Not defined yet!</td>
+</tr>
+<tr class="row-odd"><td>classes</td>
+<td>list</td>
+<td>A 1 dimensional array, each entry represents the class for the
+respective epoch in <cite>data</cite>. The value is also the index of
+<cite>class_names</cite> for a human readable description of the class.</td>
+</tr>
+<tr class="row-even"><td>class_names</td>
+<td>array of strings</td>
+<td>The human readable class names. The indices of the classes in
+<cite>class_names</cite> match the values in <cite>classes</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.band_pass">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">band_pass</tt><big>(</big><em>cnt</em>, <em>low</em>, <em>high</em><big>)</big><a class="headerlink" href="#wyrm.misc.band_pass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.calculate_classwise_average">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">calculate_classwise_average</tt><big>(</big><em>epo</em><big>)</big><a class="headerlink" href="#wyrm.misc.calculate_classwise_average" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the classwise average.</p>
+<p>This method calculates the average continuous per class for all
+classes defined in the <cite>epo</cite>. In other words, if you have two
+different classes, with many continuous data per class, this method
+will calculate the average time course for each class and channel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>Epo</strong> :</p>
+<blockquote class="last">
+<div><p>An Epo object holding a continuous per class.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Split existing continuous data into two classes and calculate the
+average continuous for each class.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">mrk_def</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;std&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S </span><span class="si">%2i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">)],</span>
+<span class="gp">... </span>           <span class="s">&#39;dev&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S </span><span class="si">%2i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">)]</span>
+<span class="gp">... </span>          <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">misc</span><span class="o">.</span><span class="n">cnt_to_epo</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">mrk_def</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">660</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avg_epo</span> <span class="o">=</span> <span class="n">calculate_classwise_average</span><span class="p">(</span><span class="n">epo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">(</span><span class="n">avg_epo</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">(</span><span class="n">avg_epo</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -125,11 +244,11 @@ frequency, the channel names and the marker.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>class1 :</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>class1</strong> :</p>
 <blockquote>
 <div><p>A matrix of the form (trials, time, channels) representing class 1.</p>
 </div></blockquote>
-<p><strong>class2 :</strong> :</p>
+<p><strong>class2</strong> :</p>
 <blockquote>
 <div><p>A matrix of the form (trials, time, channels) representing the second
 class.</p>
@@ -178,8 +297,51 @@ the pattern of column x of v.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wyrm.misc.filter_bp">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">filter_bp</tt><big>(</big><em>data</em>, <em>fs</em>, <em>low</em>, <em>high</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#filter_bp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.filter_bp" title="Permalink to this definition">¶</a></dt>
+<dt id="wyrm.misc.cnt_to_epo">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">cnt_to_epo</tt><big>(</big><em>cnt</em>, <em>marker_def</em>, <em>ival</em><big>)</big><a class="headerlink" href="#wyrm.misc.cnt_to_epo" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Continuous data object</p>
+<p><strong>marker_def</strong> : dict</p>
+<blockquote>
+<div><p>The keys are class names, the values are lists of markers</p>
+</div></blockquote>
+<p><strong>ival</strong> : [int, int]</p>
+<blockquote>
+<div><p>The interval in milliseconds to cut around the markers. I.e. to
+get the interval starting with the marker plus the remaining
+100ms define the interval like [0, 100].</p>
+<p>To get 200ms before the marker until 100ms after the marker do:
+[-200, 100]</p>
+<p>Only negative or positive values are possible (i.e. [-500, -100])</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>epo</strong> :</p>
+<blockquote class="last">
+<div><p>The resulting epoched data.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Define the markers belonging to class 1 and 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;class 1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">],</span>
+<span class="gp">... </span>      <span class="s">&#39;class 2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S3&#39;</span><span class="p">,</span> <span class="s">&#39;S4&#39;</span><span class="p">]</span>
+<span class="gp">... </span>     <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Epoch the data -500ms and +700ms around the markers defined in</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># md</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">cnt_to_epo</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="mi">700</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.correct_for_baseline">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">correct_for_baseline</tt><big>(</big><em>epo</em>, <em>ival</em><big>)</big><a class="headerlink" href="#wyrm.misc.correct_for_baseline" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -208,25 +370,37 @@ frequency and the marker.</p>
 </table>
 </dd></dl>
 
-<dl class="data">
-<dt id="wyrm.misc.logger">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">logger</tt><em class="property"> = &lt;logging.Logger object at 0x4f9d110&gt;</em><a class="headerlink" href="#wyrm.misc.logger" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wyrm.misc.moving_average">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">moving_average</tt><big>(</big><em>data</em>, <em>ws</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#moving_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.moving_average" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="function">
 <dt id="wyrm.misc.plot_channels">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">plot_channels</tt><big>(</big><em>data</em>, <em>n_channels</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#plot_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.plot_channels" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">plot_channels</tt><big>(</big><em>cnt</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#plot_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.plot_channels" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="wyrm.misc.segmentation">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">segmentation</tt><big>(</big><em>data</em>, <em>mrk</em>, <em>start</em>, <em>end</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#segmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.segmentation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="wyrm.misc.remove_channels">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">remove_channels</tt><big>(</big><em>cnt</em>, <em>regexp_list</em><big>)</big><a class="headerlink" href="#wyrm.misc.remove_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove channels from data.</p>
+<p>This method just calls <a class="reference internal" href="#wyrm.misc.select_channels" title="wyrm.misc.select_channels"><tt class="xref py py-func docutils literal"><span class="pre">select_channels()</span></tt></a> with the <cite>invert</cite>
+parameter set to <cite>True</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>Cnt</strong> :</p>
+<blockquote class="last">
+<div><p>A copy of the cnt with the channels removed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="#wyrm.misc.select_channels" title="wyrm.misc.select_channels"><tt class="xref py py-obj docutils literal"><span class="pre">select_channels</span></tt></a></dt>
+<dd>Select Channels</dd>
+</dl>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="wyrm.misc.select_channels">
@@ -268,6 +442,8 @@ regular expressions.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
+<dt><a class="reference internal" href="#wyrm.misc.remove_channels" title="wyrm.misc.remove_channels"><tt class="xref py py-obj docutils literal"><span class="pre">remove_channels</span></tt></a></dt>
+<dd>Remove Channels</dd>
 <dt><a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-obj docutils literal"><span class="pre">re</span></tt></a></dt>
 <dd>Python&#8217;s Regular Expression module for more information about regular expressions.</dd>
 </dl>
@@ -288,6 +464,45 @@ array:</p>
 </div>
 </dd></dl>
 
+<dl class="function">
+<dt id="wyrm.misc.subsample">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">subsample</tt><big>(</big><em>cnt</em>, <em>factor</em><big>)</big><a class="headerlink" href="#wyrm.misc.subsample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subsample the data by factor <cite>factor</cite>.</p>
+<p>This method subsamples by taking every <cite>factor</cite> th element starting
+with the first one.</p>
+<p>Note that this method does not low-pass filter the data before
+sub-sampling.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Cnt</p>
+<p><strong>factor</strong> : int</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>Cnt</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.misc.band_pass" title="wyrm.misc.band_pass"><tt class="xref py py-obj docutils literal"><span class="pre">band_pass</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>Load some EEG data with 1kHz, bandpass filter it and downsample it
+by 10 so the resulting sampling frequency is 100Hz.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">load_brain_vision_data</span><span class="p">(</span><span class="s">&#39;some/path&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">fs</span>
+<span class="go">1000.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">band_pass</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">fs</span>
+<span class="go">100.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="module-wyrm.plot">
 <span id="plot-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">plot</span></tt> Module<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h2>
@@ -295,31 +510,55 @@ array:</p>
 <dt id="wyrm.plot.calculate_stereographic_projection">
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">calculate_stereographic_projection</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#wyrm.plot.calculate_stereographic_projection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the stereographic projection.</p>
-<p>Given a unit sphere with radius <cite>r = 1</cite> and center at the origin. Project
-the point <cite>p = (x, y, z)</cite> from the sphere&#8217;s South pole (0, 0, -1) on a
-plane on the sphere&#8217;s North pole (0, 0, 1).</p>
+<p>Given a unit sphere with radius <cite>r = 1</cite> and center at the origin.
+Project the point <cite>p = (x, y, z)</cite> from the sphere&#8217;s South pole (0,
+0, -1) on a plane on the sphere&#8217;s North pole (0, 0, 1).</p>
 <p>The formula is:</p>
 <blockquote>
 <div>P&#8217; = P * (2r / (r + z))</div></blockquote>
-<dl class="docutils">
-<dt>Arguments:</dt>
-<dd>p: The point to be projected in cartesian coordinates.</dd>
-<dt>Returns:</dt>
-<dd>[x, y]: the projected point on the plane.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>p</strong> : [float, float]</p>
+<blockquote>
+<div><p>The point to be projected in cartesian coordinates.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>x, y</strong> : float, float</p>
+<blockquote class="last">
+<div><p>The projected point on the plane.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="wyrm.plot.interpolate_2d">
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">interpolate_2d</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="headerlink" href="#wyrm.plot.interpolate_2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate missing points on a plane.</p>
-<dl class="docutils">
-<dt>Arguments:</dt>
-<dd>x, y, z: 1d arrays defining points like p[x, y] = z</dd>
-<dt>Returns:</dt>
-<dd>X, Y, Z, where Z is a 2d array [min(x)..max(x), [min(y)..max(y)] with
-the interpolated values as values.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x, y, z</strong> : equally long lists of floats</p>
+<blockquote>
+<div><p>1d arrays defining points like p[x, y] = z</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>X, Y, Z</strong> : 1d array, 1d array, 2d array</p>
+<blockquote class="last">
+<div><p><cite>Z</cite> is a 2d array <cite>[min(x)..max(x), [min(y)..max(y)]</cite> with the
+interpolated values as values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
