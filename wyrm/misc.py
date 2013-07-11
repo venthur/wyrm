@@ -168,6 +168,7 @@ def select_channels(cnt, regexp_list, invert=False):
 
     See Also
     --------
+    remove_channels : Remove Channels
     re : Python's Regular Expression module for more information about regular
         expressions.
 
@@ -186,6 +187,26 @@ def select_channels(cnt, regexp_list, invert=False):
     data = cnt.data[:,chan_mask]
     channels = cnt.channels[chan_mask]
     return Cnt(data, cnt.fs, channels, cnt.markers)
+
+
+def remove_channels(cnt, regexp_list):
+    """Remove channels from data.
+
+    This method just calls :func:`select_channels` with the `invert`
+    parameter set to `True`.
+
+    Returns
+    -------
+    Cnt
+        A copy of the cnt with the channels removed.
+
+    See Also
+    --------
+
+    select_channels: Select Channels
+
+    """
+    return select_channels(cnt, regexp_list, invert=True)
 
 
 def load_brain_vision_data(vhdr):
