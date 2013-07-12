@@ -15,18 +15,15 @@ from scipy import signal
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
-
-
-#Three Kinds of EEG Data
-#-----------------------
+# Three Kinds of EEG Data
+# -----------------------
 #
-#1. Raw: A numpy array (time x channel)
+# 1. Raw: A numpy array (time x channel)
 #
-#2. Continous Data: An object holding raw data together with meta information,
-#like the sampling frequency, channel and the marker
+# 2. Continous Data: An object holding raw data together with meta information,
+# like the sampling frequency, channel and the marker
 #
-#3. Epoched Data: An object holding a list of Continuous Data
-
+# 3. Epoched Data: An object holding a list of Continuous Data
 
 class Cnt(object):
     """Continuous Data Object.
@@ -281,19 +278,6 @@ def load_brain_vision_data(vhdr):
     return Cnt(data, fs, channels, mrk)
 
 
-def plot_channels(cnt):
-    ax = []
-    n_channels = len(cnt.channels)
-    for i, chan in enumerate(cnt.channels):
-        if i == 0:
-            a = plt.subplot(10, n_channels / 10 + 1, i + 1)
-        else:
-            a = plt.subplot(10, n_channels / 10 + 1, i + 1, sharex=ax[0], sharey=ax[0])
-        ax.append(a)
-        a.plot(cnt.data[:, i])
-        a.set_title(chan)
-
-
 def cnt_to_epo(cnt, marker_def, ival):
     """
 
@@ -412,7 +396,7 @@ def subsample(cnt, factor):
     markers = map(lambda x: [int(x[0] / factor), x[1]], cnt.markers)
     return Cnt(data, fs, cnt.channels, markers)
 
-    
+
 def calculate_csp(class1, class2):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
 

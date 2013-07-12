@@ -31,6 +31,26 @@ def plot_scalp(v, channel):
     #plt.show()
 
 
+def plot_channels(cnt):
+    """Plot all channels for a continuous.
+
+    Parameters
+    ----------
+    cnt : Cnt
+
+    """
+    ax = []
+    n_channels = len(cnt.channels)
+    for i, chan in enumerate(cnt.channels):
+        if i == 0:
+            a = plt.subplot(10, n_channels / 10 + 1, i + 1)
+        else:
+            a = plt.subplot(10, n_channels / 10 + 1, i + 1, sharex=ax[0], sharey=ax[0])
+        ax.append(a)
+        a.plot(cnt.data[:, i])
+        a.set_title(chan)
+
+
 def calculate_stereographic_projection(p):
     """Calculate the stereographic projection.
 
