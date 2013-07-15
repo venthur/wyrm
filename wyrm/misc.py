@@ -387,6 +387,41 @@ def band_pass(cnt, low, high):
     return Cnt(data, cnt.fs, cnt.channels, cnt.markers)
 
 
+def select_ival(epo, ival):
+    """Select interval from epoched data.
+
+    This method selects the time segment(s) defined by ival in a new Epo
+    instance.
+
+    Parameters
+    ----------
+    epo : Epo
+    ival : (float, float)
+        Start and end in milliseconds
+
+    Returns
+    -------
+    epo : Epo
+
+    Examples
+    --------
+
+    Select the first 200ms of the epoched data:
+
+    >>> epo2 = select_ival(epo, [0, 200])
+    >>> epo2.ival
+    [0.0, 200.0]
+
+    """
+    assert epo.ival[0] <= ival[0] <= epo.ival[1] 
+    assert epo.ival[0] <= ival[1] <= epo.ival[1] 
+    assert ival[0] <= ival[1]
+    timestamps = np.linspace(epo.ival[0], epo.ival[1], epo.data.shape[-2])
+    mask = np.logical_and(ival[0] <= timestamps, timestamps <= ival[1])
+    data = epo.data[..., mask, :]
+    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, ival)
+
+
 def subsample(cnt, factor):
     """Subsample the data by factor `factor`.
 
