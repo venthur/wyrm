@@ -10,7 +10,7 @@ pprint() {
 }
 
 pprint Running Pyflakes
-pyflakes .
+PYFLAKES_NODOCTEST=1 pyflakes .
 
 pprint Running Unittests
 coverage run --source=wyrm --module unittest discover test
