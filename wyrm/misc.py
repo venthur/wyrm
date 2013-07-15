@@ -584,6 +584,12 @@ def correct_for_baseline(epo, ival):
 
     >>> epo = correct_for_baseline(epo, [-100, 0])
 
+    Raises
+    ------
+    AssertionError
+        If the left or right border of `ival` is outside of `epo.ival`
+        or if `ival` is malformed.
+
     """
     # check if ival fits into epo.ival
     assert epo.ival[0] <= ival[0] <= epo.ival[1]
