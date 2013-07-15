@@ -33,6 +33,8 @@ class TestCntToEpo(unittest.TestCase):
         for i in range(3):
             e = epo.data[i, ...]
             self.assertEqual(np.average(e), i+1)
+        # test if the epo.ival is the same we cut out
+        self.assertEqual(epo.ival, [-400, 400])
 
 
 if __name__ == '__main__':
