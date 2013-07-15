@@ -36,6 +36,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -49,12 +52,16 @@
   <h1>Source code for wyrm.plot</h1><div class="highlight"><pre>
 <span class="c">#!/usr/bin/env python</span>
 
+<span class="sd">&quot;&quot;&quot;Plotting methods.</span>
+
+<span class="sd">This module contains various plotting methods.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">patches</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
 
 <span class="kn">import</span> <span class="nn">tentensystem</span> <span class="kn">as</span> <span class="nn">tts</span>
@@ -64,11 +71,11 @@
     <span class="sd">&quot;&quot;&quot;Plot the values v for channel `channel` on a scalp.&quot;&quot;&quot;</span>
 
     <span class="n">channelpos</span> <span class="o">=</span> <span class="p">[</span><span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channel</span><span class="p">]</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">_calculate_stereographic_projection</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">channelpos</span><span class="p">]</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">calculate_stereographic_projection</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">channelpos</span><span class="p">]</span>
     <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
     <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">v</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">_interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
     <span class="c">#plt.clabel(im)</span>
@@ -77,25 +84,49 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;bo&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)):</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c">#plt.show()</span>
 
 </div>
-<span class="k">def</span> <span class="nf">_calculate_stereographic_projection</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_channels">[docs]</a><span class="k">def</span> <span class="nf">plot_channels</span><span class="p">(</span><span class="n">cnt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot all channels for a continuous.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cnt : Cnt</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">channels</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">channels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_channels</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_channels</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cnt</span><span class="o">.</span><span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span> <span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="calculate_stereographic_projection"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calculate_stereographic_projection">[docs]</a><span class="k">def</span> <span class="nf">calculate_stereographic_projection</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculate the stereographic projection.</span>
 
-<span class="sd">    Given a unit sphere with radius `r = 1` and center at the origin. Project</span>
-<span class="sd">    the point `p = (x, y, z)` from the sphere&#39;s South pole (0, 0, -1) on a</span>
-<span class="sd">    plane on the sphere&#39;s North pole (0, 0, 1).</span>
+<span class="sd">    Given a unit sphere with radius `r = 1` and center at the origin.</span>
+<span class="sd">    Project the point `p = (x, y, z)` from the sphere&#39;s South pole (0,</span>
+<span class="sd">    0, -1) on a plane on the sphere&#39;s North pole (0, 0, 1).</span>
 
 <span class="sd">    The formula is:</span>
 
 <span class="sd">        P&#39; = P * (2r / (r + z))</span>
 
-<span class="sd">    Arguments:</span>
-<span class="sd">        p: The point to be projected in cartesian coordinates.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : [float, float]</span>
+<span class="sd">        The point to be projected in cartesian coordinates.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        [x, y]: the projected point on the plane.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x, y : float, float</span>
+<span class="sd">        The projected point on the plane.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># P&#39; = P * (2r / r + z)</span>
@@ -104,16 +135,20 @@
     <span class="n">y</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">mu</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 
-
-<span class="k">def</span> <span class="nf">_interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+</div>
+<div class="viewcode-block" id="interpolate_2d"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.interpolate_2d">[docs]</a><span class="k">def</span> <span class="nf">interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Interpolate missing points on a plane.</span>
 
-<span class="sd">    Arguments:</span>
-<span class="sd">        x, y, z: 1d arrays defining points like p[x, y] = z</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x, y, z : equally long lists of floats</span>
+<span class="sd">        1d arrays defining points like p[x, y] = z</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        X, Y, Z, where Z is a 2d array [min(x)..max(x), [min(y)..max(y)] with</span>
-<span class="sd">        the interpolated values as values.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X, Y, Z : 1d array, 1d array, 2d array</span>
+<span class="sd">        `Z` is a 2d array `[min(x)..max(x), [min(y)..max(y)]` with the</span>
+<span class="sd">        interpolated values as values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -123,7 +158,7 @@
     <span class="c">#Z = f(X[0, :], Y[:, 0])</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">LinearNDInterpolator</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span>
     <span class="n">Z</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span></div>
 </pre></div>
 
           </div>
@@ -156,6 +191,9 @@
              >index</a></li>
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 

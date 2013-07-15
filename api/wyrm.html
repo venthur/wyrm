@@ -25,6 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="Wyrm alpha documentation" href="../index.html" />
     <link rel="up" title="wyrm" href="modules.html" />
+    <link rel="next" title="wyrm.misc" href="wyrm.misc.html" />
     <link rel="prev" title="wyrm" href="modules.html" /> 
   </head>
   <body>
@@ -37,6 +38,12 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="wyrm.misc.html" title="wyrm.misc"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="modules.html" title="wyrm"
              accesskey="P">previous</a> |</li>
@@ -54,9 +61,13 @@
 <h1>wyrm Package<a class="headerlink" href="#wyrm-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-wyrm.misc">
 <span id="misc-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">misc</span></tt> Module<a class="headerlink" href="#module-wyrm.misc" title="Permalink to this headline">¶</a></h2>
+<p>Miscellaneous toolbox methods.</p>
+<p>This module currently contains all the processing methods.</p>
+<p>The contents of this module should move into various other modules once
+it is ready for prime.</p>
 <dl class="class">
 <dt id="wyrm.misc.Cnt">
-<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Cnt</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em><big>)</big><a class="headerlink" href="#wyrm.misc.Cnt" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Cnt</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#Cnt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.Cnt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Continuous Data Object.</p>
 <p>This object represents a stream of continuous EEG data. It is
@@ -113,12 +124,14 @@ frequency, the channel names and the marker.</p>
 
 <dl class="class">
 <dt id="wyrm.misc.Epo">
-<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Epo</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em>, <em>classes</em>, <em>class_names</em><big>)</big><a class="headerlink" href="#wyrm.misc.Epo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Epo</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em>, <em>classes</em>, <em>class_names</em>, <em>ival</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#Epo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.Epo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Epoched data object.</p>
 <p>An Epoch represents a list of Continuous data. Each element <cite>i</cite> of
 an Epoch is assigned to a class <cite>c = classes[i]</cite> of the name
 <cite>classname[c]</cite>.</p>
+<p>Each cnt of this epo has the same length (number of samples), number
+of channels and time interval.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -147,9 +160,13 @@ respective epoch in <cite>data</cite>. The value is also the index of
 <cite>class_names</cite> for a human readable description of the class.</p>
 </div></blockquote>
 <p><strong>class_names</strong> : array of strings</p>
-<blockquote class="last">
+<blockquote>
 <div><p>The human readable class names. The indices of the classes in
 <cite>class_names</cite> match the values in <cite>classes</cite>.</p>
+</div></blockquote>
+<p><strong>ival</strong> : [float, float]</p>
+<blockquote class="last">
+<div><p>Start and stop time of this interval in ms.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -190,18 +207,22 @@ respective epoch in <cite>data</cite>. The value is also the index of
 <td>The human readable class names. The indices of the classes in
 <cite>class_names</cite> match the values in <cite>classes</cite>.</td>
 </tr>
+<tr class="row-odd"><td>ival</td>
+<td>[float, float]</td>
+<td>Start and stop time of this interval in ms.</td>
+</tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
 <dt id="wyrm.misc.band_pass">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">band_pass</tt><big>(</big><em>cnt</em>, <em>low</em>, <em>high</em><big>)</big><a class="headerlink" href="#wyrm.misc.band_pass" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">band_pass</tt><big>(</big><em>cnt</em>, <em>low</em>, <em>high</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#band_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.band_pass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="wyrm.misc.calculate_classwise_average">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">calculate_classwise_average</tt><big>(</big><em>epo</em><big>)</big><a class="headerlink" href="#wyrm.misc.calculate_classwise_average" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">calculate_classwise_average</tt><big>(</big><em>epo</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#calculate_classwise_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.calculate_classwise_average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the classwise average.</p>
 <p>This method calculates the average continuous per class for all
 classes defined in the <cite>epo</cite>. In other words, if you have two
@@ -214,7 +235,7 @@ will calculate the average time course for each class and channel.</p>
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>Epo</strong> :</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
 <blockquote class="last">
 <div><p>An Epo object holding a continuous per class.</p>
 </div></blockquote>
@@ -240,6 +261,7 @@ average continuous for each class.</p>
 <dt id="wyrm.misc.calculate_csp">
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">calculate_csp</tt><big>(</big><em>class1</em>, <em>class2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#calculate_csp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.calculate_csp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Common Spatial Pattern (CSP) for two classes.</p>
+<p>You should use the columns of the patterns and filters.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -255,20 +277,18 @@ class.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>A tuple (v, a, d). You should use the columns of the matrices, where</strong> :</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>v</strong> : 2d array</p>
+<blockquote>
+<div><p>the sorted spacial filters</p>
+</div></blockquote>
+<p><strong>a</strong> : 2d array</p>
+<blockquote>
+<div><p>the sorted spacial patterns. Column i of a represents the
+pattern of the filter in column i of v.</p>
+</div></blockquote>
+<p><strong>d</strong> : 1d array</p>
 <blockquote class="last">
-<div><dl class="docutils">
-<dt>v:</dt>
-<dd><p class="first last">The sorted spacial filters.</p>
-</dd>
-<dt>a:</dt>
-<dd><p class="first last">The sorted spacial patterns (i.e. column x of a represents
-the pattern of column x of v.</p>
-</dd>
-<dt>d:</dt>
-<dd><p class="first last">The variances of the components.</p>
-</dd>
-</dl>
+<div><p>the variances of the components</p>
 </div></blockquote>
 </td>
 </tr>
@@ -298,12 +318,18 @@ the pattern of column x of v.</p>
 
 <dl class="function">
 <dt id="wyrm.misc.cnt_to_epo">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">cnt_to_epo</tt><big>(</big><em>cnt</em>, <em>marker_def</em>, <em>ival</em><big>)</big><a class="headerlink" href="#wyrm.misc.cnt_to_epo" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">cnt_to_epo</tt><big>(</big><em>cnt</em>, <em>marker_def</em>, <em>ival</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#cnt_to_epo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.cnt_to_epo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a continuous data object to an peoched one.</p>
+<p>Given a continuous data object, a definition of classes, and an
+interval, this method looks for markers as defined in <cite>marker_def</cite>
+and slices the cnt according to the time interval given with <cite>ival</cite>.
+The returned <cite>Epo</cite> object stores those slices and the class each
+slice belongs to.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Continuous data object</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Cnt</p>
 <p><strong>marker_def</strong> : dict</p>
 <blockquote>
 <div><p>The keys are class names, the values are lists of markers</p>
@@ -319,7 +345,7 @@ get the interval starting with the marker plus the remaining
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>epo</strong> :</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
 <blockquote class="last">
 <div><p>The resulting epoched data.</p>
 </div></blockquote>
@@ -327,6 +353,10 @@ get the interval starting with the marker plus the remaining
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.misc.Epo" title="wyrm.misc.Epo"><tt class="xref py py-obj docutils literal"><span class="pre">Epo</span></tt></a></p>
+</div>
 <p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Define the markers belonging to class 1 and 2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;class 1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">],</span>
@@ -341,8 +371,41 @@ get the interval starting with the marker plus the remaining
 
 <dl class="function">
 <dt id="wyrm.misc.correct_for_baseline">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">correct_for_baseline</tt><big>(</big><em>epo</em>, <em>ival</em><big>)</big><a class="headerlink" href="#wyrm.misc.correct_for_baseline" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">correct_for_baseline</tt><big>(</big><em>epo</em>, <em>ival</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#correct_for_baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.correct_for_baseline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subtract the baseline.</p>
+<p>For each cnt-Element and channel in the given epo, this method
+calculates the average value for the given interval and subtracts
+this value from the channel data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+<p><strong>ival</strong> : (float, float)</p>
+<blockquote>
+<div><p>the start and stop borders in milli seconds. <cite>ival</cite> must fit
+into <cite>epo.ival</cite> and ival[0] &lt;= ival[1]</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>If the left or right border of <cite>ival</cite> is outside of <cite>epo.ival</cite>
+or if <cite>ival</cite> is malformed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Remove the baselines for the interval [100, 0]</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">correct_for_baseline</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="wyrm.misc.load_brain_vision_data">
@@ -360,7 +423,7 @@ frequency and the marker.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> :</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Cnt</p>
 <blockquote class="last">
 <div><p>Continuous Data.</p>
 </div></blockquote>
@@ -371,13 +434,8 @@ frequency and the marker.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wyrm.misc.plot_channels">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">plot_channels</tt><big>(</big><em>cnt</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#plot_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.plot_channels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="wyrm.misc.remove_channels">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">remove_channels</tt><big>(</big><em>cnt</em>, <em>regexp_list</em><big>)</big><a class="headerlink" href="#wyrm.misc.remove_channels" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">remove_channels</tt><big>(</big><em>cnt</em>, <em>regexp_list</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#remove_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.remove_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove channels from data.</p>
 <p>This method just calls <a class="reference internal" href="#wyrm.misc.select_channels" title="wyrm.misc.select_channels"><tt class="xref py py-func docutils literal"><span class="pre">select_channels()</span></tt></a> with the <cite>invert</cite>
 parameter set to <cite>True</cite>.</p>
@@ -385,7 +443,7 @@ parameter set to <cite>True</cite>.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>Cnt</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Cnt</p>
 <blockquote class="last">
 <div><p>A copy of the cnt with the channels removed.</p>
 </div></blockquote>
@@ -403,12 +461,41 @@ parameter set to <cite>True</cite>.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.misc.remove_epochs">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">remove_epochs</tt><big>(</big><em>epo</em>, <em>indices</em><big>)</big><a class="headerlink" href="#wyrm.misc.remove_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove epochs from an Epo object.</p>
+<p>This Method just calls <a class="reference internal" href="#wyrm.misc.select_epochs" title="wyrm.misc.select_epochs"><tt class="xref py py-meth docutils literal"><span class="pre">select_epochs()</span></tt></a> with the <cite>inverse</cite>
+paramerter set to <cite>True</cite>.</p>
+<p>Void classes are removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+<p><strong>indices</strong> : array of ints</p>
+<blockquote>
+<div><p>the indices of the elements to exclude</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>epo</strong> : Epo</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.misc.select_epochs" title="wyrm.misc.select_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">select_epochs</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.misc.select_channels">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">select_channels</tt><big>(</big><em>cnt</em>, <em>regexp_list</em>, <em>invert=False</em><big>)</big><a class="headerlink" href="#wyrm.misc.select_channels" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">select_channels</tt><big>(</big><em>cnt</em>, <em>regexp_list</em>, <em>invert=False</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#select_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.select_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select channels from data.</p>
-<p>The matching is case-insensitive and locale-aware (as in re.IGNORECASE and
-re.LOCALE). The regular expression always has to match the whole channel
-name string</p>
+<p>The matching is case-insensitive and locale-aware (as in
+re.IGNORECASE and re.LOCALE). The regular expression always has to
+match the whole channel name string</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -430,10 +517,10 @@ channels, you are removing the channels.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> :</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Cnt</p>
 <blockquote class="last">
-<div><p>A copy of the continuous data with the channels, matched by the list of
-regular expressions.</p>
+<div><p>A copy of the continuous data with the channels, matched by the
+list of regular expressions.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -465,8 +552,100 @@ array:</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.misc.select_epochs">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">select_epochs</tt><big>(</big><em>epo</em>, <em>indices</em>, <em>invert=False</em><big>)</big><a class="headerlink" href="#wyrm.misc.select_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select epochs from an Epo object.</p>
+<p>This method selects the epochs with the specified indices. Void
+classes are removed, i.e. the class_names are removed and the values
+in <cite>classes</cite> are compressed ([0, 2, 3] becomes [0, 1, 2]).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+<p><strong>indices</strong> : array of ints</p>
+<blockquote>
+<div><p>The indices of the elements to select.</p>
+</div></blockquote>
+<p><strong>invert</strong> : Boolean</p>
+<blockquote>
+<div><p>if true keep all elements except the ones defined by <cite>indices</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+<blockquote class="last">
+<div><p>a copy of the epoched data with only the selected epochs included.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.misc.remove_epochs" title="wyrm.misc.remove_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">remove_epochs</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>Get the first three epochs. Note how the class &#8216;2&#8217;, becomes the only
+class and is thus compressed to &#8216;0&#8217;.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span><span class="o">.</span><span class="n">classes</span>
+<span class="go">[0, 0, 1, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">select_epochs</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span><span class="o">.</span><span class="n">classes</span>
+<span class="go">[0, 0]</span>
+</pre></div>
+</div>
+<p>Remove the fourth epoch</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span><span class="o">.</span><span class="n">classes</span>
+<span class="go">[0, 0, 1, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">select_epochs</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span><span class="o">.</span><span class="n">classes</span>
+<span class="go">[0, 0, 1, 2]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.select_ival">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">select_ival</tt><big>(</big><em>epo</em>, <em>ival</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#select_ival"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.select_ival" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select interval from epoched data.</p>
+<p>This method selects the time segment(s) defined by ival in a new Epo
+instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+<p><strong>ival</strong> : (float, float)</p>
+<blockquote>
+<div><p>Start and end in milliseconds</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>if the given interval does not fit into <cite>epo.ival</cite> or <cite>ival[0] &gt;
+ival[1]</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Select the first 200ms of the epoched data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo2</span> <span class="o">=</span> <span class="n">select_ival</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo2</span><span class="o">.</span><span class="n">ival</span>
+<span class="go">[0.0, 200.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.misc.subsample">
-<tt class="descclassname">wyrm.misc.</tt><tt class="descname">subsample</tt><big>(</big><em>cnt</em>, <em>factor</em><big>)</big><a class="headerlink" href="#wyrm.misc.subsample" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">subsample</tt><big>(</big><em>cnt</em>, <em>factor</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#subsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.subsample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subsample the data by factor <cite>factor</cite>.</p>
 <p>This method subsamples by taking every <cite>factor</cite> th element starting
 with the first one.</p>
@@ -480,7 +659,7 @@ sub-sampling.</p>
 <p><strong>factor</strong> : int</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>Cnt</strong> :</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>cnt</strong> : Cnt</p>
 </td>
 </tr>
 </tbody>
@@ -506,9 +685,11 @@ by 10 so the resulting sampling frequency is 100Hz.</p>
 </div>
 <div class="section" id="module-wyrm.plot">
 <span id="plot-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">plot</span></tt> Module<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h2>
+<p>Plotting methods.</p>
+<p>This module contains various plotting methods.</p>
 <dl class="function">
 <dt id="wyrm.plot.calculate_stereographic_projection">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">calculate_stereographic_projection</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#wyrm.plot.calculate_stereographic_projection" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">calculate_stereographic_projection</tt><big>(</big><em>p</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#calculate_stereographic_projection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.calculate_stereographic_projection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the stereographic projection.</p>
 <p>Given a unit sphere with radius <cite>r = 1</cite> and center at the origin.
 Project the point <cite>p = (x, y, z)</cite> from the sphere&#8217;s South pole (0,
@@ -538,7 +719,7 @@ Project the point <cite>p = (x, y, z)</cite> from the sphere&#8217;s South pole 
 
 <dl class="function">
 <dt id="wyrm.plot.interpolate_2d">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">interpolate_2d</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="headerlink" href="#wyrm.plot.interpolate_2d" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">interpolate_2d</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#interpolate_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.interpolate_2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate missing points on a plane.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -556,6 +737,20 @@ Project the point <cite>p = (x, y, z)</cite> from the sphere&#8217;s South pole 
 interpolated values as values.</p>
 </div></blockquote>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.plot_channels">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_channels</tt><big>(</big><em>cnt</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot all channels for a continuous.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>cnt</strong> : Cnt</td>
 </tr>
 </tbody>
 </table>
@@ -592,6 +787,9 @@ interpolated values as values.</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="modules.html"
                         title="previous chapter">wyrm</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="wyrm.misc.html"
+                        title="next chapter">wyrm.misc</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/api/wyrm.txt"
@@ -623,6 +821,12 @@ interpolated values as values.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="wyrm.misc.html" title="wyrm.misc"
+             >next</a> |</li>
         <li class="right" >
           <a href="modules.html" title="wyrm"
              >previous</a> |</li>

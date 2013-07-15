@@ -1,0 +1,25 @@
+wyrm.plot
+=========
+
+.. automodule:: wyrm.plot
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      calculate_stereographic_projection
+      interpolate_2d
+      plot_channels
+      plot_scalp
+   
+   
+
+   
+   
+   
+
+   
+   
+   
