@@ -403,6 +403,12 @@ def select_ival(epo, ival):
     -------
     epo : Epo
 
+    Raises
+    ------
+    AssertionError
+        if the given interval does not fit into `epo.ival` or `ival[0] >
+        ival[1]`.
+
     Examples
     --------
 
