@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+"""Miscellaneous toolbox methods.
+
+This module currently contains all the processing methods.
+
+The contents of this module should move into various other modules once
+it is ready for prime.
+
+"""
+
+
 
 from __future__ import division
 
@@ -14,6 +24,7 @@ from scipy import signal
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
+
 
 # Three Kinds of EEG Data
 # -----------------------
@@ -70,6 +81,9 @@ class Epo(object):
     an Epoch is assigned to a class `c = classes[i]` of the name
     `classname[c]`.
 
+    Each cnt of this epo has the same length (number of samples), number
+    of channels and time interval.
+
     Parameters
     ----------
     data : ndarray (epoch, sample, channel)
@@ -88,6 +102,9 @@ class Epo(object):
     class_names : array of strings
         The human readable class names. The indices of the classes in
         `class_names` match the values in `classes`.
+    ival : [float, float]
+        Start and stop time of this interval in ms.
+
 
 
     Attributes
@@ -107,23 +124,31 @@ class Epo(object):
     class_names : array of strings
         The human readable class names. The indices of the classes in
         `class_names` match the values in `classes`.
+    ival : [float, float]
+        Start and stop time of this interval in ms.
 
     """
-    def __init__(self, data, fs, channels, markers, classes, class_names):
+    def __init__(self, data, fs, channels, markers, classes, class_names, ival):
         self.data = data
         self.fs = fs
         self.channels = np.array(channels)
         self.markers = markers
         self.classes = np.array(classes)
         self.class_names = class_names
+        self.ival = ival
+
+    def __getitem__(self, key):
+        data = self.data[key]
+        # TODO: deal with the markers issue
+        return Cnt(data, self.fs, self.channels, self.markers)
 
 
 def select_channels(cnt, regexp_list, invert=False):
     """Select channels from data.
 
-    The matching is case-insensitive and locale-aware (as in re.IGNORECASE and
-    re.LOCALE). The regular expression always has to match the whole channel
-    name string
+    The matching is case-insensitive and locale-aware (as in
+    re.IGNORECASE and re.LOCALE). The regular expression always has to
+    match the whole channel name string
 
     Parameters
     ----------
@@ -144,9 +169,9 @@ def select_channels(cnt, regexp_list, invert=False):
 
     Returns
     -------
-    cnt
-        A copy of the continuous data with the channels, matched by the list of
-        regular expressions.
+    cnt : Cnt
+        A copy of the continuous data with the channels, matched by the
+        list of regular expressions.
 
     Examples
     --------
@@ -166,8 +191,8 @@ def select_channels(cnt, regexp_list, invert=False):
     See Also
     --------
     remove_channels : Remove Channels
-    re : Python's Regular Expression module for more information about regular
-        expressions.
+    re : Python's Regular Expression module for more information about
+        regular expressions.
 
     """
     # TODO: make it work with epos
@@ -194,7 +219,7 @@ def remove_channels(cnt, regexp_list):
 
     Returns
     -------
-    Cnt
+    cnt : Cnt
         A copy of the cnt with the channels removed.
 
     See Also
@@ -219,7 +244,7 @@ def load_brain_vision_data(vhdr):
 
     Returns
     -------
-    cnt
+    cnt : Cnt
         Continuous Data.
 
     """
@@ -279,11 +304,18 @@ def load_brain_vision_data(vhdr):
 
 
 def cnt_to_epo(cnt, marker_def, ival):
-    """
+    """Convert a continuous data object to an peoched one.
+
+    Given a continuous data object, a definition of classes, and an
+    interval, this method looks for markers as defined in `marker_def`
+    and slices the cnt according to the time interval given with `ival`.
+    The returned `Epo` object stores those slices and the class each
+    slice belongs to.
+
 
     Parameters
     ----------
-    cnt : Continuous data object
+    cnt : Cnt
     marker_def : dict
         The keys are class names, the values are lists of markers
     ival : [int, int]
@@ -298,13 +330,12 @@ def cnt_to_epo(cnt, marker_def, ival):
 
     Returns
     -------
-    epo
+    epo : Epo
         The resulting epoched data.
 
 
     Examples
     --------
-
     >>> # Define the markers belonging to class 1 and 2
     >>> md = {'class 1': ['S1', 'S2'],
     ...       'class 2': ['S3', 'S4']
@@ -312,6 +343,10 @@ def cnt_to_epo(cnt, marker_def, ival):
     >>> # Epoch the data -500ms and +700ms around the markers defined in
     >>> # md
     >>> epo = cnt_to_epo(cnt, md, [-500, 700])
+
+    See Also
+    --------
+    Epo
 
     """
     assert ival[0] <= ival[1]
@@ -370,7 +405,7 @@ def subsample(cnt, factor):
 
     Returns
     -------
-    Cnt
+    cnt : Cnt
 
     See Also
     --------
@@ -399,6 +434,8 @@ def subsample(cnt, factor):
 
 def calculate_csp(class1, class2):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
+
+    You should use the columns of the patterns and filters.
 
     Examples
     --------
@@ -430,15 +467,14 @@ def calculate_csp(class1, class2):
 
     Returns
     -------
-    A tuple (v, a, d). You should use the columns of the matrices, where
+    v : 2d array
+        the sorted spacial filters
+    a : 2d array
+        the sorted spacial patterns. Column i of a represents the
+        pattern of the filter in column i of v.
+    d : 1d array
+        the variances of the components
 
-        v:
-            The sorted spacial filters.
-        a:
-            The sorted spacial patterns (i.e. column x of a represents
-            the pattern of column x of v.
-        d:
-            The variances of the components.
 
     References
     ----------
@@ -493,7 +529,7 @@ def calculate_classwise_average(epo):
 
     Returns
     -------
-    Epo
+    epo : Epo
         An Epo object holding a continuous per class.
 
     Examples

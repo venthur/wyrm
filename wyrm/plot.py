@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+"""Plotting methods.
+
+This module contains various plotting methods.
+
+"""
 
 from __future__ import division
 
@@ -64,8 +69,8 @@ def calculate_stereographic_projection(p):
 
     Parameters
     ----------
-        p : [float, float]
-            The point to be projected in cartesian coordinates.
+    p : [float, float]
+        The point to be projected in cartesian coordinates.
 
     Returns
     -------
