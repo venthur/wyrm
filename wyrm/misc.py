@@ -560,9 +560,42 @@ def calculate_classwise_average(epo):
 
 
 def correct_for_baseline(epo, ival):
-    factor = epo.fs / 1000
-    start, stop = [i * factor for i in ival]
-    ivals = epo.data[:, start:stop ,:]
-    averages = np.average(ivals, axis=1)
+    """Subtract the baseline.
+
+    For each cnt-Element and channel in the given epo, this method
+    calculates the average value for the given interval and subtracts
+    this value from the channel data.
+
+    Parameters
+    ----------
+    epo : Epo
+    ival : (float, float)
+        the start and stop borders in milli seconds. `ival` must fit
+        into `epo.ival` and ival[0] <= ival[1]
+
+    Returns
+    -------
+    epo : Epo
+
+
+    Examples
+    --------
+
+    Remove the baselines for the interval [100, 0]
+
+    >>> epo = correct_for_baseline(epo, [-100, 0]
+
+    """
+    # check if ival fits into epo.ival
+    assert epo.ival[0] <= ival[0] <= epo.ival[1]
+    assert epo.ival[0] <= ival[1] <= epo.ival[1]
+    assert ival[0] <= ival[1]
+    # create an indexing mask ([true, true, false, ...])
+    timestamps = np.linspace(epo.ival[0], epo.ival[1], epo.data.shape[-2])
+    mask = np.logical_and(ival[0] <= timestamps, timestamps <= ival[1])
+    # take all values from the epo except the ones not fitting the mask
+    # and calculate the average along the sampling axis
+    averages = np.average(epo.data[:, mask, :], axis=1)
     data = epo.data - averages[:, np.newaxis, :]
     return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.ival)
+
