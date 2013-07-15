@@ -11,7 +11,6 @@ class TestCorrectForBaseline(unittest.TestCase):
 
     def setUp(self):
         ones = np.ones((10, 5))
-        raw = np.arange(20).reshape(4, 5)
         channels = ['ca1', 'ca2', 'cb1', 'cb2', 'cc1']
         fs = 10
         marker = []

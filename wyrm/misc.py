@@ -18,7 +18,6 @@ import logging
 import re
 
 import numpy as np
-from matplotlib import pyplot as plt
 import scipy as sp
 from scipy import signal
 
@@ -583,7 +582,7 @@ def correct_for_baseline(epo, ival):
 
     Remove the baselines for the interval [100, 0]
 
-    >>> epo = correct_for_baseline(epo, [-100, 0]
+    >>> epo = correct_for_baseline(epo, [-100, 0])
 
     """
     # check if ival fits into epo.ival

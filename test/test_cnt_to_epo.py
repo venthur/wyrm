@@ -4,7 +4,6 @@ import unittest
 import numpy as np
 
 from wyrm.misc import Cnt
-from wyrm.misc import Epo
 from wyrm.misc import cnt_to_epo
 
 
