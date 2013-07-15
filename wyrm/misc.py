@@ -106,7 +106,6 @@ class Epo(object):
         Start and stop time of this interval in ms.
 
 
-
     Attributes
     ----------
     data : ndarray (epoch, sample, channel)
@@ -365,7 +364,7 @@ def cnt_to_epo(cnt, marker_def, ival):
                 classes.append(class_idx)
     # convert the array of cnts into an (epo, time, channel) array
     data = np.array(data)
-    epo = Epo(data, cnt.fs, cnt.channels, cnt.markers, classes, class_names)
+    epo = Epo(data, cnt.fs, cnt.channels, cnt.markers, classes, class_names, ival)
     return epo
 
 
@@ -557,7 +556,7 @@ def calculate_classwise_average(epo):
         data.append(avg)
     classes = np.array(classes)
     data = np.array(data)
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames)
+    return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames, epo.ival)
 
 
 def correct_for_baseline(epo, ival):
@@ -566,4 +565,4 @@ def correct_for_baseline(epo, ival):
     ivals = epo.data[:, start:stop ,:]
     averages = np.average(ivals, axis=1)
     data = epo.data - averages[:, np.newaxis, :]
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names)
+    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.ival)
