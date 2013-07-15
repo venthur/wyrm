@@ -13,11 +13,15 @@ Contents:
 
    api/modules
 
+API Documentation
+-----------------
+
 .. autosummary::
    :toctree: api
 
    wyrm.misc
    wyrm.plot
+
 
 Indices and tables
 ==================
