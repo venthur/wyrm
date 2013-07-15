@@ -132,7 +132,7 @@ class Epo(object):
         self.channels = np.array(channels)
         self.markers = markers
         self.classes = np.array(classes)
-        self.class_names = class_names
+        self.class_names = np.array(class_names)
         self.ival = ival
 
     def __getitem__(self, key):
@@ -419,8 +419,8 @@ def select_ival(epo, ival):
     [0.0, 200.0]
 
     """
-    assert epo.ival[0] <= ival[0] <= epo.ival[1] 
-    assert epo.ival[0] <= ival[1] <= epo.ival[1] 
+    assert epo.ival[0] <= ival[0] <= epo.ival[1]
+    assert epo.ival[0] <= ival[1] <= epo.ival[1]
     assert ival[0] <= ival[1]
     timestamps = np.linspace(epo.ival[0], epo.ival[1], epo.data.shape[-2])
     mask = np.logical_and(ival[0] <= timestamps, timestamps <= ival[1])

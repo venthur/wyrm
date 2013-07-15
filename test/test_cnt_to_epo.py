@@ -27,7 +27,7 @@ class TestCntToEpo(unittest.TestCase):
         self.assertEqual(channels, list(epo.channels))
         # test if the actual data is correct
         self.assertEqual(list(epo.classes), [0, 1, 1])
-        self.assertEqual(epo.class_names, ['class 1', 'class 2'])
+        np.testing.assert_array_equal(epo.class_names, np.array(['class 1', 'class 2']))
         self.assertEqual(epo.data.shape, (3, 80, 3))
         for i in range(3):
             e = epo.data[i, ...]
