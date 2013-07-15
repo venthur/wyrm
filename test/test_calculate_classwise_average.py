@@ -18,7 +18,8 @@ class TestCalculateClasswiseAverage(unittest.TestCase):
         classes = [0, 0, 1, 1, 0, 1, 1]
         class_names = ['ones', 'twoes']
         markers = []
-        epo = Epo(data, fs, channels, markers, classes, class_names)
+        ival = [0, 700]
+        epo = Epo(data, fs, channels, markers, classes, class_names, ival)
         avg_epo = calculate_classwise_average(epo)
         # check for two epoches (one for each class)
         self.assertEqual(avg_epo.data.shape[0], 2)
