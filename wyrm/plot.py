@@ -32,7 +32,6 @@ def plot_scalp(v, channel):
     plt.plot(x, y, 'bo')
     for i in zip(channel, zip(x,y)):
         plt.annotate(i[0], i[1])
-    #plt.show()
 
 
 def plot_channels(cnt):
@@ -51,7 +50,10 @@ def plot_channels(cnt):
         else:
             a = plt.subplot(10, n_channels / 10 + 1, i + 1, sharex=ax[0], sharey=ax[0])
         ax.append(a)
-        a.plot(cnt.data[:, i])
+        if hasattr(cnt, 'ival'):
+            a.plot(np.linspace(cnt.ival[0], cnt.ival[1], cnt.data.shape[-2]), cnt.data[:, i])
+        else:
+            a.plot(cnt.data[:, i])
         a.set_title(chan)
 
 
