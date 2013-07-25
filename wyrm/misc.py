@@ -66,8 +66,8 @@ class Cnt(object):
     def __init__(self, data, fs, channels, markers):
         self.data = data
         self.fs = fs
-        self.channels= np.array(channels)
-        self.markers= markers
+        self.channels = np.array(channels)
+        self.markers = markers
         # TODO: should we make some sanity checks here?
     # Should this class only be a wrapper for the raw data + meta info?
     # Should it provide its own methods for removing channels, resampling, etc
