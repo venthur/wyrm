@@ -56,6 +56,24 @@ def plot_channels(cnt):
             a.plot(cnt.data[:, i])
         a.set_title(chan)
 
+def plot_spectrum(spectrum, freqs):
+    plt.plot(freqs, spectrum, '.')
+    plt.xlabel('Frequency [Hz]')
+    plt.ylabel('[dl]')
+
+
+def plot_spectrogram(spectrogram, freqs):
+    extent = 0, len(spectrogram), freqs[0], freqs[-1]
+    print extent
+    plt.imshow(spectrogram.transpose(),
+        aspect='auto',
+        origin='lower',
+        extent=extent,
+        interpolation='none')
+    plt.colorbar()
+    plt.ylabel('Frequency [Hz]')
+    plt.xlabel('Time')
+
 
 def calculate_stereographic_projection(p):
     """Calculate the stereographic projection.
