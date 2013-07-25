@@ -368,6 +368,20 @@ def cnt_to_epo(cnt, marker_def, ival):
 
 
 def band_pass(cnt, low, high):
+    """Band pass filter the data.
+
+    Parameters
+    ----------
+    cnt : Cnt
+    low, high : int
+        the low, and high borders of the desired frequency band
+
+    Returns
+    -------
+    cnt : Cnt
+        the band pass filtered data
+
+    """
     # band pass filter the data
     fs_n = cnt.fs * 0.5
     #logger.debug('Calculating butter order...')
