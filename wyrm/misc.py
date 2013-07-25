@@ -583,6 +583,76 @@ def subsample(cnt, factor):
     return Cnt(data, fs, cnt.channels, markers)
 
 
+def spectrum(cnt):
+    """Calculate the normalized spectrum of a continuous data object.
+
+
+    Returns
+    -------
+    fourier : ndarray
+    freqs : ndarray
+
+    See Also
+    --------
+    spectrogram, stft
+
+    """
+    fourier = np.array([sp.fftpack.rfft(cnt.data[:,i]) for i in range(cnt.data.shape[-1])])
+    fourier *= (2 / cnt.data.shape[-2])
+    freqs = sp.fftpack.rfftfreq(cnt.data.shape[-2], 1/cnt.fs)
+    return fourier, freqs
+
+
+def spectrogram(cnt):
+    """Calculate the spectrogram of a continuous data object.
+
+    See Also
+    --------
+    spectrum, stft
+
+    """
+    framesize = 1000 #ms
+    width = int(cnt.fs * (framesize / 1000))
+    specgram = np.array([stft(cnt.data[:,i], width) for i in range(cnt.data.shape[-1])])
+    freqs = sp.fftpack.rfftfreq(width, 1/cnt.fs)
+    return specgram, freqs
+
+
+def stft(x, width):
+    """Short time fourier transform of a real sequence.
+
+    This method performs a discrete short time Fourier transform. It
+    uses a sliding window to perform discrete Fourier transforms on the
+    data in the Window. The results are returned in an array.
+
+    This method uses a Hanning window on the data in the window before
+    calculating the Fourier transform.
+
+    The sliding windows are overlapping by `width/2`.
+
+    Parameters
+    ----------
+    x : ndarray
+    width: int
+        the width of the sliding window in samples
+
+    Returns
+    -------
+    fourier : 2d complex array
+        the dimensions are time, frequency; the frequencies are evenly
+        binned from 0 to f_nyquist
+
+    See Also
+    --------
+    spectrum, spectrogram, scipy.hanning, scipy.fftpack.rfft
+
+    """
+    window = sp.hanning(width)
+    fourier = np.array([sp.fftpack.rfft(x[i:i+width] * window) for i in range(0, len(x)-width, width//2)])
+    fourier *= (2 / width)
+    return fourier
+
+
 def calculate_csp(class1, class2):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
 
