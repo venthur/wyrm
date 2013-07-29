@@ -44,23 +44,27 @@ class Cnt(object):
 
     Parameters
     ----------
-    data : ndarray (time, channel)
+    data : 2darray
         The raw EEG data in a 2 dimensional nd array (sample, channel)
     fs : float
         The sampling frequency
     channels : array of strings
         The channel names in the same order as they appear in `data`
-    markers : array of ???
+    markers : array of (int, str)
+        the int represents the position in data this marker belongs to,
+        and str is the actual marker
 
     Attributes
     ----------
-    data : numpy array (samples x channels)
-        Defines the raw EEG data.
+    data : 2darray
+        Defines the raw EEG data (sample, channel)
     fs : float
         The sampling frequency of the given data set
     channels : numpy array of strings
         The names of the channels in the same order as they appear in data
-    markers: ???
+    markers : array of (int, str)
+        the int represents the position in data this marker belongs to,
+        and str is the actual marker
 
     """
     def __init__(self, data, fs, channels, markers):
@@ -92,8 +96,10 @@ class Epo(object):
         The sampling frequency
     channels : array of strings
         The channel names in the same order as they appear in `data`
-    markers : ???
-        Not defined yet!
+    markers : array of arrays of (int, str)
+        for each epoch there is an array of mackers (int, str), where
+        the int indicates the position of the marker relative to data
+        and str is the actual marker.
     classes : array
         A 1 dimensional array, each entry represents the class for the
         respective epoch in `data`. The value is also the index of
@@ -107,14 +113,16 @@ class Epo(object):
 
     Attributes
     ----------
-    data : ndarray (epoch, sample, channel)
+    data : (N, N, N) ndarray
         The raw and epoched EEG data: (epochs, samples, channels).
     fs : float
         The sampling frequency
     channels : array of strings
         The channel names in the same order as they appear in `data`
-    markers : NOT DEFINED YET
-        Not defined yet!
+    markers : array of arrays of (int, str)
+        for each epoch there is an array of mackers (int, str), where
+        the int indicates the position of the marker relative to data
+        and str is the actual marker.
     classes : list
         A 1 dimensional array, each entry represents the class for the
         respective epoch in `data`. The value is also the index of
