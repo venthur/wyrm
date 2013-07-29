@@ -16,12 +16,12 @@ class TestSelectEpochs(unittest.TestCase):
         channels = ['ca1', 'ca2', 'cb1', 'cb2', 'cc1']
         fs = 10
         marker = []
-        ival = [-1000, 1000]
+        t_start = -1000
         classes = [0, 1, 2, 1]
         class_names = ['zeros', 'ones', 'twoes']
         # three cnts: 1s, -1s, and 0s
         data = np.array([ones * 0, ones * 1, ones * 2, ones * 0])
-        self.epo = Epo(data, fs, channels, marker, classes, class_names, ival)
+        self.epo = Epo(data, fs, channels, marker, classes, class_names, t_start)
 
     def test_select_epochs(self):
         """Selecting Epochs."""

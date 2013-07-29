@@ -34,7 +34,7 @@ def plot_scalp(v, channel):
         plt.annotate(i[0], i[1])
 
 
-def plot_channels(cnt):
+def plot_channels(cnt, markers=True):
     """Plot all channels for a continuous.
 
     Parameters
@@ -50,11 +50,14 @@ def plot_channels(cnt):
         else:
             a = plt.subplot(10, n_channels / 10 + 1, i + 1, sharex=ax[0], sharey=ax[0])
         ax.append(a)
-        if hasattr(cnt, 'ival'):
-            a.plot(np.linspace(cnt.ival[0], cnt.ival[1], cnt.data.shape[-2]), cnt.data[:, i])
-        else:
-            a.plot(cnt.data[:, i])
+        a.plot(cnt.t, cnt.data[:, i])
         a.set_title(chan)
+        plt.axvline(x=0)
+        plt.axhline(y=0)
+        if markers:
+            for pos, txt in cnt.markers:
+                plt.axvline(x=cnt.t[pos])
+                plt.text(cnt.t[pos], -20, txt)
 
 def plot_spectrum(spectrum, freqs):
     plt.plot(freqs, spectrum, '.')

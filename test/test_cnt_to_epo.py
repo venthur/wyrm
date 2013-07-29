@@ -28,12 +28,13 @@ class TestCntToEpo(unittest.TestCase):
         # test if the actual data is correct
         self.assertEqual(list(epo.classes), [0, 1, 1])
         np.testing.assert_array_equal(epo.class_names, np.array(['class 1', 'class 2']))
-        self.assertEqual(epo.data.shape, (3, 80, 3))
+        self.assertEqual(epo.data.shape, (3, 81, 3))
         for i in range(3):
             e = epo.data[i, ...]
             self.assertEqual(np.average(e), i+1)
         # test if the epo.ival is the same we cut out
-        self.assertEqual(epo.ival, [-400, 400])
+        self.assertEqual(epo.t[0], -400)
+        self.assertEqual(epo.t[-1], 400)
 
 
 if __name__ == '__main__':

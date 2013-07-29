@@ -65,6 +65,8 @@ class Cnt(object):
     markers : array of (int, str)
         the int represents the position in data this marker belongs to,
         and str is the actual marker
+    t : array of float
+        the time in ms for each element in data.
 
     """
     def __init__(self, data, fs, channels, markers):
@@ -72,10 +74,10 @@ class Cnt(object):
         self.fs = fs
         self.channels = np.array(channels)
         self.markers = markers
+        duration = 1000 * data.shape[0] / fs
+        self.t = np.linspace(0, duration, data.shape[0], endpoint=False)
         # TODO: should we make some sanity checks here?
-    # Should this class only be a wrapper for the raw data + meta info?
-    # Should it provide its own methods for removing channels, resampling, etc
-    # or should this be done by mushu library methods?
+
 
 class Epo(object):
     """Epoched data object.
@@ -107,8 +109,9 @@ class Epo(object):
     class_names : array of strings
         The human readable class names. The indices of the classes in
         `class_names` match the values in `classes`.
-    ival : [float, float]
-        Start and stop time of this interval in ms.
+    t_start : float
+        (start) time in ms of the interval in relation to the event of
+        the epoch (e.g. -100, 0, or 200)
 
 
     Attributes
@@ -130,24 +133,25 @@ class Epo(object):
     class_names : array of strings
         The human readable class names. The indices of the classes in
         `class_names` match the values in `classes`.
-    ival : [float, float]
-        Start and stop time of this interval in ms.
+    t : (N,) nd array
+        the time in ms for each element in data
 
     """
-    def __init__(self, data, fs, channels, markers, classes, class_names, ival):
+    def __init__(self, data, fs, channels, markers, classes, class_names, t_start):
         self.data = data
         self.fs = fs
         self.channels = np.array(channels)
         self.markers = markers
         self.classes = np.array(classes)
         self.class_names = np.array(class_names)
-        self.ival = ival
+        duration = 1000 * data.shape[-2] / fs
+        self.t = np.linspace(t_start, t_start + duration, data.shape[-2], endpoint=False)
 
     def __getitem__(self, key):
         data = self.data[key]
-        # TODO: deal with the markers issue
-        return Cnt(data, self.fs, self.channels, self.markers)
-
+        cnt = Cnt(data, self.fs, self.channels, self.markers[key])
+        cnt.t = self.t
+        return cnt
 
 def select_channels(cnt, regexp_list, invert=False):
     """Select channels from data.
@@ -356,22 +360,30 @@ def cnt_to_epo(cnt, marker_def, ival):
 
     """
     assert ival[0] <= ival[1]
-    # calculate the number of samples, given the fs of the cnt
-    factor = cnt.fs / 1000
-    start, stop = [i * factor for i in ival]
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
+    # create an marker array similar to .data
+    marker = ['' for i in range(cnt.t.shape[0])]
+    for pos, txt in cnt.markers:
+        marker[pos] = txt
+    marker = np.array(marker)
+    markers = []
     for pos, m in cnt.markers:
-        pos = int(pos)
+        t = cnt.t[int(pos)]
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
-                chunk = cnt.data[pos+start: pos+stop]
-                data.append(chunk)
+                mask = np.logical_and(t+ival[0] <= cnt.t, cnt.t <= t+ival[1])
+                data.append(cnt.data[mask])
                 classes.append(class_idx)
+                mrk = []
+                for idx, val in enumerate(marker[mask]):
+                    if val != '':
+                        mrk.append([idx, val])
+                markers.append(mrk)
     # convert the array of cnts into an (epo, time, channel) array
     data = np.array(data)
-    epo = Epo(data, cnt.fs, cnt.channels, cnt.markers, classes, class_names, ival)
+    epo = Epo(data, cnt.fs, cnt.channels, markers, classes, class_names, ival[0])
     return epo
 
 
@@ -441,13 +453,12 @@ def select_ival(epo, ival):
     [0.0, 200.0]
 
     """
-    assert epo.ival[0] <= ival[0] <= epo.ival[1]
-    assert epo.ival[0] <= ival[1] <= epo.ival[1]
+    assert epo.t[0] <= ival[0] <= epo.t[-1]
+    assert epo.t[0] <= ival[1] <= epo.t[-1]
     assert ival[0] <= ival[1]
-    timestamps = np.linspace(epo.ival[0], epo.ival[1], epo.data.shape[-2])
-    mask = np.logical_and(ival[0] <= timestamps, timestamps <= ival[1])
+    mask = np.logical_and(ival[0] <= epo.t, epo.t <= ival[1])
     data = epo.data[..., mask, :]
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, ival)
+    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, ival[0])
 
 
 def select_epochs(epo, indices, invert=False):
@@ -514,7 +525,7 @@ def select_epochs(epo, indices, invert=False):
         for idx, _ in enumerate(classes):
             if classes[idx] > val:
                 classes[idx] -= 1
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, class_names, epo.ival)
+    return Epo(data, epo.fs, epo.channels, epo.markers, classes, class_names, epo.t[0])
     #TODO: test if this would work too:
     # (i.e. if this returns a copy of epo or a reference)
     # epo.data = epo.data[mask]
@@ -786,7 +797,7 @@ def calculate_classwise_average(epo):
         data.append(avg)
     classes = np.array(classes)
     data = np.array(data)
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames, epo.ival)
+    return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames, epo.t[0])
 
 
 def correct_for_baseline(epo, ival):
@@ -823,15 +834,14 @@ def correct_for_baseline(epo, ival):
 
     """
     # check if ival fits into epo.ival
-    assert epo.ival[0] <= ival[0] <= epo.ival[1]
-    assert epo.ival[0] <= ival[1] <= epo.ival[1]
+    assert epo.t[0] <= ival[0] <= epo.t[-1]
+    assert epo.t[0] <= ival[1] <= epo.t[-1]
     assert ival[0] <= ival[1]
     # create an indexing mask ([true, true, false, ...])
-    timestamps = np.linspace(epo.ival[0], epo.ival[1], epo.data.shape[-2])
-    mask = np.logical_and(ival[0] <= timestamps, timestamps <= ival[1])
+    mask = np.logical_and(ival[0] <= epo.t, epo.t <= ival[1])
     # take all values from the epo except the ones not fitting the mask
     # and calculate the average along the sampling axis
     averages = np.average(epo.data[:, mask, :], axis=1)
     data = epo.data - averages[:, np.newaxis, :]
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.ival)
+    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.t[0])
 
