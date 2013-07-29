@@ -431,7 +431,7 @@ def select_ival(epo, ival):
     ----------
     epo : Epo
     ival : (float, float)
-        Start and end in milliseconds
+        Start and end in milliseconds. Start and End are included.
 
     Returns
     -------
@@ -449,8 +449,8 @@ def select_ival(epo, ival):
     Select the first 200ms of the epoched data:
 
     >>> epo2 = select_ival(epo, [0, 200])
-    >>> epo2.ival
-    [0.0, 200.0]
+    >>> print epo2.t[0], epo2.t[-1]
+    0.0 200.0
 
     """
     assert epo.t[0] <= ival[0] <= epo.t[-1]
