@@ -16,7 +16,7 @@ class TestCntToEpo(unittest.TestCase):
         data = np.array([ones, ones*2, ones*3]).reshape(-1, 3)
         fs = 100
         channels = ['a', 'b', 'c']
-        markers = [[49, 'M1'], ['149', 'M2'], ['249', 'M3']]
+        markers = [[49, 'M1'], [149, 'M2'], [249, 'M3']]
         cnt = Cnt(data, fs, channels, markers)
         mrk_def = {'class 1': ['M1'],
                    'class 2': ['M2', 'M3']
