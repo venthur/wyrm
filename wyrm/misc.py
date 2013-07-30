@@ -845,3 +845,31 @@ def correct_for_baseline(epo, ival):
     data = epo.data - averages[:, np.newaxis, :]
     return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.t[0])
 
+def jumping_means(epo, ivals):
+    """Calculate the jumping means.
+
+    Parameters
+    ----------
+    epo : Epo
+    ivals : array of [float, float]
+        the intervals for which to calculate the means
+
+    Returns
+    -------
+
+    """
+    n_epos, n_samples, n_chans = epo.data.shape
+    n_ivals = len(ivals)
+    data = np.zeros((n_epos, n_ivals, n_chans))
+    for i, [start, end] in enumerate(ivals):
+        mask = np.logical_and(start <= epo.t, epo.t <= end)
+        data[:, i, :] = np.mean(epo.data[:, mask, :], axis=1)
+    t = np.mean(ivals, axis=1)
+    # is this really an epo? what about:
+    # - fs
+    # - markers
+    # - init of t_start
+    epo = Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, 0)
+    epo.t = t
+    epo.markers = [[] for i in range(n_epos)]
+    return epo
