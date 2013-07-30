@@ -69,7 +69,7 @@ it is ready for prime.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.band_pass" title="wyrm.misc.band_pass"><tt class="xref py py-obj docutils literal"><span class="pre">band_pass</span></tt></a>(cnt,&nbsp;low,&nbsp;high)</td>
-<td></td>
+<td>Band pass filter the data.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.calculate_classwise_average" title="wyrm.misc.calculate_classwise_average"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_classwise_average</span></tt></a>(epo)</td>
 <td>Calculate the classwise average.</td>
@@ -83,23 +83,35 @@ it is ready for prime.</p>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.correct_for_baseline" title="wyrm.misc.correct_for_baseline"><tt class="xref py py-obj docutils literal"><span class="pre">correct_for_baseline</span></tt></a>(epo,&nbsp;ival)</td>
 <td>Subtract the baseline.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.load_brain_vision_data" title="wyrm.misc.load_brain_vision_data"><tt class="xref py py-obj docutils literal"><span class="pre">load_brain_vision_data</span></tt></a>(vhdr)</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.jumping_means" title="wyrm.misc.jumping_means"><tt class="xref py py-obj docutils literal"><span class="pre">jumping_means</span></tt></a>(epo,&nbsp;ivals)</td>
+<td>Calculate the jumping means.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.load_brain_vision_data" title="wyrm.misc.load_brain_vision_data"><tt class="xref py py-obj docutils literal"><span class="pre">load_brain_vision_data</span></tt></a>(vhdr)</td>
 <td>Load Brain Vision data from a file.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.remove_channels" title="wyrm.misc.remove_channels"><tt class="xref py py-obj docutils literal"><span class="pre">remove_channels</span></tt></a>(cnt,&nbsp;regexp_list)</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.remove_channels" title="wyrm.misc.remove_channels"><tt class="xref py py-obj docutils literal"><span class="pre">remove_channels</span></tt></a>(cnt,&nbsp;regexp_list)</td>
 <td>Remove channels from data.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.remove_epochs" title="wyrm.misc.remove_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">remove_epochs</span></tt></a>(epo,&nbsp;indices)</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.remove_epochs" title="wyrm.misc.remove_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">remove_epochs</span></tt></a>(epo,&nbsp;indices)</td>
 <td>Remove epochs from an Epo object.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.select_channels" title="wyrm.misc.select_channels"><tt class="xref py py-obj docutils literal"><span class="pre">select_channels</span></tt></a>(cnt,&nbsp;regexp_list[,&nbsp;invert])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.select_channels" title="wyrm.misc.select_channels"><tt class="xref py py-obj docutils literal"><span class="pre">select_channels</span></tt></a>(cnt,&nbsp;regexp_list[,&nbsp;invert])</td>
 <td>Select channels from data.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.select_epochs" title="wyrm.misc.select_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">select_epochs</span></tt></a>(epo,&nbsp;indices[,&nbsp;invert])</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.select_epochs" title="wyrm.misc.select_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">select_epochs</span></tt></a>(epo,&nbsp;indices[,&nbsp;invert])</td>
 <td>Select epochs from an Epo object.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.select_ival" title="wyrm.misc.select_ival"><tt class="xref py py-obj docutils literal"><span class="pre">select_ival</span></tt></a>(epo,&nbsp;ival)</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.select_ival" title="wyrm.misc.select_ival"><tt class="xref py py-obj docutils literal"><span class="pre">select_ival</span></tt></a>(epo,&nbsp;ival)</td>
 <td>Select interval from epoched data.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.spectrogram" title="wyrm.misc.spectrogram"><tt class="xref py py-obj docutils literal"><span class="pre">spectrogram</span></tt></a>(cnt)</td>
+<td>Calculate the spectrogram of a continuous data object.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.spectrum" title="wyrm.misc.spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">spectrum</span></tt></a>(cnt)</td>
+<td>Calculate the normalized spectrum of a continuous data object.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.misc.stft" title="wyrm.misc.stft"><tt class="xref py py-obj docutils literal"><span class="pre">stft</span></tt></a>(x,&nbsp;width)</td>
+<td>Short time fourier transform of a real sequence.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.misc.subsample" title="wyrm.misc.subsample"><tt class="xref py py-obj docutils literal"><span class="pre">subsample</span></tt></a>(cnt,&nbsp;factor)</td>
 <td>Subsample the data by factor <cite>factor</cite>.</td>

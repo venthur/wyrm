@@ -77,7 +77,7 @@ frequency, the channel names and the marker.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray (time, channel)</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : 2darray</p>
 <blockquote>
 <div><p>The raw EEG data in a 2 dimensional nd array (sample, channel)</p>
 </div></blockquote>
@@ -89,7 +89,11 @@ frequency, the channel names and the marker.</p>
 <blockquote>
 <div><p>The channel names in the same order as they appear in <cite>data</cite></p>
 </div></blockquote>
-<p class="last"><strong>markers</strong> : array of ???</p>
+<p><strong>markers</strong> : array of (int, str)</p>
+<blockquote class="last">
+<div><p>the int represents the position in data this marker belongs to,
+and str is the actual marker</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -97,14 +101,14 @@ frequency, the channel names and the marker.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="11%" />
-<col width="29%" />
-<col width="60%" />
+<col width="8%" />
+<col width="23%" />
+<col width="69%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>data</td>
-<td>numpy array (samples x channels)</td>
-<td>Defines the raw EEG data.</td>
+<td>2darray</td>
+<td>Defines the raw EEG data (sample, channel)</td>
 </tr>
 <tr class="row-even"><td>fs</td>
 <td>float</td>
@@ -114,9 +118,14 @@ frequency, the channel names and the marker.</p>
 <td>numpy array of strings</td>
 <td>The names of the channels in the same order as they appear in data</td>
 </tr>
-<tr class="row-even"><td>markers: ???</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td>markers</td>
+<td>array of (int, str)</td>
+<td>the int represents the position in data this marker belongs to,
+and str is the actual marker</td>
+</tr>
+<tr class="row-odd"><td>t</td>
+<td>array of float</td>
+<td>the time in ms for each element in data.</td>
 </tr>
 </tbody>
 </table>
@@ -124,7 +133,7 @@ frequency, the channel names and the marker.</p>
 
 <dl class="class">
 <dt id="wyrm.misc.Epo">
-<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Epo</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em>, <em>classes</em>, <em>class_names</em>, <em>ival</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#Epo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.Epo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.misc.</tt><tt class="descname">Epo</tt><big>(</big><em>data</em>, <em>fs</em>, <em>channels</em>, <em>markers</em>, <em>classes</em>, <em>class_names</em>, <em>t_start</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#Epo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.Epo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Epoched data object.</p>
 <p>An Epoch represents a list of Continuous data. Each element <cite>i</cite> of
@@ -149,9 +158,11 @@ sample, channel)</p>
 <blockquote>
 <div><p>The channel names in the same order as they appear in <cite>data</cite></p>
 </div></blockquote>
-<p><strong>markers</strong> : ???</p>
+<p><strong>markers</strong> : array of arrays of (int, str)</p>
 <blockquote>
-<div><p>Not defined yet!</p>
+<div><p>for each epoch there is an array of mackers (int, str), where
+the int indicates the position of the marker relative to data
+and str is the actual marker.</p>
 </div></blockquote>
 <p><strong>classes</strong> : array</p>
 <blockquote>
@@ -164,9 +175,10 @@ respective epoch in <cite>data</cite>. The value is also the index of
 <div><p>The human readable class names. The indices of the classes in
 <cite>class_names</cite> match the values in <cite>classes</cite>.</p>
 </div></blockquote>
-<p><strong>ival</strong> : [float, float]</p>
+<p><strong>t_start</strong> : float</p>
 <blockquote class="last">
-<div><p>Start and stop time of this interval in ms.</p>
+<div><p>(start) time in ms of the interval in relation to the event of
+the epoch (e.g. -100, 0, or 200)</p>
 </div></blockquote>
 </td>
 </tr>
@@ -175,13 +187,13 @@ respective epoch in <cite>data</cite>. The value is also the index of
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="10%" />
-<col width="30%" />
-<col width="59%" />
+<col width="11%" />
+<col width="28%" />
+<col width="61%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>data</td>
-<td>ndarray (epoch, sample, channel)</td>
+<td>(N, N, N) ndarray</td>
 <td>The raw and epoched EEG data: (epochs, samples, channels).</td>
 </tr>
 <tr class="row-even"><td>fs</td>
@@ -193,8 +205,10 @@ respective epoch in <cite>data</cite>. The value is also the index of
 <td>The channel names in the same order as they appear in <cite>data</cite></td>
 </tr>
 <tr class="row-even"><td>markers</td>
-<td>NOT DEFINED YET</td>
-<td>Not defined yet!</td>
+<td>array of arrays of (int, str)</td>
+<td>for each epoch there is an array of mackers (int, str), where
+the int indicates the position of the marker relative to data
+and str is the actual marker.</td>
 </tr>
 <tr class="row-odd"><td>classes</td>
 <td>list</td>
@@ -207,9 +221,9 @@ respective epoch in <cite>data</cite>. The value is also the index of
 <td>The human readable class names. The indices of the classes in
 <cite>class_names</cite> match the values in <cite>classes</cite>.</td>
 </tr>
-<tr class="row-odd"><td>ival</td>
-<td>[float, float]</td>
-<td>Start and stop time of this interval in ms.</td>
+<tr class="row-odd"><td>t</td>
+<td>(N,) nd array</td>
+<td>the time in ms for each element in data</td>
 </tr>
 </tbody>
 </table>
@@ -218,7 +232,27 @@ respective epoch in <cite>data</cite>. The value is also the index of
 <dl class="function">
 <dt id="wyrm.misc.band_pass">
 <tt class="descclassname">wyrm.misc.</tt><tt class="descname">band_pass</tt><big>(</big><em>cnt</em>, <em>low</em>, <em>high</em><big>)</big><a class="reference internal" href="../_modules/wyrm/misc.html#band_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.misc.band_pass" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Band pass filter the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Cnt</p>
+<p><strong>low, high</strong> : int</p>
+<blockquote>
+<div><p>the low, and high borders of the desired frequency band</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cnt</strong> : Cnt</p>
+<blockquote class="last">
+<div><p>the band pass filtered data</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="wyrm.misc.calculate_classwise_average">
@@ -405,6 +439,25 @@ or if <cite>ival</cite> is malformed.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">correct_for_baseline</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.jumping_means">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">jumping_means</tt><big>(</big><em>epo</em>, <em>ivals</em><big>)</big><a class="headerlink" href="#wyrm.misc.jumping_means" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the jumping means.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
+<p><strong>ivals</strong> : array of [float, float]</p>
+<blockquote class="last">
+<div><p>the intervals for which to calculate the means</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -618,7 +671,7 @@ instance.</p>
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>epo</strong> : Epo</p>
 <p><strong>ival</strong> : (float, float)</p>
 <blockquote>
-<div><p>Start and end in milliseconds</p>
+<div><p>Start and end in milliseconds. Start and End are included.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -637,9 +690,75 @@ ival[1]</cite>.</p>
 <p class="rubric">Examples</p>
 <p>Select the first 200ms of the epoched data:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo2</span> <span class="o">=</span> <span class="n">select_ival</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">epo2</span><span class="o">.</span><span class="n">ival</span>
-<span class="go">[0.0, 200.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">epo2</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">epo2</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">0.0 200.0</span>
 </pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.spectrogram">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">spectrogram</tt><big>(</big><em>cnt</em><big>)</big><a class="headerlink" href="#wyrm.misc.spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the spectrogram of a continuous data object.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.misc.spectrum" title="wyrm.misc.spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">spectrum</span></tt></a>, <a class="reference internal" href="#wyrm.misc.stft" title="wyrm.misc.stft"><tt class="xref py py-obj docutils literal"><span class="pre">stft</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.spectrum">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">spectrum</tt><big>(</big><em>cnt</em><big>)</big><a class="headerlink" href="#wyrm.misc.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the normalized spectrum of a continuous data object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>fourier</strong> : ndarray</p>
+<p class="last"><strong>freqs</strong> : ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.misc.spectrogram" title="wyrm.misc.spectrogram"><tt class="xref py py-obj docutils literal"><span class="pre">spectrogram</span></tt></a>, <a class="reference internal" href="#wyrm.misc.stft" title="wyrm.misc.stft"><tt class="xref py py-obj docutils literal"><span class="pre">stft</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.misc.stft">
+<tt class="descclassname">wyrm.misc.</tt><tt class="descname">stft</tt><big>(</big><em>x</em>, <em>width</em><big>)</big><a class="headerlink" href="#wyrm.misc.stft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short time fourier transform of a real sequence.</p>
+<p>This method performs a discrete short time Fourier transform. It
+uses a sliding window to perform discrete Fourier transforms on the
+data in the Window. The results are returned in an array.</p>
+<p>This method uses a Hanning window on the data in the window before
+calculating the Fourier transform.</p>
+<p>The sliding windows are overlapping by <cite>width/2</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x</strong> : ndarray</p>
+<p><strong>width: int</strong> :</p>
+<blockquote>
+<div><p>the width of the sliding window in samples</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>fourier</strong> : 2d complex array</p>
+<blockquote class="last">
+<div><p>the dimensions are time, frequency; the frequencies are evenly
+binned from 0 to f_nyquist</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.misc.spectrum" title="wyrm.misc.spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">spectrum</span></tt></a>, <a class="reference internal" href="#wyrm.misc.spectrogram" title="wyrm.misc.spectrogram"><tt class="xref py py-obj docutils literal"><span class="pre">spectrogram</span></tt></a>, <tt class="xref py py-obj docutils literal"><span class="pre">scipy.hanning</span></tt>, <tt class="xref py py-obj docutils literal"><span class="pre">scipy.fftpack.rfft</span></tt></p>
 </div>
 </dd></dl>
 
@@ -744,7 +863,7 @@ interpolated values as values.</p>
 
 <dl class="function">
 <dt id="wyrm.plot.plot_channels">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_channels</tt><big>(</big><em>cnt</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_channels" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_channels</tt><big>(</big><em>cnt</em>, <em>markers=True</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot all channels for a continuous.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -761,6 +880,16 @@ interpolated values as values.</p>
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channel</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the values v for channel <cite>channel</cite> on a scalp.</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.plot_spectrogram">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spectrogram</tt><big>(</big><em>spectrogram</em>, <em>freqs</em><big>)</big><a class="headerlink" href="#wyrm.plot.plot_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.plot_spectrum">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spectrum</tt><big>(</big><em>spectrum</em>, <em>freqs</em><big>)</big><a class="headerlink" href="#wyrm.plot.plot_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-wyrm.tentensystem">

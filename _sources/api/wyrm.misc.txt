@@ -14,12 +14,16 @@ wyrm.misc
       calculate_csp
       cnt_to_epo
       correct_for_baseline
+      jumping_means
       load_brain_vision_data
       remove_channels
       remove_epochs
       select_channels
       select_epochs
       select_ival
+      spectrogram
+      spectrum
+      stft
       subsample
    
    
