@@ -464,9 +464,7 @@ def select_ival(epo, ival):
 def select_epochs(epo, indices, invert=False):
     """Select epochs from an Epo object.
 
-    This method selects the epochs with the specified indices. Void
-    classes are removed, i.e. the class_names are removed and the values
-    in `classes` are compressed ([0, 2, 3] becomes [0, 1, 2]).
+    This method selects the epochs with the specified indices.
 
     Parameters
     ----------
@@ -495,7 +493,7 @@ def select_epochs(epo, indices, invert=False):
     [0, 0, 1, 2, 2]
     >>> epo = select_epochs(epo, [0, 1, 2])
     >>> epo.classes
-    [0, 0]
+    [0, 0, 1]
 
     Remove the fourth epoch
 
@@ -513,24 +511,7 @@ def select_epochs(epo, indices, invert=False):
         mask = ~mask
     data = epo.data[mask]
     classes = epo.classes[mask]
-    class_names = []
-    removed_idxs = []
-    for i, name in enumerate(epo.class_names):
-        if i in classes:
-            class_names.append(name)
-        else:
-            removed_idxs.append(i)
-    removed_idxs.reverse()
-    for val in removed_idxs:
-        for idx, _ in enumerate(classes):
-            if classes[idx] > val:
-                classes[idx] -= 1
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, class_names, epo.t[0])
-    #TODO: test if this would work too:
-    # (i.e. if this returns a copy of epo or a reference)
-    # epo.data = epo.data[mask]
-    # return epo
-
+    return Epo(data, epo.fs, epo.channels, epo.markers, classes, epo.class_names, epo.t[0])
 
 
 def remove_epochs(epo, indices):
@@ -538,8 +519,6 @@ def remove_epochs(epo, indices):
 
     This Method just calls :meth:`select_epochs` with the `inverse`
     paramerter set to `True`.
-
-    Void classes are removed.
 
     Parameters
     ----------
