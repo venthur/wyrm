@@ -49,7 +49,7 @@ class Cnt(object):
     fs : float
         The sampling frequency
     channels : array of strings
-        The channel names in the same order as they appear in `data`
+        The channel names in the same order as they appear in ``data``
     markers : array of (int, str)
         the int represents the position in data this marker belongs to,
         and str is the actual marker
@@ -82,9 +82,9 @@ class Cnt(object):
 class Epo(object):
     """Epoched data object.
 
-    An Epoch represents a list of Continuous data. Each element `i` of
-    an Epoch is assigned to a class `c = classes[i]` of the name
-    `classname[c]`.
+    An Epoch represents a list of Continuous data. Each element ``i`` of
+    an Epoch is assigned to a class ``c = classes[i]`` of the name
+    ``classname[c]``.
 
     Each cnt of this epo has the same length (number of samples), number
     of channels and time interval.
@@ -97,18 +97,18 @@ class Epo(object):
     fs : float
         The sampling frequency
     channels : array of strings
-        The channel names in the same order as they appear in `data`
+        The channel names in the same order as they appear in ``data``
     markers : array of arrays of (int, str)
         for each epoch there is an array of mackers (int, str), where
         the int indicates the position of the marker relative to data
         and str is the actual marker.
     classes : array
         A 1 dimensional array, each entry represents the class for the
-        respective epoch in `data`. The value is also the index of
-        `class_names` for a human readable description of the class.
+        respective epoch in ``data``. The value is also the index of
+        ``class_names`` for a human readable description of the class.
     class_names : array of strings
         The human readable class names. The indices of the classes in
-        `class_names` match the values in `classes`.
+        ``class_names`` match the values in ``classes``.
     t_start : float
         (start) time in ms of the interval in relation to the event of
         the epoch (e.g. -100, 0, or 200)
@@ -121,18 +121,18 @@ class Epo(object):
     fs : float
         The sampling frequency
     channels : array of strings
-        The channel names in the same order as they appear in `data`
+        The channel names in the same order as they appear in ``data``
     markers : array of arrays of (int, str)
         for each epoch there is an array of mackers (int, str), where
         the int indicates the position of the marker relative to data
         and str is the actual marker.
     classes : list
         A 1 dimensional array, each entry represents the class for the
-        respective epoch in `data`. The value is also the index of
-        `class_names` for a human readable description of the class.
+        respective epoch in ``data``. The value is also the index of
+        ``class_names`` for a human readable description of the class.
     class_names : array of strings
         The human readable class names. The indices of the classes in
-        `class_names` match the values in `classes`.
+        ``class_names`` match the values in ``classes``.
     t : (N,) nd array
         the time in ms for each element in data
 
@@ -157,8 +157,8 @@ def select_channels(cnt, regexp_list, invert=False):
     """Select channels from data.
 
     The matching is case-insensitive and locale-aware (as in
-    re.IGNORECASE and re.LOCALE). The regular expression always has to
-    match the whole channel name string
+    ``re.IGNORECASE`` and ``re.LOCALE``). The regular expression always
+    has to match the whole channel name string
 
     Parameters
     ----------
@@ -224,8 +224,8 @@ def select_channels(cnt, regexp_list, invert=False):
 def remove_channels(cnt, regexp_list):
     """Remove channels from data.
 
-    This method just calls :func:`select_channels` with the `invert`
-    parameter set to `True`.
+    This method just calls :func:`select_channels` with the ``invert``
+    parameter set to ``True``.
 
     Returns
     -------
@@ -317,10 +317,10 @@ def segment_cnt(cnt, marker_def, ival):
     """Convert a continuous data object to an peoched one.
 
     Given a continuous data object, a definition of classes, and an
-    interval, this method looks for markers as defined in `marker_def`
-    and slices the cnt according to the time interval given with `ival`.
-    The returned `Epo` object stores those slices and the class each
-    slice belongs to.
+    interval, this method looks for markers as defined in ``marker_def``
+    and slices the cnt according to the time interval given with
+    ``ival``.  The returned ``Epo`` object stores those slices and the
+    class each slice belongs to.
 
 
     Parameters
@@ -334,9 +334,10 @@ def segment_cnt(cnt, marker_def, ival):
         100ms define the interval like [0, 100].
 
         To get 200ms before the marker until 100ms after the marker do:
-        [-200, 100]
+        ``[-200, 100]``
 
-        Only negative or positive values are possible (i.e. [-500, -100])
+        Only negative or positive values are possible (i.e. ``[-500,
+        -100]``)
 
     Returns
     -------
@@ -440,8 +441,8 @@ def select_ival(epo, ival):
     Raises
     ------
     AssertionError
-        if the given interval does not fit into `epo.ival` or `ival[0] >
-        ival[1]`.
+        if the given interval does not fit into ``epo.ival`` or
+        ``ival[0] > ival[1]``.
 
     Examples
     --------
@@ -472,7 +473,7 @@ def select_epochs(epo, indices, invert=False):
     indices : array of ints
         The indices of the elements to select.
     invert : Boolean
-        if true keep all elements except the ones defined by `indices`.
+        if true keep all elements except the ones defined by ``indices``.
 
     Returns
     -------
@@ -517,8 +518,8 @@ def select_epochs(epo, indices, invert=False):
 def remove_epochs(epo, indices):
     """Remove epochs from an Epo object.
 
-    This Method just calls :meth:`select_epochs` with the `inverse`
-    paramerter set to `True`.
+    This Method just calls :meth:`select_epochs` with the ``inverse``
+    paramerter set to ``True``.
 
     Parameters
     ----------
@@ -539,10 +540,10 @@ def remove_epochs(epo, indices):
 
 
 def subsample(cnt, factor):
-    """Subsample the data by factor `factor`.
+    """Subsample the data by factor ``factor``.
 
-    This method subsamples by taking every `factor` th element starting
-    with the first one.
+    This method subsamples by taking every ``factor`` th element
+    starting with the first one.
 
     Note that this method does not low-pass filter the data before
     sub-sampling.
@@ -626,7 +627,7 @@ def stft(x, width):
     This method uses a Hanning window on the data in the window before
     calculating the Fourier transform.
 
-    The sliding windows are overlapping by `width/2`.
+    The sliding windows are overlapping by ``width / 2``.
 
     Parameters
     ----------
@@ -738,7 +739,7 @@ def calculate_classwise_average(epo):
     """Calculate the classwise average.
 
     This method calculates the average continuous per class for all
-    classes defined in the `epo`. In other words, if you have two
+    classes defined in the ``epo``. In other words, if you have two
     different classes, with many continuous data per class, this method
     will calculate the average time course for each class and channel.
 
@@ -790,8 +791,8 @@ def correct_for_baseline(epo, ival):
     ----------
     epo : Epo
     ival : (float, float)
-        the start and stop borders in milli seconds. `ival` must fit
-        into `epo.ival` and ival[0] <= ival[1]
+        the start and stop borders in milli seconds. ``ival`` must fit
+        into ``epo.ival`` and ``ival[0] <= ival[1]``
 
     Returns
     -------
@@ -801,15 +802,15 @@ def correct_for_baseline(epo, ival):
     Examples
     --------
 
-    Remove the baselines for the interval [100, 0]
+    Remove the baselines for the interval ``[100, 0]``
 
     >>> epo = correct_for_baseline(epo, [-100, 0])
 
     Raises
     ------
     AssertionError
-        If the left or right border of `ival` is outside of `epo.ival`
-        or if `ival` is malformed.
+        If the left or right border of ``ival`` is outside of
+        ``epo.ival`` or if ``ival`` is malformed.
 
     """
     # check if ival fits into epo.ival
