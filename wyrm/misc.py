@@ -313,7 +313,7 @@ def load_brain_vision_data(vhdr):
     return Cnt(data, fs, channels, mrk)
 
 
-def cnt_to_epo(cnt, marker_def, ival):
+def segment_cnt(cnt, marker_def, ival):
     """Convert a continuous data object to an peoched one.
 
     Given a continuous data object, a definition of classes, and an
@@ -352,7 +352,7 @@ def cnt_to_epo(cnt, marker_def, ival):
     ...      }
     >>> # Epoch the data -500ms and +700ms around the markers defined in
     >>> # md
-    >>> epo = cnt_to_epo(cnt, md, [-500, 700])
+    >>> epo = segment_cnt(cnt, md, [-500, 700])
 
     See Also
     --------
@@ -781,7 +781,7 @@ def calculate_classwise_average(epo):
     >>> mrk_def = {'std': ['S %2i' % i for i in range(2, 7)],
     ...            'dev': ['S %2i' % i for i in range(12, 17)]
     ...           }
-    >>> epo = misc.cnt_to_epo(cnt, mrk_def, [0, 660])
+    >>> epo = misc.segment_cnt(cnt, mrk_def, [0, 660])
     >>> avg_epo = calculate_classwise_average(epo)
     >>> plot(avg_epo.data[0])
     >>> plot(avg_epo.data[1])

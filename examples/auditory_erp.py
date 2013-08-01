@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # >>> marker_def = {'std': ['S  %i' % i for i in range (2, 7)],
     #                   'dev': ['S %i' % i for i in range(12, 17)]
     #                  }
-    epo = cnt_to_epo(cnt, marker_dev, [-250, 250])
+    epo = segment_cnt(cnt, marker_dev, [-250, 250])
 
 
     # preliminary ml code from interactive console:

@@ -4,12 +4,12 @@ import unittest
 import numpy as np
 
 from wyrm.misc import Cnt
-from wyrm.misc import cnt_to_epo
+from wyrm.misc import segment_cnt
 
 
 class TestCntToEpo(unittest.TestCase):
 
-    def test_cnt_to_epo(self):
+    def test_segment_cnt(self):
         """Test conversion from Continuous to Epoched data."""
         # create 100 samples and tree channels data
         ones = np.ones((100, 3))
@@ -21,7 +21,7 @@ class TestCntToEpo(unittest.TestCase):
         mrk_def = {'class 1': ['M1'],
                    'class 2': ['M2', 'M3']
                   }
-        epo = cnt_to_epo(cnt, mrk_def, [-400, 400])
+        epo = segment_cnt(cnt, mrk_def, [-400, 400])
         # test if basic info was transferred from cnt
         self.assertEqual(fs, epo.fs)
         self.assertEqual(channels, list(epo.channels))
