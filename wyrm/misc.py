@@ -539,11 +539,12 @@ def remove_epochs(epo, indices):
     return select_epochs(epo, indices, invert=True)
 
 
-def subsample(cnt, factor):
-    """Subsample the data by factor ``factor``.
+def subsample(cnt, freq):
+    """Subsample the data to ``freq`` Hz.
 
-    This method subsamples by taking every ``factor`` th element
-    starting with the first one.
+    This method subsamples by taking every ``n`` th element starting
+    with the first one and ``n`` being ``cnt.fs / freq``. Please note
+    that ``freq`` must be a whole number divisor of ``cnt.fs``.
 
     Note that this method does not low-pass filter the data before
     sub-sampling.
@@ -551,7 +552,8 @@ def subsample(cnt, factor):
     Parameters
     ----------
     cnt : Cnt
-    factor : int
+    freq : float
+        the target frequency in Hz
 
     Returns
     -------
@@ -565,17 +567,23 @@ def subsample(cnt, factor):
     --------
 
     Load some EEG data with 1kHz, bandpass filter it and downsample it
-    by 10 so the resulting sampling frequency is 100Hz.
+    to 100Hz.
 
     >>> cnt = load_brain_vision_data('some/path')
     >>> cnt.fs
     1000.0
     >>> cnt = band_pass(cnt, 8, 40)
-    >>> cnt = subsample(cnt, 10)
+    >>> cnt = subsample(cnt, 100)
     >>> cnt.fs
     100.0
 
+    Raises
+    ------
+    AssertionError : if ``freq`` is not a whole number divisor of ``cnt.fs``
+
     """
+    assert cnt.fs % freq == 0
+    factor = int(cnt.fs / freq)
     data = cnt.data[..., ::factor, :]
     fs = cnt.fs / factor
     markers = map(lambda x: [int(x[0] / factor), x[1]], cnt.markers)
