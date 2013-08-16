@@ -11,9 +11,10 @@ class TestCalculateClasswiseAverage(unittest.TestCase):
     def setUp(self):
         ones = np.ones((10, 2))
         twoes = ones * 2
+        # 7 epochs
         data = np.array([ones, ones, twoes, twoes, ones, twoes, twoes])
         channels = ['c1', 'c2']
-        time = np.linspace(0, 7000, 70)
+        time = np.linspace(0, 1000, 10)
         classes = [0, 0, 1, 1, 0, 1, 1]
         class_names = ['ones', 'twoes']
         self.dat = Data(data, [classes, time, channels], ['class', 'time', 'channel'], ['#', 'ms', '#'])

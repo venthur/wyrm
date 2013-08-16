@@ -174,6 +174,10 @@ class Data(object):
 
     """
     def __init__(self, data, axes, names, units):
+        assert data.ndim == len(axes) == len(names) == len(units)
+        for i in range(data.ndim):
+            if data.shape[i] != len(axes[i]):
+                raise AssertionError("Axis '%s' (%i) not as long as corresponding axis in 'data' (%i)" % (names[i], len(axes[i]), data.shape[i]))
         self.data = data
         self.axes = [np.array(i) for i in axes]
         self.names = names

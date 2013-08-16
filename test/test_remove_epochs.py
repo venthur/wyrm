@@ -15,12 +15,12 @@ class TestRemoveEpochs(unittest.TestCase):
     def setUp(self):
         ones = np.ones((10, 5))
         channels = ['ca1', 'ca2', 'cb1', 'cb2', 'cc1']
-        time = np.linspace(0, 4000, 40, endpoint=False)
+        time = np.linspace(0, 1000, 10, endpoint=False)
         classes = [0, 1, 2, 1]
         class_names = ['zeros', 'ones', 'twoes']
-        # three cnts: 1s, -1s, and 0s
+        # four cnts: 0s, 1s, -1s, and 0s
         data = np.array([ones * 0, ones * 1, ones * 2, ones * 0])
-        self.dat = Data(data, [classes, channels, time], ['class', 'time', 'channel'], ['#', 'ms', '#'])
+        self.dat = Data(data, [classes, time, channels], ['class', 'time', 'channel'], ['#', 'ms', '#'])
         self.dat.class_names = class_names
 
     def test_remove_epochs(self):
