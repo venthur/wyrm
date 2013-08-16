@@ -476,6 +476,8 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
 
         Only negative or positive values are possible (i.e. ``[-500,
         -100]``)
+    timeaxis : int, optional
+        the axis along which the segmentation will take place
 
     Returns
     -------
@@ -571,6 +573,8 @@ def select_ival(dat, ival, timeaxis=-2):
     ival : list of two floats
         Start and end in milliseconds. Start is included end is excluded
         (like ``[stard, end)``]
+    timeaxis : int, optional
+        the axis along which the intervals are selected
 
     Returns
     -------
@@ -616,6 +620,8 @@ def select_epochs(dat, indices, invert=False, classaxis=0):
         The indices of the elements to select.
     invert : Boolean
         if true keep all elements except the ones defined by ``indices``.
+    classaxis : int, optional
+        the axis along which the epochs are selected
 
     Returns
     -------
@@ -698,6 +704,8 @@ def subsample(dat, freq, timeaxis=-2):
         Data object with ``.fs`` attribute
     freq : float
         the target frequency in Hz
+    timeaxis : int, optional
+        the axis along which to subsample
 
     Returns
     -------
@@ -906,6 +914,8 @@ def calculate_classwise_average(dat, classaxis=0):
     ----------
     dat : Data
         an epoched Data object with a ``.class_names`` attribute.
+    classaxis : int, optional
+        the axis along which to calculate the average
 
     Returns
     -------
@@ -962,6 +972,8 @@ def correct_for_baseline(dat, ival, timeaxis=-2):
         included, the right border is not: ``[start, stop)``.
         ``ival[0]`` must fit into ``dat.axes[timeaxis]`` and
         ``ival[0] <= ival[1]``.
+    timeaxis : int, optional
+        the axis along which to correct for the baseline
 
     Returns
     -------
@@ -1043,6 +1055,8 @@ def jumping_means(dat, ivals, timeaxis=-2):
     ivals : array of [float, float]
         the intervals for which to calculate the means. Start is
         included end is not (like ``[start, end)``).
+    timeaxis : int, optional
+        the axis along which to calculate the jumping means
 
     Returns
     -------
