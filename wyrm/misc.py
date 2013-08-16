@@ -450,25 +450,26 @@ def load_brain_vision_data(vhdr):
     return Cnt(data, fs, channels, mrk)
 
 
-def segment_cnt(cnt, marker_def, ival):
-    """Convert a continuous data object to an peoched one.
+def segment_dat(dat, marker_def, ival, timeaxis=-2):
+    """Convert a continuous data object to an epoched one.
 
     Given a continuous data object, a definition of classes, and an
     interval, this method looks for markers as defined in ``marker_def``
-    and slices the cnt according to the time interval given with
-    ``ival``.  The returned ``Epo`` object stores those slices and the
-    class each slice belongs to.
+    and slices the dat according to the time interval given with
+    ``ival`` along the ``timeaxis``. The returned ``dat`` object stores
+    those slices and the class each slice belongs to.
 
 
     Parameters
     ----------
-    cnt : Cnt
+    dat : Data
     marker_def : dict
         The keys are class names, the values are lists of markers
     ival : [int, int]
         The interval in milliseconds to cut around the markers. I.e. to
         get the interval starting with the marker plus the remaining
-        100ms define the interval like [0, 100].
+        100ms define the interval like [0, 100]. The start point is
+        included, the endpoint is not (like: ``[start, end)``).
 
         To get 200ms before the marker until 100ms after the marker do:
         ``[-200, 100]``
@@ -478,9 +479,14 @@ def segment_cnt(cnt, marker_def, ival):
 
     Returns
     -------
-    epo : Epo
-        The resulting epoched data.
+    dat : Data
+        a copy of the resulting epoched data.
 
+    Raises
+    ------
+    AssertionError :
+        if ``dat`` has not ``.fs`` or ``.markers`` attribute or if
+        ``ival[0] > ival[1]``.
 
     Examples
     --------
@@ -490,39 +496,34 @@ def segment_cnt(cnt, marker_def, ival):
     ...      }
     >>> # Epoch the data -500ms and +700ms around the markers defined in
     >>> # md
-    >>> epo = segment_cnt(cnt, md, [-500, 700])
-
-    See Also
-    --------
-    Epo
+    >>> epo = segment_dat(cnt, md, [-500, 700])
 
     """
+    assert hasattr(dat, 'fs')
+    assert hasattr(dat, 'markers')
     assert ival[0] <= ival[1]
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
-    # create an marker array similar to .data
-    marker = ['' for i in range(cnt.t.shape[0])]
-    for pos, txt in cnt.markers:
-        marker[pos] = txt
-    marker = np.array(marker)
-    markers = []
-    for pos, m in cnt.markers:
-        t = cnt.t[int(pos)]
+    for t, m in dat.markers:
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
-                mask = np.logical_and(t+ival[0] <= cnt.t, cnt.t <= t+ival[1])
-                data.append(cnt.data[mask])
+                mask = (t+ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < t+ival[1])
+                d = dat.data.compress(mask, timeaxis)
+                d = np.expand_dims(d, axis=0)
+                data.append(d)
                 classes.append(class_idx)
-                mrk = []
-                for idx, val in enumerate(marker[mask]):
-                    if val != '':
-                        mrk.append([idx, val])
-                markers.append(mrk)
-    # convert the array of cnts into an (epo, time, channel) array
-    data = np.array(data)
-    epo = Epo(data, cnt.fs, cnt.channels, markers, classes, class_names, ival[0])
-    return epo
+    data = np.concatenate(data, axis=0)
+    axes = dat.axes[:]
+    time = np.linspace(ival[0], ival[1], (ival[1] - ival[0]) / 1000 * dat.fs, endpoint=False)
+    axes[timeaxis] = time
+    classes = np.array(classes)
+    axes.insert(0, classes)
+    names = dat.names[:]
+    names.insert(0, 'class')
+    units = dat.units[:]
+    units.insert(0, '#')
+    return dat.copy(data=data, axes=axes, names=names, units=units, class_names=class_names)
 
 
 def band_pass(cnt, low, high):
@@ -924,7 +925,7 @@ def calculate_classwise_average(dat, classaxis=0):
     >>> mrk_def = {'std': ['S %2i' % i for i in range(2, 7)],
     ...            'dev': ['S %2i' % i for i in range(12, 17)]
     ...           }
-    >>> epo = misc.segment_cnt(cnt, mrk_def, [0, 660])
+    >>> epo = misc.segment_dat(cnt, mrk_def, [0, 660])
     >>> avg_epo = calculate_classwise_average(epo)
     >>> plot(avg_epo.data[0])
     >>> plot(avg_epo.data[1])
