@@ -595,14 +595,15 @@ def select_ival(epo, ival):
     return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, ival[0])
 
 
-def select_epochs(epo, indices, invert=False):
-    """Select epochs from an Epo object.
+def select_epochs(dat, indices, invert=False, classaxis=0):
+    """Select epochs from an epoched data object.
 
     This method selects the epochs with the specified indices.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
+        epoched Data object with an ``.class_names`` attribute
     indices : array of ints
         The indices of the elements to select.
     invert : Boolean
@@ -610,8 +611,12 @@ def select_epochs(epo, indices, invert=False):
 
     Returns
     -------
-    epo : Epo
+    dat : Data
         a copy of the epoched data with only the selected epochs included.
+
+    Raises
+    ------
+    AssertionError : if ``dat`` has no ``.class_names`` attribute.
 
     See Also
     --------
@@ -620,56 +625,52 @@ def select_epochs(epo, indices, invert=False):
     Examples
     --------
 
-    Get the first three epochs. Note how the class '2', becomes the only
-    class and is thus compressed to '0'.
+    Get the first three epochs.
 
-    >>> epo.classes
+    >>> dat.classes
     [0, 0, 1, 2, 2]
-    >>> epo = select_epochs(epo, [0, 1, 2])
-    >>> epo.classes
+    >>> dat = select_epochs(dat, [0, 1, 2])
+    >>> dat.classes
     [0, 0, 1]
 
     Remove the fourth epoch
 
-    >>> epo.classes
+    >>> dat.classes
     [0, 0, 1, 2, 2]
-    >>> epo = select_epochs(epo, [3], invert=True)
-    >>> epo.classes
+    >>> dat = select_epochs(dat, [3], invert=True)
+    >>> dat.classes
     [0, 0, 1, 2]
 
     """
-    mask = np.array([False for i in range(epo.data.shape[0])])
+    assert hasattr(dat, 'class_names')
+    mask = np.array([False for i in range(dat.data.shape[classaxis])])
     for i in indices:
         mask[i] = True
     if invert:
         mask = ~mask
-    data = epo.data[mask]
-    classes = epo.classes[mask]
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, epo.class_names, epo.t[0])
+    data = dat.data.compress(mask, classaxis)
+    axes = dat.axes[:]
+    axes[classaxis] = dat.axes[classaxis].compress(mask)
+    return dat.copy(data=data, axes=axes)
 
 
-def remove_epochs(epo, indices):
-    """Remove epochs from an Epo object.
+def remove_epochs(*args, **kwargs):
+    """Remove epochs from an epoched Data object.
 
-    This Method just calls :meth:`select_epochs` with the ``inverse``
+    This method just calls :meth:`select_epochs` with the ``inverse``
     paramerter set to ``True``.
-
-    Parameters
-    ----------
-    epo : Epo
-    indices : array of ints
-        the indices of the elements to exclude
 
     Returns
     -------
-    epo : Epo
+    dat : Data
+        epoched Data object with the epochs removed
 
     See Also
     --------
     select_epochs
 
     """
-    return select_epochs(epo, indices, invert=True)
+    return select_epochs(*args, invert=True, **kwargs)
 
 
 def subsample(cnt, freq):

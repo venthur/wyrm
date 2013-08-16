@@ -5,8 +5,9 @@ import unittest
 
 import numpy as np
 
-from wyrm.misc import Epo
+from wyrm.misc import Data
 from wyrm.misc import remove_epochs
+from wyrm.misc import swapaxes
 
 
 class TestRemoveEpochs(unittest.TestCase):
@@ -14,28 +15,47 @@ class TestRemoveEpochs(unittest.TestCase):
     def setUp(self):
         ones = np.ones((10, 5))
         channels = ['ca1', 'ca2', 'cb1', 'cb2', 'cc1']
-        fs = 10
-        marker = []
-        t_start = -1000
+        time = np.linspace(0, 4000, 40, endpoint=False)
         classes = [0, 1, 2, 1]
         class_names = ['zeros', 'ones', 'twoes']
         # three cnts: 1s, -1s, and 0s
         data = np.array([ones * 0, ones * 1, ones * 2, ones * 0])
-        self.epo = Epo(data, fs, channels, marker, classes, class_names, t_start)
+        self.dat = Data(data, [classes, channels, time], ['class', 'time', 'channel'], ['#', 'ms', '#'])
+        self.dat.class_names = class_names
 
     def test_remove_epochs(self):
         """Removing Epochs."""
         # normal case
-        epo = remove_epochs(self.epo, [0])
-        self.assertEqual(epo.data.shape[0], 3)
-        np.testing.assert_array_equal(epo.data, self.epo.data[1:])
+        dat = remove_epochs(self.dat, [0])
+        self.assertEqual(dat.data.shape[0], 3)
+        np.testing.assert_array_equal(dat.data, self.dat.data[1:])
         # normal every second
-        epo = remove_epochs(self.epo, [0, 2])
-        self.assertEqual(epo.data.shape[0], 2)
-        np.testing.assert_array_equal(epo.data, self.epo.data[1::2])
+        dat = remove_epochs(self.dat, [0, 2])
+        self.assertEqual(dat.data.shape[0], 2)
+        np.testing.assert_array_equal(dat.data, self.dat.data[1::2])
         # the full epo
-        epo = remove_epochs(self.epo, range(self.epo.data.shape[0]))
-        np.testing.assert_array_equal(epo.data.shape[0], 0)
+        dat = remove_epochs(self.dat, range(self.dat.data.shape[0]))
+        np.testing.assert_array_equal(dat.data.shape[0], 0)
+
+    def test_remove_epochs_with_cnt(self):
+        """Remove epochs must raise an exception if called with cnt argument."""
+        del(self.dat.class_names)
+        with self.assertRaises(AssertionError):
+            remove_epochs(self.dat, [0, 1])
+
+    def test_remove_epochs_swapaxes(self):
+        """Remove epochs must work with nonstandard classaxis."""
+        dat = remove_epochs(swapaxes(self.dat, 0, 2), [0, 1], classaxis=2)
+        dat = swapaxes(dat, 0, 2)
+        dat2 = remove_epochs(self.dat, [0, 1])
+        self.assertEqual(dat, dat2)
+
+    def test_remove_epochs_copy(self):
+        """Remove Epochs must not modify argument."""
+        cpy = self.dat.copy()
+        remove_epochs(self.dat, [0, 1])
+        self.assertEqual(self.dat, cpy)
+
 
 
 if __name__ == '__main__':
