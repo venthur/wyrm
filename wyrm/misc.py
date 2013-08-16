@@ -294,9 +294,8 @@ def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
 
     Parameters
     ----------
-    cnt : Continuous data
-
-    regexp_list : Array of regular expressions
+    dat : Data
+    regexp_list : list of regular expressions
         The regular expressions provided, are used directly by Python's
         :mod:`re` module, so all regular expressions which are understood
         by this module are allowed.
@@ -304,31 +303,32 @@ def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
         Internally the :func:`re.match` method is used, additionally to
         check for a match (which also matches substrings), it is also
         checked if the whole string matched the pattern.
-
-    invert : Boolean (default=False)
+    invert : Boolean, optional
         If True the selection is inverted. Instead of selecting specific
-        channels, you are removing the channels.
+        channels, you are removing the channels. (default: False)
+    chanaxis : int, optional
+        the index of the channel axis in ``dat`` (default: -1)
 
     Returns
     -------
-    cnt : Cnt
-        A copy of the continuous data with the channels, matched by the
-        list of regular expressions.
+    dat : Data
+        A copy of ``dat`` with the channels, matched by the list of
+        regular expressions.
 
     Examples
     --------
     Select all channels Matching 'af.*' or 'fc.*'
 
-    >>> cnt_new = select_channels(cnt, ['af.*', 'fc.*'])
+    >>> dat_new = select_channels(dat, ['af.*', 'fc.*'])
 
     Remove all channels Matching 'emg.*' or 'eog.*'
 
-    >>> cnt_new = select_channels(cnt, ['emg.*', 'eog.*'], invert=True)
+    >>> dat_new = select_channels(dat, ['emg.*', 'eog.*'], invert=True)
 
     Even if you only provide one Regular expression, it has to be in an
     array:
 
-    >>> cnt_new = select_channels(cnt, ['af.*'])
+    >>> dat_new = select_channels(dat, ['af.*'])
 
     See Also
     --------
@@ -338,8 +338,8 @@ def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
 
     """
     # TODO: make it work with epos
-    chan_mask = np.array([False for i in range(len(cnt.channels))])
-    for c_idx, c in enumerate(cnt.channels):
+    chan_mask = np.array([False for i in range(len(dat.axes[chanaxis]))])
+    for c_idx, c in enumerate(dat.axes[chanaxis]):
         for regexp in regexp_list:
             m = re.match(regexp, c, re.IGNORECASE | re.LOCALE)
             if m and m.group() == c:
@@ -348,29 +348,30 @@ def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
                 break
     if invert:
         chan_mask = ~chan_mask
-    data = cnt.data[:,chan_mask]
-    channels = cnt.channels[chan_mask]
-    return Cnt(data, cnt.fs, channels, cnt.markers)
+    data = dat.data.compress(chan_mask, chanaxis)
+    channels = dat.axes[chanaxis][chan_mask]
+    axes = dat.axes[:]
+    axes[chanaxis] = channels
+    return dat.copy(data=data, axes=axes)
 
 
-def remove_channels(cnt, regexp_list):
+def remove_channels(*args, **kwargs):
     """Remove channels from data.
 
-    This method just calls :func:`select_channels` with the ``invert``
-    parameter set to ``True``.
+    This method just calls :func:`select_channels` with the same
+    parameters and the ``invert`` parameter set to ``True``.
 
     Returns
     -------
-    cnt : Cnt
-        A copy of the cnt with the channels removed.
+    dat : Data
+        A copy of the dat with the channels removed.
 
     See Also
     --------
-
-    select_channels: Select Channels
+    select_channels : Select Channels
 
     """
-    return select_channels(cnt, regexp_list, invert=True)
+    return select_channels(*args, invert=True, **kwargs)
 
 
 def load_brain_vision_data(vhdr):
