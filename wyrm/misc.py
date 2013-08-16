@@ -16,6 +16,7 @@ from __future__ import division
 from os import path
 import logging
 import re
+import copy
 
 import numpy as np
 import scipy as sp
@@ -153,7 +154,98 @@ class Epo(object):
         cnt.t = self.t
         return cnt
 
-def select_channels(cnt, regexp_list, invert=False):
+
+class Data(object):
+    """Not documented yet :(
+
+    Parameters
+    ----------
+    data : ndarray
+    axes : nlist of 1darrays
+    names : nlist of strings
+    units : nlist of strings
+
+    Attributes
+    ----------
+    data : ndarray
+    axes : nlist of 1darrays
+    names : nlist of strings
+    units : nlist of strings
+
+    """
+    def __init__(self, data, axes, names, units):
+        self.data = data
+        self.axes = [np.array(i) for i in axes]
+        self.names = names
+        self.units = units
+
+    def __eq__(self, other):
+        """Test for equality.
+
+        Don't trust this method it only checks for known attributes and
+        assumes equality if those are equal.
+
+        Parameters
+        ----------
+        other : Data
+
+        Returns
+        -------
+        equal : Boolean
+            True if ``self`` and ``other`` are equal, False if not.
+
+        """
+        if (sorted(self.__dict__.keys()) == sorted(other.__dict__.keys()) and
+            np.array_equal(self.data, other.data) and
+            len(self.axes) == len(other.axes) and
+            all([self.axes[i].shape == other.axes[i].shape for i in range(len(self.axes))]) and
+            all([(self.axes[i] == other.axes[i]).all() for i in range(len(self.axes))]) and
+            self.names == other.names and
+            self.units == other.units
+           ):
+            return True
+        return False
+
+    def copy(self, **kwargs):
+        """Return a memory efficient deep copy of ``self``.
+
+        It first creates a shallow copy of ``self``, sets the attributes
+        in ``kwargs`` if necessary and returns a deep copy of the
+        resulting object.
+
+        Parameters
+        ----------
+        kwargs : dict, optional
+            if provided ``copy`` will try to overwrite the name, value
+            pairs after the shallow- and before the deep copy. If no
+            ``kwargs`` are provided, it will just return the deep copy.
+
+        Returns
+        -------
+        dat : Data
+            a deep copy of ``self``.
+
+        Examples
+        --------
+        >>> # perform an ordinary deep copy of dat
+        >>> dat2 = dat.copy()
+        >>> # perform a deep copy but overwrite .axes first
+        >>> dat.axes
+        ['time', 'channels']
+        >>> dat3 = dat.copy(axes=['foo'], ['bar'])
+        >>> dat3.axes
+        ['foo', 'bar']
+        >>> dat.axes
+        ['time', 'channel']
+
+        """
+        obj = copy.copy(self)
+        for name, value in kwargs.items():
+            setattr(obj, name, value)
+        return copy.deepcopy(obj)
+
+
+def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
     """Select channels from data.
 
     The matching is case-insensitive and locale-aware (as in
