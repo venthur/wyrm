@@ -245,6 +245,46 @@ class Data(object):
         return copy.deepcopy(obj)
 
 
+def swapaxes(dat, ax1, ax2):
+    """Swap axes of a Data object.
+
+    This method swaps two axes of a Data object by swapping the
+    appropriate ``.data``, ``.names``, ``.units``, and ``.axes``.
+
+    Parameters
+    ----------
+    dat : Data
+    ax1, ax2 : int
+        the indices of the axes to swap
+
+    Returns
+    -------
+    dat : Data
+        a copy of ``dat`` with the appropriate axes swapped.
+
+    Examples
+    --------
+    >>> dat.names
+    ['time', 'channels']
+    >>> dat = swapaxes(dat, 0, 1)
+    >>> dat.names
+    ['channels', 'time']
+
+    See Also
+    --------
+    numpy.swapaxes
+
+    """
+    data = dat.data.swapaxes(ax1, ax2)
+    axes = dat.axes[:]
+    axes[ax1], axes[ax2] = axes[ax2], axes[ax1]
+    units = dat.units[:]
+    units[ax1], units[ax2] = units[ax2], units[ax1]
+    names = dat.names[:]
+    names[ax1], names[ax2] = names[ax2], names[ax1]
+    return dat.copy(data=data, axes=axes, units=units, names=names)
+
+
 def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
     """Select channels from data.
 
