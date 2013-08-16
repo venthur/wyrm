@@ -673,25 +673,28 @@ def remove_epochs(*args, **kwargs):
     return select_epochs(*args, invert=True, **kwargs)
 
 
-def subsample(cnt, freq):
+def subsample(dat, freq, timeaxis=-2):
     """Subsample the data to ``freq`` Hz.
 
-    This method subsamples by taking every ``n`` th element starting
-    with the first one and ``n`` being ``cnt.fs / freq``. Please note
-    that ``freq`` must be a whole number divisor of ``cnt.fs``.
+    This method subsamples data along ``timeaxis`` by taking every ``n``
+    th element starting with the first one and ``n`` being ``dat.fs /
+    freq``. Please note that ``freq`` must be a whole number divisor of
+    ``dat.fs``.
 
     Note that this method does not low-pass filter the data before
     sub-sampling.
 
     Parameters
     ----------
-    cnt : Cnt
+    dat : Data
+        Data object with ``.fs`` attribute
     freq : float
         the target frequency in Hz
 
     Returns
     -------
-    cnt : Cnt
+    dat : Data
+        copy of ``dat`` with subsampled frequency
 
     See Also
     --------
@@ -703,25 +706,31 @@ def subsample(cnt, freq):
     Load some EEG data with 1kHz, bandpass filter it and downsample it
     to 100Hz.
 
-    >>> cnt = load_brain_vision_data('some/path')
-    >>> cnt.fs
+    >>> dat = load_brain_vision_data('some/path')
+    >>> dat.fs
     1000.0
-    >>> cnt = band_pass(cnt, 8, 40)
-    >>> cnt = subsample(cnt, 100)
-    >>> cnt.fs
+    >>> dat = band_pass(dat, 8, 40)
+    >>> dat = subsample(dat, 100)
+    >>> dat.fs
     100.0
 
     Raises
     ------
-    AssertionError : if ``freq`` is not a whole number divisor of ``cnt.fs``
+    AssertionError : if ``freq`` is not a whole number divisor of ``dat.fs``
+    AssertionError : if ``dat`` has no ``.fs`` attribute
+    AssertionError : if ``dat.data.shape[timeaxis] != len(dat.axes[timexis])``
 
     """
-    assert cnt.fs % freq == 0
-    factor = int(cnt.fs / freq)
-    data = cnt.data[..., ::factor, :]
-    fs = cnt.fs / factor
-    markers = map(lambda x: [int(x[0] / factor), x[1]], cnt.markers)
-    return Cnt(data, fs, cnt.channels, markers)
+    assert hasattr(dat, 'fs')
+    assert dat.data.shape[timeaxis] == len(dat.axes[timeaxis])
+    assert dat.fs % freq == 0
+    factor = int(dat.fs / freq)
+    idxmask = np.arange(dat.data.shape[timeaxis], step=factor)
+    data = dat.data.take(idxmask, timeaxis)
+    axes = dat.axes[:]
+    axes[timeaxis] =  axes[timeaxis].take(idxmask)
+    markers = map(lambda x: [int(x[0] / factor), x[1]], dat.markers)
+    return dat.copy(data=data, axes=axes, fs=freq, markers=markers)
 
 
 def spectrum(cnt):
