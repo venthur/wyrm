@@ -937,50 +937,68 @@ def calculate_classwise_average(dat, classaxis=0):
     return dat.copy(data=data, axes=axes)
 
 
-def correct_for_baseline(epo, ival):
+def correct_for_baseline(dat, ival, timeaxis=-2):
     """Subtract the baseline.
 
-    For each cnt-Element and channel in the given epo, this method
-    calculates the average value for the given interval and subtracts
-    this value from the channel data.
+    For each epoch and channel in the given dat, this method calculates
+    the average value for the given interval and subtracts this value
+    from the channel data within this epoch and channel.
+
+    This method generalizes to dats with more than 3 dimensions.
 
     Parameters
     ----------
-    epo : Epo
-    ival : (float, float)
-        the start and stop borders in milli seconds. ``ival`` must fit
-        into ``epo.ival`` and ``ival[0] <= ival[1]``
+    dat : Dat
+    ival : array of two floats
+        the start and stop borders in milli seconds. the left border is
+        included, the right border is not: ``[start, stop)``.
+        ``ival[0]`` must fit into ``dat.axes[timeaxis]`` and
+        ``ival[0] <= ival[1]``.
 
     Returns
     -------
-    epo : Epo
-
+    dat : Dat
+        a copy of ``dat`` with the averages of the intervals subtracted.
 
     Examples
     --------
 
-    Remove the baselines for the interval ``[100, 0]``
+    Remove the baselines for the interval ``[100, 0)``
 
-    >>> epo = correct_for_baseline(epo, [-100, 0])
+    >>> dat = correct_for_baseline(dat, [-100, 0])
+
+    Notes
+    -----
+    The Algorithm calculates the average(s) along the ``timeaxis`` within
+    the given interval. The resulting array has one dimension less
+    than the original one (the elements on ``timeaxis`` where reduced).
+
+    The resulting avgarray is then subtracted from the original data. To
+    match the shape, a new axis is created on ``timeaxis`` of avgarray.
+    And the shapes are then matched via numpy's broadcasting.
 
     Raises
     ------
     AssertionError
-        If the left or right border of ``ival`` is outside of
-        ``epo.ival`` or if ``ival`` is malformed.
+        If the left border of ``ival`` is outside of
+        ``dat.axes[timeaxis]`` or if ``ival[1] < ival[0]``.
+
+    See Also
+    --------
+    numpy.average, numpy.expand_dims
 
     """
-    # check if ival fits into epo.ival
-    assert epo.t[0] <= ival[0] <= epo.t[-1]
-    assert epo.t[0] <= ival[1] <= epo.t[-1]
-    assert ival[0] <= ival[1]
-    # create an indexing mask ([true, true, false, ...])
-    mask = np.logical_and(ival[0] <= epo.t, epo.t <= ival[1])
-    # take all values from the epo except the ones not fitting the mask
+    # check if ival fits into dat.ival
+    # we can't make any assumptions about ival[1] and the last element
+    # of the timeaxis since ival[1] is expected to be bigger as the
+    # interval is not including the last element of ival[1]
+    assert dat.axes[timeaxis][0] <= ival[0] <= ival[1]
+    mask = (ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < ival[1])
+    # take all values from the dat except the ones not fitting the mask
     # and calculate the average along the sampling axis
-    averages = np.average(epo.data[:, mask, :], axis=1)
-    data = epo.data - averages[:, np.newaxis, :]
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.t[0])
+    averages = np.average(dat.data.compress(mask, timeaxis), axis=timeaxis)
+    data = dat.data - np.expand_dims(averages, timeaxis)
+    return dat.copy(data=data)
 
 
 def rectify_chanels(epo):
