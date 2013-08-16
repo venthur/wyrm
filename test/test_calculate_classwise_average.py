@@ -2,31 +2,47 @@ import unittest
 
 import numpy as np
 
-from wyrm.misc import Epo
+from wyrm.misc import Data
 from wyrm.misc import calculate_classwise_average
 
 
 class TestCalculateClasswiseAverage(unittest.TestCase):
 
-    def test_calculate_classwise_average(self):
-        """Calculate classwise average."""
+    def setUp(self):
         ones = np.ones((10, 2))
         twoes = ones * 2
         data = np.array([ones, ones, twoes, twoes, ones, twoes, twoes])
         channels = ['c1', 'c2']
-        fs = 10
+        time = np.linspace(0, 7000, 70)
         classes = [0, 0, 1, 1, 0, 1, 1]
         class_names = ['ones', 'twoes']
-        markers = []
-        t_start = 0
-        epo = Epo(data, fs, channels, markers, classes, class_names, t_start)
-        avg_epo = calculate_classwise_average(epo)
-        # check for two epoches (one for each class)
-        self.assertEqual(avg_epo.data.shape[0], 2)
-        # check if the data is correct
-        self.assertEqual(np.average(avg_epo.data[0]), 1)
-        self.assertEqual(np.average(avg_epo.data[1]), 2)
+        self.dat = Data(data, [classes, time, channels], ['class', 'time', 'channel'], ['#', 'ms', '#'])
+        self.dat.class_names = class_names
 
+    def test_calculate_classwise_average(self):
+        """Calculate classwise average."""
+        avg_dat = calculate_classwise_average(self.dat)
+        # check for two datches (one for each class)
+        self.assertEqual(avg_dat.data.shape[0], 2)
+        # check if the data is correct
+        self.assertEqual(np.average(avg_dat.data[0]), 1)
+        self.assertEqual(np.average(avg_dat.data[1]), 2)
+        # check if we have as many classes on axes as we have in data
+        self.assertEqual(avg_dat.data.shape[0], len(avg_dat.axes[0]))
+        #
+        self.assertEqual(avg_dat.class_names, self.dat.class_names)
+
+    def test_calculate_classwise_average_with_cnt(self):
+        """Calculate classwise avg must raise an error if called with continouos data."""
+        del(self.dat.class_names)
+        with self.assertRaises(AssertionError):
+            calculate_classwise_average(self.dat)
+
+    def test_calculate_classwise_average_copy(self):
+        """Calculate classwise avg must not modify the argument."""
+        cpy = self.dat.copy()
+        calculate_classwise_average(self.dat)
+        self.assertEqual(self.dat, cpy)
 
 if __name__ == '__main__':
     unittest.main()

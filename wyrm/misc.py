@@ -886,28 +886,33 @@ def calculate_csp(class1, class2):
     return v, a, d
 
 
-def calculate_classwise_average(epo):
+def calculate_classwise_average(dat, classaxis=0):
     """Calculate the classwise average.
 
     This method calculates the average continuous per class for all
-    classes defined in the ``epo``. In other words, if you have two
+    classes defined in the ``dat``. In other words, if you have two
     different classes, with many continuous data per class, this method
     will calculate the average time course for each class and channel.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
+        an epoched Data object with a ``.class_names`` attribute.
 
     Returns
     -------
-    epo : Epo
-        An Epo object holding a continuous per class.
+    dat : Data
+        copy of ``dat`` a witht the ``classaxis`` dimension reduced to
+        the number of different classes.
+
+    Raises
+    ------
+    AssertionError : if the ``dat`` has no ``.class_names`` attribute.
 
     Examples
     --------
-
     Split existing continuous data into two classes and calculate the
-    average continuous for each class.
+    average for each class.
 
     >>> mrk_def = {'std': ['S %2i' % i for i in range(2, 7)],
     ...            'dev': ['S %2i' % i for i in range(12, 17)]
@@ -918,17 +923,18 @@ def calculate_classwise_average(epo):
     >>> plot(avg_epo.data[1])
 
     """
-    data = []
+    assert hasattr(dat, 'class_names')
     classes = []
-    classnames = []
-    for i, classname in enumerate(epo.class_names):
-        avg = np.average(epo.data[epo.classes == i], axis=0)
-        classes.append(i)
-        classnames.append(classname)
+    data = []
+    for i, classname in enumerate(dat.class_names):
+        avg = np.average(dat.data[dat.axes[classaxis] == i], axis=classaxis)
         data.append(avg)
-    classes = np.array(classes)
+        classes.append(i)
     data = np.array(data)
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames, epo.t[0])
+    classes = np.array(classes)
+    axes = dat.axes[:]
+    axes[classaxis] = classes
+    return dat.copy(data=data, axes=axes)
 
 
 def correct_for_baseline(epo, ival):
