@@ -1033,31 +1033,36 @@ def rectify_channels(dat):
     return dat.copy(data=np.abs(dat.data))
 
 
-def jumping_means(epo, ivals):
+def jumping_means(dat, ivals, timeaxis=-2):
     """Calculate the jumping means.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
     ivals : array of [float, float]
-        the intervals for which to calculate the means
+        the intervals for which to calculate the means. Start is
+        included end is not (like ``[start, end)``).
 
     Returns
     -------
+    dat : Data
+        copy of ``dat`` with the jumping means along the ``timeaxis``.
+        ``dat.name[timeaxis]`` and ``dat.axes[timeaxis]`` Are modified
+        too to reflect the intervals used for the data points.
 
     """
-    n_epos, n_samples, n_chans = epo.data.shape
-    n_ivals = len(ivals)
-    data = np.zeros((n_epos, n_ivals, n_chans))
+    means = []
+    time = []
     for i, [start, end] in enumerate(ivals):
-        mask = np.logical_and(start <= epo.t, epo.t <= end)
-        data[:, i, :] = np.mean(epo.data[:, mask, :], axis=1)
-    t = np.mean(ivals, axis=1)
-    # is this really an epo? what about:
-    # - fs
-    # - markers
-    # - init of t_start
-    epo = Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, 0)
-    epo.t = t
-    epo.markers = [[] for i in range(n_epos)]
-    return epo
+        mask = (start <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < end)
+        mean = np.mean(dat.data.compress(mask, timeaxis), axis=timeaxis)
+        mean = np.expand_dims(mean, timeaxis)
+        means.append(mean)
+        time.append('[%i, %i)' % (start, end))
+    means = np.concatenate(means, axis=timeaxis)
+    names = dat.names[:]
+    names[timeaxis] = 'time interval'
+    axes = dat.axes[:]
+    axes[timeaxis] = np.array(time)
+    return dat.copy(data=means, names=names, axes=axes)
+
