@@ -1001,29 +1001,29 @@ def correct_for_baseline(dat, ival, timeaxis=-2):
     return dat.copy(data=data)
 
 
-def rectify_chanels(epo):
-    """Calculate all samplewise absolute values.
+def rectify_channels(dat):
+    """Calculate the absolute values in ``dat.data``.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
 
     Returns
     -------
-    epo : Epo
+    dat : Data
+        a copy of ``dat`` with all values absolute in ``.data``
 
     Examples
     --------
 
-    >>> print np.average(epo.data)
+    >>> print np.average(dat.data)
     0.391987338917
-    >>> epo = misc.rectify_chanels(epo)
-    >>> print np.average(epo.data)
+    >>> dat = rectify_channels(dat)
+    >>> print np.average(dat.data)
     22.40234266
 
     """
-    data = np.abs(epo.data)
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.t[0])
+    return dat.copy(data=np.abs(dat.data))
 
 
 def jumping_means(epo, ivals):
