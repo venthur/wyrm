@@ -555,44 +555,47 @@ def band_pass(cnt, low, high):
     return Cnt(data, cnt.fs, cnt.channels, cnt.markers)
 
 
-def select_ival(epo, ival):
-    """Select interval from epoched data.
+def select_ival(dat, ival, timeaxis=-2):
+    """Select interval from data.
 
-    This method selects the time segment(s) defined by ival in a new Epo
-    instance.
+    This method selects the time segment(s) defined by ``ival``.
 
     Parameters
     ----------
-    epo : Epo
-    ival : (float, float)
-        Start and end in milliseconds. Start and End are included.
+    dat : Data
+    ival : list of two floats
+        Start and end in milliseconds. Start is included end is excluded
+        (like ``[stard, end)``]
 
     Returns
     -------
-    epo : Epo
+    dat : Data
+        a copy of ``dat`` with the selected time intervals.
 
     Raises
     ------
     AssertionError
-        if the given interval does not fit into ``epo.ival`` or
-        ``ival[0] > ival[1]``.
+        if the given interval does not fit into ``dat.axes[timeaxis]``
+        or ``ival[0] > ival[1]``.
 
     Examples
     --------
 
     Select the first 200ms of the epoched data:
 
-    >>> epo2 = select_ival(epo, [0, 200])
-    >>> print epo2.t[0], epo2.t[-1]
-    0.0 200.0
+    >>> dat.fs
+    100.
+    >>> dat2 = select_ival(dat, [0, 200])
+    >>> print dat2.t[0], dat2.t[-1]
+    0. 199.
 
     """
-    assert epo.t[0] <= ival[0] <= epo.t[-1]
-    assert epo.t[0] <= ival[1] <= epo.t[-1]
-    assert ival[0] <= ival[1]
-    mask = np.logical_and(ival[0] <= epo.t, epo.t <= ival[1])
-    data = epo.data[..., mask, :]
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, ival[0])
+    assert dat.axes[timeaxis][0] <= ival[0] <= ival[1]
+    mask = (ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < ival[1])
+    data = dat.data.compress(mask, timeaxis)
+    axes = dat.axes[:]
+    axes[timeaxis] = dat.axes[timeaxis].compress(mask)
+    return dat.copy(data=data, axes=axes)
 
 
 def select_epochs(dat, indices, invert=False, classaxis=0):
