@@ -423,13 +423,10 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
         The interval in milliseconds to cut around the markers. I.e. to
         get the interval starting with the marker plus the remaining
         100ms define the interval like [0, 100]. The start point is
-        included, the endpoint is not (like: ``[start, end)``).
-
-        To get 200ms before the marker until 100ms after the marker do:
-        ``[-200, 100]``
-
-        Only negative or positive values are possible (i.e. ``[-500,
-        -100]``)
+        included, the endpoint is not (like: ``[start, end)``).  To get
+        200ms before the marker until 100ms after the marker do:
+        ``[-200, 100]`` Only negative or positive values are possible
+        (i.e. ``[-500, -100]``)
     timeaxis : int, optional
         the axis along which the segmentation will take place
 
