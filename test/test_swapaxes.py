@@ -18,7 +18,7 @@ class TestSwapaxes(unittest.TestCase):
         self.dat.markers = marker
 
     def test_swapaxes(self):
-        """Subsampling to 10Hz."""
+        """Swapping axes."""
         new = swapaxes(self.dat, 0, 1)
         self.assertTrue((new.axes[0] == self.dat.axes[1]).all())
         self.assertTrue((new.axes[1] == self.dat.axes[0]).all())
