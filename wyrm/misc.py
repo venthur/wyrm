@@ -10,7 +10,6 @@ it is ready for prime.
 """
 
 
-
 from __future__ import division
 
 from os import path
@@ -26,137 +25,43 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
 
-# Three Kinds of EEG Data
-# -----------------------
-#
-# 1. Raw: A numpy array (time x channel)
-#
-# 2. Continous Data: An object holding raw data together with meta information,
-# like the sampling frequency, channel and the marker
-#
-# 3. Epoched Data: An object holding a list of Continuous Data
-
-class Cnt(object):
-    """Continuous Data Object.
-
-    This object represents a stream of continuous EEG data. It is
-    defined by the raw EEG data (samples x channels), the sampling
-    frequency, the channel names and the marker.
-
-    Parameters
-    ----------
-    data : 2darray
-        The raw EEG data in a 2 dimensional nd array (sample, channel)
-    fs : float
-        The sampling frequency
-    channels : array of strings
-        The channel names in the same order as they appear in ``data``
-    markers : array of (int, str)
-        the int represents the position in data this marker belongs to,
-        and str is the actual marker
-
-    Attributes
-    ----------
-    data : 2darray
-        Defines the raw EEG data (sample, channel)
-    fs : float
-        The sampling frequency of the given data set
-    channels : numpy array of strings
-        The names of the channels in the same order as they appear in data
-    markers : array of (int, str)
-        the int represents the position in data this marker belongs to,
-        and str is the actual marker
-    t : array of float
-        the time in ms for each element in data.
-
-    """
-    def __init__(self, data, fs, channels, markers):
-        self.data = data
-        self.fs = fs
-        self.channels = np.array(channels)
-        self.markers = markers
-        duration = 1000 * data.shape[0] / fs
-        self.t = np.linspace(0, duration, data.shape[0], endpoint=False)
-        # TODO: should we make some sanity checks here?
-
-
-class Epo(object):
-    """Epoched data object.
-
-    An Epoch represents a list of Continuous data. Each element ``i`` of
-    an Epoch is assigned to a class ``c = classes[i]`` of the name
-    ``classname[c]``.
-
-    Each cnt of this epo has the same length (number of samples), number
-    of channels and time interval.
-
-    Parameters
-    ----------
-    data : ndarray (epoch, sample, channel)
-        The raw, epoched EEG data in a 3 dimensional ndarray (epoch,
-        sample, channel)
-    fs : float
-        The sampling frequency
-    channels : array of strings
-        The channel names in the same order as they appear in ``data``
-    markers : array of arrays of (int, str)
-        for each epoch there is an array of mackers (int, str), where
-        the int indicates the position of the marker relative to data
-        and str is the actual marker.
-    classes : array
-        A 1 dimensional array, each entry represents the class for the
-        respective epoch in ``data``. The value is also the index of
-        ``class_names`` for a human readable description of the class.
-    class_names : array of strings
-        The human readable class names. The indices of the classes in
-        ``class_names`` match the values in ``classes``.
-    t_start : float
-        (start) time in ms of the interval in relation to the event of
-        the epoch (e.g. -100, 0, or 200)
-
-
-    Attributes
-    ----------
-    data : (N, N, N) ndarray
-        The raw and epoched EEG data: (epochs, samples, channels).
-    fs : float
-        The sampling frequency
-    channels : array of strings
-        The channel names in the same order as they appear in ``data``
-    markers : array of arrays of (int, str)
-        for each epoch there is an array of mackers (int, str), where
-        the int indicates the position of the marker relative to data
-        and str is the actual marker.
-    classes : list
-        A 1 dimensional array, each entry represents the class for the
-        respective epoch in ``data``. The value is also the index of
-        ``class_names`` for a human readable description of the class.
-    class_names : array of strings
-        The human readable class names. The indices of the classes in
-        ``class_names`` match the values in ``classes``.
-    t : (N,) nd array
-        the time in ms for each element in data
-
-    """
-    def __init__(self, data, fs, channels, markers, classes, class_names, t_start):
-        self.data = data
-        self.fs = fs
-        self.channels = np.array(channels)
-        self.markers = markers
-        self.classes = np.array(classes)
-        self.class_names = np.array(class_names)
-        duration = 1000 * data.shape[-2] / fs
-        self.t = np.linspace(t_start, t_start + duration, data.shape[-2], endpoint=False)
-
-    def __getitem__(self, key):
-        data = self.data[key]
-        cnt = Cnt(data, self.fs, self.channels, self.markers[key])
-        cnt.t = self.t
-        return cnt
-
-
 class Data(object):
-    """Not documented yet :(
+    """Generic, self-describing data container.
+
+    This data structure is very generic on purpose. The goal here was to
+    provide something which can fit the various different known and yet
+    unknown requirements for BCI algorithms.
+
+    At the core of ``Data`` is its n-dimensional ``.data`` attribute
+    which holds the actual data. Along with the data, there is meta
+    information about each axis of the data, contained in ``.axes``,
+    ``.names``, and ``.units``.
+
+    Most toolbox methods rely on a *convention* how specific data should
+    be structured (i.e. they assume that the channels are always in the
+    last dimension). You don't have to follow this convention (or
+    sometimes it might not even be possible when trying out new things),
+    and all methods, provide an optional parameter to tell them on which
+    axis they should work on.
+
+    Continuous Data:
+        Continuous Data is usually EEG data and consists of a 2d array
+        ``[time, channel]``. Whenever you have continuous data, time and
+        channel should be the last two dimensions.
+
+    Epoched Data:
+        Epoched data can be seen as an array of (non-epoched) data. The
+        epoch should always be the first dimension. Most commonly used is
+        epoched continuous EEG data which looks like this: ``[class,
+        time, channel]``.
+
+    Feature Vector:
+        Similar to Epoched Data, with classes in the first dimension.
+
+    A :func:`__eq__` function is providet to test for equality of two
+    Data objects (via ``==``). This method only checks for the known
+    attributes and does not guaranty correct result if the Data object
+    contains custom attributes. It is mainly used in unittests.
 
     Parameters
     ----------
@@ -168,12 +73,34 @@ class Data(object):
     Attributes
     ----------
     data : ndarray
+        n-dimensional data array
     axes : nlist of 1darrays
+        each element of corresponds to a dimension of ``.data`` (i.e.
+        the first one in ``.axes`` to the first dimension in ``.data``
+        and so on). The 1-dimensional arrays contain the description of
+        the data along the appropriate axis in ``.data``. For example if
+        ``.data`` contains Continuous Data, then ``.axes[0]`` should be
+        an array of timesteps and ``.axes[1]`` an array of channel names
     names : nlist of strings
+        the human readable description of each axis, like 'time', or 'channel'
     units : nlist of strings
+        the human readable description of the unit used for the data in
+        ``.axes``
 
     """
     def __init__(self, data, axes, names, units):
+        """Initialize a new ``Data`` object.
+
+        Upon initialization we check if ``axes``, ``names``, and
+        ``units`` have the same length and if their respective length
+        matches the shape of ``data``.
+
+        Raises
+        ------
+        AssertionError : if the lengths of the parameters are not
+            correct.
+
+        """
         assert data.ndim == len(axes) == len(names) == len(units)
         for i in range(data.ndim):
             if data.shape[i] != len(axes[i]):
@@ -187,7 +114,8 @@ class Data(object):
         """Test for equality.
 
         Don't trust this method it only checks for known attributes and
-        assumes equality if those are equal.
+        assumes equality if those are equal. This method is heavily used
+        in unittests.
 
         Parameters
         ----------
