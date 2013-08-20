@@ -479,23 +479,25 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
     return dat.copy(data=data, axes=axes, names=names, units=units, class_names=class_names)
 
 
-def band_pass(cnt, low, high):
+def band_pass(dat, low, high, timeaxis=-2):
     """Band pass filter the data.
 
     Parameters
     ----------
-    cnt : Cnt
+    dat : Date
     low, high : int
         the low, and high borders of the desired frequency band
+    timeaxis : int, optional
+        the axis in ``dat.data`` to filter
 
     Returns
     -------
-    cnt : Cnt
+    dat : Data
         the band pass filtered data
 
     """
     # band pass filter the data
-    fs_n = cnt.fs * 0.5
+    fs_n = dat.fs * 0.5
     #logger.debug('Calculating butter order...')
     #butter_ord, f_butter = signal.buttord(ws=[(low - .1) / fs_n, (high + .1) / fs_n],
     #                                      wp=[low / fs_n, high / fs_n],
@@ -503,14 +505,15 @@ def band_pass(cnt, low, high):
     #                                      gstop=3.0
     #                                      )
 
-    #logger.debug("{ord} {fbutter} {low} {high}".format(**{'ord': butter_ord,
+    #logger.debug("order: {ord} fbutter: {fbutter} low: {low} high: {high}".format(**{'ord': butter_ord,
     #                                                      'fbutter': f_butter,
     #                                                      'low': low / fs_n,
     #                                                      'high': high / fs_n}))
+    logger.warning('Using fixed order for butterworth filter.')
     butter_ord = 4
     b, a = signal.butter(butter_ord, [low / fs_n, high / fs_n], btype='band')
-    data = signal.lfilter(b, a, cnt.data, axis=-2)
-    return Cnt(data, cnt.fs, cnt.channels, cnt.markers)
+    data = signal.lfilter(b, a, dat.data, axis=timeaxis)
+    return dat.copy(data=data)
 
 
 def select_ival(dat, ival, timeaxis=-2):
