@@ -696,8 +696,7 @@ def subsample(dat, freq, timeaxis=-2):
     data = dat.data.take(idxmask, timeaxis)
     axes = dat.axes[:]
     axes[timeaxis] =  axes[timeaxis].take(idxmask)
-    markers = map(lambda x: [int(x[0] / factor), x[1]], dat.markers)
-    return dat.copy(data=data, axes=axes, fs=freq, markers=markers)
+    return dat.copy(data=data, axes=axes, fs=freq)
 
 
 def spectrum(cnt):

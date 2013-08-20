@@ -28,10 +28,8 @@ class TestSubsample(unittest.TestCase):
         # no channels must have been deleted
         np.testing.assert_array_equal(self.dat.axes[-1], dat.axes[-1])
         self.assertEqual(self.dat.data.shape[-1], dat.data.shape[-1])
-        # markers must have been modified to the new sample positions
-        mrk_times_old = [i for i, j in self.dat.markers]
-        mrk_times_new = [i for i, j in dat.markers]
-        self.assertEqual(mrk_times_old, [i * 10 for i in mrk_times_new])
+        # markers must not have been modified
+        self.assertEqual(self.dat.markers, dat.markers)
         # no marker must have been deleted
         self.assertEqual(len(self.dat.markers), len(dat.markers))
         # check the actual data
