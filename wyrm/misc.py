@@ -10,12 +10,12 @@ it is ready for prime.
 """
 
 
-
 from __future__ import division
 
 from os import path
 import logging
 import re
+import copy
 
 import numpy as np
 import scipy as sp
@@ -25,135 +25,199 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
 
-# Three Kinds of EEG Data
-# -----------------------
-#
-# 1. Raw: A numpy array (time x channel)
-#
-# 2. Continous Data: An object holding raw data together with meta information,
-# like the sampling frequency, channel and the marker
-#
-# 3. Epoched Data: An object holding a list of Continuous Data
+class Data(object):
+    """Generic, self-describing data container.
 
-class Cnt(object):
-    """Continuous Data Object.
+    This data structure is very generic on purpose. The goal here was to
+    provide something which can fit the various different known and yet
+    unknown requirements for BCI algorithms.
 
-    This object represents a stream of continuous EEG data. It is
-    defined by the raw EEG data (samples x channels), the sampling
-    frequency, the channel names and the marker.
+    At the core of ``Data`` is its n-dimensional ``.data`` attribute
+    which holds the actual data. Along with the data, there is meta
+    information about each axis of the data, contained in ``.axes``,
+    ``.names``, and ``.units``.
 
-    Parameters
-    ----------
-    data : 2darray
-        The raw EEG data in a 2 dimensional nd array (sample, channel)
-    fs : float
-        The sampling frequency
-    channels : array of strings
-        The channel names in the same order as they appear in ``data``
-    markers : array of (int, str)
-        the int represents the position in data this marker belongs to,
-        and str is the actual marker
+    Most toolbox methods rely on a *convention* how specific data should
+    be structured (i.e. they assume that the channels are always in the
+    last dimension). You don't have to follow this convention (or
+    sometimes it might not even be possible when trying out new things),
+    and all methods, provide an optional parameter to tell them on which
+    axis they should work on.
 
-    Attributes
-    ----------
-    data : 2darray
-        Defines the raw EEG data (sample, channel)
-    fs : float
-        The sampling frequency of the given data set
-    channels : numpy array of strings
-        The names of the channels in the same order as they appear in data
-    markers : array of (int, str)
-        the int represents the position in data this marker belongs to,
-        and str is the actual marker
-    t : array of float
-        the time in ms for each element in data.
+    Continuous Data:
+        Continuous Data is usually EEG data and consists of a 2d array
+        ``[time, channel]``. Whenever you have continuous data, time and
+        channel should be the last two dimensions.
 
-    """
-    def __init__(self, data, fs, channels, markers):
-        self.data = data
-        self.fs = fs
-        self.channels = np.array(channels)
-        self.markers = markers
-        duration = 1000 * data.shape[0] / fs
-        self.t = np.linspace(0, duration, data.shape[0], endpoint=False)
-        # TODO: should we make some sanity checks here?
+    Epoched Data:
+        Epoched data can be seen as an array of (non-epoched) data. The
+        epoch should always be the first dimension. Most commonly used is
+        epoched continuous EEG data which looks like this: ``[class,
+        time, channel]``.
 
+    Feature Vector:
+        Similar to Epoched Data, with classes in the first dimension.
 
-class Epo(object):
-    """Epoched data object.
-
-    An Epoch represents a list of Continuous data. Each element ``i`` of
-    an Epoch is assigned to a class ``c = classes[i]`` of the name
-    ``classname[c]``.
-
-    Each cnt of this epo has the same length (number of samples), number
-    of channels and time interval.
+    A :func:`__eq__` function is providet to test for equality of two
+    Data objects (via ``==``). This method only checks for the known
+    attributes and does not guaranty correct result if the Data object
+    contains custom attributes. It is mainly used in unittests.
 
     Parameters
     ----------
-    data : ndarray (epoch, sample, channel)
-        The raw, epoched EEG data in a 3 dimensional ndarray (epoch,
-        sample, channel)
-    fs : float
-        The sampling frequency
-    channels : array of strings
-        The channel names in the same order as they appear in ``data``
-    markers : array of arrays of (int, str)
-        for each epoch there is an array of mackers (int, str), where
-        the int indicates the position of the marker relative to data
-        and str is the actual marker.
-    classes : array
-        A 1 dimensional array, each entry represents the class for the
-        respective epoch in ``data``. The value is also the index of
-        ``class_names`` for a human readable description of the class.
-    class_names : array of strings
-        The human readable class names. The indices of the classes in
-        ``class_names`` match the values in ``classes``.
-    t_start : float
-        (start) time in ms of the interval in relation to the event of
-        the epoch (e.g. -100, 0, or 200)
-
+    data : ndarray
+    axes : nlist of 1darrays
+    names : nlist of strings
+    units : nlist of strings
 
     Attributes
     ----------
-    data : (N, N, N) ndarray
-        The raw and epoched EEG data: (epochs, samples, channels).
-    fs : float
-        The sampling frequency
-    channels : array of strings
-        The channel names in the same order as they appear in ``data``
-    markers : array of arrays of (int, str)
-        for each epoch there is an array of mackers (int, str), where
-        the int indicates the position of the marker relative to data
-        and str is the actual marker.
-    classes : list
-        A 1 dimensional array, each entry represents the class for the
-        respective epoch in ``data``. The value is also the index of
-        ``class_names`` for a human readable description of the class.
-    class_names : array of strings
-        The human readable class names. The indices of the classes in
-        ``class_names`` match the values in ``classes``.
-    t : (N,) nd array
-        the time in ms for each element in data
+    data : ndarray
+        n-dimensional data array
+    axes : nlist of 1darrays
+        each element of corresponds to a dimension of ``.data`` (i.e.
+        the first one in ``.axes`` to the first dimension in ``.data``
+        and so on). The 1-dimensional arrays contain the description of
+        the data along the appropriate axis in ``.data``. For example if
+        ``.data`` contains Continuous Data, then ``.axes[0]`` should be
+        an array of timesteps and ``.axes[1]`` an array of channel names
+    names : nlist of strings
+        the human readable description of each axis, like 'time', or 'channel'
+    units : nlist of strings
+        the human readable description of the unit used for the data in
+        ``.axes``
 
     """
-    def __init__(self, data, fs, channels, markers, classes, class_names, t_start):
+    def __init__(self, data, axes, names, units):
+        """Initialize a new ``Data`` object.
+
+        Upon initialization we check if ``axes``, ``names``, and
+        ``units`` have the same length and if their respective length
+        matches the shape of ``data``.
+
+        Raises
+        ------
+        AssertionError : if the lengths of the parameters are not
+            correct.
+
+        """
+        assert data.ndim == len(axes) == len(names) == len(units)
+        for i in range(data.ndim):
+            if data.shape[i] != len(axes[i]):
+                raise AssertionError("Axis '%s' (%i) not as long as corresponding axis in 'data' (%i)" % (names[i], len(axes[i]), data.shape[i]))
         self.data = data
-        self.fs = fs
-        self.channels = np.array(channels)
-        self.markers = markers
-        self.classes = np.array(classes)
-        self.class_names = np.array(class_names)
-        duration = 1000 * data.shape[-2] / fs
-        self.t = np.linspace(t_start, t_start + duration, data.shape[-2], endpoint=False)
+        self.axes = [np.array(i) for i in axes]
+        self.names = names
+        self.units = units
 
-    def __getitem__(self, key):
-        data = self.data[key]
-        cnt = Cnt(data, self.fs, self.channels, self.markers[key])
-        cnt.t = self.t
-        return cnt
+    def __eq__(self, other):
+        """Test for equality.
 
-def select_channels(cnt, regexp_list, invert=False):
+        Don't trust this method it only checks for known attributes and
+        assumes equality if those are equal. This method is heavily used
+        in unittests.
+
+        Parameters
+        ----------
+        other : Data
+
+        Returns
+        -------
+        equal : Boolean
+            True if ``self`` and ``other`` are equal, False if not.
+
+        """
+        if (sorted(self.__dict__.keys()) == sorted(other.__dict__.keys()) and
+            np.array_equal(self.data, other.data) and
+            len(self.axes) == len(other.axes) and
+            all([self.axes[i].shape == other.axes[i].shape for i in range(len(self.axes))]) and
+            all([(self.axes[i] == other.axes[i]).all() for i in range(len(self.axes))]) and
+            self.names == other.names and
+            self.units == other.units
+           ):
+            return True
+        return False
+
+    def copy(self, **kwargs):
+        """Return a memory efficient deep copy of ``self``.
+
+        It first creates a shallow copy of ``self``, sets the attributes
+        in ``kwargs`` if necessary and returns a deep copy of the
+        resulting object.
+
+        Parameters
+        ----------
+        kwargs : dict, optional
+            if provided ``copy`` will try to overwrite the name, value
+            pairs after the shallow- and before the deep copy. If no
+            ``kwargs`` are provided, it will just return the deep copy.
+
+        Returns
+        -------
+        dat : Data
+            a deep copy of ``self``.
+
+        Examples
+        --------
+        >>> # perform an ordinary deep copy of dat
+        >>> dat2 = dat.copy()
+        >>> # perform a deep copy but overwrite .axes first
+        >>> dat.axes
+        ['time', 'channels']
+        >>> dat3 = dat.copy(axes=['foo'], ['bar'])
+        >>> dat3.axes
+        ['foo', 'bar']
+        >>> dat.axes
+        ['time', 'channel']
+
+        """
+        obj = copy.copy(self)
+        for name, value in kwargs.items():
+            setattr(obj, name, value)
+        return copy.deepcopy(obj)
+
+
+def swapaxes(dat, ax1, ax2):
+    """Swap axes of a Data object.
+
+    This method swaps two axes of a Data object by swapping the
+    appropriate ``.data``, ``.names``, ``.units``, and ``.axes``.
+
+    Parameters
+    ----------
+    dat : Data
+    ax1, ax2 : int
+        the indices of the axes to swap
+
+    Returns
+    -------
+    dat : Data
+        a copy of ``dat`` with the appropriate axes swapped.
+
+    Examples
+    --------
+    >>> dat.names
+    ['time', 'channels']
+    >>> dat = swapaxes(dat, 0, 1)
+    >>> dat.names
+    ['channels', 'time']
+
+    See Also
+    --------
+    numpy.swapaxes
+
+    """
+    data = dat.data.swapaxes(ax1, ax2)
+    axes = dat.axes[:]
+    axes[ax1], axes[ax2] = axes[ax2], axes[ax1]
+    units = dat.units[:]
+    units[ax1], units[ax2] = units[ax2], units[ax1]
+    names = dat.names[:]
+    names[ax1], names[ax2] = names[ax2], names[ax1]
+    return dat.copy(data=data, axes=axes, units=units, names=names)
+
+
+def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
     """Select channels from data.
 
     The matching is case-insensitive and locale-aware (as in
@@ -162,9 +226,8 @@ def select_channels(cnt, regexp_list, invert=False):
 
     Parameters
     ----------
-    cnt : Continuous data
-
-    regexp_list : Array of regular expressions
+    dat : Data
+    regexp_list : list of regular expressions
         The regular expressions provided, are used directly by Python's
         :mod:`re` module, so all regular expressions which are understood
         by this module are allowed.
@@ -172,31 +235,32 @@ def select_channels(cnt, regexp_list, invert=False):
         Internally the :func:`re.match` method is used, additionally to
         check for a match (which also matches substrings), it is also
         checked if the whole string matched the pattern.
-
-    invert : Boolean (default=False)
+    invert : Boolean, optional
         If True the selection is inverted. Instead of selecting specific
-        channels, you are removing the channels.
+        channels, you are removing the channels. (default: False)
+    chanaxis : int, optional
+        the index of the channel axis in ``dat`` (default: -1)
 
     Returns
     -------
-    cnt : Cnt
-        A copy of the continuous data with the channels, matched by the
-        list of regular expressions.
+    dat : Data
+        A copy of ``dat`` with the channels, matched by the list of
+        regular expressions.
 
     Examples
     --------
     Select all channels Matching 'af.*' or 'fc.*'
 
-    >>> cnt_new = select_channels(cnt, ['af.*', 'fc.*'])
+    >>> dat_new = select_channels(dat, ['af.*', 'fc.*'])
 
     Remove all channels Matching 'emg.*' or 'eog.*'
 
-    >>> cnt_new = select_channels(cnt, ['emg.*', 'eog.*'], invert=True)
+    >>> dat_new = select_channels(dat, ['emg.*', 'eog.*'], invert=True)
 
     Even if you only provide one Regular expression, it has to be in an
     array:
 
-    >>> cnt_new = select_channels(cnt, ['af.*'])
+    >>> dat_new = select_channels(dat, ['af.*'])
 
     See Also
     --------
@@ -206,8 +270,8 @@ def select_channels(cnt, regexp_list, invert=False):
 
     """
     # TODO: make it work with epos
-    chan_mask = np.array([False for i in range(len(cnt.channels))])
-    for c_idx, c in enumerate(cnt.channels):
+    chan_mask = np.array([False for i in range(len(dat.axes[chanaxis]))])
+    for c_idx, c in enumerate(dat.axes[chanaxis]):
         for regexp in regexp_list:
             m = re.match(regexp, c, re.IGNORECASE | re.LOCALE)
             if m and m.group() == c:
@@ -216,36 +280,38 @@ def select_channels(cnt, regexp_list, invert=False):
                 break
     if invert:
         chan_mask = ~chan_mask
-    data = cnt.data[:,chan_mask]
-    channels = cnt.channels[chan_mask]
-    return Cnt(data, cnt.fs, channels, cnt.markers)
+    data = dat.data.compress(chan_mask, chanaxis)
+    channels = dat.axes[chanaxis][chan_mask]
+    axes = dat.axes[:]
+    axes[chanaxis] = channels
+    return dat.copy(data=data, axes=axes)
 
 
-def remove_channels(cnt, regexp_list):
+def remove_channels(*args, **kwargs):
     """Remove channels from data.
 
-    This method just calls :func:`select_channels` with the ``invert``
-    parameter set to ``True``.
+    This method just calls :func:`select_channels` with the same
+    parameters and the ``invert`` parameter set to ``True``.
 
     Returns
     -------
-    cnt : Cnt
-        A copy of the cnt with the channels removed.
+    dat : Data
+        A copy of the dat with the channels removed.
 
     See Also
     --------
-
-    select_channels: Select Channels
+    select_channels : Select Channels
 
     """
-    return select_channels(cnt, regexp_list, invert=True)
+    return select_channels(*args, invert=True, **kwargs)
 
 
 def load_brain_vision_data(vhdr):
     """Load Brain Vision data from a file.
 
-    This methods loads the continuous EEG data, the channel names, sampling
-    frequency and the marker.
+    This methods loads the continuous EEG data, and returns a ``Data``
+    object of continuous data ``[time, channel]``, along with the
+    markers and the sampling frequency.
 
     Parameters
     ----------
@@ -254,8 +320,23 @@ def load_brain_vision_data(vhdr):
 
     Returns
     -------
-    cnt : Cnt
-        Continuous Data.
+    dat : Data
+        Continuous Data with the additional attributes ``.fs`` for the
+        sampling frequency and ``.marker`` for a list of markers. Each
+        marker is a tuple of ``(time in ms, marker)``.
+
+    Raises
+    ------
+    AssertionError : If one of the consistency checks fails
+
+    Examples
+    --------
+
+    >>> dat = load_brain_vision_data('path/to/vhdr')
+    >>> dat.fs
+    1000
+    >>> dat.data.shape
+    (54628, 61)
 
     """
     logger.debug('Loading Brain Vision Data Exchange Header File')
@@ -296,6 +377,10 @@ def load_brain_vision_data(vhdr):
     logger.debug('Loading EEG Data.')
     data = np.fromfile(data_f, np.int16)
     data = data.reshape(-1, n_channels)
+    n_samples = data.shape[0]
+    # duration in ms
+    duration = 1000 * n_samples / fs
+    time = np.linspace(0, duration, n_samples, endpoint=False)
     # load marker
     logger.debug('Loading Marker.')
     regexp = r'^Mk(?P<mrk_nr>[0-9]*)=.*,(?P<mrk_descr>.*),(?P<mrk_pos>[0-9]*),[0-9]*,[0-9]*$'
@@ -309,41 +394,52 @@ def load_brain_vision_data(vhdr):
             mrk_pos = match.group('mrk_pos')
             mrk_descr = match.group('mrk_descr')
             if len(mrk_descr) > 1:
-                mrk.append([int(mrk_pos), mrk_descr])
-    return Cnt(data, fs, channels, mrk)
+                # marker := [samplenr, marker]
+                #mrk.append([int(mrk_pos), mrk_descr])
+                # marker := [time in ms, marker]
+                mrk.append([time[int(mrk_pos)], mrk_descr])
+    dat = Data(data, [time, channels], ['time', 'channel'], ['ms', '#'])
+    dat.fs = fs
+    dat.markers = mrk
+    return dat
 
 
-def segment_cnt(cnt, marker_def, ival):
-    """Convert a continuous data object to an peoched one.
+def segment_dat(dat, marker_def, ival, timeaxis=-2):
+    """Convert a continuous data object to an epoched one.
 
     Given a continuous data object, a definition of classes, and an
     interval, this method looks for markers as defined in ``marker_def``
-    and slices the cnt according to the time interval given with
-    ``ival``.  The returned ``Epo`` object stores those slices and the
-    class each slice belongs to.
+    and slices the dat according to the time interval given with
+    ``ival`` along the ``timeaxis``. The returned ``dat`` object stores
+    those slices and the class each slice belongs to.
 
 
     Parameters
     ----------
-    cnt : Cnt
+    dat : Data
     marker_def : dict
         The keys are class names, the values are lists of markers
     ival : [int, int]
         The interval in milliseconds to cut around the markers. I.e. to
         get the interval starting with the marker plus the remaining
-        100ms define the interval like [0, 100].
-
-        To get 200ms before the marker until 100ms after the marker do:
-        ``[-200, 100]``
-
-        Only negative or positive values are possible (i.e. ``[-500,
-        -100]``)
+        100ms define the interval like [0, 100]. The start point is
+        included, the endpoint is not (like: ``[start, end)``).  To get
+        200ms before the marker until 100ms after the marker do:
+        ``[-200, 100]`` Only negative or positive values are possible
+        (i.e. ``[-500, -100]``)
+    timeaxis : int, optional
+        the axis along which the segmentation will take place
 
     Returns
     -------
-    epo : Epo
-        The resulting epoched data.
+    dat : Data
+        a copy of the resulting epoched data.
 
+    Raises
+    ------
+    AssertionError :
+        if ``dat`` has not ``.fs`` or ``.markers`` attribute or if
+        ``ival[0] > ival[1]``.
 
     Examples
     --------
@@ -353,39 +449,34 @@ def segment_cnt(cnt, marker_def, ival):
     ...      }
     >>> # Epoch the data -500ms and +700ms around the markers defined in
     >>> # md
-    >>> epo = segment_cnt(cnt, md, [-500, 700])
-
-    See Also
-    --------
-    Epo
+    >>> epo = segment_dat(cnt, md, [-500, 700])
 
     """
+    assert hasattr(dat, 'fs')
+    assert hasattr(dat, 'markers')
     assert ival[0] <= ival[1]
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
-    # create an marker array similar to .data
-    marker = ['' for i in range(cnt.t.shape[0])]
-    for pos, txt in cnt.markers:
-        marker[pos] = txt
-    marker = np.array(marker)
-    markers = []
-    for pos, m in cnt.markers:
-        t = cnt.t[int(pos)]
+    for t, m in dat.markers:
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
-                mask = np.logical_and(t+ival[0] <= cnt.t, cnt.t <= t+ival[1])
-                data.append(cnt.data[mask])
+                mask = (t+ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < t+ival[1])
+                d = dat.data.compress(mask, timeaxis)
+                d = np.expand_dims(d, axis=0)
+                data.append(d)
                 classes.append(class_idx)
-                mrk = []
-                for idx, val in enumerate(marker[mask]):
-                    if val != '':
-                        mrk.append([idx, val])
-                markers.append(mrk)
-    # convert the array of cnts into an (epo, time, channel) array
-    data = np.array(data)
-    epo = Epo(data, cnt.fs, cnt.channels, markers, classes, class_names, ival[0])
-    return epo
+    data = np.concatenate(data, axis=0)
+    axes = dat.axes[:]
+    time = np.linspace(ival[0], ival[1], (ival[1] - ival[0]) / 1000 * dat.fs, endpoint=False)
+    axes[timeaxis] = time
+    classes = np.array(classes)
+    axes.insert(0, classes)
+    names = dat.names[:]
+    names.insert(0, 'class')
+    units = dat.units[:]
+    units.insert(0, '#')
+    return dat.copy(data=data, axes=axes, names=names, units=units, class_names=class_names)
 
 
 def band_pass(cnt, low, high):
@@ -422,63 +513,75 @@ def band_pass(cnt, low, high):
     return Cnt(data, cnt.fs, cnt.channels, cnt.markers)
 
 
-def select_ival(epo, ival):
-    """Select interval from epoched data.
+def select_ival(dat, ival, timeaxis=-2):
+    """Select interval from data.
 
-    This method selects the time segment(s) defined by ival in a new Epo
-    instance.
+    This method selects the time segment(s) defined by ``ival``.
 
     Parameters
     ----------
-    epo : Epo
-    ival : (float, float)
-        Start and end in milliseconds. Start and End are included.
+    dat : Data
+    ival : list of two floats
+        Start and end in milliseconds. Start is included end is excluded
+        (like ``[stard, end)``]
+    timeaxis : int, optional
+        the axis along which the intervals are selected
 
     Returns
     -------
-    epo : Epo
+    dat : Data
+        a copy of ``dat`` with the selected time intervals.
 
     Raises
     ------
     AssertionError
-        if the given interval does not fit into ``epo.ival`` or
-        ``ival[0] > ival[1]``.
+        if the given interval does not fit into ``dat.axes[timeaxis]``
+        or ``ival[0] > ival[1]``.
 
     Examples
     --------
 
     Select the first 200ms of the epoched data:
 
-    >>> epo2 = select_ival(epo, [0, 200])
-    >>> print epo2.t[0], epo2.t[-1]
-    0.0 200.0
+    >>> dat.fs
+    100.
+    >>> dat2 = select_ival(dat, [0, 200])
+    >>> print dat2.t[0], dat2.t[-1]
+    0. 199.
 
     """
-    assert epo.t[0] <= ival[0] <= epo.t[-1]
-    assert epo.t[0] <= ival[1] <= epo.t[-1]
-    assert ival[0] <= ival[1]
-    mask = np.logical_and(ival[0] <= epo.t, epo.t <= ival[1])
-    data = epo.data[..., mask, :]
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, ival[0])
+    assert dat.axes[timeaxis][0] <= ival[0] <= ival[1]
+    mask = (ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < ival[1])
+    data = dat.data.compress(mask, timeaxis)
+    axes = dat.axes[:]
+    axes[timeaxis] = dat.axes[timeaxis].compress(mask)
+    return dat.copy(data=data, axes=axes)
 
 
-def select_epochs(epo, indices, invert=False):
-    """Select epochs from an Epo object.
+def select_epochs(dat, indices, invert=False, classaxis=0):
+    """Select epochs from an epoched data object.
 
     This method selects the epochs with the specified indices.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
+        epoched Data object with an ``.class_names`` attribute
     indices : array of ints
         The indices of the elements to select.
     invert : Boolean
         if true keep all elements except the ones defined by ``indices``.
+    classaxis : int, optional
+        the axis along which the epochs are selected
 
     Returns
     -------
-    epo : Epo
+    dat : Data
         a copy of the epoched data with only the selected epochs included.
+
+    Raises
+    ------
+    AssertionError : if ``dat`` has no ``.class_names`` attribute.
 
     See Also
     --------
@@ -487,77 +590,78 @@ def select_epochs(epo, indices, invert=False):
     Examples
     --------
 
-    Get the first three epochs. Note how the class '2', becomes the only
-    class and is thus compressed to '0'.
+    Get the first three epochs.
 
-    >>> epo.classes
+    >>> dat.classes
     [0, 0, 1, 2, 2]
-    >>> epo = select_epochs(epo, [0, 1, 2])
-    >>> epo.classes
+    >>> dat = select_epochs(dat, [0, 1, 2])
+    >>> dat.classes
     [0, 0, 1]
 
     Remove the fourth epoch
 
-    >>> epo.classes
+    >>> dat.classes
     [0, 0, 1, 2, 2]
-    >>> epo = select_epochs(epo, [3], invert=True)
-    >>> epo.classes
+    >>> dat = select_epochs(dat, [3], invert=True)
+    >>> dat.classes
     [0, 0, 1, 2]
 
     """
-    mask = np.array([False for i in range(epo.data.shape[0])])
+    assert hasattr(dat, 'class_names')
+    mask = np.array([False for i in range(dat.data.shape[classaxis])])
     for i in indices:
         mask[i] = True
     if invert:
         mask = ~mask
-    data = epo.data[mask]
-    classes = epo.classes[mask]
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, epo.class_names, epo.t[0])
+    data = dat.data.compress(mask, classaxis)
+    axes = dat.axes[:]
+    axes[classaxis] = dat.axes[classaxis].compress(mask)
+    return dat.copy(data=data, axes=axes)
 
 
-def remove_epochs(epo, indices):
-    """Remove epochs from an Epo object.
+def remove_epochs(*args, **kwargs):
+    """Remove epochs from an epoched Data object.
 
-    This Method just calls :meth:`select_epochs` with the ``inverse``
+    This method just calls :meth:`select_epochs` with the ``inverse``
     paramerter set to ``True``.
-
-    Parameters
-    ----------
-    epo : Epo
-    indices : array of ints
-        the indices of the elements to exclude
 
     Returns
     -------
-    epo : Epo
+    dat : Data
+        epoched Data object with the epochs removed
 
     See Also
     --------
     select_epochs
 
     """
-    return select_epochs(epo, indices, invert=True)
+    return select_epochs(*args, invert=True, **kwargs)
 
 
-def subsample(cnt, freq):
+def subsample(dat, freq, timeaxis=-2):
     """Subsample the data to ``freq`` Hz.
 
-    This method subsamples by taking every ``n`` th element starting
-    with the first one and ``n`` being ``cnt.fs / freq``. Please note
-    that ``freq`` must be a whole number divisor of ``cnt.fs``.
+    This method subsamples data along ``timeaxis`` by taking every ``n``
+    th element starting with the first one and ``n`` being ``dat.fs /
+    freq``. Please note that ``freq`` must be a whole number divisor of
+    ``dat.fs``.
 
     Note that this method does not low-pass filter the data before
     sub-sampling.
 
     Parameters
     ----------
-    cnt : Cnt
+    dat : Data
+        Data object with ``.fs`` attribute
     freq : float
         the target frequency in Hz
+    timeaxis : int, optional
+        the axis along which to subsample
 
     Returns
     -------
-    cnt : Cnt
+    dat : Data
+        copy of ``dat`` with subsampled frequency
 
     See Also
     --------
@@ -569,25 +673,30 @@ def subsample(cnt, freq):
     Load some EEG data with 1kHz, bandpass filter it and downsample it
     to 100Hz.
 
-    >>> cnt = load_brain_vision_data('some/path')
-    >>> cnt.fs
+    >>> dat = load_brain_vision_data('some/path')
+    >>> dat.fs
     1000.0
-    >>> cnt = band_pass(cnt, 8, 40)
-    >>> cnt = subsample(cnt, 100)
-    >>> cnt.fs
+    >>> dat = band_pass(dat, 8, 40)
+    >>> dat = subsample(dat, 100)
+    >>> dat.fs
     100.0
 
     Raises
     ------
-    AssertionError : if ``freq`` is not a whole number divisor of ``cnt.fs``
+    AssertionError : if ``freq`` is not a whole number divisor of ``dat.fs``
+    AssertionError : if ``dat`` has no ``.fs`` attribute
+    AssertionError : if ``dat.data.shape[timeaxis] != len(dat.axes[timexis])``
 
     """
-    assert cnt.fs % freq == 0
-    factor = int(cnt.fs / freq)
-    data = cnt.data[..., ::factor, :]
-    fs = cnt.fs / factor
-    markers = map(lambda x: [int(x[0] / factor), x[1]], cnt.markers)
-    return Cnt(data, fs, cnt.channels, markers)
+    assert hasattr(dat, 'fs')
+    assert dat.data.shape[timeaxis] == len(dat.axes[timeaxis])
+    assert dat.fs % freq == 0
+    factor = int(dat.fs / freq)
+    idxmask = np.arange(dat.data.shape[timeaxis], step=factor)
+    data = dat.data.take(idxmask, timeaxis)
+    axes = dat.axes[:]
+    axes[timeaxis] =  axes[timeaxis].take(idxmask)
+    return dat.copy(data=data, axes=axes, fs=freq)
 
 
 def spectrum(cnt):
@@ -743,147 +852,182 @@ def calculate_csp(class1, class2):
     return v, a, d
 
 
-def calculate_classwise_average(epo):
+def calculate_classwise_average(dat, classaxis=0):
     """Calculate the classwise average.
 
     This method calculates the average continuous per class for all
-    classes defined in the ``epo``. In other words, if you have two
+    classes defined in the ``dat``. In other words, if you have two
     different classes, with many continuous data per class, this method
     will calculate the average time course for each class and channel.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
+        an epoched Data object with a ``.class_names`` attribute.
+    classaxis : int, optional
+        the axis along which to calculate the average
 
     Returns
     -------
-    epo : Epo
-        An Epo object holding a continuous per class.
+    dat : Data
+        copy of ``dat`` a witht the ``classaxis`` dimension reduced to
+        the number of different classes.
+
+    Raises
+    ------
+    AssertionError : if the ``dat`` has no ``.class_names`` attribute.
 
     Examples
     --------
-
     Split existing continuous data into two classes and calculate the
-    average continuous for each class.
+    average for each class.
 
     >>> mrk_def = {'std': ['S %2i' % i for i in range(2, 7)],
     ...            'dev': ['S %2i' % i for i in range(12, 17)]
     ...           }
-    >>> epo = misc.segment_cnt(cnt, mrk_def, [0, 660])
+    >>> epo = misc.segment_dat(cnt, mrk_def, [0, 660])
     >>> avg_epo = calculate_classwise_average(epo)
     >>> plot(avg_epo.data[0])
     >>> plot(avg_epo.data[1])
 
     """
-    data = []
+    assert hasattr(dat, 'class_names')
     classes = []
-    classnames = []
-    for i, classname in enumerate(epo.class_names):
-        avg = np.average(epo.data[epo.classes == i], axis=0)
-        classes.append(i)
-        classnames.append(classname)
+    data = []
+    for i, classname in enumerate(dat.class_names):
+        avg = np.average(dat.data[dat.axes[classaxis] == i], axis=classaxis)
         data.append(avg)
-    classes = np.array(classes)
+        classes.append(i)
     data = np.array(data)
-    return Epo(data, epo.fs, epo.channels, epo.markers, classes, classnames, epo.t[0])
+    classes = np.array(classes)
+    axes = dat.axes[:]
+    axes[classaxis] = classes
+    return dat.copy(data=data, axes=axes)
 
 
-def correct_for_baseline(epo, ival):
+def correct_for_baseline(dat, ival, timeaxis=-2):
     """Subtract the baseline.
 
-    For each cnt-Element and channel in the given epo, this method
-    calculates the average value for the given interval and subtracts
-    this value from the channel data.
+    For each epoch and channel in the given dat, this method calculates
+    the average value for the given interval and subtracts this value
+    from the channel data within this epoch and channel.
+
+    This method generalizes to dats with more than 3 dimensions.
 
     Parameters
     ----------
-    epo : Epo
-    ival : (float, float)
-        the start and stop borders in milli seconds. ``ival`` must fit
-        into ``epo.ival`` and ``ival[0] <= ival[1]``
+    dat : Dat
+    ival : array of two floats
+        the start and stop borders in milli seconds. the left border is
+        included, the right border is not: ``[start, stop)``.
+        ``ival[0]`` must fit into ``dat.axes[timeaxis]`` and
+        ``ival[0] <= ival[1]``.
+    timeaxis : int, optional
+        the axis along which to correct for the baseline
 
     Returns
     -------
-    epo : Epo
-
+    dat : Dat
+        a copy of ``dat`` with the averages of the intervals subtracted.
 
     Examples
     --------
 
-    Remove the baselines for the interval ``[100, 0]``
+    Remove the baselines for the interval ``[100, 0)``
 
-    >>> epo = correct_for_baseline(epo, [-100, 0])
+    >>> dat = correct_for_baseline(dat, [-100, 0])
+
+    Notes
+    -----
+    The Algorithm calculates the average(s) along the ``timeaxis`` within
+    the given interval. The resulting array has one dimension less
+    than the original one (the elements on ``timeaxis`` where reduced).
+
+    The resulting avgarray is then subtracted from the original data. To
+    match the shape, a new axis is created on ``timeaxis`` of avgarray.
+    And the shapes are then matched via numpy's broadcasting.
 
     Raises
     ------
     AssertionError
-        If the left or right border of ``ival`` is outside of
-        ``epo.ival`` or if ``ival`` is malformed.
+        If the left border of ``ival`` is outside of
+        ``dat.axes[timeaxis]`` or if ``ival[1] < ival[0]``.
+
+    See Also
+    --------
+    numpy.average, numpy.expand_dims
 
     """
-    # check if ival fits into epo.ival
-    assert epo.t[0] <= ival[0] <= epo.t[-1]
-    assert epo.t[0] <= ival[1] <= epo.t[-1]
-    assert ival[0] <= ival[1]
-    # create an indexing mask ([true, true, false, ...])
-    mask = np.logical_and(ival[0] <= epo.t, epo.t <= ival[1])
-    # take all values from the epo except the ones not fitting the mask
+    # check if ival fits into dat.ival
+    # we can't make any assumptions about ival[1] and the last element
+    # of the timeaxis since ival[1] is expected to be bigger as the
+    # interval is not including the last element of ival[1]
+    assert dat.axes[timeaxis][0] <= ival[0] <= ival[1]
+    mask = (ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < ival[1])
+    # take all values from the dat except the ones not fitting the mask
     # and calculate the average along the sampling axis
-    averages = np.average(epo.data[:, mask, :], axis=1)
-    data = epo.data - averages[:, np.newaxis, :]
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.t[0])
+    averages = np.average(dat.data.compress(mask, timeaxis), axis=timeaxis)
+    data = dat.data - np.expand_dims(averages, timeaxis)
+    return dat.copy(data=data)
 
 
-def rectify_chanels(epo):
-    """Calculate all samplewise absolute values.
+def rectify_channels(dat):
+    """Calculate the absolute values in ``dat.data``.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
 
     Returns
     -------
-    epo : Epo
+    dat : Data
+        a copy of ``dat`` with all values absolute in ``.data``
 
     Examples
     --------
 
-    >>> print np.average(epo.data)
+    >>> print np.average(dat.data)
     0.391987338917
-    >>> epo = misc.rectify_chanels(epo)
-    >>> print np.average(epo.data)
+    >>> dat = rectify_channels(dat)
+    >>> print np.average(dat.data)
     22.40234266
 
     """
-    data = np.abs(epo.data)
-    return Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, epo.t[0])
+    return dat.copy(data=np.abs(dat.data))
 
 
-def jumping_means(epo, ivals):
+def jumping_means(dat, ivals, timeaxis=-2):
     """Calculate the jumping means.
 
     Parameters
     ----------
-    epo : Epo
+    dat : Data
     ivals : array of [float, float]
-        the intervals for which to calculate the means
+        the intervals for which to calculate the means. Start is
+        included end is not (like ``[start, end)``).
+    timeaxis : int, optional
+        the axis along which to calculate the jumping means
 
     Returns
     -------
+    dat : Data
+        copy of ``dat`` with the jumping means along the ``timeaxis``.
+        ``dat.name[timeaxis]`` and ``dat.axes[timeaxis]`` Are modified
+        too to reflect the intervals used for the data points.
 
     """
-    n_epos, n_samples, n_chans = epo.data.shape
-    n_ivals = len(ivals)
-    data = np.zeros((n_epos, n_ivals, n_chans))
+    means = []
+    time = []
     for i, [start, end] in enumerate(ivals):
-        mask = np.logical_and(start <= epo.t, epo.t <= end)
-        data[:, i, :] = np.mean(epo.data[:, mask, :], axis=1)
-    t = np.mean(ivals, axis=1)
-    # is this really an epo? what about:
-    # - fs
-    # - markers
-    # - init of t_start
-    epo = Epo(data, epo.fs, epo.channels, epo.markers, epo.classes, epo.class_names, 0)
-    epo.t = t
-    epo.markers = [[] for i in range(n_epos)]
-    return epo
+        mask = (start <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < end)
+        mean = np.mean(dat.data.compress(mask, timeaxis), axis=timeaxis)
+        mean = np.expand_dims(mean, timeaxis)
+        means.append(mean)
+        time.append('[%i, %i)' % (start, end))
+    means = np.concatenate(means, axis=timeaxis)
+    names = dat.names[:]
+    names[timeaxis] = 'time interval'
+    axes = dat.axes[:]
+    axes[timeaxis] = np.array(time)
+    return dat.copy(data=means, names=names, axes=axes)
+
