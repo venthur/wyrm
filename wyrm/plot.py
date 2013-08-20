@@ -34,30 +34,28 @@ def plot_scalp(v, channel):
         plt.annotate(i[0], i[1])
 
 
-def plot_channels(cnt, markers=True):
+def plot_channels(dat, chanaxis=-1, otheraxis=-2):
     """Plot all channels for a continuous.
 
     Parameters
     ----------
-    cnt : Cnt
+    dat : Data
 
     """
     ax = []
-    n_channels = len(cnt.channels)
-    for i, chan in enumerate(cnt.channels):
+    n_channels = dat.data.shape[chanaxis]
+    for i, chan in enumerate(dat.axes[chanaxis]):
         if i == 0:
             a = plt.subplot(10, n_channels / 10 + 1, i + 1)
         else:
             a = plt.subplot(10, n_channels / 10 + 1, i + 1, sharex=ax[0], sharey=ax[0])
         ax.append(a)
-        a.plot(cnt.t, cnt.data[:, i])
+        x, y =  dat.axes[otheraxis], dat.data.take([i], chanaxis)
+        a.plot(dat.axes[otheraxis], dat.data.take([i], chanaxis).squeeze())
         a.set_title(chan)
         plt.axvline(x=0)
         plt.axhline(y=0)
-        if markers:
-            for pos, txt in cnt.markers:
-                plt.axvline(x=cnt.t[pos])
-                plt.text(cnt.t[pos], -20, txt)
+
 
 def plot_spectrum(spectrum, freqs):
     plt.plot(freqs, spectrum, '.')
