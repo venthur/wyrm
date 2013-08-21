@@ -118,6 +118,9 @@ This is possible since ``a[:, ::2]`` is the same as
 ``a[slice(None), slice(None, None, 2)]`` and the fact that ``a[x, y]`` is just
 syntactic sugar for ``a[[x, y]]``.
 
+Sometimes it might be necessary to insert a new axis in order to make numpy's
+broadcasting work properly. For that use :func:`numpy.expand_dims`
+
 Testing
 ~~~~~~~
 
