@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from wyrm.misc import Data
-from wyrm.misc import rectify_channels
+from wyrm.types import Data
+from wyrm.processing import rectify_channels
 
 class TestRectifytChannels(unittest.TestCase):
 

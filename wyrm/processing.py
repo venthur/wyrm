@@ -1,21 +1,16 @@
 #!/usr/bin/env python
 
-"""Miscellaneous toolbox methods.
+"""Processing toolbox methods.
 
 This module currently contains all the processing methods.
-
-The contents of this module should move into various other modules once
-it is ready for prime.
 
 """
 
 
 from __future__ import division
 
-from os import path
 import logging
 import re
-import copy
 
 import numpy as np
 import scipy as sp
@@ -24,157 +19,6 @@ from scipy import signal
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
-
-class Data(object):
-    """Generic, self-describing data container.
-
-    This data structure is very generic on purpose. The goal here was to
-    provide something which can fit the various different known and yet
-    unknown requirements for BCI algorithms.
-
-    At the core of ``Data`` is its n-dimensional ``.data`` attribute
-    which holds the actual data. Along with the data, there is meta
-    information about each axis of the data, contained in ``.axes``,
-    ``.names``, and ``.units``.
-
-    Most toolbox methods rely on a *convention* how specific data should
-    be structured (i.e. they assume that the channels are always in the
-    last dimension). You don't have to follow this convention (or
-    sometimes it might not even be possible when trying out new things),
-    and all methods, provide an optional parameter to tell them on which
-    axis they should work on.
-
-    Continuous Data:
-        Continuous Data is usually EEG data and consists of a 2d array
-        ``[time, channel]``. Whenever you have continuous data, time and
-        channel should be the last two dimensions.
-
-    Epoched Data:
-        Epoched data can be seen as an array of (non-epoched) data. The
-        epoch should always be the first dimension. Most commonly used is
-        epoched continuous EEG data which looks like this: ``[class,
-        time, channel]``.
-
-    Feature Vector:
-        Similar to Epoched Data, with classes in the first dimension.
-
-    A :func:`__eq__` function is providet to test for equality of two
-    Data objects (via ``==``). This method only checks for the known
-    attributes and does not guaranty correct result if the Data object
-    contains custom attributes. It is mainly used in unittests.
-
-    Parameters
-    ----------
-    data : ndarray
-    axes : nlist of 1darrays
-    names : nlist of strings
-    units : nlist of strings
-
-    Attributes
-    ----------
-    data : ndarray
-        n-dimensional data array
-    axes : nlist of 1darrays
-        each element of corresponds to a dimension of ``.data`` (i.e.
-        the first one in ``.axes`` to the first dimension in ``.data``
-        and so on). The 1-dimensional arrays contain the description of
-        the data along the appropriate axis in ``.data``. For example if
-        ``.data`` contains Continuous Data, then ``.axes[0]`` should be
-        an array of timesteps and ``.axes[1]`` an array of channel names
-    names : nlist of strings
-        the human readable description of each axis, like 'time', or 'channel'
-    units : nlist of strings
-        the human readable description of the unit used for the data in
-        ``.axes``
-
-    """
-    def __init__(self, data, axes, names, units):
-        """Initialize a new ``Data`` object.
-
-        Upon initialization we check if ``axes``, ``names``, and
-        ``units`` have the same length and if their respective length
-        matches the shape of ``data``.
-
-        Raises
-        ------
-        AssertionError : if the lengths of the parameters are not
-            correct.
-
-        """
-        assert data.ndim == len(axes) == len(names) == len(units)
-        for i in range(data.ndim):
-            if data.shape[i] != len(axes[i]):
-                raise AssertionError("Axis '%s' (%i) not as long as corresponding axis in 'data' (%i)" % (names[i], len(axes[i]), data.shape[i]))
-        self.data = data
-        self.axes = [np.array(i) for i in axes]
-        self.names = names
-        self.units = units
-
-    def __eq__(self, other):
-        """Test for equality.
-
-        Don't trust this method it only checks for known attributes and
-        assumes equality if those are equal. This method is heavily used
-        in unittests.
-
-        Parameters
-        ----------
-        other : Data
-
-        Returns
-        -------
-        equal : Boolean
-            True if ``self`` and ``other`` are equal, False if not.
-
-        """
-        if (sorted(self.__dict__.keys()) == sorted(other.__dict__.keys()) and
-            np.array_equal(self.data, other.data) and
-            len(self.axes) == len(other.axes) and
-            all([self.axes[i].shape == other.axes[i].shape for i in range(len(self.axes))]) and
-            all([(self.axes[i] == other.axes[i]).all() for i in range(len(self.axes))]) and
-            self.names == other.names and
-            self.units == other.units
-           ):
-            return True
-        return False
-
-    def copy(self, **kwargs):
-        """Return a memory efficient deep copy of ``self``.
-
-        It first creates a shallow copy of ``self``, sets the attributes
-        in ``kwargs`` if necessary and returns a deep copy of the
-        resulting object.
-
-        Parameters
-        ----------
-        kwargs : dict, optional
-            if provided ``copy`` will try to overwrite the name, value
-            pairs after the shallow- and before the deep copy. If no
-            ``kwargs`` are provided, it will just return the deep copy.
-
-        Returns
-        -------
-        dat : Data
-            a deep copy of ``self``.
-
-        Examples
-        --------
-        >>> # perform an ordinary deep copy of dat
-        >>> dat2 = dat.copy()
-        >>> # perform a deep copy but overwrite .axes first
-        >>> dat.axes
-        ['time', 'channels']
-        >>> dat3 = dat.copy(axes=['foo'], ['bar'])
-        >>> dat3.axes
-        ['foo', 'bar']
-        >>> dat.axes
-        ['time', 'channel']
-
-        """
-        obj = copy.copy(self)
-        for name, value in kwargs.items():
-            setattr(obj, name, value)
-        return copy.deepcopy(obj)
 
 
 def swapaxes(dat, ax1, ax2):
@@ -304,104 +148,6 @@ def remove_channels(*args, **kwargs):
 
     """
     return select_channels(*args, invert=True, **kwargs)
-
-
-def load_brain_vision_data(vhdr):
-    """Load Brain Vision data from a file.
-
-    This methods loads the continuous EEG data, and returns a ``Data``
-    object of continuous data ``[time, channel]``, along with the
-    markers and the sampling frequency.
-
-    Parameters
-    ----------
-    vhdr : str
-        Path to a VHDR file
-
-    Returns
-    -------
-    dat : Data
-        Continuous Data with the additional attributes ``.fs`` for the
-        sampling frequency and ``.marker`` for a list of markers. Each
-        marker is a tuple of ``(time in ms, marker)``.
-
-    Raises
-    ------
-    AssertionError : If one of the consistency checks fails
-
-    Examples
-    --------
-
-    >>> dat = load_brain_vision_data('path/to/vhdr')
-    >>> dat.fs
-    1000
-    >>> dat.data.shape
-    (54628, 61)
-
-    """
-    logger.debug('Loading Brain Vision Data Exchange Header File')
-    with open(vhdr) as fh:
-        fdata = map(str.strip, fh.readlines())
-    fdata = filter(lambda x: not x.startswith(';'), fdata)
-    fdata = filter(lambda x: len(x) > 0, fdata)
-    # check for the correct file version:
-    assert fdata[0].endswith('1.0')
-    # read all data into a dict where the key is the stanza of the file
-    file_dict = dict()
-    for line in fdata[1:]:
-        if line.startswith('[') and line.endswith(']'):
-            current_stanza = line[1:-1]
-            file_dict[current_stanza] = []
-        else:
-            file_dict[current_stanza].append(line)
-    # translate known stanzas from simple list of strings to a dict
-    for stanza in 'Common Infos', 'Binary Infos', 'Channel Infos':
-        logger.debug(stanza)
-        file_dict[stanza] = {line.split('=', 1)[0]: line.split('=', 1)[1] for line in file_dict[stanza]}
-    # now file_dict contains the parsed data from the vhdr file
-    # load the rest
-    data_f = file_dict['Common Infos']['DataFile']
-    marker_f = file_dict['Common Infos']['MarkerFile']
-    data_f = path.sep.join([path.dirname(vhdr), data_f])
-    marker_f = path.sep.join([path.dirname(vhdr), marker_f])
-    n_channels = int(file_dict['Common Infos']['NumberOfChannels'])
-    sampling_interval_microseconds = float(file_dict['Common Infos']['SamplingInterval'])
-    fs = 1 / (sampling_interval_microseconds / 10**6)
-    channels = [file_dict['Channel Infos']['Ch%i' % (i + 1)] for i in range(n_channels)]
-    channels = map(lambda x: x.split(',')[0], channels)
-    # some assumptions about the data...
-    assert file_dict['Common Infos']['DataFormat'] == 'BINARY'
-    assert file_dict['Common Infos']['DataOrientation'] == 'MULTIPLEXED'
-    assert file_dict['Binary Infos']['BinaryFormat'] == 'INT_16'
-    # load EEG data
-    logger.debug('Loading EEG Data.')
-    data = np.fromfile(data_f, np.int16)
-    data = data.reshape(-1, n_channels)
-    n_samples = data.shape[0]
-    # duration in ms
-    duration = 1000 * n_samples / fs
-    time = np.linspace(0, duration, n_samples, endpoint=False)
-    # load marker
-    logger.debug('Loading Marker.')
-    regexp = r'^Mk(?P<mrk_nr>[0-9]*)=.*,(?P<mrk_descr>.*),(?P<mrk_pos>[0-9]*),[0-9]*,[0-9]*$'
-    mrk = []
-    with open(marker_f) as fh:
-        for line in fh:
-            line = line.strip()
-            match = re.match(regexp, line)
-            if match is None:
-                continue
-            mrk_pos = match.group('mrk_pos')
-            mrk_descr = match.group('mrk_descr')
-            if len(mrk_descr) > 1:
-                # marker := [samplenr, marker]
-                #mrk.append([int(mrk_pos), mrk_descr])
-                # marker := [time in ms, marker]
-                mrk.append([time[int(mrk_pos)], mrk_descr])
-    dat = Data(data, [time, channels], ['time', 'channel'], ['ms', '#'])
-    dat.fs = fs
-    dat.markers = mrk
-    return dat
 
 
 def segment_dat(dat, marker_def, ival, timeaxis=-2):

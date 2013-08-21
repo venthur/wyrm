@@ -3,9 +3,9 @@ import unittest
 
 import numpy as np
 
-from wyrm.misc import Data
-from wyrm.misc import segment_dat
-from wyrm.misc import swapaxes
+from wyrm.types import Data
+from wyrm.processing import segment_dat
+from wyrm.processing import swapaxes
 
 
 class TestSegmentDat(unittest.TestCase):

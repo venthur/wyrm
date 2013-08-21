@@ -11,7 +11,6 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   api/modules
 
 API Documentation
 -----------------
@@ -19,9 +18,10 @@ API Documentation
 .. autosummary::
    :toctree: api
 
-   wyrm.misc
+   wyrm.processing
    wyrm.plot
-
+   wyrm.types
+   wyrm.io
 
 Indices and tables
 ==================

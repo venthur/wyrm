@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from wyrm.misc import Data
-from wyrm.misc import calculate_classwise_average
+from wyrm.types import Data
+from wyrm.processing import calculate_classwise_average
 
 
 class TestCalculateClasswiseAverage(unittest.TestCase):

@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from wyrm.misc import Data
-from wyrm.misc import swapaxes
+from wyrm.types import Data
+from wyrm.processing import swapaxes
 
 class TestSwapaxes(unittest.TestCase):
 

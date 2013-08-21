@@ -5,9 +5,9 @@ import unittest
 import numpy as np
 from scipy.fftpack import rfft, rfftfreq
 
-from wyrm.misc import Data
-from wyrm.misc import band_pass
-from wyrm.misc import swapaxes
+from wyrm.types import Data
+from wyrm.processing import band_pass
+from wyrm.processing import swapaxes
 
 class TestBandpass(unittest.TestCase):
 

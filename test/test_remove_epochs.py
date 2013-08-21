@@ -5,9 +5,9 @@ import unittest
 
 import numpy as np
 
-from wyrm.misc import Data
-from wyrm.misc import remove_epochs
-from wyrm.misc import swapaxes
+from wyrm.types import Data
+from wyrm.processing import remove_epochs
+from wyrm.processing import swapaxes
 
 
 class TestRemoveEpochs(unittest.TestCase):
