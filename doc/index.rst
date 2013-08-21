@@ -11,9 +11,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   conventions
+   writing_toolbox_methods
 
 API Documentation
------------------
+=================
+
+Wyrm's methods are grouped into several modules:
 
 .. autosummary::
    :toctree: api
