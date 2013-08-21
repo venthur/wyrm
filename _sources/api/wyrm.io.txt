@@ -1,0 +1,28 @@
+wyrm.io
+=======
+
+.. automodule:: wyrm.io
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      load_brain_vision_data
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Data
+   
+   
+
+   
+   
+   

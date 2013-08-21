@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wyrm.io &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wyrm.io</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Input/Output methods.</span>
+
+<span class="sd">This module provides methods for loading and saving data into various</span>
+<span class="sd">formats.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">wyrm.types</span> <span class="kn">import</span> <span class="n">Data</span>
+
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<span class="k">def</span> <span class="nf">load_brain_vision_data</span><span class="p">(</span><span class="n">vhdr</span><span class="p">):</span>
+<div class="viewcode-block" id="load_brain_vision_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_brain_vision_data">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load Brain Vision data from a file.</span>
+
+<span class="sd">    This methods loads the continuous EEG data, and returns a ``Data``</span>
+<span class="sd">    object of continuous data ``[time, channel]``, along with the</span>
+<span class="sd">    markers and the sampling frequency. The EEG data is returned in</span>
+<span class="sd">    micro Volt.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vhdr : str</span>
+<span class="sd">        Path to a VHDR file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        Continuous Data with the additional attributes ``.fs`` for the</span>
+<span class="sd">        sampling frequency and ``.marker`` for a list of markers. Each</span>
+<span class="sd">        marker is a tuple of ``(time in ms, marker)``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError : If one of the consistency checks fails</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; dat = load_brain_vision_data(&#39;path/to/vhdr&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; dat.fs</span>
+<span class="sd">    1000</span>
+<span class="sd">    &gt;&gt;&gt; dat.data.shape</span>
+<span class="sd">    (54628, 61)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Loading Brain Vision Data Exchange Header File&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="n">fdata</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">fh</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">fdata</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;;&#39;</span><span class="p">),</span> <span class="n">fdata</span><span class="p">)</span>
+    <span class="n">fdata</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fdata</span><span class="p">)</span>
+    <span class="c"># check for the correct file version:</span>
+    <span class="k">assert</span> <span class="n">fdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;1.0&#39;</span><span class="p">)</span>
+    <span class="c"># read all data into a dict where the key is the stanza of the file</span>
+    <span class="n">file_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;]&#39;</span><span class="p">):</span>
+            <span class="n">current_stanza</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">file_dict</span><span class="p">[</span><span class="n">current_stanza</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_dict</span><span class="p">[</span><span class="n">current_stanza</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="c"># translate known stanzas from simple list of strings to a dict</span>
+    <span class="k">for</span> <span class="n">stanza</span> <span class="ow">in</span> <span class="s">&#39;Common Infos&#39;</span><span class="p">,</span> <span class="s">&#39;Binary Infos&#39;</span><span class="p">,</span> <span class="s">&#39;Channel Infos&#39;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">stanza</span><span class="p">)</span>
+        <span class="n">file_dict</span><span class="p">[</span><span class="n">stanza</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_dict</span><span class="p">[</span><span class="n">stanza</span><span class="p">]}</span>
+    <span class="c"># now file_dict contains the parsed data from the vhdr file</span>
+    <span class="c"># load the rest</span>
+    <span class="n">data_f</span> <span class="o">=</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;DataFile&#39;</span><span class="p">]</span>
+    <span class="n">marker_f</span> <span class="o">=</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;MarkerFile&#39;</span><span class="p">]</span>
+    <span class="n">data_f</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">vhdr</span><span class="p">),</span> <span class="n">data_f</span><span class="p">])</span>
+    <span class="n">marker_f</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">vhdr</span><span class="p">),</span> <span class="n">marker_f</span><span class="p">])</span>
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;NumberOfChannels&#39;</span><span class="p">])</span>
+    <span class="n">sampling_interval_microseconds</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;SamplingInterval&#39;</span><span class="p">])</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">sampling_interval_microseconds</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Channel Infos&#39;</span><span class="p">][</span><span class="s">&#39;Ch</span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)]</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">channels</span><span class="p">)</span>
+    <span class="n">resolutions</span> <span class="o">=</span> <span class="p">[</span><span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Channel Infos&#39;</span><span class="p">][</span><span class="s">&#39;Ch</span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)]</span>
+    <span class="n">resolutions</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">resolutions</span><span class="p">)</span>
+    <span class="c"># assert all channels have the same resolution of 0.1</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">i</span> <span class="o">==</span> <span class="mf">0.1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">resolutions</span><span class="p">])</span>
+    <span class="c"># some assumptions about the data...</span>
+    <span class="k">assert</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;DataFormat&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;BINARY&#39;</span>
+    <span class="k">assert</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Common Infos&#39;</span><span class="p">][</span><span class="s">&#39;DataOrientation&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;MULTIPLEXED&#39;</span>
+    <span class="k">assert</span> <span class="n">file_dict</span><span class="p">[</span><span class="s">&#39;Binary Infos&#39;</span><span class="p">][</span><span class="s">&#39;BinaryFormat&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;INT_16&#39;</span>
+    <span class="c"># load EEG data</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Loading EEG Data.&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">data_f</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">*=</span> <span class="n">resolutions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c"># duration in ms</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">n_samples</span> <span class="o">/</span> <span class="n">fs</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c"># load marker</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Loading Marker.&#39;</span><span class="p">)</span>
+    <span class="n">regexp</span> <span class="o">=</span> <span class="s">r&#39;^Mk(?P&lt;mrk_nr&gt;[0-9]*)=.*,(?P&lt;mrk_descr&gt;.*),(?P&lt;mrk_pos&gt;[0-9]*),[0-9]*,[0-9]*$&#39;</span>
+    <span class="n">mrk</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">marker_f</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">mrk_pos</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;mrk_pos&#39;</span><span class="p">)</span>
+            <span class="n">mrk_descr</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;mrk_descr&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mrk_descr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c"># marker := [samplenr, marker]</span>
+                <span class="c">#mrk.append([int(mrk_pos), mrk_descr])</span>
+                <span class="c"># marker := [time in ms, marker]</span>
+                <span class="n">mrk</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">time</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">mrk_pos</span><span class="p">)],</span> <span class="n">mrk_descr</span><span class="p">])</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="n">time</span><span class="p">,</span> <span class="n">channels</span><span class="p">],</span> <span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;channel&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s">&#39;ms&#39;</span><span class="p">,</span> <span class="s">&#39;#&#39;</span><span class="p">])</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">mrk</span>
+    <span class="k">return</span> <span class="n">dat</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

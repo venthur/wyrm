@@ -1,10 +1,18 @@
 wyrm Package
 ============
 
-:mod:`misc` Module
-------------------
+:mod:`wyrm` Package
+-------------------
 
-.. automodule:: wyrm.misc
+.. automodule:: wyrm.__init__
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`io` Module
+----------------
+
+.. automodule:: wyrm.io
     :members:
     :undoc-members:
     :show-inheritance:
@@ -17,10 +25,26 @@ wyrm Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`processing` Module
+------------------------
+
+.. automodule:: wyrm.processing
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`tentensystem` Module
 --------------------------
 
 .. automodule:: wyrm.tentensystem
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`types` Module
+-------------------
+
+.. automodule:: wyrm.types
     :members:
     :undoc-members:
     :show-inheritance:

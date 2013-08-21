@@ -1,0 +1,22 @@
+wyrm.types
+==========
+
+.. automodule:: wyrm.types
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Data
+   
+   
+
+   
+   
+   

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>wyrm.plot &mdash; Wyrm alpha documentation</title>
+    <title>wyrm.io &mdash; Wyrm alpha documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,8 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
     <link rel="top" title="Wyrm alpha documentation" href="../index.html" />
-    <link rel="next" title="wyrm.types" href="wyrm.types.html" />
-    <link rel="prev" title="wyrm.processing" href="wyrm.processing.html" /> 
+    <link rel="prev" title="wyrm.types" href="wyrm.types.html" /> 
   </head>
   <body>
     <div class="related">
@@ -43,9 +42,6 @@
              >modules</a> |</li>
         <li class="right" >
           <a href="wyrm.types.html" title="wyrm.types"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="wyrm.processing.html" title="wyrm.processing"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
       </ul>
@@ -56,10 +52,11 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-wyrm.plot">
-<span id="wyrm-plot"></span><h1>wyrm.plot<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h1>
-<p>Plotting methods.</p>
-<p>This module contains various plotting methods.</p>
+  <div class="section" id="module-wyrm.io">
+<span id="wyrm-io"></span><h1>wyrm.io<a class="headerlink" href="#module-wyrm.io" title="Permalink to this headline">¶</a></h1>
+<p>Input/Output methods.</p>
+<p>This module provides methods for loading and saving data into various
+formats.</p>
 <p class="rubric">Functions</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -67,23 +64,20 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.calculate_stereographic_projection" title="wyrm.plot.calculate_stereographic_projection"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_stereographic_projection</span></tt></a>(p)</td>
-<td>Calculate the stereographic projection.</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.io.load_brain_vision_data" title="wyrm.io.load_brain_vision_data"><tt class="xref py py-obj docutils literal"><span class="pre">load_brain_vision_data</span></tt></a>(vhdr)</td>
+<td>Load Brain Vision data from a file.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.interpolate_2d" title="wyrm.plot.interpolate_2d"><tt class="xref py py-obj docutils literal"><span class="pre">interpolate_2d</span></tt></a>(x,&nbsp;y,&nbsp;z)</td>
-<td>Interpolate missing points on a plane.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_channels" title="wyrm.plot.plot_channels"><tt class="xref py py-obj docutils literal"><span class="pre">plot_channels</span></tt></a>(dat[,&nbsp;chanaxis,&nbsp;otheraxis])</td>
-<td>Plot all channels for a continuous.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_scalp" title="wyrm.plot.plot_scalp"><tt class="xref py py-obj docutils literal"><span class="pre">plot_scalp</span></tt></a>(v,&nbsp;channel)</td>
-<td>Plot the values v for channel <tt class="docutils literal"><span class="pre">channel</span></tt> on a scalp.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_spectrogram" title="wyrm.plot.plot_spectrogram"><tt class="xref py py-obj docutils literal"><span class="pre">plot_spectrogram</span></tt></a>(spectrogram,&nbsp;freqs)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_spectrum" title="wyrm.plot.plot_spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">plot_spectrum</span></tt></a>(spectrum,&nbsp;freqs)</td>
-<td></td>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">Data</span></tt>(data,&nbsp;axes,&nbsp;names,&nbsp;units)</td>
+<td>Generic, self-describing data container.</td>
 </tr>
 </tbody>
 </table>
@@ -96,14 +90,11 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="wyrm.processing.html"
-                        title="previous chapter">wyrm.processing</a></p>
-  <h4>Next topic</h4>
   <p class="topless"><a href="wyrm.types.html"
-                        title="next chapter">wyrm.types</a></p>
+                        title="previous chapter">wyrm.types</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../_sources/api/wyrm.plot.txt"
+    <li><a href="../_sources/api/wyrm.io.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -137,9 +128,6 @@
              >modules</a> |</li>
         <li class="right" >
           <a href="wyrm.types.html" title="wyrm.types"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="wyrm.processing.html" title="wyrm.processing"
              >previous</a> |</li>
         <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
       </ul>

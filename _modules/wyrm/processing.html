@@ -1,0 +1,880 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wyrm.processing &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wyrm.processing</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;Processing toolbox methods.</span>
+
+<span class="sd">This module currently contains all the processing methods.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="kn">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="swapaxes"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.swapaxes">[docs]</a><span class="k">def</span> <span class="nf">swapaxes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Swap axes of a Data object.</span>
+
+<span class="sd">    This method swaps two axes of a Data object by swapping the</span>
+<span class="sd">    appropriate ``.data``, ``.names``, ``.units``, and ``.axes``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">    ax1, ax2 : int</span>
+<span class="sd">        the indices of the axes to swap</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        a copy of ``dat`` with the appropriate axes swapped.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; dat.names</span>
+<span class="sd">    [&#39;time&#39;, &#39;channels&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; dat = swapaxes(dat, 0, 1)</span>
+<span class="sd">    &gt;&gt;&gt; dat.names</span>
+<span class="sd">    [&#39;channels&#39;, &#39;time&#39;]</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    numpy.swapaxes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">ax1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="n">ax2</span><span class="p">]</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">ax2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="n">ax1</span><span class="p">]</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">units</span><span class="p">[:]</span>
+    <span class="n">units</span><span class="p">[</span><span class="n">ax1</span><span class="p">],</span> <span class="n">units</span><span class="p">[</span><span class="n">ax2</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span><span class="p">[</span><span class="n">ax2</span><span class="p">],</span> <span class="n">units</span><span class="p">[</span><span class="n">ax1</span><span class="p">]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[:]</span>
+    <span class="n">names</span><span class="p">[</span><span class="n">ax1</span><span class="p">],</span> <span class="n">names</span><span class="p">[</span><span class="n">ax2</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">ax2</span><span class="p">],</span> <span class="n">names</span><span class="p">[</span><span class="n">ax1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="select_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.select_channels">[docs]</a><span class="k">def</span> <span class="nf">select_channels</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">regexp_list</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">chanaxis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select channels from data.</span>
+
+<span class="sd">    The matching is case-insensitive and locale-aware (as in</span>
+<span class="sd">    ``re.IGNORECASE`` and ``re.LOCALE``). The regular expression always</span>
+<span class="sd">    has to match the whole channel name string</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">    regexp_list : list of regular expressions</span>
+<span class="sd">        The regular expressions provided, are used directly by Python&#39;s</span>
+<span class="sd">        :mod:`re` module, so all regular expressions which are understood</span>
+<span class="sd">        by this module are allowed.</span>
+
+<span class="sd">        Internally the :func:`re.match` method is used, additionally to</span>
+<span class="sd">        check for a match (which also matches substrings), it is also</span>
+<span class="sd">        checked if the whole string matched the pattern.</span>
+<span class="sd">    invert : Boolean, optional</span>
+<span class="sd">        If True the selection is inverted. Instead of selecting specific</span>
+<span class="sd">        channels, you are removing the channels. (default: False)</span>
+<span class="sd">    chanaxis : int, optional</span>
+<span class="sd">        the index of the channel axis in ``dat`` (default: -1)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        A copy of ``dat`` with the channels, matched by the list of</span>
+<span class="sd">        regular expressions.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Select all channels Matching &#39;af.*&#39; or &#39;fc.*&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; dat_new = select_channels(dat, [&#39;af.*&#39;, &#39;fc.*&#39;])</span>
+
+<span class="sd">    Remove all channels Matching &#39;emg.*&#39; or &#39;eog.*&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; dat_new = select_channels(dat, [&#39;emg.*&#39;, &#39;eog.*&#39;], invert=True)</span>
+
+<span class="sd">    Even if you only provide one Regular expression, it has to be in an</span>
+<span class="sd">    array:</span>
+
+<span class="sd">    &gt;&gt;&gt; dat_new = select_channels(dat, [&#39;af.*&#39;])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    remove_channels : Remove Channels</span>
+<span class="sd">    re : Python&#39;s Regular Expression module for more information about</span>
+<span class="sd">        regular expressions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># TODO: make it work with epos</span>
+    <span class="n">chan_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">False</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">chanaxis</span><span class="p">]))])</span>
+    <span class="k">for</span> <span class="n">c_idx</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">chanaxis</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">regexp</span> <span class="ow">in</span> <span class="n">regexp_list</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">LOCALE</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span> <span class="o">==</span> <span class="n">c</span><span class="p">:</span>
+                <span class="n">chan_mask</span><span class="p">[</span><span class="n">c_idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="c"># no need to look any further for matches for this channel</span>
+                <span class="k">break</span>
+    <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+        <span class="n">chan_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">chan_mask</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">chan_mask</span><span class="p">,</span> <span class="n">chanaxis</span><span class="p">)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">chanaxis</span><span class="p">][</span><span class="n">chan_mask</span><span class="p">]</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">chanaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">channels</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="remove_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.remove_channels">[docs]</a><span class="k">def</span> <span class="nf">remove_channels</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove channels from data.</span>
+
+<span class="sd">    This method just calls :func:`select_channels` with the same</span>
+<span class="sd">    parameters and the ``invert`` parameter set to ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        A copy of the dat with the channels removed.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    select_channels : Select Channels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">select_channels</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="segment_dat"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.segment_dat">[docs]</a><span class="k">def</span> <span class="nf">segment_dat</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">marker_def</span><span class="p">,</span> <span class="n">ival</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a continuous data object to an epoched one.</span>
+
+<span class="sd">    Given a continuous data object, a definition of classes, and an</span>
+<span class="sd">    interval, this method looks for markers as defined in ``marker_def``</span>
+<span class="sd">    and slices the dat according to the time interval given with</span>
+<span class="sd">    ``ival`` along the ``timeaxis``. The returned ``dat`` object stores</span>
+<span class="sd">    those slices and the class each slice belongs to.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">    marker_def : dict</span>
+<span class="sd">        The keys are class names, the values are lists of markers</span>
+<span class="sd">    ival : [int, int]</span>
+<span class="sd">        The interval in milliseconds to cut around the markers. I.e. to</span>
+<span class="sd">        get the interval starting with the marker plus the remaining</span>
+<span class="sd">        100ms define the interval like [0, 100]. The start point is</span>
+<span class="sd">        included, the endpoint is not (like: ``[start, end)``).  To get</span>
+<span class="sd">        200ms before the marker until 100ms after the marker do:</span>
+<span class="sd">        ``[-200, 100]`` Only negative or positive values are possible</span>
+<span class="sd">        (i.e. ``[-500, -100]``)</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">        the axis along which the segmentation will take place</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        a copy of the resulting epoched data.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError :</span>
+<span class="sd">        if ``dat`` has not ``.fs`` or ``.markers`` attribute or if</span>
+<span class="sd">        ``ival[0] &gt; ival[1]``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Define the markers belonging to class 1 and 2</span>
+<span class="sd">    &gt;&gt;&gt; md = {&#39;class 1&#39;: [&#39;S1&#39;, &#39;S2&#39;],</span>
+<span class="sd">    ...       &#39;class 2&#39;: [&#39;S3&#39;, &#39;S4&#39;]</span>
+<span class="sd">    ...      }</span>
+<span class="sd">    &gt;&gt;&gt; # Epoch the data -500ms and +700ms around the markers defined in</span>
+<span class="sd">    &gt;&gt;&gt; # md</span>
+<span class="sd">    &gt;&gt;&gt; epo = segment_dat(cnt, md, [-500, 700])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;fs&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">class_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">marker_def</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">dat</span><span class="o">.</span><span class="n">markers</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">class_idx</span><span class="p">,</span> <span class="n">classname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">class_names</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">marker_def</span><span class="p">[</span><span class="n">classname</span><span class="p">]:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">t</span><span class="o">+</span><span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="n">classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_idx</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[:]</span>
+    <span class="n">names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">)</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">units</span><span class="p">[:]</span>
+    <span class="n">units</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;#&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span> <span class="n">class_names</span><span class="o">=</span><span class="n">class_names</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="band_pass"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.band_pass">[docs]</a><span class="k">def</span> <span class="nf">band_pass</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Band pass filter the data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Date</span>
+<span class="sd">    low, high : int</span>
+<span class="sd">        the low, and high borders of the desired frequency band</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">        the axis in ``dat.data`` to filter</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        the band pass filtered data</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># band pass filter the data</span>
+    <span class="n">fs_n</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">*</span> <span class="mf">0.5</span>
+    <span class="c">#logger.debug(&#39;Calculating butter order...&#39;)</span>
+    <span class="c">#butter_ord, f_butter = signal.buttord(ws=[(low - .1) / fs_n, (high + .1) / fs_n],</span>
+    <span class="c">#                                      wp=[low / fs_n, high / fs_n],</span>
+    <span class="c">#                                      gpass=0.1,</span>
+    <span class="c">#                                      gstop=3.0</span>
+    <span class="c">#                                      )</span>
+
+    <span class="c">#logger.debug(&quot;order: {ord} fbutter: {fbutter} low: {low} high: {high}&quot;.format(**{&#39;ord&#39;: butter_ord,</span>
+    <span class="c">#                                                      &#39;fbutter&#39;: f_butter,</span>
+    <span class="c">#                                                      &#39;low&#39;: low / fs_n,</span>
+    <span class="c">#                                                      &#39;high&#39;: high / fs_n}))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;Using fixed order for butterworth filter.&#39;</span><span class="p">)</span>
+    <span class="n">butter_ord</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">low</span> <span class="o">/</span> <span class="n">fs_n</span><span class="p">,</span> <span class="n">high</span> <span class="o">/</span> <span class="n">fs_n</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="select_ival"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.select_ival">[docs]</a><span class="k">def</span> <span class="nf">select_ival</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">ival</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select interval from data.</span>
+
+<span class="sd">    This method selects the time segment(s) defined by ``ival``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">    ival : list of two floats</span>
+<span class="sd">        Start and end in milliseconds. Start is included end is excluded</span>
+<span class="sd">        (like ``[stard, end)``]</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">        the axis along which the intervals are selected</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        a copy of ``dat`` with the selected time intervals.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError</span>
+<span class="sd">        if the given interval does not fit into ``dat.axes[timeaxis]``</span>
+<span class="sd">        or ``ival[0] &gt; ival[1]``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Select the first 200ms of the epoched data:</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.fs</span>
+<span class="sd">    100.</span>
+<span class="sd">    &gt;&gt;&gt; dat2 = select_ival(dat, [0, 200])</span>
+<span class="sd">    &gt;&gt;&gt; print dat2.t[0], dat2.t[-1]</span>
+<span class="sd">    0. 199.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="select_epochs"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.select_epochs">[docs]</a><span class="k">def</span> <span class="nf">select_epochs</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select epochs from an epoched data object.</span>
+
+<span class="sd">    This method selects the epochs with the specified indices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        epoched Data object with an ``.class_names`` attribute</span>
+<span class="sd">    indices : array of ints</span>
+<span class="sd">        The indices of the elements to select.</span>
+<span class="sd">    invert : Boolean</span>
+<span class="sd">        if true keep all elements except the ones defined by ``indices``.</span>
+<span class="sd">    classaxis : int, optional</span>
+<span class="sd">        the axis along which the epochs are selected</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        a copy of the epoched data with only the selected epochs included.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError : if ``dat`` has no ``.class_names`` attribute.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    remove_epochs</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Get the first three epochs.</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    [0, 0, 1, 2, 2]</span>
+<span class="sd">    &gt;&gt;&gt; dat = select_epochs(dat, [0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    [0, 0, 1]</span>
+
+<span class="sd">    Remove the fourth epoch</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    [0, 0, 1, 2, 2]</span>
+<span class="sd">    &gt;&gt;&gt; dat = select_epochs(dat, [3], invert=True)</span>
+<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    [0, 0, 1, 2]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">False</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">classaxis</span><span class="p">])])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mask</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">classaxis</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="remove_epochs"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.remove_epochs">[docs]</a><span class="k">def</span> <span class="nf">remove_epochs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove epochs from an epoched Data object.</span>
+
+<span class="sd">    This method just calls :meth:`select_epochs` with the ``inverse``</span>
+<span class="sd">    paramerter set to ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        epoched Data object with the epochs removed</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    select_epochs</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">select_epochs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="subsample"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.subsample">[docs]</a><span class="k">def</span> <span class="nf">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subsample the data to ``freq`` Hz.</span>
+
+<span class="sd">    This method subsamples data along ``timeaxis`` by taking every ``n``</span>
+<span class="sd">    th element starting with the first one and ``n`` being ``dat.fs /</span>
+<span class="sd">    freq``. Please note that ``freq`` must be a whole number divisor of</span>
+<span class="sd">    ``dat.fs``.</span>
+
+<span class="sd">    Note that this method does not low-pass filter the data before</span>
+<span class="sd">    sub-sampling.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        Data object with ``.fs`` attribute</span>
+<span class="sd">    freq : float</span>
+<span class="sd">        the target frequency in Hz</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">        the axis along which to subsample</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        copy of ``dat`` with subsampled frequency</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    band_pass</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Load some EEG data with 1kHz, bandpass filter it and downsample it</span>
+<span class="sd">    to 100Hz.</span>
+
+<span class="sd">    &gt;&gt;&gt; dat = load_brain_vision_data(&#39;some/path&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; dat.fs</span>
+<span class="sd">    1000.0</span>
+<span class="sd">    &gt;&gt;&gt; dat = band_pass(dat, 8, 40)</span>
+<span class="sd">    &gt;&gt;&gt; dat = subsample(dat, 100)</span>
+<span class="sd">    &gt;&gt;&gt; dat.fs</span>
+<span class="sd">    100.0</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError : if ``freq`` is not a whole number divisor of ``dat.fs``</span>
+<span class="sd">    AssertionError : if ``dat`` has no ``.fs`` attribute</span>
+<span class="sd">    AssertionError : if ``dat.data.shape[timeaxis] != len(dat.axes[timexis])``</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;fs&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="n">freq</span><span class="p">)</span>
+    <span class="n">idxmask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">factor</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">idxmask</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span>  <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">idxmask</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="spectrum"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.spectrum">[docs]</a><span class="k">def</span> <span class="nf">spectrum</span><span class="p">(</span><span class="n">cnt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the normalized spectrum of a continuous data object.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fourier : ndarray</span>
+<span class="sd">    freqs : ndarray</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    spectrogram, stft</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sp</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+    <span class="n">fourier</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="o">/</span><span class="n">cnt</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fourier</span><span class="p">,</span> <span class="n">freqs</span>
+
+</div>
+<div class="viewcode-block" id="spectrogram"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.spectrogram">[docs]</a><span class="k">def</span> <span class="nf">spectrogram</span><span class="p">(</span><span class="n">cnt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the spectrogram of a continuous data object.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    spectrum, stft</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">framesize</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c">#ms</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">fs</span> <span class="o">*</span> <span class="p">(</span><span class="n">framesize</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">))</span>
+    <span class="n">specgram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">stft</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="n">width</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">cnt</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">specgram</span><span class="p">,</span> <span class="n">freqs</span>
+
+</div>
+<div class="viewcode-block" id="stft"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.stft">[docs]</a><span class="k">def</span> <span class="nf">stft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Short time fourier transform of a real sequence.</span>
+
+<span class="sd">    This method performs a discrete short time Fourier transform. It</span>
+<span class="sd">    uses a sliding window to perform discrete Fourier transforms on the</span>
+<span class="sd">    data in the Window. The results are returned in an array.</span>
+
+<span class="sd">    This method uses a Hanning window on the data in the window before</span>
+<span class="sd">    calculating the Fourier transform.</span>
+
+<span class="sd">    The sliding windows are overlapping by ``width / 2``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : ndarray</span>
+<span class="sd">    width: int</span>
+<span class="sd">        the width of the sliding window in samples</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fourier : 2d complex array</span>
+<span class="sd">        the dimensions are time, frequency; the frequencies are evenly</span>
+<span class="sd">        binned from 0 to f_nyquist</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    spectrum, spectrogram, scipy.hanning, scipy.fftpack.rfft</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sp</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">width</span><span class="p">]</span> <span class="o">*</span> <span class="n">window</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">width</span><span class="p">,</span> <span class="n">width</span><span class="o">//</span><span class="mi">2</span><span class="p">)])</span>
+    <span class="n">fourier</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">width</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fourier</span>
+
+</div>
+<div class="viewcode-block" id="calculate_csp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.calculate_csp">[docs]</a><span class="k">def</span> <span class="nf">calculate_csp</span><span class="p">(</span><span class="n">class1</span><span class="p">,</span> <span class="n">class2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the Common Spatial Pattern (CSP) for two classes.</span>
+
+<span class="sd">    You should use the columns of the patterns and filters.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate the CSP for two classes::</span>
+
+<span class="sd">    &gt;&gt;&gt; w, a, d = calculate_csp(c1, c2)</span>
+
+<span class="sd">    Take the first two and the last two columns of the sorted filter::</span>
+
+<span class="sd">    &gt;&gt;&gt; w = w[:, (0, 1, -2, -1)]</span>
+
+<span class="sd">    Apply the new filter to your data d of the form (time, channels)::</span>
+
+<span class="sd">    &gt;&gt;&gt; filtered = np.dot(d, w)</span>
+
+<span class="sd">    You&#39;ll probably want to get the log-variance along the time axis::</span>
+
+<span class="sd">    &gt;&gt;&gt; filtered = np.log(np.var(filtered, 0))</span>
+
+<span class="sd">    This should result in four numbers (one for each channel).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    class1</span>
+<span class="sd">        A matrix of the form (trials, time, channels) representing class 1.</span>
+<span class="sd">    class2</span>
+<span class="sd">        A matrix of the form (trials, time, channels) representing the second</span>
+<span class="sd">        class.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    v : 2d array</span>
+<span class="sd">        the sorted spacial filters</span>
+<span class="sd">    a : 2d array</span>
+<span class="sd">        the sorted spacial patterns. Column i of a represents the</span>
+<span class="sd">        pattern of the filter in column i of v.</span>
+<span class="sd">    d : 1d array</span>
+<span class="sd">        the variances of the components</span>
+
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://en.wikipedia.org/wiki/Common_spatial_pattern</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># sven&#39;s super simple matlab code</span>
+    <span class="c"># function [W, A, lambda] = my_csp(X1, X2)</span>
+    <span class="c">#     % compute covariance matrices of the two classes</span>
+    <span class="c">#     C1 = compute_Covariance_Matrix(X1);</span>
+    <span class="c">#     C2 = compute_Covariance_Matrix(X2);</span>
+    <span class="c">#     % solution of CSP objective via generalized eigenvalue problem</span>
+    <span class="c">#     [W, D] = eig(C1-C2, C1+C2);</span>
+    <span class="c">#     % make sure the eigenvalues and eigenvectors are sorted correctly</span>
+    <span class="c">#     [lambda, sort_idx] = sort(diag(D), &#39;descend&#39;);</span>
+    <span class="c">#     W = W(:,sort_idx);</span>
+    <span class="c">#     A = inv(W)&#39;;</span>
+
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="n">class1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c"># we need a matrix of the form (observations, channels) so we stack trials</span>
+    <span class="c"># and time per channel together</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">class1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">class2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+    <span class="c"># compute covariance matrices of the two classes</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x2</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="c"># solution of csp objective via generalized eigenvalue problem</span>
+    <span class="c"># in matlab the signature is v, d = eig(a, b)</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">c1</span><span class="o">-</span><span class="n">c2</span><span class="p">,</span> <span class="n">c1</span><span class="o">+</span><span class="n">c2</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">real</span>
+    <span class="c"># make sure the eigenvalues and -vectors are correctly sorted</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="c"># reverse</span>
+    <span class="n">indx</span> <span class="o">=</span> <span class="n">indx</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indx</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span>
+
+</div>
+<div class="viewcode-block" id="calculate_classwise_average"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.calculate_classwise_average">[docs]</a><span class="k">def</span> <span class="nf">calculate_classwise_average</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the classwise average.</span>
+
+<span class="sd">    This method calculates the average continuous per class for all</span>
+<span class="sd">    classes defined in the ``dat``. In other words, if you have two</span>
+<span class="sd">    different classes, with many continuous data per class, this method</span>
+<span class="sd">    will calculate the average time course for each class and channel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        an epoched Data object with a ``.class_names`` attribute.</span>
+<span class="sd">    classaxis : int, optional</span>
+<span class="sd">        the axis along which to calculate the average</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        copy of ``dat`` a witht the ``classaxis`` dimension reduced to</span>
+<span class="sd">        the number of different classes.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError : if the ``dat`` has no ``.class_names`` attribute.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Split existing continuous data into two classes and calculate the</span>
+<span class="sd">    average for each class.</span>
+
+<span class="sd">    &gt;&gt;&gt; mrk_def = {&#39;std&#39;: [&#39;S %2i&#39; % i for i in range(2, 7)],</span>
+<span class="sd">    ...            &#39;dev&#39;: [&#39;S %2i&#39; % i for i in range(12, 17)]</span>
+<span class="sd">    ...           }</span>
+<span class="sd">    &gt;&gt;&gt; epo = misc.segment_dat(cnt, mrk_def, [0, 660])</span>
+<span class="sd">    &gt;&gt;&gt; avg_epo = calculate_classwise_average(epo)</span>
+<span class="sd">    &gt;&gt;&gt; plot(avg_epo.data[0])</span>
+<span class="sd">    &gt;&gt;&gt; plot(avg_epo.data[1])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">)</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">classname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">class_names</span><span class="p">):</span>
+        <span class="n">avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avg</span><span class="p">)</span>
+        <span class="n">classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">classes</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="correct_for_baseline"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.correct_for_baseline">[docs]</a><span class="k">def</span> <span class="nf">correct_for_baseline</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">ival</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subtract the baseline.</span>
+
+<span class="sd">    For each epoch and channel in the given dat, this method calculates</span>
+<span class="sd">    the average value for the given interval and subtracts this value</span>
+<span class="sd">    from the channel data within this epoch and channel.</span>
+
+<span class="sd">    This method generalizes to dats with more than 3 dimensions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Dat</span>
+<span class="sd">    ival : array of two floats</span>
+<span class="sd">        the start and stop borders in milli seconds. the left border is</span>
+<span class="sd">        included, the right border is not: ``[start, stop)``.</span>
+<span class="sd">        ``ival[0]`` must fit into ``dat.axes[timeaxis]`` and</span>
+<span class="sd">        ``ival[0] &lt;= ival[1]``.</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">        the axis along which to correct for the baseline</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Dat</span>
+<span class="sd">        a copy of ``dat`` with the averages of the intervals subtracted.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Remove the baselines for the interval ``[100, 0)``</span>
+
+<span class="sd">    &gt;&gt;&gt; dat = correct_for_baseline(dat, [-100, 0])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Algorithm calculates the average(s) along the ``timeaxis`` within</span>
+<span class="sd">    the given interval. The resulting array has one dimension less</span>
+<span class="sd">    than the original one (the elements on ``timeaxis`` where reduced).</span>
+
+<span class="sd">    The resulting avgarray is then subtracted from the original data. To</span>
+<span class="sd">    match the shape, a new axis is created on ``timeaxis`` of avgarray.</span>
+<span class="sd">    And the shapes are then matched via numpy&#39;s broadcasting.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError</span>
+<span class="sd">        If the left border of ``ival`` is outside of</span>
+<span class="sd">        ``dat.axes[timeaxis]`` or if ``ival[1] &lt; ival[0]``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    numpy.average, numpy.expand_dims</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># check if ival fits into dat.ival</span>
+    <span class="c"># we can&#39;t make any assumptions about ival[1] and the last element</span>
+    <span class="c"># of the timeaxis since ival[1] is expected to be bigger as the</span>
+    <span class="c"># interval is not including the last element of ival[1]</span>
+    <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c"># take all values from the dat except the ones not fitting the mask</span>
+    <span class="c"># and calculate the average along the sampling axis</span>
+    <span class="n">averages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">averages</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="rectify_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.rectify_channels">[docs]</a><span class="k">def</span> <span class="nf">rectify_channels</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the absolute values in ``dat.data``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        a copy of ``dat`` with all values absolute in ``.data``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; print np.average(dat.data)</span>
+<span class="sd">    0.391987338917</span>
+<span class="sd">    &gt;&gt;&gt; dat = rectify_channels(dat)</span>
+<span class="sd">    &gt;&gt;&gt; print np.average(dat.data)</span>
+<span class="sd">    22.40234266</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="jumping_means"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.jumping_means">[docs]</a><span class="k">def</span> <span class="nf">jumping_means</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">ivals</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the jumping means.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">    ivals : array of [float, float]</span>
+<span class="sd">        the intervals for which to calculate the means. Start is</span>
+<span class="sd">        included end is not (like ``[start, end)``).</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">        the axis along which to calculate the jumping means</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        copy of ``dat`` with the jumping means along the ``timeaxis``.</span>
+<span class="sd">        ``dat.name[timeaxis]`` and ``dat.axes[timeaxis]`` Are modified</span>
+<span class="sd">        too to reflect the intervals used for the data points.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">means</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ivals</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
+        <span class="n">means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;[</span><span class="si">%i</span><span class="s">, </span><span class="si">%i</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+    <span class="n">means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">means</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[:]</span>
+    <span class="n">names</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;time interval&#39;</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">means</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

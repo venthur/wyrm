@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Conventions Used in This Toolbox &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="index.html" />
+    <link rel="next" title="Writing Toolbox Methods" href="writing_toolbox_methods.html" />
+    <link rel="prev" title="Welcome to Wyrm’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing_toolbox_methods.html" title="Writing Toolbox Methods"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Wyrm’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="conventions-used-in-this-toolbox">
+<h1>Conventions Used in This Toolbox<a class="headerlink" href="#conventions-used-in-this-toolbox" title="Permalink to this headline">¶</a></h1>
+<p>The idea is to make the regular use cases easy and the hard ones possible.</p>
+<div class="section" id="common-vocabulary">
+<h2>Common Vocabulary<a class="headerlink" href="#common-vocabulary" title="Permalink to this headline">¶</a></h2>
+<p>A common vocabulary is important when different parties talk about complicated
+concepts to make sure everyone fully understands what the other is talking
+about.</p>
+<div class="section" id="dimensions-and-axes">
+<h3>Dimensions and Axes<a class="headerlink" href="#dimensions-and-axes" title="Permalink to this headline">¶</a></h3>
+<p>Talking about dimensions in context of numpy arrays can be a bit confusing
+especially when coming from a mathematical background. We use the following
+convention: A point in the 3D Space <tt class="docutils literal"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></tt> is an array with one dimension
+of length 3. An array of <tt class="docutils literal"><span class="pre">n</span></tt> such points would be an array with two
+dimensions, the first axis (dimension) with the length of <tt class="docutils literal"><span class="pre">n</span></tt>, and the exond
+axis with the length of <tt class="docutils literal"><span class="pre">3</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([ 0,  1,  2,  3, ..., 17, 18, 19])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+<span class="go">1              # one dimension (or axis)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(20,)          # of lenght 20</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[ 0,  1,  2,  3,  4],</span>
+<span class="go">       [ 5,  6,  7,  8,  9],</span>
+<span class="go">       [10, 11, 12, 13, 14],</span>
+<span class="go">       [15, 16, 17, 18, 19]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+<span class="go">2              # two dimensions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4, 5)         # of length 4 and 5</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="data-structures">
+<h2>Data Structures<a class="headerlink" href="#data-structures" title="Permalink to this headline">¶</a></h2>
+<p>Wyrm uses one data structure <a class="reference internal" href="api/wyrm.html#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-class docutils literal"><span class="pre">wyrm.types.Data</span></tt></a> to wrap the different data
+during the processing. <cite>Data</cite> is very generic and thus flexible on purpose. It
+can contain all kinds of data and tries to stay out of the way. <cite>Data</cite> is also
+self-explaining in a sense that it does not only contain the raw data but also
+meta-data about the axes, like names and units and the values of the axes (for a
+complete overview on <cite>Data</cite> please refer to the documentation).</p>
+<p>Most of Wyrm&#8217;s toolbox methods are expecting a <tt class="docutils literal"><span class="pre">Data</span></tt> object as an argument.
+Since <tt class="docutils literal"><span class="pre">Data</span></tt> is very flexible and does not impose for example the order of the
+axes, it is important to abide a certain convention:</p>
+<dl class="glossary docutils">
+<dt id="term-continuous-data">Continuous Data</dt>
+<dd>Continuous Data is usually (but not limited to) raw EEG data. It has two
+axes: <tt class="docutils literal"><span class="pre">[time,</span> <span class="pre">channel]</span></tt>. Channel should always be the last axis, time
+the second last.</dd>
+<dt id="term-epoched-data">Epoched Data</dt>
+<dd><p class="first">Epoched Data is often Continuous Data split into several equally long
+chunks (epochs). Each epoch usually belongs to a class. The axes in this
+case are <tt class="docutils literal"><span class="pre">[class,</span> <span class="pre">time,</span> <span class="pre">channel]</span></tt>. Class should always be the first
+axis, time the second last and channel the last one. This is consistent
+with Continuos Data.</p>
+<p class="last">Epoched Data can also contain different data than (e.g. data in the
+frequency domain), but the class axis should always be the first.</p>
+</dd>
+<dt id="term-feature-vector">Feature Vector</dt>
+<dd>In the later steps of the data processing, one often deals no more with
+continuous data but with feature vectors. Feature Vectors are similar to
+Epoched data, since each vector usually belongs to a class. Thus the
+axes are: <tt class="docutils literal"><span class="pre">[class,</span> <span class="pre">fv]</span></tt>.</dd>
+</dl>
+<p>You are free to follow the convention or not. If you do, most methods will work
+out of the box &#8211; off course you still have to think if a certain method makes
+sense on the current object at hand.</p>
+<p>If you create non-conventional <tt class="docutils literal"><span class="pre">Data</span></tt> objects, the methods will still work (if
+they make sense), but you have to provide the methods an extra parameter, with
+the index of the axis (or axes).</p>
+</div>
+<div class="section" id="associating-samples-to-timestamps">
+<h2>Associating Samples to Timestamps<a class="headerlink" href="#associating-samples-to-timestamps" title="Permalink to this headline">¶</a></h2>
+<p>The time marks the time at the <em>beginning</em> of the sample.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>Time  [ms]  0    10   20   30 ...
+            |    |    |    |
+Sample [#]  [ 0 ][ 1 ][ 2 ][ 3 ]</pre>
+</div>
+<p>The interpretation is that sample 0 contains the data from <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">10)</span></tt>, sample 1
+contains <tt class="docutils literal"><span class="pre">[10,</span> <span class="pre">20)</span></tt>, and so on.</p>
+</div>
+<div class="section" id="intervals">
+<h2>Intervals<a class="headerlink" href="#intervals" title="Permalink to this headline">¶</a></h2>
+<p>Whenever you encounter a time interval with a start and stop value, the
+convention is <tt class="docutils literal"><span class="pre">[start,</span> <span class="pre">stop)</span></tt> (i.e. start is <em>included</em>, stop is <em>excluded</em>).</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>Time  [ms]  0    10   20   30 ...
+            |    |    |    |
+Sample [#]  [ 0 ][ 1 ][ 2 ][ 3 ]</pre>
+</div>
+<p>Interval (0, 30) returns the samples 0, 1, 2</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Conventions Used in This Toolbox</a><ul>
+<li><a class="reference internal" href="#common-vocabulary">Common Vocabulary</a><ul>
+<li><a class="reference internal" href="#dimensions-and-axes">Dimensions and Axes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-structures">Data Structures</a></li>
+<li><a class="reference internal" href="#associating-samples-to-timestamps">Associating Samples to Timestamps</a></li>
+<li><a class="reference internal" href="#intervals">Intervals</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Wyrm&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="writing_toolbox_methods.html"
+                        title="next chapter">Writing Toolbox Methods</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/conventions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing_toolbox_methods.html" title="Writing Toolbox Methods"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Wyrm’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

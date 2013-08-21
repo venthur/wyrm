@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wyrm.types &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wyrm.types</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Data type definitions.</span>
+
+<span class="sd">This module provides the basic data types for Wyrm.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Data</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.types.Data">[docs]</a>    <span class="sd">&quot;&quot;&quot;Generic, self-describing data container.</span>
+
+<span class="sd">    This data structure is very generic on purpose. The goal here was to</span>
+<span class="sd">    provide something which can fit the various different known and yet</span>
+<span class="sd">    unknown requirements for BCI algorithms.</span>
+
+<span class="sd">    At the core of ``Data`` is its n-dimensional ``.data`` attribute</span>
+<span class="sd">    which holds the actual data. Along with the data, there is meta</span>
+<span class="sd">    information about each axis of the data, contained in ``.axes``,</span>
+<span class="sd">    ``.names``, and ``.units``.</span>
+
+<span class="sd">    Most toolbox methods rely on a *convention* how specific data should</span>
+<span class="sd">    be structured (i.e. they assume that the channels are always in the</span>
+<span class="sd">    last dimension). You don&#39;t have to follow this convention (or</span>
+<span class="sd">    sometimes it might not even be possible when trying out new things),</span>
+<span class="sd">    and all methods, provide an optional parameter to tell them on which</span>
+<span class="sd">    axis they should work on.</span>
+
+<span class="sd">    Continuous Data:</span>
+<span class="sd">        Continuous Data is usually EEG data and consists of a 2d array</span>
+<span class="sd">        ``[time, channel]``. Whenever you have continuous data, time and</span>
+<span class="sd">        channel should be the last two dimensions.</span>
+
+<span class="sd">    Epoched Data:</span>
+<span class="sd">        Epoched data can be seen as an array of (non-epoched) data. The</span>
+<span class="sd">        epoch should always be the first dimension. Most commonly used is</span>
+<span class="sd">        epoched continuous EEG data which looks like this: ``[class,</span>
+<span class="sd">        time, channel]``.</span>
+
+<span class="sd">    Feature Vector:</span>
+<span class="sd">        Similar to Epoched Data, with classes in the first dimension.</span>
+
+<span class="sd">    A :func:`__eq__` function is providet to test for equality of two</span>
+<span class="sd">    Data objects (via ``==``). This method only checks for the known</span>
+<span class="sd">    attributes and does not guaranty correct result if the Data object</span>
+<span class="sd">    contains custom attributes. It is mainly used in unittests.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : ndarray</span>
+<span class="sd">    axes : nlist of 1darrays</span>
+<span class="sd">    names : nlist of strings</span>
+<span class="sd">    units : nlist of strings</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : ndarray</span>
+<span class="sd">        n-dimensional data array</span>
+<span class="sd">    axes : nlist of 1darrays</span>
+<span class="sd">        each element of corresponds to a dimension of ``.data`` (i.e.</span>
+<span class="sd">        the first one in ``.axes`` to the first dimension in ``.data``</span>
+<span class="sd">        and so on). The 1-dimensional arrays contain the description of</span>
+<span class="sd">        the data along the appropriate axis in ``.data``. For example if</span>
+<span class="sd">        ``.data`` contains Continuous Data, then ``.axes[0]`` should be</span>
+<span class="sd">        an array of timesteps and ``.axes[1]`` an array of channel names</span>
+<span class="sd">    names : nlist of strings</span>
+<span class="sd">        the human readable description of each axis, like &#39;time&#39;, or &#39;channel&#39;</span>
+<span class="sd">    units : nlist of strings</span>
+<span class="sd">        the human readable description of the unit used for the data in</span>
+<span class="sd">        ``.axes``</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a new ``Data`` object.</span>
+
+<span class="sd">        Upon initialization we check if ``axes``, ``names``, and</span>
+<span class="sd">        ``units`` have the same length and if their respective length</span>
+<span class="sd">        matches the shape of ``data``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError : if the lengths of the parameters are not</span>
+<span class="sd">            correct.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s">&quot;Axis &#39;</span><span class="si">%s</span><span class="s">&#39; (</span><span class="si">%i</span><span class="s">) not as long as corresponding axis in &#39;data&#39; (</span><span class="si">%i</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test for equality.</span>
+
+<span class="sd">        Don&#39;t trust this method it only checks for known attributes and</span>
+<span class="sd">        assumes equality if those are equal. This method is heavily used</span>
+<span class="sd">        in unittests.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : Data</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        equal : Boolean</span>
+<span class="sd">            True if ``self`` and ``other`` are equal, False if not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="nb">all</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">))])</span> <span class="ow">and</span>
+            <span class="nb">all</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">))])</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">names</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">units</span>
+           <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Data.copy"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.types.Data.copy">[docs]</a>        <span class="sd">&quot;&quot;&quot;Return a memory efficient deep copy of ``self``.</span>
+
+<span class="sd">        It first creates a shallow copy of ``self``, sets the attributes</span>
+<span class="sd">        in ``kwargs`` if necessary and returns a deep copy of the</span>
+<span class="sd">        resulting object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict, optional</span>
+<span class="sd">            if provided ``copy`` will try to overwrite the name, value</span>
+<span class="sd">            pairs after the shallow- and before the deep copy. If no</span>
+<span class="sd">            ``kwargs`` are provided, it will just return the deep copy.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dat : Data</span>
+<span class="sd">            a deep copy of ``self``.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; # perform an ordinary deep copy of dat</span>
+<span class="sd">        &gt;&gt;&gt; dat2 = dat.copy()</span>
+<span class="sd">        &gt;&gt;&gt; # perform a deep copy but overwrite .axes first</span>
+<span class="sd">        &gt;&gt;&gt; dat.axes</span>
+<span class="sd">        [&#39;time&#39;, &#39;channels&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; dat3 = dat.copy(axes=[&#39;foo&#39;], [&#39;bar&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; dat3.axes</span>
+<span class="sd">        [&#39;foo&#39;, &#39;bar&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; dat.axes</span>
+<span class="sd">        [&#39;time&#39;, &#39;channel&#39;]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

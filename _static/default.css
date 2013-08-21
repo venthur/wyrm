@@ -114,6 +114,11 @@ div.sphinxsidebar input {
 }
 
 
+/* for collapsible sidebar */
+div#sidebarbutton {
+    background-color: #3c6e83;
+}
+
 
 /* -- hyperlink styles ------------------------------------------------------ */
 
@@ -131,6 +136,21 @@ a:hover {
     text-decoration: underline;
 }
 
+
+a.external {
+   text-decoration: none;
+   border-bottom: 1px dashed #355f7c;
+}
+
+a.external:hover {
+   text-decoration: none;
+   border-bottom: none;
+}
+
+a.external:visited {
+    text-decoration: none;
+    border-bottom: 1px dashed #355f7c;
+}
 
 
 /* -- body styles ----------------------------------------------------------- */

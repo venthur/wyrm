@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wyrm.processing &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="../index.html" />
+    <link rel="next" title="wyrm.plot" href="wyrm.plot.html" />
+    <link rel="prev" title="wyrm.io" href="wyrm.io.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="wyrm.plot.html" title="wyrm.plot"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="wyrm.io.html" title="wyrm.io"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-wyrm.processing">
+<span id="wyrm-processing"></span><h1>wyrm.processing<a class="headerlink" href="#module-wyrm.processing" title="Permalink to this headline">¶</a></h1>
+<p>Processing toolbox methods.</p>
+<p>This module currently contains all the processing methods.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.band_pass" title="wyrm.processing.band_pass"><tt class="xref py py-obj docutils literal"><span class="pre">band_pass</span></tt></a>(dat,&nbsp;low,&nbsp;high[,&nbsp;timeaxis])</td>
+<td>Band pass filter the data.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_classwise_average" title="wyrm.processing.calculate_classwise_average"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_classwise_average</span></tt></a>(dat[,&nbsp;classaxis])</td>
+<td>Calculate the classwise average.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_csp" title="wyrm.processing.calculate_csp"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_csp</span></tt></a>(class1,&nbsp;class2)</td>
+<td>Calculate the Common Spatial Pattern (CSP) for two classes.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.correct_for_baseline" title="wyrm.processing.correct_for_baseline"><tt class="xref py py-obj docutils literal"><span class="pre">correct_for_baseline</span></tt></a>(dat,&nbsp;ival[,&nbsp;timeaxis])</td>
+<td>Subtract the baseline.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.jumping_means" title="wyrm.processing.jumping_means"><tt class="xref py py-obj docutils literal"><span class="pre">jumping_means</span></tt></a>(dat,&nbsp;ivals[,&nbsp;timeaxis])</td>
+<td>Calculate the jumping means.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.rectify_channels" title="wyrm.processing.rectify_channels"><tt class="xref py py-obj docutils literal"><span class="pre">rectify_channels</span></tt></a>(dat)</td>
+<td>Calculate the absolute values in <tt class="docutils literal"><span class="pre">dat.data</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.remove_channels" title="wyrm.processing.remove_channels"><tt class="xref py py-obj docutils literal"><span class="pre">remove_channels</span></tt></a>(*args,&nbsp;**kwargs)</td>
+<td>Remove channels from data.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.remove_epochs" title="wyrm.processing.remove_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">remove_epochs</span></tt></a>(*args,&nbsp;**kwargs)</td>
+<td>Remove epochs from an epoched Data object.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.segment_dat" title="wyrm.processing.segment_dat"><tt class="xref py py-obj docutils literal"><span class="pre">segment_dat</span></tt></a>(dat,&nbsp;marker_def,&nbsp;ival[,&nbsp;timeaxis])</td>
+<td>Convert a continuous data object to an epoched one.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.select_channels" title="wyrm.processing.select_channels"><tt class="xref py py-obj docutils literal"><span class="pre">select_channels</span></tt></a>(dat,&nbsp;regexp_list[,&nbsp;invert,&nbsp;...])</td>
+<td>Select channels from data.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.select_epochs" title="wyrm.processing.select_epochs"><tt class="xref py py-obj docutils literal"><span class="pre">select_epochs</span></tt></a>(dat,&nbsp;indices[,&nbsp;invert,&nbsp;classaxis])</td>
+<td>Select epochs from an epoched data object.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.select_ival" title="wyrm.processing.select_ival"><tt class="xref py py-obj docutils literal"><span class="pre">select_ival</span></tt></a>(dat,&nbsp;ival[,&nbsp;timeaxis])</td>
+<td>Select interval from data.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.spectrogram" title="wyrm.processing.spectrogram"><tt class="xref py py-obj docutils literal"><span class="pre">spectrogram</span></tt></a>(cnt)</td>
+<td>Calculate the spectrogram of a continuous data object.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.spectrum" title="wyrm.processing.spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">spectrum</span></tt></a>(cnt)</td>
+<td>Calculate the normalized spectrum of a continuous data object.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.stft" title="wyrm.processing.stft"><tt class="xref py py-obj docutils literal"><span class="pre">stft</span></tt></a>(x,&nbsp;width)</td>
+<td>Short time fourier transform of a real sequence.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-obj docutils literal"><span class="pre">subsample</span></tt></a>(dat,&nbsp;freq[,&nbsp;timeaxis])</td>
+<td>Subsample the data to <tt class="docutils literal"><span class="pre">freq</span></tt> Hz.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.swapaxes" title="wyrm.processing.swapaxes"><tt class="xref py py-obj docutils literal"><span class="pre">swapaxes</span></tt></a>(dat,&nbsp;ax1,&nbsp;ax2)</td>
+<td>Swap axes of a Data object.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="wyrm.io.html"
+                        title="previous chapter">wyrm.io</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="wyrm.plot.html"
+                        title="next chapter">wyrm.plot</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/wyrm.processing.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="wyrm.plot.html" title="wyrm.plot"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="wyrm.io.html" title="wyrm.io"
+             >previous</a> |</li>
+        <li><a href="../index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

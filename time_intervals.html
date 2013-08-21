@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dealing with Time Intervals &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="index.html" />
+    <link rel="next" title="wyrm.processing" href="api/wyrm.processing.html" />
+    <link rel="prev" title="Writing Toolbox Methods" href="writing_toolbox_methods.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api/wyrm.processing.html" title="wyrm.processing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="writing_toolbox_methods.html" title="Writing Toolbox Methods"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dealing-with-time-intervals">
+<h1>Dealing with Time Intervals<a class="headerlink" href="#dealing-with-time-intervals" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="associating-samples-to-timestamps">
+<h2>Associating Samples to Timestamps<a class="headerlink" href="#associating-samples-to-timestamps" title="Permalink to this headline">¶</a></h2>
+<p>The time marks the time at the <em>beginning</em> of the sample.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>Time  [ms]  0    10   20   30 ...
+            |    |    |    |
+Sample [#]  [ 0 ][ 1 ][ 2 ][ 3 ]</pre>
+</div>
+<p>The interpretation is that sample 0 contains the data from <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">10)</span></tt>, sample 1
+contains <tt class="docutils literal"><span class="pre">[10,</span> <span class="pre">20)</span></tt>, and so on.</p>
+</div>
+<div class="section" id="intervals">
+<h2>Intervals<a class="headerlink" href="#intervals" title="Permalink to this headline">¶</a></h2>
+<p>Whenever you encounter a time interval with a start and stop value, the
+convention is <tt class="docutils literal"><span class="pre">[start,</span> <span class="pre">stop)</span></tt> (i.e. start is <em>included</em>, stop is <em>excluded</em>).</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>Time  [ms]  0    10   20   30 ...
+            |    |    |    |
+Sample [#]  [ 0 ][ 1 ][ 2 ][ 3 ]</pre>
+</div>
+<p>Interval (0, 30) returns the samples 0, 1, 2</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dealing with Time Intervals</a><ul>
+<li><a class="reference internal" href="#associating-samples-to-timestamps">Associating Samples to Timestamps</a></li>
+<li><a class="reference internal" href="#intervals">Intervals</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="writing_toolbox_methods.html"
+                        title="previous chapter">Writing Toolbox Methods</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api/wyrm.processing.html"
+                        title="next chapter">wyrm.processing</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/time_intervals.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api/wyrm.processing.html" title="wyrm.processing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="writing_toolbox_methods.html" title="Writing Toolbox Methods"
+             >previous</a> |</li>
+        <li><a href="index.html">Wyrm alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
