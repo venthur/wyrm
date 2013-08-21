@@ -27,7 +27,8 @@ def load_brain_vision_data(vhdr):
 
     This methods loads the continuous EEG data, and returns a ``Data``
     object of continuous data ``[time, channel]``, along with the
-    markers and the sampling frequency.
+    markers and the sampling frequency. The EEG data is returned in
+    micro Volt.
 
     Parameters
     ----------
@@ -85,6 +86,10 @@ def load_brain_vision_data(vhdr):
     fs = 1 / (sampling_interval_microseconds / 10**6)
     channels = [file_dict['Channel Infos']['Ch%i' % (i + 1)] for i in range(n_channels)]
     channels = map(lambda x: x.split(',')[0], channels)
+    resolutions = [file_dict['Channel Infos']['Ch%i' % (i + 1)] for i in range(n_channels)]
+    resolutions = map(lambda x: float(x.split(',')[2]), resolutions)
+    # assert all channels have the same resolution of 0.1
+    assert all([i == 0.1 for i in resolutions])
     # some assumptions about the data...
     assert file_dict['Common Infos']['DataFormat'] == 'BINARY'
     assert file_dict['Common Infos']['DataOrientation'] == 'MULTIPLEXED'
@@ -93,6 +98,7 @@ def load_brain_vision_data(vhdr):
     logger.debug('Loading EEG Data.')
     data = np.fromfile(data_f, np.int16)
     data = data.reshape(-1, n_channels)
+    data *= resolutions[0]
     n_samples = data.shape[0]
     # duration in ms
     duration = 1000 * n_samples / fs
