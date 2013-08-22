@@ -371,7 +371,7 @@ def select_epochs(dat, indices, invert=False, classaxis=0):
 def remove_epochs(*args, **kwargs):
     """Remove epochs from an epoched Data object.
 
-    This method just calls :meth:`select_epochs` with the ``inverse``
+    This method just calls :func:`select_epochs` with the ``inverse``
     paramerter set to ``True``.
 
     Returns
@@ -453,7 +453,7 @@ def select_classes(dat, indices, invert=False, classaxis=0):
 def remove_classes(*args, **kwargs):
     """Remove classes from an epoched Data object.
 
-    This method just calls :meth:`select_epochs` with the ``inverse``
+    This method just calls :func:`select_epochs` with the ``inverse``
     parameter set to ``True``.
 
     Returns

@@ -20,12 +20,12 @@ Example::
     >>> obj
     {'bar': 2, 'foo': 2}
 
-Using :func:`wyrm.types.Data.copy`
+Using :meth:`wyrm.types.Data.copy`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Users rely on the methods to leave their arguments unmodified. To assist you
 with that, the :class:`wyrm.types.Data` object, provides a
-:func:`wyrm.types.Data.copy` method which returns a deep copy of the object.
+:meth:`wyrm.types.Data.copy` method which returns a deep copy of the object.
 This method also allows to selectively overwrite or create attributes in the new
 copy of the object.
 
