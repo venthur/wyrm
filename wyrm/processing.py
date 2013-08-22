@@ -387,6 +387,69 @@ def remove_epochs(*args, **kwargs):
     return select_epochs(*args, invert=True, **kwargs)
 
 
+def select_classes(dat, indices, invert=False, classaxis=0):
+    """Select classes from an epoched data object.
+
+    This method selects the classes with the specified indices.
+
+    Parameters
+    ----------
+    dat : Data
+        epoched Data object
+    indices : array of ints
+        The indices of the classes to select.
+    invert : Boolean, optional
+        if true keep all classes except the ones defined by ``indices``.
+    classaxis : int, optional
+        the axis along which the classes are selected
+
+    Returns
+    -------
+    dat : Data
+        a copy of the epoched data with only the selected classes
+        included.
+
+    Raises
+    ------
+    AssertionError : if ``dat`` has no ``.class_names`` attribute.
+
+    See Also
+    --------
+    remove_classes
+
+    Examples
+    --------
+
+    Get the classes 1 and 2.
+
+    >>> dat.axes[0]
+    [0, 0, 1, 2, 2]
+    >>> dat = select_classes(dat, [1, 2])
+    >>> dat.axes[0]
+    [1, 2, 2]
+
+    Remove class 2
+
+    >>> dat.axes[0]
+    [0, 0, 1, 2, 2]
+    >>> dat = select_classes(dat, [2], invert=True)
+    >>> dat.axes[0]
+    [0, 0, 1]
+
+    """
+    assert hasattr(dat, 'class_names')
+    mask = np.array([False for i in range(dat.data.shape[classaxis])])
+    for idx, val in enumerate(dat.axes[classaxis]):
+        if val in indices:
+            mask[idx] = True
+    if invert:
+        mask = ~mask
+    data = dat.data.compress(mask, classaxis)
+    axes = dat.axes[:]
+    axes[classaxis] = dat.axes[classaxis].compress(mask)
+    return dat.copy(data=data, axes=axes)
+
+
 def subsample(dat, freq, timeaxis=-2):
     """Subsample the data to ``freq`` Hz.
 
