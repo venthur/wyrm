@@ -450,6 +450,25 @@ def select_classes(dat, indices, invert=False, classaxis=0):
     return dat.copy(data=data, axes=axes)
 
 
+def remove_classes(*args, **kwargs):
+    """Remove classes from an epoched Data object.
+
+    This method just calls :meth:`select_epochs` with the ``inverse``
+    parameter set to ``True``.
+
+    Returns
+    -------
+    dat : Data
+        copy of Data object with the classes removed
+
+    See Also
+    --------
+    select_classes
+
+    """
+    return select_classes(*args, invert=True, **kwargs)
+
+
 def subsample(dat, freq, timeaxis=-2):
     """Subsample the data to ``freq`` Hz.
 
