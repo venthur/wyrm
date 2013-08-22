@@ -903,3 +903,49 @@ def create_feature_vectors(dat, classaxis=0):
     units[-1] = 'dl'
     return dat.copy(data=data, axes=axes, names=names, units=units)
 
+def calculate_signed_r_square(dat, classaxis=0):
+    """Calculate the signed r**2 values.
+
+    This method calculates the signed r**2 values over the epochs of the
+    ``dat``.
+
+    Parameters
+    ----------
+    dat : Data
+        epoched data
+    classaxis : int, optional
+        the axis to be treatet as the classaxis
+
+    Returns
+    -------
+    signed_r_square : ndarray
+        the signed r**2 values, signed_r_square has one axis less than
+        the ``dat`` parameter, the ``classaxis`` has been removed
+
+    Examples
+    --------
+
+    >>> dat.data.shape
+    (400, 100, 64)
+    >>> r = calculate_signed_r_square(dat)
+    >>> r.shape
+    (100, 64)
+
+    """
+    # TODO: explain the algorithm in the docstring and add a reference
+    # to a paper.
+    # select class 0 and 1
+    # TODO: make class 0, 1 variables
+    fv1 = select_classes(dat, [0], classaxis=classaxis).data
+    fv2 = select_classes(dat, [1], classaxis=classaxis).data
+    # number of epochs per class
+    l1 = fv1.shape[classaxis]
+    l2 = fv2.shape[classaxis]
+    # calculate r-value (Benjamin approved!)
+    a = (fv1.mean(axis=classaxis) - fv2.mean(axis=classaxis)) * np.sqrt(l1 * l2)
+    b = dat.data.std(axis=classaxis) * (l1 + l2)
+    r = a / b
+    # return signed r**2
+    s = np.sign(r)
+    return s * r * r
+
