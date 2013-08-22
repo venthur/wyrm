@@ -333,6 +333,45 @@ pattern of the filter in column i of v.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.calculate_signed_r_square">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_signed_r_square</tt><big>(</big><em>dat</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_signed_r_square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_signed_r_square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the signed r**2 values.</p>
+<p>This method calculates the signed r**2 values over the epochs of the
+<tt class="docutils literal"><span class="pre">dat</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>epoched data</p>
+</div></blockquote>
+<p><strong>classaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the axis to be treatet as the classaxis</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>signed_r_square</strong> : ndarray</p>
+<blockquote class="last">
+<div><p>the signed r**2 values, signed_r_square has one axis less than
+the <tt class="docutils literal"><span class="pre">dat</span></tt> parameter, the <tt class="docutils literal"><span class="pre">classaxis</span></tt> has been removed</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(400, 100, 64)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">calculate_signed_r_square</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(100, 64)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.correct_for_baseline">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">correct_for_baseline</tt><big>(</big><em>dat</em>, <em>ival</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#correct_for_baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.correct_for_baseline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subtract the baseline.</p>
@@ -387,6 +426,44 @@ And the shapes are then matched via numpy&#8217;s broadcasting.</p>
 <p class="rubric">Examples</p>
 <p>Remove the baselines for the interval <tt class="docutils literal"><span class="pre">[100,</span> <span class="pre">0)</span></tt></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">correct_for_baseline</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.create_feature_vectors">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">create_feature_vectors</tt><big>(</big><em>dat</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#create_feature_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.create_feature_vectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create feature vectors from epoched data.</p>
+<p>This method flattens a <tt class="docutils literal"><span class="pre">Data</span></tt> objects down to 2 dimensions: the
+first one for the classes and the second for the feature vectors.
+All surplus dimensions of the <tt class="docutils literal"><span class="pre">dat</span></tt> argument are clashed into the
+appropriate class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<p><strong>classaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the index of the class axis</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with reshaped to 2 dimensions and with the
+classaxis moved to dimension 0</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(300, 2, 64)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">create_feature_vectors</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(300, 128)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -480,10 +557,34 @@ parameters and the <tt class="docutils literal"><span class="pre">invert</span><
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.remove_classes">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">remove_classes</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#remove_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.remove_classes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove classes from an epoched Data object.</p>
+<p>This method just calls <a class="reference internal" href="#wyrm.processing.select_epochs" title="wyrm.processing.select_epochs"><tt class="xref py py-func docutils literal"><span class="pre">select_epochs()</span></tt></a> with the <tt class="docutils literal"><span class="pre">inverse</span></tt>
+parameter set to <tt class="docutils literal"><span class="pre">True</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>copy of Data object with the classes removed</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.select_classes" title="wyrm.processing.select_classes"><tt class="xref py py-obj docutils literal"><span class="pre">select_classes</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.remove_epochs">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">remove_epochs</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#remove_epochs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.remove_epochs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove epochs from an epoched Data object.</p>
-<p>This method just calls <a class="reference internal" href="#wyrm.processing.select_epochs" title="wyrm.processing.select_epochs"><tt class="xref py py-meth docutils literal"><span class="pre">select_epochs()</span></tt></a> with the <tt class="docutils literal"><span class="pre">inverse</span></tt>
+<p>This method just calls <a class="reference internal" href="#wyrm.processing.select_epochs" title="wyrm.processing.select_epochs"><tt class="xref py py-func docutils literal"><span class="pre">select_epochs()</span></tt></a> with the <tt class="docutils literal"><span class="pre">inverse</span></tt>
 paramerter set to <tt class="docutils literal"><span class="pre">True</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -631,6 +732,68 @@ array:</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.select_classes">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">select_classes</tt><big>(</big><em>dat</em>, <em>indices</em>, <em>invert=False</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#select_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.select_classes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select classes from an epoched data object.</p>
+<p>This method selects the classes with the specified indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>epoched Data object</p>
+</div></blockquote>
+<p><strong>indices</strong> : array of ints</p>
+<blockquote>
+<div><p>The indices of the classes to select.</p>
+</div></blockquote>
+<p><strong>invert</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>if true keep all classes except the ones defined by <tt class="docutils literal"><span class="pre">indices</span></tt>.</p>
+</div></blockquote>
+<p><strong>classaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the axis along which the classes are selected</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>a copy of the epoched data with only the selected classes
+included.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.remove_classes" title="wyrm.processing.remove_classes"><tt class="xref py py-obj docutils literal"><span class="pre">remove_classes</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>Get the classes 1 and 2.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[0, 0, 1, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">select_classes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[1, 2, 2]</span>
+</pre></div>
+</div>
+<p>Remove class 2</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[0, 0, 1, 2, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">select_classes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[0, 0, 1]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.select_epochs">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">select_epochs</tt><big>(</big><em>dat</em>, <em>indices</em>, <em>invert=False</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#select_epochs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.select_epochs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select epochs from an epoched data object.</p>
@@ -647,7 +810,7 @@ array:</p>
 <blockquote>
 <div><p>The indices of the elements to select.</p>
 </div></blockquote>
-<p><strong>invert</strong> : Boolean</p>
+<p><strong>invert</strong> : Boolean, optional</p>
 <blockquote>
 <div><p>if true keep all elements except the ones defined by <tt class="docutils literal"><span class="pre">indices</span></tt>.</p>
 </div></blockquote>
@@ -674,18 +837,18 @@ array:</p>
 </div>
 <p class="rubric">Examples</p>
 <p>Get the first three epochs.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">classes</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="go">[0, 0, 1, 2, 2]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">select_epochs</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">classes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="go">[0, 0, 1]</span>
 </pre></div>
 </div>
 <p>Remove the fourth epoch</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">classes</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="go">[0, 0, 1, 2, 2]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">select_epochs</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">classes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="go">[0, 0, 1, 2]</span>
 </pre></div>
 </div>

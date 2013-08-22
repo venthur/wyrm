@@ -12,13 +12,17 @@ wyrm.processing
       band_pass
       calculate_classwise_average
       calculate_csp
+      calculate_signed_r_square
       correct_for_baseline
+      create_feature_vectors
       jumping_means
       rectify_channels
       remove_channels
+      remove_classes
       remove_epochs
       segment_dat
       select_channels
+      select_classes
       select_epochs
       select_ival
       spectrogram

@@ -371,7 +371,7 @@
 <span class="sd">        epoched Data object with an ``.class_names`` attribute</span>
 <span class="sd">    indices : array of ints</span>
 <span class="sd">        The indices of the elements to select.</span>
-<span class="sd">    invert : Boolean</span>
+<span class="sd">    invert : Boolean, optional</span>
 <span class="sd">        if true keep all elements except the ones defined by ``indices``.</span>
 <span class="sd">    classaxis : int, optional</span>
 <span class="sd">        the axis along which the epochs are selected</span>
@@ -394,18 +394,18 @@
 
 <span class="sd">    Get the first three epochs.</span>
 
-<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
 <span class="sd">    [0, 0, 1, 2, 2]</span>
 <span class="sd">    &gt;&gt;&gt; dat = select_epochs(dat, [0, 1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
 <span class="sd">    [0, 0, 1]</span>
 
 <span class="sd">    Remove the fourth epoch</span>
 
-<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
 <span class="sd">    [0, 0, 1, 2, 2]</span>
 <span class="sd">    &gt;&gt;&gt; dat = select_epochs(dat, [3], invert=True)</span>
-<span class="sd">    &gt;&gt;&gt; dat.classes</span>
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
 <span class="sd">    [0, 0, 1, 2]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -424,7 +424,7 @@
 <div class="viewcode-block" id="remove_epochs"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.remove_epochs">[docs]</a><span class="k">def</span> <span class="nf">remove_epochs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Remove epochs from an epoched Data object.</span>
 
-<span class="sd">    This method just calls :meth:`select_epochs` with the ``inverse``</span>
+<span class="sd">    This method just calls :func:`select_epochs` with the ``inverse``</span>
 <span class="sd">    paramerter set to ``True``.</span>
 
 <span class="sd">    Returns</span>
@@ -438,6 +438,88 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">select_epochs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="select_classes"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.select_classes">[docs]</a><span class="k">def</span> <span class="nf">select_classes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select classes from an epoched data object.</span>
+
+<span class="sd">    This method selects the classes with the specified indices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        epoched Data object</span>
+<span class="sd">    indices : array of ints</span>
+<span class="sd">        The indices of the classes to select.</span>
+<span class="sd">    invert : Boolean, optional</span>
+<span class="sd">        if true keep all classes except the ones defined by ``indices``.</span>
+<span class="sd">    classaxis : int, optional</span>
+<span class="sd">        the axis along which the classes are selected</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        a copy of the epoched data with only the selected classes</span>
+<span class="sd">        included.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError : if ``dat`` has no ``.class_names`` attribute.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    remove_classes</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Get the classes 1 and 2.</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
+<span class="sd">    [0, 0, 1, 2, 2]</span>
+<span class="sd">    &gt;&gt;&gt; dat = select_classes(dat, [1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
+<span class="sd">    [1, 2, 2]</span>
+
+<span class="sd">    Remove class 2</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
+<span class="sd">    [0, 0, 1, 2, 2]</span>
+<span class="sd">    &gt;&gt;&gt; dat = select_classes(dat, [2], invert=True)</span>
+<span class="sd">    &gt;&gt;&gt; dat.axes[0]</span>
+<span class="sd">    [0, 0, 1]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">False</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">classaxis</span><span class="p">])])</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="n">mask</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mask</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">classaxis</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="remove_classes"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.remove_classes">[docs]</a><span class="k">def</span> <span class="nf">remove_classes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove classes from an epoched Data object.</span>
+
+<span class="sd">    This method just calls :func:`select_epochs` with the ``inverse``</span>
+<span class="sd">    parameter set to ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        copy of Data object with the classes removed</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    select_classes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">select_classes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="subsample"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.subsample">[docs]</a><span class="k">def</span> <span class="nf">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
@@ -832,6 +914,93 @@
     <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">means</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="create_feature_vectors"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.create_feature_vectors">[docs]</a><span class="k">def</span> <span class="nf">create_feature_vectors</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create feature vectors from epoched data.</span>
+
+<span class="sd">    This method flattens a ``Data`` objects down to 2 dimensions: the</span>
+<span class="sd">    first one for the classes and the second for the feature vectors.</span>
+<span class="sd">    All surplus dimensions of the ``dat`` argument are clashed into the</span>
+<span class="sd">    appropriate class.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">    classaxis : int, optional</span>
+<span class="sd">        the index of the class axis</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        a copy of ``dat`` with reshaped to 2 dimensions and with the</span>
+<span class="sd">        classaxis moved to dimension 0</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.shape</span>
+<span class="sd">    (300, 2, 64)</span>
+<span class="sd">    &gt;&gt;&gt; dat = create_feature_vectors(dat)</span>
+<span class="sd">    &gt;&gt;&gt; dat.shape</span>
+<span class="sd">    (300, 128)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">classaxis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">swapaxes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">classaxis</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">classaxis</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[:]</span>
+    <span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;feature vector&#39;</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">units</span><span class="p">[:]</span>
+    <span class="n">units</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;dl&#39;</span>
+    <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="calculate_signed_r_square"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.calculate_signed_r_square">[docs]</a><span class="k">def</span> <span class="nf">calculate_signed_r_square</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the signed r**2 values.</span>
+
+<span class="sd">    This method calculates the signed r**2 values over the epochs of the</span>
+<span class="sd">    ``dat``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        epoched data</span>
+<span class="sd">    classaxis : int, optional</span>
+<span class="sd">        the axis to be treatet as the classaxis</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    signed_r_square : ndarray</span>
+<span class="sd">        the signed r**2 values, signed_r_square has one axis less than</span>
+<span class="sd">        the ``dat`` parameter, the ``classaxis`` has been removed</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.data.shape</span>
+<span class="sd">    (400, 100, 64)</span>
+<span class="sd">    &gt;&gt;&gt; r = calculate_signed_r_square(dat)</span>
+<span class="sd">    &gt;&gt;&gt; r.shape</span>
+<span class="sd">    (100, 64)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># TODO: explain the algorithm in the docstring and add a reference</span>
+    <span class="c"># to a paper.</span>
+    <span class="c"># select class 0 and 1</span>
+    <span class="c"># TODO: make class 0, 1 variables</span>
+    <span class="n">fv1</span> <span class="o">=</span> <span class="n">select_classes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">classaxis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">fv2</span> <span class="o">=</span> <span class="n">select_classes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">classaxis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+    <span class="c"># number of epochs per class</span>
+    <span class="n">l1</span> <span class="o">=</span> <span class="n">fv1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span>
+    <span class="n">l2</span> <span class="o">=</span> <span class="n">fv2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span>
+    <span class="c"># calculate r-value (Benjamin approved!)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">fv1</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">)</span> <span class="o">-</span> <span class="n">fv2</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">l1</span> <span class="o">*</span> <span class="n">l2</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">l1</span> <span class="o">+</span> <span class="n">l2</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
+    <span class="c"># return signed r**2</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">r</span>
 </pre></div></div>
 
           </div>
