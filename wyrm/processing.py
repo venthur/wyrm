@@ -780,3 +780,44 @@ def jumping_means(dat, ivals, timeaxis=-2):
     axes[timeaxis] = np.array(time)
     return dat.copy(data=means, names=names, axes=axes)
 
+def create_feature_vectors(dat, classaxis=0):
+    """Create feature vectors from epoched data.
+
+    This method flattens a ``Data`` objects down to 2 dimensions: the
+    first one for the classes and the second for the feature vectors.
+    All surplus dimensions of the ``dat`` argument are clashed into the
+    appropriate class.
+
+    Parameters
+    ----------
+    dat : Data
+    classaxis : int, optional
+        the index of the class axis
+
+    Returns
+    -------
+    dat : Data
+        a copy of ``dat`` with reshaped to 2 dimensions and with the
+        classaxis moved to dimension 0
+
+    Examples
+    --------
+
+    >>> dat.shape
+    (300, 2, 64)
+    >>> dat = create_feature_vectors(dat)
+    >>> dat.shape
+    (300, 128)
+
+    """
+    if classaxis != 0:
+        dat = swapaxes(dat, 0, classaxis)
+    data = dat.data.reshape(dat.data.shape[classaxis], -1)
+    axes = dat.axes[:]
+    axes[-1] = np.arange(data.shape[-1])
+    names = dat.names[:]
+    names[-1] = 'feature vector'
+    units = dat.units[:]
+    units[-1] = 'dl'
+    return dat.copy(data=data, axes=axes, names=names, units=units)
+
