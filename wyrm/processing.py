@@ -318,7 +318,7 @@ def select_epochs(dat, indices, invert=False, classaxis=0):
         epoched Data object with an ``.class_names`` attribute
     indices : array of ints
         The indices of the elements to select.
-    invert : Boolean
+    invert : Boolean, optional
         if true keep all elements except the ones defined by ``indices``.
     classaxis : int, optional
         the axis along which the epochs are selected
@@ -341,18 +341,18 @@ def select_epochs(dat, indices, invert=False, classaxis=0):
 
     Get the first three epochs.
 
-    >>> dat.classes
+    >>> dat.axes[0]
     [0, 0, 1, 2, 2]
     >>> dat = select_epochs(dat, [0, 1, 2])
-    >>> dat.classes
+    >>> dat.axes[0]
     [0, 0, 1]
 
     Remove the fourth epoch
 
-    >>> dat.classes
+    >>> dat.axes[0]
     [0, 0, 1, 2, 2]
     >>> dat = select_epochs(dat, [3], invert=True)
-    >>> dat.classes
+    >>> dat.axes[0]
     [0, 0, 1, 2]
 
     """
