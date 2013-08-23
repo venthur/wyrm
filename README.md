@@ -1,10 +1,7 @@
-Warning!
-========
+About
+=====
 
-Wyrm is a Brain Computer Interface (BCI) toolbox written in Python. It's in a
-very early stage of development and thus a fast moving target -- you should not
-use it yet.
-
+Wyrm is a Brain Computer Interface (BCI) toolbox written in Python.
 
 Using it
 ========
