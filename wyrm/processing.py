@@ -951,3 +951,25 @@ def calculate_signed_r_square(dat, classaxis=0):
     s = np.sign(r)
     return s * r * r
 
+
+def logarithm(dat):
+    """Computes the element wise natural logarithm of ``dat.data``
+
+    Calling this method is equivalent to calling
+
+    >>> dat.copy(data=np.log(dat.data))
+
+    Parameters
+    ----------
+    dat : Data
+
+    Returns
+    -------
+    dat : Data
+        a copy of ``dat`` with the element wise natural logarithms of
+        the values in ``.data``
+
+    """
+    data = np.log(dat.data)
+    return dat.copy(data=data)
+
