@@ -8,7 +8,7 @@ from wyrm.processing import logarithm
 class TestLogarithm(unittest.TestCase):
 
     def setUp(self):
-        raw = np.arange(20).reshape(4, 5)
+        raw = np.arange(1, 21).reshape(4, 5)
         channels = ['ca1', 'ca2', 'cb1', 'cb2', 'cc1']
         time = np.arange(4)
         self.dat = Data(raw, [time, channels], ['time', 'channels'], ['ms', '#'])
