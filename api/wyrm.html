@@ -501,6 +501,32 @@ too to reflect the intervals used for the data points.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.logarithm">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">logarithm</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.processing.logarithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the element wise natural logarithm of <tt class="docutils literal"><span class="pre">dat.data</span></tt></p>
+<p>Calling this method is equivalent to calling</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the element wise natural logarithms of
+the values in <tt class="docutils literal"><span class="pre">.data</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.rectify_channels">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">rectify_channels</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#rectify_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.rectify_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the absolute values in <tt class="docutils literal"><span class="pre">dat.data</span></tt>.</p>
@@ -1003,7 +1029,7 @@ sub-sampling.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">freq</span></tt> is not a whole number divisor of <tt class="docutils literal"><span class="pre">dat.fs</span></tt></p>
 <p><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.fs</span></tt> attribute</p>
-<p class="last"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat.data.shape[timeaxis]</span> <span class="pre">!=</span> <span class="pre">len(dat.axes[timexis])</span></tt></p>
+<p class="last"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat.data.shape[timeaxis]</span> <span class="pre">!=</span> <span class="pre">len(dat.axes[timeaxis])</span></tt></p>
 </td>
 </tr>
 </tbody>
@@ -1061,6 +1087,36 @@ appropriate <tt class="docutils literal"><span class="pre">.data</span></tt>, <t
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">swapaxes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">names</span>
 <span class="go">[&#39;channels&#39;, &#39;time&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.variance">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">variance</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the variance along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt> of <tt class="docutils literal"><span class="pre">dat</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with with the variance along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt>
+removed and <tt class="docutils literal"><span class="pre">timeaxis</span></tt> removed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span><span class="o">.</span><span class="n">names</span>
+<span class="go">[&#39;class&#39;, &#39;time&#39;, &#39;channel&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var</span> <span class="o">=</span> <span class="n">variance</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var</span><span class="o">.</span><span class="n">names</span>
+<span class="go">[&#39;class&#39;, &#39;channel&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
