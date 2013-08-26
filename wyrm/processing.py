@@ -987,6 +987,15 @@ def variance(dat, timeaxis=-2):
         copy of ``dat`` with with the variance along the ``timeaxis``
         removed and ``timeaxis`` removed.
 
+    Examples
+    --------
+
+    >>> epo.names
+    ['class', 'time', 'channel']
+    >>> var = variance(cnt)
+    >>> var.names
+    ['class', 'channel']
+
     """
     data = np.var(dat.data, axis=timeaxis)
     axes = dat.axes[:].pop(timeaxis)
