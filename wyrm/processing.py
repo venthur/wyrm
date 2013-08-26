@@ -973,3 +973,24 @@ def logarithm(dat):
     data = np.log(dat.data)
     return dat.copy(data=data)
 
+
+def variance(dat, timeaxis=-2):
+    """Compute the variance along the ``timeaxis`` of ``dat``.
+
+    Parameters
+    ----------
+    dat : Data
+
+    Returns
+    -------
+    dat : Data
+        copy of ``dat`` with with the variance along the ``timeaxis``
+        removed and ``timeaxis`` removed.
+
+    """
+    data = np.var(dat.data, axis=timeaxis)
+    axes = dat.axes[:].pop(timeaxis)
+    names = dat.names[:].pop(timeaxis)
+    units = dat.units[:].pop(timeaxis)
+    return dat.copy(data=data, axes=axes, names=names, units=units)
+
