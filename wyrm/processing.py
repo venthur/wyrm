@@ -516,7 +516,7 @@ def subsample(dat, freq, timeaxis=-2):
     ------
     AssertionError : if ``freq`` is not a whole number divisor of ``dat.fs``
     AssertionError : if ``dat`` has no ``.fs`` attribute
-    AssertionError : if ``dat.data.shape[timeaxis] != len(dat.axes[timexis])``
+    AssertionError : if ``dat.data.shape[timeaxis] != len(dat.axes[timeaxis])``
 
     """
     assert hasattr(dat, 'fs')
@@ -862,6 +862,7 @@ def jumping_means(dat, ivals, timeaxis=-2):
     axes[timeaxis] = np.array(time)
     return dat.copy(data=means, names=names, axes=axes)
 
+
 def create_feature_vectors(dat, classaxis=0):
     """Create feature vectors from epoched data.
 
@@ -902,6 +903,7 @@ def create_feature_vectors(dat, classaxis=0):
     units = dat.units[:]
     units[-1] = 'dl'
     return dat.copy(data=data, axes=axes, names=names, units=units)
+
 
 def calculate_signed_r_square(dat, classaxis=0):
     """Calculate the signed r**2 values.
