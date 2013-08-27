@@ -195,7 +195,75 @@ the interpolated values as values.</p>
 <div class="section" id="module-wyrm.processing">
 <span id="processing-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">processing</span></tt> Module<a class="headerlink" href="#module-wyrm.processing" title="Permalink to this headline">¶</a></h2>
 <p>Processing toolbox methods.</p>
-<p>This module currently contains all the processing methods.</p>
+<p>This module contains the processing methods.</p>
+<dl class="function">
+<dt id="wyrm.processing.append">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>smartypants=True</em>, <em>axis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append <tt class="docutils literal"><span class="pre">dat2</span></tt> to <tt class="docutils literal"><span class="pre">dat</span></tt>.</p>
+<p>This method will append <tt class="docutils literal"><span class="pre">dat2</span></tt> to <tt class="docutils literal"><span class="pre">dat</span></tt> and return the result.
+It appends the <tt class="docutils literal"><span class="pre">data</span></tt> along <tt class="docutils literal"><span class="pre">axis</span></tt> and also appends the
+<tt class="docutils literal"><span class="pre">axes[axis]</span></tt>.</p>
+<p>The method will do various checks to test if appending the data
+makes sense or will give a consisten result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
+<p><strong>smartypants</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>if true try to append continuous and epoched data correctly by
+checking for <tt class="docutils literal"><span class="pre">class_names</span></tt> and <tt class="docutils literal"><span class="pre">markers</span></tt> (default True), if
+false, append only appends <tt class="docutils literal"><span class="pre">data</span></tt>, <tt class="docutils literal"><span class="pre">axes</span></tt>, <tt class="docutils literal"><span class="pre">names</span></tt>, and
+<tt class="docutils literal"><span class="pre">units</span></tt></p>
+</div></blockquote>
+<p><strong>axis</strong> : int, optional</p>
+<blockquote>
+<div><p>the axis along which to concatenate. The default axis (0) does
+the right thing for continuous and epoched data as it
+concatenates along the time- or the class-axis respectively.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with <tt class="docutils literal"><span class="pre">dat2</span></tt> appended</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> : if one or more of the following is not true:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>the dimensions of <tt class="docutils literal"><span class="pre">.data</span></tt> match</li>
+<li><tt class="docutils literal"><span class="pre">names[i]</span></tt>, <tt class="docutils literal"><span class="pre">units[i]</span></tt>, <tt class="docutils literal"><span class="pre">axes[i]</span></tt> and <tt class="docutils literal"><span class="pre">shape[i]</span></tt> are
+equal in <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt> for all <tt class="docutils literal"><span class="pre">i</span></tt> except for <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span>
+<span class="pre">axis</span></tt></li>
+<li>if <tt class="docutils literal"><span class="pre">smartypants</span> <span class="pre">==</span> <span class="pre">True</span></tt>: if <tt class="docutils literal"><span class="pre">dat</span></tt> or <tt class="docutils literal"><span class="pre">dat2</span></tt> has the
+<tt class="docutils literal"><span class="pre">class_names</span></tt> attribute, the other must have it too. Same
+goes for <tt class="docutils literal"><span class="pre">markers</span></tt></li>
+</ul>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.append_channels">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_channels</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>chanaxis=-1</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.append_cnt">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_cnt</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>timeaxis=-1</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_cnt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_cnt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.append_epo">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_epo</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_epo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_epo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="wyrm.processing.band_pass">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">band_pass</tt><big>(</big><em>dat</em>, <em>low</em>, <em>high</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#band_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.band_pass" title="Permalink to this definition">¶</a></dt>
@@ -502,7 +570,7 @@ too to reflect the intervals used for the data points.</p>
 
 <dl class="function">
 <dt id="wyrm.processing.logarithm">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">logarithm</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.processing.logarithm" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">logarithm</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#logarithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.logarithm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the element wise natural logarithm of <tt class="docutils literal"><span class="pre">dat.data</span></tt></p>
 <p>Calling this method is equivalent to calling</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
@@ -1093,7 +1161,7 @@ appropriate <tt class="docutils literal"><span class="pre">.data</span></tt>, <t
 
 <dl class="function">
 <dt id="wyrm.processing.variance">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">variance</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.variance" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">variance</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.variance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the variance along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt> of <tt class="docutils literal"><span class="pre">dat</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
