@@ -2,7 +2,7 @@
 
 """Processing toolbox methods.
 
-This module currently contains all the processing methods.
+This module contains the processing methods.
 
 """
 
