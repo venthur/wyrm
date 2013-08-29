@@ -286,7 +286,7 @@ def append(dat, dat2, axis=0, extra=None):
 
     See Also
     --------
-    append_cnt, append_epo, append_channels
+    append_cnt, append_epo
 
     """
     assert dat.data.ndim == dat2.data.ndim
@@ -337,7 +337,12 @@ def append_cnt(dat, dat2, timeaxis=-2, extra=None):
 
     See Also
     --------
-    append
+    append, append_epo
+
+    Examples
+    --------
+
+    >>> cnt = append_cnt(cnt, cnt2)
 
     """
     if hasattr(dat, 'markers') and hasattr(dat2, 'markers'):
