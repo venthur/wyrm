@@ -318,6 +318,37 @@ def append(dat, dat2, axis=0, extra=None):
     return dat_new
 
 
+def append_cnt(dat, dat2, timeaxis=-2, extra=None):
+    """Append two continuous data objects.
+
+    This method just calls :func:`append`. If both ``dat`` and ``dat2``
+    have the ``markers`` attribute it will add ``'markers'`` to
+    ``extra``.
+
+    Parameters
+    ----------
+    dat, dat2 : Data
+    timeaxis : int, optional
+    extra: list of strings, optional
+
+    Returns
+    -------
+    dat : Data
+
+    See Also
+    --------
+    append
+
+    """
+    if hasattr(dat, 'markers') and hasattr(dat2, 'markers'):
+        if extra is None:
+            extra=['markers']
+        else:
+            extra.append('markers')
+    cnt = append(dat, dat2, axis=timeaxis, extra=extra)
+    return cnt
+
+
 def band_pass(dat, low, high, timeaxis=-2):
     """Band pass filter the data.
 
