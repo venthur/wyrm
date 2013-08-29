@@ -349,6 +349,46 @@ def append_cnt(dat, dat2, timeaxis=-2, extra=None):
     return cnt
 
 
+def append_epo(dat, dat2, classaxis=0, extra=None):
+    """Append two epoched data objects.
+
+    This method just calls :func:`append`. In addition to the errors
+    :func:`append` might throw, it will raise an error if the
+    ``class_names`` are not equal if present in both objects.
+
+    Parameters
+    ----------
+    dat, dat2 : Data
+    classaxis : int, optional
+    extra : list of strings, optional
+
+    Returns
+    -------
+    dat : Data
+
+    Raises
+    ------
+    ValueError :
+        if both objects have a ``class_names`` attribute, they must be
+        equal
+
+    See Also
+    --------
+    append, append_cnt
+
+    Examples
+    --------
+
+    >>> epo = append_epo(epo, epo2)
+
+    """
+    if hasattr(dat, 'class_names') and hasattr(dat2, 'class_names'):
+        if dat.class_names != dat2.class_names:
+            raise ValueError('Incompatible class names.')
+    epo = append(dat, dat2, axis=classaxis, extra=extra)
+    return epo
+
+
 def band_pass(dat, low, high, timeaxis=-2):
     """Band pass filter the data.
 
