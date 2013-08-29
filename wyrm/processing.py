@@ -649,18 +649,6 @@ def calculate_csp(class1, class2):
     http://en.wikipedia.org/wiki/Common_spatial_pattern
 
     """
-    # sven's super simple matlab code
-    # function [W, A, lambda] = my_csp(X1, X2)
-    #     % compute covariance matrices of the two classes
-    #     C1 = compute_Covariance_Matrix(X1);
-    #     C2 = compute_Covariance_Matrix(X2);
-    #     % solution of CSP objective via generalized eigenvalue problem
-    #     [W, D] = eig(C1-C2, C1+C2);
-    #     % make sure the eigenvalues and eigenvectors are sorted correctly
-    #     [lambda, sort_idx] = sort(diag(D), 'descend');
-    #     W = W(:,sort_idx);
-    #     A = inv(W)';
-
     n_channels = class1.shape[2]
     # we need a matrix of the form (observations, channels) so we stack trials
     # and time per channel together
