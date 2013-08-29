@@ -10,7 +10,6 @@ wyrm.processing
    .. autosummary::
    
       append
-      append_channels
       append_cnt
       append_epo
       band_pass

@@ -198,30 +198,35 @@ the interpolated values as values.</p>
 <p>This module contains the processing methods.</p>
 <dl class="function">
 <dt id="wyrm.processing.append">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>smartypants=True</em>, <em>axis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>axis=0</em>, <em>extra=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append <tt class="docutils literal"><span class="pre">dat2</span></tt> to <tt class="docutils literal"><span class="pre">dat</span></tt>.</p>
-<p>This method will append <tt class="docutils literal"><span class="pre">dat2</span></tt> to <tt class="docutils literal"><span class="pre">dat</span></tt> and return the result.
-It appends the <tt class="docutils literal"><span class="pre">data</span></tt> along <tt class="docutils literal"><span class="pre">axis</span></tt> and also appends the
-<tt class="docutils literal"><span class="pre">axes[axis]</span></tt>.</p>
-<p>The method will do various checks to test if appending the data
-makes sense or will give a consisten result.</p>
+<p>This method creates a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> (with all attributes),
+concatenates <tt class="docutils literal"><span class="pre">dat.data</span></tt> and <tt class="docutils literal"><span class="pre">dat2.data</span></tt> along <tt class="docutils literal"><span class="pre">axis</span></tt> as well
+as <tt class="docutils literal"><span class="pre">dat.axes[axis]</span></tt> and <tt class="docutils literal"><span class="pre">dat2.axes[axis]</span></tt>. If present, it will
+concatenate the attributes in <tt class="docutils literal"><span class="pre">extra</span></tt> as well and return the
+result.</p>
+<p>It also performs checks if the dimensions and lengths of <tt class="docutils literal"><span class="pre">data</span></tt>
+and <tt class="docutils literal"><span class="pre">axes</span></tt> match and test if <tt class="docutils literal"><span class="pre">units</span></tt> and <tt class="docutils literal"><span class="pre">names</span></tt> are equal.</p>
+<p>Since <tt class="docutils literal"><span class="pre">append</span></tt> cannot know how to deal with the various attributes
+<tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt> might have, it only copies the attributes of
+<tt class="docutils literal"><span class="pre">dat</span></tt> and deals with the attributes it knows about, namely:
+<tt class="docutils literal"><span class="pre">data</span></tt>, <tt class="docutils literal"><span class="pre">axes</span></tt>, <tt class="docutils literal"><span class="pre">names</span></tt>, and <tt class="docutils literal"><span class="pre">units</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
-<p><strong>smartypants</strong> : Boolean, optional</p>
-<blockquote>
-<div><p>if true try to append continuous and epoched data correctly by
-checking for <tt class="docutils literal"><span class="pre">class_names</span></tt> and <tt class="docutils literal"><span class="pre">markers</span></tt> (default True), if
-false, append only appends <tt class="docutils literal"><span class="pre">data</span></tt>, <tt class="docutils literal"><span class="pre">axes</span></tt>, <tt class="docutils literal"><span class="pre">names</span></tt>, and
-<tt class="docutils literal"><span class="pre">units</span></tt></p>
-</div></blockquote>
 <p><strong>axis</strong> : int, optional</p>
 <blockquote>
 <div><p>the axis along which to concatenate. The default axis (0) does
 the right thing for continuous and epoched data as it
 concatenates along the time- or the class-axis respectively.</p>
+</div></blockquote>
+<p><strong>extra</strong> : list of strings, optional</p>
+<blockquote>
+<div><p>a list of attributes in <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt> to concatenate as
+well. Currently the attributes must have the types <tt class="docutils literal"><span class="pre">list</span></tt> or
+<tt class="docutils literal"><span class="pre">ndarray</span></tt>.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -231,38 +236,113 @@ concatenates along the time- or the class-axis respectively.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> : if one or more of the following is not true:</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> : if one of the following is true:</p>
+<blockquote>
+<div><ul class="simple">
+<li>the dimensions of <tt class="docutils literal"><span class="pre">.data</span></tt> do not match</li>
+<li><tt class="docutils literal"><span class="pre">names</span></tt> are not equal</li>
+<li><tt class="docutils literal"><span class="pre">units</span></tt> are not equal</li>
+<li><tt class="docutils literal"><span class="pre">data.shape[i]</span></tt> are not equal for all i except <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">axis</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">axes[i]</span></tt> are not equal for all i except <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">axis</span></tt></li>
+</ul>
+</div></blockquote>
+<p><strong>TypeError:</strong> :</p>
 <blockquote class="last">
 <div><ul class="simple">
-<li>the dimensions of <tt class="docutils literal"><span class="pre">.data</span></tt> match</li>
-<li><tt class="docutils literal"><span class="pre">names[i]</span></tt>, <tt class="docutils literal"><span class="pre">units[i]</span></tt>, <tt class="docutils literal"><span class="pre">axes[i]</span></tt> and <tt class="docutils literal"><span class="pre">shape[i]</span></tt> are
-equal in <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt> for all <tt class="docutils literal"><span class="pre">i</span></tt> except for <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span>
-<span class="pre">axis</span></tt></li>
-<li>if <tt class="docutils literal"><span class="pre">smartypants</span> <span class="pre">==</span> <span class="pre">True</span></tt>: if <tt class="docutils literal"><span class="pre">dat</span></tt> or <tt class="docutils literal"><span class="pre">dat2</span></tt> has the
-<tt class="docutils literal"><span class="pre">class_names</span></tt> attribute, the other must have it too. Same
-goes for <tt class="docutils literal"><span class="pre">markers</span></tt></li>
+<li>if one of the attributes in <tt class="docutils literal"><span class="pre">extra</span></tt> does not have the same
+type in <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt></li>
+<li>if one of the attributes in <tt class="docutils literal"><span class="pre">extra</span></tt> has an unsupported type</li>
 </ul>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.append_cnt" title="wyrm.processing.append_cnt"><tt class="xref py py-obj docutils literal"><span class="pre">append_cnt</span></tt></a>, <a class="reference internal" href="#wyrm.processing.append_epo" title="wyrm.processing.append_epo"><tt class="xref py py-obj docutils literal"><span class="pre">append_epo</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># concatenate two continuous data objects, and their markers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">markers</span>
+<span class="go">[[0, &#39;a&#39;], [10, &#39;b&#39;]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt2</span><span class="o">.</span><span class="n">markers</span>
+<span class="go">[[20, &#39;c&#39;], [30, &#39;d&#39;]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">append</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;markers&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">markers</span>
+<span class="go">[[0, &#39;a&#39;], [10, &#39;b&#39;], [20, &#39;c&#39;], [30, &#39;d&#39;]]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
-<dt id="wyrm.processing.append_channels">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_channels</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>chanaxis=-1</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_channels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="wyrm.processing.append_cnt">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_cnt</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>timeaxis=-1</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_cnt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_cnt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_cnt</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>timeaxis=-2</em>, <em>extra=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_cnt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_cnt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append two continuous data objects.</p>
+<p>This method just calls <a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-func docutils literal"><span class="pre">append()</span></tt></a>. If both <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt>
+have the <tt class="docutils literal"><span class="pre">markers</span></tt> attribute it will add <tt class="docutils literal"><span class="pre">'markers'</span></tt> to
+<tt class="docutils literal"><span class="pre">extra</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
+<p><strong>timeaxis</strong> : int, optional</p>
+<p><strong>extra: list of strings, optional</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>dat</strong> : Data</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>, <a class="reference internal" href="#wyrm.processing.append_epo" title="wyrm.processing.append_epo"><tt class="xref py py-obj docutils literal"><span class="pre">append_epo</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">append_cnt</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="wyrm.processing.append_epo">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_epo</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_epo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_epo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_epo</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>classaxis=0</em>, <em>extra=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_epo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_epo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append two epoched data objects.</p>
+<p>This method just calls <a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-func docutils literal"><span class="pre">append()</span></tt></a>. In addition to the errors
+<a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-func docutils literal"><span class="pre">append()</span></tt></a> might throw, it will raise an error if the
+<tt class="docutils literal"><span class="pre">class_names</span></tt> are not equal if present in both objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
+<p><strong>classaxis</strong> : int, optional</p>
+<p><strong>extra</strong> : list of strings, optional</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>ValueError :</strong> :</p>
+<blockquote class="last">
+<div><p>if both objects have a <tt class="docutils literal"><span class="pre">class_names</span></tt> attribute, they must be
+equal</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>, <a class="reference internal" href="#wyrm.processing.append_cnt" title="wyrm.processing.append_cnt"><tt class="xref py py-obj docutils literal"><span class="pre">append_cnt</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">append_epo</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="n">epo2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="wyrm.processing.band_pass">
