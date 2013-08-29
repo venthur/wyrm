@@ -225,6 +225,99 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
     return dat.copy(data=data, axes=axes, names=names, units=units, class_names=class_names)
 
 
+def append(dat, dat2, axis=0, extra=None):
+    """Append ``dat2`` to ``dat``.
+
+    This method creates a copy of ``dat`` (with all attributes),
+    concatenates ``dat.data`` and ``dat2.data`` along ``axis`` as well
+    as ``dat.axes[axis]`` and ``dat2.axes[axis]``. If present, it will
+    concatenate the attributes in ``extra`` as well and return the
+    result.
+
+    It also performs checks if the dimensions and lengths of ``data``
+    and ``axes`` match and test if ``units`` and ``names`` are equal.
+
+    Since ``append`` cannot know how to deal with the various attributes
+    ``dat`` and ``dat2`` might have, it only copies the attributes of
+    ``dat`` and deals with the attributes it knows about, namely:
+    ``data``, ``axes``, ``names``, and ``units``.
+
+     Parameters
+    ----------
+    dat, dat2 : Data
+    axis : int, optional
+        the axis along which to concatenate. The default axis (0) does
+        the right thing for continuous and epoched data as it
+        concatenates along the time- or the class-axis respectively.
+    extra : list of strings, optional
+        a list of attributes in ``dat`` and ``dat2`` to concatenate as
+        well. Currently the attributes must have the types ``list`` or
+        ``ndarray``.
+
+    Returns
+    -------
+    dat : Data
+        a copy of ``dat`` with ``dat2`` appended
+
+    Raises
+    ------
+    AssertionError : if one of the following is true:
+        * the dimensions of ``.data`` do not match
+        * ``names`` are not equal
+        * ``units`` are not equal
+        * ``data.shape[i]`` are not equal for all i except ``i == axis``
+        * ``axes[i]`` are not equal for all i except ``i == axis``
+    TypeError:
+        * if one of the attributes in ``extra`` does not have the same
+          type in ``dat`` and ``dat2``
+        * if one of the attributes in ``extra`` has an unsupported type
+
+    Examples
+    --------
+
+    >>> # concatenate two continuous data objects, and their markers
+    >>> cnt.markers
+    [[0, 'a'], [10, 'b']]
+    >>> cnt2.markers
+    [[20, 'c'], [30, 'd']]
+    >>> cnt = append(cnt, cnt2, extra=['markers'])
+    >>> cnt.markers
+    [[0, 'a'], [10, 'b'], [20, 'c'], [30, 'd']]
+
+    See Also
+    --------
+    append_cnt, append_epo, append_channels
+
+    """
+    assert dat.data.ndim == dat2.data.ndim
+    for i in range(dat.data.ndim):
+        assert dat.names[i] == dat2.names[i]
+        assert dat.units[i] == dat2.units[i]
+        if i == axis:
+            continue
+        assert dat.data.shape[i] == dat2.data.shape[i]
+        assert np.all(dat.axes[i] == dat2.axes[i])
+    data = np.concatenate([dat.data, dat2.data], axis=axis)
+    axes = dat.axes[:]
+    axes[axis] = np.concatenate([dat.axes[axis], dat2.axes[axis]])
+    dat_new = dat.copy(data=data, axes=axes)
+    if extra:
+        for attr in extra:
+            a1 = getattr(dat, attr)[:]
+            a2 = getattr(dat2, attr)[:]
+            if type(a1) != type(a2):
+                raise TypeError('%s must have the same type' % attr)
+            t = type(a1)
+            if t == list:
+                a1.extend(a2)
+            elif t == np.ndarray:
+                a1 = np.concatenate([a1, a2])
+            else:
+                raise TypeError('Concatenation of type %s is not supported.' % t)
+            setattr(dat_new, attr, a1)
+    return dat_new
+
+
 def band_pass(dat, low, high, timeaxis=-2):
     """Band pass filter the data.
 
