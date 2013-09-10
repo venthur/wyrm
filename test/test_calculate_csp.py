@@ -29,7 +29,7 @@ class TestCalculateCSP(unittest.TestCase):
         # X = As + noise
         self.A = np.random.randn(self.CHANNELS, self.SOURCES)
         # our 'signal' which 50 epochs, 100 samples and 10 channels
-        self.X = np.zeros((self.EPOCHS, self.SAMPLES, self.CHANNELS))
+        self.X = np.empty((self.EPOCHS, self.SAMPLES, self.CHANNELS))
         for i in range(self.EPOCHS):
             self.X[i] = np.dot(self.A, self.s[i].T).T
         noise = np.random.randn(self.EPOCHS, self.SAMPLES, self.CHANNELS) * 0.01
@@ -67,7 +67,7 @@ class TestCalculateCSP(unittest.TestCase):
         W, A_est, d = calculate_csp(self.X[::2], self.X[1::2])
         # applying the filter to X gives us s_est which should be almost
         # equal s
-        s_est = np.zeros(self.s.shape)
+        s_est = np.empty(self.s.shape)
         for i in range(self.EPOCHS):
             s_est[i] = np.dot(self.X[i], W[:, [0, -1]])
         # correct for scaling, and sign
