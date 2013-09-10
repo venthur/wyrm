@@ -89,7 +89,9 @@ def load_brain_vision_data(vhdr):
     resolutions = [file_dict['Channel Infos']['Ch%i' % (i + 1)] for i in range(n_channels)]
     resolutions = map(lambda x: float(x.split(',')[2]), resolutions)
     # assert all channels have the same resolution of 0.1
-    assert all([i == 0.1 for i in resolutions])
+    # FIXME: that is not always true, for example if we measure pulse or
+    # emg
+    #assert all([i == 0.1 for i in resolutions])
     # some assumptions about the data...
     assert file_dict['Common Infos']['DataFormat'] == 'BINARY'
     assert file_dict['Common Infos']['DataOrientation'] == 'MULTIPLEXED'
