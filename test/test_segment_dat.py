@@ -51,6 +51,15 @@ class TestSegmentDat(unittest.TestCase):
         epo = segment_dat(self.dat, mrk_def, [-400, 400])
         self.assertEqual(epo.data.shape[0], 0)
 
+    def test_segment_dat_with_unequally_sized_data(self):
+        """Segmentation must ignore too short or too long chunks in the result."""
+        # We create a marker that is too close to the beginning of the
+        # data, so its cnt will not bee of length [-400, 400] ms. It
+        # should not appear in the resulting epo
+        self.dat.markers.append([100, 'M1'])
+        epo = segment_dat(self.dat, self.mrk_def, [-400, 400])
+        self.assertEqual(epo.data.shape[0], 3)
+
     def test_segment_dat_copy(self):
         """segment_dat must not modify arguments."""
         cpy = self.dat.copy()

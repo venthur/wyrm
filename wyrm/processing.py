@@ -159,6 +159,9 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
     ``ival`` along the ``timeaxis``. The returned ``dat`` object stores
     those slices and the class each slice belongs to.
 
+    Epochs that are too close to the borders and thus too short are
+    ignored.
+
     If the segmentation does not result in any epochs (i.e. the markers
     in ``marker_def`` could not be found in ``dat``, the resulting
     dat.data will be an empty array.
@@ -204,6 +207,8 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
     assert hasattr(dat, 'fs')
     assert hasattr(dat, 'markers')
     assert ival[0] <= ival[1]
+    # the expected length of each cnt in the resulted epo
+    expected_samples = dat.fs * (ival[1] - ival[0]) / 1000
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
@@ -213,6 +218,9 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
                 mask = (t+ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < t+ival[1])
                 d = dat.data.compress(mask, timeaxis)
                 d = np.expand_dims(d, axis=0)
+                if d.shape[timeaxis] != expected_samples:
+                    # result is too short or too long, ignore it
+                    continue
                 data.append(d)
                 classes.append(class_idx)
     data = np.concatenate(data, axis=0) if len(data) > 0 else np.array(data)
