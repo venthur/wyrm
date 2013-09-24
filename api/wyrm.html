@@ -787,6 +787,11 @@ interval, this method looks for markers as defined in <tt class="docutils litera
 and slices the dat according to the time interval given with
 <tt class="docutils literal"><span class="pre">ival</span></tt> along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt>. The returned <tt class="docutils literal"><span class="pre">dat</span></tt> object stores
 those slices and the class each slice belongs to.</p>
+<p>Epochs that are too close to the borders and thus too short are
+ignored.</p>
+<p>If the segmentation does not result in any epochs (i.e. the markers
+in <tt class="docutils literal"><span class="pre">marker_def</span></tt> could not be found in <tt class="docutils literal"><span class="pre">dat</span></tt>, the resulting
+dat.data will be an empty array.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1436,11 +1441,6 @@ pairs after the shallow- and before the deep copy. If no
 </li>
 </ul>
 
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/api/wyrm.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">

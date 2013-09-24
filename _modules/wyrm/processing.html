@@ -278,28 +278,34 @@
     <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span> <span class="n">class_names</span><span class="o">=</span><span class="n">class_names</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="append"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">smartypants</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="append"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Append ``dat2`` to ``dat``.</span>
 
-<span class="sd">    This method will append ``dat2`` to ``dat`` and return the result.</span>
-<span class="sd">    It appends the ``data`` along ``axis`` and also appends the</span>
-<span class="sd">    ``axes[axis]``.</span>
+<span class="sd">    This method creates a copy of ``dat`` (with all attributes),</span>
+<span class="sd">    concatenates ``dat.data`` and ``dat2.data`` along ``axis`` as well</span>
+<span class="sd">    as ``dat.axes[axis]`` and ``dat2.axes[axis]``. If present, it will</span>
+<span class="sd">    concatenate the attributes in ``extra`` as well and return the</span>
+<span class="sd">    result.</span>
 
-<span class="sd">    The method will do various checks to test if appending the data</span>
-<span class="sd">    makes sense or will give a consisten result.</span>
+<span class="sd">    It also performs checks if the dimensions and lengths of ``data``</span>
+<span class="sd">    and ``axes`` match and test if ``units`` and ``names`` are equal.</span>
 
-<span class="sd">    Parameters</span>
+<span class="sd">    Since ``append`` cannot know how to deal with the various attributes</span>
+<span class="sd">    ``dat`` and ``dat2`` might have, it only copies the attributes of</span>
+<span class="sd">    ``dat`` and deals with the attributes it knows about, namely:</span>
+<span class="sd">    ``data``, ``axes``, ``names``, and ``units``.</span>
+
+<span class="sd">     Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    dat, dat2 : Data</span>
-<span class="sd">    smartypants : Boolean, optional</span>
-<span class="sd">        if true try to append continuous and epoched data correctly by</span>
-<span class="sd">        checking for ``class_names`` and ``markers`` (default True), if</span>
-<span class="sd">        false, append only appends ``data``, ``axes``, ``names``, and</span>
-<span class="sd">        ``units``</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        the axis along which to concatenate. The default axis (0) does</span>
 <span class="sd">        the right thing for continuous and epoched data as it</span>
 <span class="sd">        concatenates along the time- or the class-axis respectively.</span>
+<span class="sd">    extra : list of strings, optional</span>
+<span class="sd">        a list of attributes in ``dat`` and ``dat2`` to concatenate as</span>
+<span class="sd">        well. Currently the attributes must have the types ``list`` or</span>
+<span class="sd">        ``ndarray``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -308,63 +314,137 @@
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
-<span class="sd">    AssertionError : if one or more of the following is not true:</span>
-<span class="sd">        * the dimensions of ``.data`` match</span>
-<span class="sd">        * ``names[i]``, ``units[i]``, ``axes[i]`` and ``shape[i]`` are</span>
-<span class="sd">          equal in ``dat`` and ``dat2`` for all ``i`` except for ``i ==</span>
-<span class="sd">          axis``</span>
-<span class="sd">        * if ``smartypants == True``: if ``dat`` or ``dat2`` has the</span>
-<span class="sd">          ``class_names`` attribute, the other must have it too. Same</span>
-<span class="sd">          goes for ``markers``</span>
+<span class="sd">    AssertionError : if one of the following is true:</span>
+<span class="sd">        * the dimensions of ``.data`` do not match</span>
+<span class="sd">        * ``names`` are not equal</span>
+<span class="sd">        * ``units`` are not equal</span>
+<span class="sd">        * ``data.shape[i]`` are not equal for all i except ``i == axis``</span>
+<span class="sd">        * ``axes[i]`` are not equal for all i except ``i == axis``</span>
+<span class="sd">    TypeError:</span>
+<span class="sd">        * if one of the attributes in ``extra`` does not have the same</span>
+<span class="sd">          type in ``dat`` and ``dat2``</span>
+<span class="sd">        * if one of the attributes in ``extra`` has an unsupported type</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; # concatenate two continuous data objects, and their markers</span>
+<span class="sd">    &gt;&gt;&gt; cnt.markers</span>
+<span class="sd">    [[0, &#39;a&#39;], [10, &#39;b&#39;]]</span>
+<span class="sd">    &gt;&gt;&gt; cnt2.markers</span>
+<span class="sd">    [[20, &#39;c&#39;], [30, &#39;d&#39;]]</span>
+<span class="sd">    &gt;&gt;&gt; cnt = append(cnt, cnt2, extra=[&#39;markers&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; cnt.markers</span>
+<span class="sd">    [[0, &#39;a&#39;], [10, &#39;b&#39;], [20, &#39;c&#39;], [30, &#39;d&#39;]]</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    append_cnt, append_epo</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ndims</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">ndims</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">axis</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">smartypants</span><span class="p">:</span>
-        <span class="n">extra</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat2</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">):</span>
-            <span class="c"># if any of dat or dat2 has .class_names, the other must</span>
-            <span class="c"># have it too</span>
-            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat2</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">class_names</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">class_names</span>
-            <span class="n">extra</span><span class="p">[</span><span class="s">&#39;class_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">class_names</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat2</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">):</span>
-            <span class="c"># if one has markers, the other must have it too</span>
-            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat2</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">)</span>
-            <span class="n">markers</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">markers</span><span class="p">[:]</span>
-            <span class="n">markers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dat2</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span>
-            <span class="n">extra</span><span class="p">[</span><span class="s">&#39;markers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">markers</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dat2</span><span class="o">.</span><span class="n">data</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">axis</span><span class="p">]])</span>
-    <span class="k">if</span> <span class="n">smartypants</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
-        <span class="n">extra</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+    <span class="n">dat_new</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">extra</span><span class="p">:</span>
+            <span class="n">a1</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[:]</span>
+            <span class="n">a2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dat2</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[:]</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">a2</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> must have the same type&#39;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">a1</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+                <span class="n">a1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Concatenation of type </span><span class="si">%s</span><span class="s"> is not supported.&#39;</span> <span class="o">%</span> <span class="n">t</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">dat_new</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">a1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat_new</span>
 
 </div>
-<div class="viewcode-block" id="append_cnt"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.append_cnt">[docs]</a><span class="k">def</span> <span class="nf">append_cnt</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="n">cnt</span> <span class="o">=</span> <span class="n">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
-    <span class="n">markers</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">markers</span><span class="p">[:]</span>
-    <span class="n">markers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dat2</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span>
-    <span class="n">cnt</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span>
+<div class="viewcode-block" id="append_cnt"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.append_cnt">[docs]</a><span class="k">def</span> <span class="nf">append_cnt</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Append two continuous data objects.</span>
+
+<span class="sd">    This method just calls :func:`append`. If both ``dat`` and ``dat2``</span>
+<span class="sd">    have the ``markers`` attribute it will add ``&#39;markers&#39;`` to</span>
+<span class="sd">    ``extra``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat, dat2 : Data</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">    extra: list of strings, optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    append, append_epo</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; cnt = append_cnt(cnt, cnt2)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat2</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">extra</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;markers&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">extra</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;markers&#39;</span><span class="p">)</span>
+    <span class="n">cnt</span> <span class="o">=</span> <span class="n">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">extra</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cnt</span>
 
 </div>
-<div class="viewcode-block" id="append_epo"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.append_epo">[docs]</a><span class="k">def</span> <span class="nf">append_epo</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="n">epo</span> <span class="o">=</span> <span class="n">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">)</span>
-    <span class="n">epo</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">class_names</span>
-    <span class="k">return</span> <span class="n">epo</span>
+<div class="viewcode-block" id="append_epo"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.append_epo">[docs]</a><span class="k">def</span> <span class="nf">append_epo</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Append two epoched data objects.</span>
 
-</div>
-<div class="viewcode-block" id="append_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.append_channels">[docs]</a><span class="k">def</span> <span class="nf">append_channels</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">chanaxis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">chanaxis</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">d</span>
+<span class="sd">    This method just calls :func:`append`. In addition to the errors</span>
+<span class="sd">    :func:`append` might throw, it will raise an error if the</span>
+<span class="sd">    ``class_names`` are not equal if present in both objects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat, dat2 : Data</span>
+<span class="sd">    classaxis : int, optional</span>
+<span class="sd">    extra : list of strings, optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : Data</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError :</span>
+<span class="sd">        if both objects have a ``class_names`` attribute, they must be</span>
+<span class="sd">        equal</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    append, append_cnt</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; epo = append_epo(epo, epo2)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat2</span><span class="p">,</span> <span class="s">&#39;class_names&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dat</span><span class="o">.</span><span class="n">class_names</span> <span class="o">!=</span> <span class="n">dat2</span><span class="o">.</span><span class="n">class_names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Incompatible class names.&#39;</span><span class="p">)</span>
+    <span class="n">epo</span> <span class="o">=</span> <span class="n">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">extra</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">epo</span>
 
 </div>
 <div class="viewcode-block" id="band_pass"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.band_pass">[docs]</a><span class="k">def</span> <span class="nf">band_pass</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
@@ -791,18 +871,6 @@
 <span class="sd">    http://en.wikipedia.org/wiki/Common_spatial_pattern</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># sven&#39;s super simple matlab code</span>
-    <span class="c"># function [W, A, lambda] = my_csp(X1, X2)</span>
-    <span class="c">#     % compute covariance matrices of the two classes</span>
-    <span class="c">#     C1 = compute_Covariance_Matrix(X1);</span>
-    <span class="c">#     C2 = compute_Covariance_Matrix(X2);</span>
-    <span class="c">#     % solution of CSP objective via generalized eigenvalue problem</span>
-    <span class="c">#     [W, D] = eig(C1-C2, C1+C2);</span>
-    <span class="c">#     % make sure the eigenvalues and eigenvectors are sorted correctly</span>
-    <span class="c">#     [lambda, sort_idx] = sort(diag(D), &#39;descend&#39;);</span>
-    <span class="c">#     W = W(:,sort_idx);</span>
-    <span class="c">#     A = inv(W)&#39;;</span>
-
     <span class="n">n_channels</span> <span class="o">=</span> <span class="n">class1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="c"># we need a matrix of the form (observations, channels) so we stack trials</span>
     <span class="c"># and time per channel together</span>
