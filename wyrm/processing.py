@@ -164,7 +164,8 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
 
     If the segmentation does not result in any epochs (i.e. the markers
     in ``marker_def`` could not be found in ``dat``, the resulting
-    dat.data will be an empty array.
+    dat.data will be an empty array with the expected number of
+    dimensions (``dat.data.ndim + 1``).
 
     Parameters
     ----------
@@ -223,7 +224,12 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
                     continue
                 data.append(d)
                 classes.append(class_idx)
-    data = np.concatenate(data, axis=0) if len(data) > 0 else np.array(data)
+    if data == []:
+        # we found no results, so we create an empy array with the
+        # correct number of dimensions (dat.data.ndim + 1)
+        data = np.array([]).reshape([0 for i in range(dat.data.ndim + 1)])
+    else:
+        data = np.concatenate(data, axis=0)
     axes = dat.axes[:]
     time = np.linspace(ival[0], ival[1], (ival[1] - ival[0]) / 1000 * dat.fs, endpoint=False)
     axes[timeaxis] = time
