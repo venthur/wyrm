@@ -68,6 +68,7 @@ class TestSegmentDat(unittest.TestCase):
         self.assertEqual(cpy, self.dat)
 
     def test_segment_dat_swapaxes(self):
+        """Segmentation must work with nonstandard axes."""
         epo = segment_dat(swapaxes(self.dat, 0, 1), self.mrk_def, [-400, 400], timeaxis=-1)
         # segment_dat added a new dimension
         epo = swapaxes(epo, 1, 2)
