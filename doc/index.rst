@@ -25,6 +25,7 @@ Wyrm's methods are grouped into several modules:
    wyrm.processing
    wyrm.plot
    wyrm.types
+   wyrm.ringbuffer
    wyrm.io
 
 Indices and tables
