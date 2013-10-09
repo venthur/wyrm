@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import time
-import resource
 
 import numpy as np
 from matplotlib import pyplot as plt
