@@ -33,6 +33,14 @@ wyrm Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`ringbuffer` Module
+------------------------
+
+.. automodule:: wyrm.ringbuffer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`tentensystem` Module
 --------------------------
 

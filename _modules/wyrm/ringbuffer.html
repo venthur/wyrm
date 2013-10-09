@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wyrm.ringbuffer &mdash; Wyrm alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="top" title="Wyrm alpha documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wyrm.ringbuffer</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+
+<span class="n">FS</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">BUFFER_TIME</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">CHANNELS</span> <span class="o">=</span> <span class="mi">128</span>
+
+
+<div class="viewcode-block" id="RingBuffer"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.ringbuffer.RingBuffer">[docs]</a><span class="k">class</span> <span class="nc">RingBuffer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Circular Buffer implementation.</span>
+
+<span class="sd">    This implementation has a guaranteed upper bound for read and write</span>
+<span class="sd">    operations as well as a constant memory usage, which is the size of</span>
+<span class="sd">    the maximum length of the buffer in memory.</span>
+
+<span class="sd">    Reading and writing will take at most the time it takes to copy a</span>
+<span class="sd">    continuous chunk of length ``MAXLEN`` in memory. E.g. for the</span>
+<span class="sd">    extreme case of storing the last 60 seconds of 64bit data, sampled</span>
+<span class="sd">    with 1kHz and 128 channels (~60MB), reading a full buffer will take</span>
+<span class="sd">    ~25ms, as well as writing when storing more than than 60 seconds at</span>
+<span class="sd">    once. Writing will be usually much faster, as one stores usually</span>
+<span class="sd">    only a few milliseconds of data per run. In that case writing will</span>
+<span class="sd">    be a fraction of a millisecond.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Ringbuffer.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape : (int, int)</span>
+<span class="sd">            the shape of the data and maximum length of the buffer</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">full</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="RingBuffer.append"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.ringbuffer.RingBuffer.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Append data to the Ringbuffer, overwriting old data if necessary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">full</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span>
+            <span class="n">l2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">l1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">l1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="n">l1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">l2</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">l1</span><span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">l2</span>
+</div>
+<div class="viewcode-block" id="RingBuffer.get"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.ringbuffer.RingBuffer.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all buffered data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data : ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">full</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="profile"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.ringbuffer.profile">[docs]</a><span class="k">def</span> <span class="nf">profile</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">iterations</span><span class="p">):</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">rb</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">rb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">rb</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+</div>
+<div class="viewcode-block" id="pretty_print"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.ringbuffer.pretty_print">[docs]</a><span class="k">def</span> <span class="nf">pretty_print</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Min: {min:7.3f}, Max: {max:7.3f}, Mean: {mean:7.3f}, Std: {std:7.3f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="nb">min</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="nb">max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="n">mean</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="n">std</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">times</span><span class="p">)))</span>
+
+</div>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.ringbuffer.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;#d33682&#39;</span><span class="p">,</span> <span class="s">&#39;#268bd2&#39;</span><span class="p">,</span> <span class="s">&#39;#859900&#39;</span><span class="p">,</span> <span class="s">&#39;#073642&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rb_cls</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">RingBuffer</span><span class="p">]):</span>
+        <span class="k">print</span> <span class="s">&quot;Testing {cls}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cls</span><span class="o">=</span><span class="n">rb_cls</span><span class="p">)</span>
+        <span class="c"># test big chunks</span>
+        <span class="n">rb</span> <span class="o">=</span> <span class="n">rb_cls</span><span class="p">((</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">))</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">profile</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="p">(</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;full&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">pretty_print</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="c"># full -1</span>
+        <span class="n">rb</span> <span class="o">=</span> <span class="n">rb_cls</span><span class="p">((</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">))</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">profile</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="p">(</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;full-1&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">pretty_print</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+         <span class="c"># small chunks</span>
+        <span class="n">rb</span> <span class="o">=</span> <span class="n">rb_cls</span><span class="p">((</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">))</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">profile</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="p">(</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;/10&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">pretty_print</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="c"># small chunks</span>
+        <span class="n">rb</span> <span class="o">=</span> <span class="n">rb_cls</span><span class="p">((</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">))</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">profile</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="p">(</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;/100&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">pretty_print</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="c"># small chunks</span>
+        <span class="n">rb</span> <span class="o">=</span> <span class="n">rb_cls</span><span class="p">((</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">))</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">profile</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="p">(</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;/1000&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">pretty_print</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+        <span class="n">rb</span> <span class="o">=</span> <span class="n">rb_cls</span><span class="p">((</span><span class="n">FS</span> <span class="o">*</span> <span class="n">BUFFER_TIME</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">))</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">profile</span><span class="p">(</span><span class="n">rb</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">CHANNELS</span><span class="p">),</span> <span class="mi">10000</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">pretty_print</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wyrm alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
