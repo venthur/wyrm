@@ -10,100 +10,8 @@ FS = 1000
 BUFFER_TIME = 60
 CHANNELS = 128
 
+
 class RingBuffer(object):
-
-    def __init__(self, shape):
-        self.shape = shape
-
-    def append(self, data):
-        pass
-
-    def get(self):
-        pass
-
-
-class NaiveRingBuffer(RingBuffer):
-
-    def __init__(self, shape):
-        super(NaiveRingBuffer, self).__init__(shape)
-        self.data = np.array([])
-        self.shape = shape
-
-    def append(self, data):
-        if len(self.data) == 0:
-            self.data = data
-        else:
-            self.data = np.append(self.data, data, axis=0)
-        self.data = self.data[-self.shape[0]:]
-
-    def get(self):
-        return self.data.copy()
-
-
-class BetterRingBuffer(RingBuffer):
-
-    def __init__(self, shape):
-        super(BetterRingBuffer, self).__init__(shape)
-        self.data = np.empty(self.shape)
-        self.len = 0
-
-    def append(self, data):
-        l = len(data)
-        if l == 0:
-            return
-        if l > self.shape[0]:
-            l = self.shape[0]
-            data = data[-l:]
-        self.data[:-l] = self.data[l:]
-        self.data[-l:] = data
-        self.len += l
-        if self.len >= self.shape[0]:
-            self.append = self.append_full
-            self.get = self.get_full
-
-    def get(self):
-        return self.data[-self.len:].copy()
-
-    def append_full(self, data):
-        l = len(data)
-        if l == 0:
-            return
-        if l > self.shape[0]:
-            l = self.shape[0]
-            data = data[-l:]
-        self.data[:-l] = self.data[l:]
-        self.data[-l:] = data
-
-    def get_full(self):
-        return self.data.copy()
-
-
-class LazyRingBuffer(RingBuffer):
-
-    def __init__(self, shape):
-        super(LazyRingBuffer, self).__init__(shape)
-        self.data = []
-        self.len = 0
-
-    def append(self, data):
-        l = len(data)
-        if l == 0:
-            return
-        self.data.append(data)
-        self.len += l
-
-        while self.len - len(self.data[0]) > self.shape[0]:
-            l = len(self.data[0])
-            self.data = self.data[1:]
-            self.len -= l
-
-    def get(self):
-        if len(self.data) == 0:
-            return np.array([])
-        return np.concatenate(self.data)[-self.shape[0]:]
-
-
-class FixedMemoryRingBuffer(RingBuffer):
     """Circular Buffer implementation.
 
     This implementation has a guaranteed upper bound for read and write
@@ -129,7 +37,7 @@ class FixedMemoryRingBuffer(RingBuffer):
             the shape of the data and maximum length of the buffer
 
         """
-        super(FixedMemoryRingBuffer, self).__init__(shape)
+        self.shape = shape
         self.data = np.empty(shape)
         self.full = False
         self.idx = 0
@@ -189,7 +97,7 @@ def pretty_print(times):
 
 def main():
     c = ['#d33682', '#268bd2', '#859900', '#073642']
-    for i, rb_cls in enumerate([NaiveRingBuffer, BetterRingBuffer, LazyRingBuffer, FixedMemoryRingBuffer]):
+    for i, rb_cls in enumerate([RingBuffer]):
         print "Testing {cls}".format(cls=rb_cls)
         # test big chunks
         rb = rb_cls((FS * BUFFER_TIME, CHANNELS))
@@ -217,7 +125,7 @@ def main():
         plt.plot(times, 'x', label='/1000', color=c[i])
         pretty_print(times)
         rb = rb_cls((FS * BUFFER_TIME, CHANNELS))
-        times = profile(rb, (1, CHANNELS), 100000)
+        times = profile(rb, (1, CHANNELS), 10000)
         plt.plot(times, '.', label='1', color=c[i])
         pretty_print(times)
     plt.legend()
