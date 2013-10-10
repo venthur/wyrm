@@ -170,3 +170,71 @@ class Data(object):
         return copy.deepcopy(obj)
 
 
+class RingBuffer(object):
+    """Circular Buffer implementation.
+
+    This implementation has a guaranteed upper bound for read and write
+    operations as well as a constant memory usage, which is the size of
+    the maximum length of the buffer in memory.
+
+    Reading and writing will take at most the time it takes to copy a
+    continuous chunk of length ``MAXLEN`` in memory. E.g. for the
+    extreme case of storing the last 60 seconds of 64bit data, sampled
+    with 1kHz and 128 channels (~60MB), reading a full buffer will take
+    ~25ms, as well as writing when storing more than than 60 seconds at
+    once. Writing will be usually much faster, as one stores usually
+    only a few milliseconds of data per run. In that case writing will
+    be a fraction of a millisecond.
+
+    """
+    def __init__(self, shape):
+        """Initialize the Ringbuffer.
+
+        Parameters
+        ----------
+        shape : (int, int)
+            the shape of the data and maximum length of the buffer
+
+        """
+        self.shape = shape
+        self.data = np.empty(shape)
+        self.full = False
+        self.idx = 0
+
+    def append(self, data):
+        """Append data to the Ringbuffer, overwriting old data if necessary.
+
+        Parameters
+        ----------
+        data : ndarray
+
+        """
+        if len(data) > self.shape[0]:
+            data = data[-self.shape[0]:]
+        if len(data) == 0:
+            return
+        if self.idx + len(data) < self.shape[0]:
+            self.data[self.idx:self.idx+len(data)] = data
+            self.idx += len(data)
+        else:
+            self.full = True
+            l1 = self.shape[0] - self.idx
+            l2 = len(data) - l1
+            self.data[-l1:] = data[:l1]
+            self.data[:l2] = data[l1:]
+            self.idx = l2
+
+    def get(self):
+        """Get all buffered data.
+
+        Returns
+        -------
+        data : ndarray
+
+        """
+        if self.full:
+            return np.concatenate([self.data[self.idx:], self.data[:self.idx]], axis=0)
+        else:
+            return self.data[:self.idx].copy()
+
+

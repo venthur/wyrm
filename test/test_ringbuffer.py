@@ -5,13 +5,13 @@ import unittest
 
 import numpy as np
 
-from wyrm import ringbuffer
+from wyrm.types import RingBuffer
 
 
-class TestRingbuffer(unittest.TestCase):
+class TestRingBuffer(unittest.TestCase):
 
     def setUp(self):
-        self.rb = ringbuffer.RingBuffer((10, ))
+        self.rb = RingBuffer((10, ))
 
     def test_add_empty(self):
         # start with emtpy rb
