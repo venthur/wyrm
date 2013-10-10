@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 
+
 import time
 
 import numpy as np
-from matplotlib import pyplot as plt
-
-
-FS = 1000
-BUFFER_TIME = 60
-CHANNELS = 128
 
 
 class RingBuffer(object):
@@ -96,6 +91,12 @@ def pretty_print(times):
 
 
 def main():
+    from matplotlib import pyplot as plt
+
+    FS = 1000
+    BUFFER_TIME = 60
+    CHANNELS = 128
+
     c = ['#d33682', '#268bd2', '#859900', '#073642']
     for i, rb_cls in enumerate([RingBuffer]):
         print "Testing {cls}".format(cls=rb_cls)
@@ -125,7 +126,7 @@ def main():
         plt.plot(times, 'x', label='/1000', color=c[i])
         pretty_print(times)
         rb = rb_cls((FS * BUFFER_TIME, CHANNELS))
-        times = profile(rb, (1, CHANNELS), 10000)
+        times = profile(rb, (10, CHANNELS), 10000)
         plt.plot(times, '.', label='1', color=c[i])
         pretty_print(times)
     plt.legend()
