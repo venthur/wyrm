@@ -259,7 +259,7 @@ def append(dat, dat2, axis=0, extra=None):
     ``dat`` and deals with the attributes it knows about, namely:
     ``data``, ``axes``, ``names``, and ``units``.
 
-     Parameters
+    Parameters
     ----------
     dat, dat2 : Data
     axis : int, optional
