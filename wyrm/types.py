@@ -1,7 +1,8 @@
 
 """Data type definitions.
 
-This module provides the basic data types for Wyrm.
+This module provides the basic data types for Wyrm, like the
+:class:`Data` and :class:`RingBuffer` classes.
 
 """
 
@@ -186,19 +187,49 @@ class RingBuffer(object):
     only a few milliseconds of data per run. In that case writing will
     be a fraction of a millisecond.
 
+    Parameters
+    ----------
+    length : int
+        the length of the ring buffer in samples
+
+    Attributes
+    ----------
+    length : int
+        the length of the ring buffer in samples
+    data : ndarray
+        the contents of the ring buffer
+    full : boolean
+        indicates if the buffer has at least ``length`` elements stored
+    idx : int
+        the starting position of the oldest data in the ring buffer
+
+    Examples
+    --------
+
+    >>> rb = RingBuffer(length)
+    >>> while True:
+    ...     rb.append(amp.get_data())
+    ...     buffered = rb.get()
+    ...     # do something with buffered
+
+
     """
-    def __init__(self, shape):
+    def __init__(self, length):
         """Initialize the Ringbuffer.
 
         Parameters
         ----------
-        shape : (int, int)
-            the shape of the data and maximum length of the buffer
+        length : int
+            the length of the data and maximum length of the buffer
 
         """
-        self.shape = shape
-        self.data = np.empty(shape)
+        # the maximum length of the ring buffer
+        self.length = length
+        self.data = None
+        # indicate if the buffer write was wrapped around at least once
         self.full = False
+        # the index where to insert new data (= the start of the oldest
+        # data)
         self.idx = 0
 
     def append(self, data):
@@ -208,17 +239,33 @@ class RingBuffer(object):
         ----------
         data : ndarray
 
+        Raises
+        ------
+        ValueError
+            if the [1:]-dimensions (all but the first one) of ``data``
+            does not match the ring buffer dimensions
+
         """
-        if len(data) > self.shape[0]:
-            data = data[-self.shape[0]:]
+        # we have nothing to append
         if len(data) == 0:
             return
-        if self.idx + len(data) < self.shape[0]:
+        # we append the first time, initialize .data with the correct
+        # shape
+        if self.data is None:
+            buffershape = list(data.shape)
+            buffershape[0] = self.length
+            self.data = np.empty(buffershape)
+        # incoming data is bigger than the buffer's capacity
+        if len(data) > self.length:
+            data = data[-self.length:]
+        # we can write without wrapping around the buffer's end
+        if self.idx + len(data) < self.length:
             self.data[self.idx:self.idx+len(data)] = data
             self.idx += len(data)
+        # we will wrap around the buffer's end
         else:
             self.full = True
-            l1 = self.shape[0] - self.idx
+            l1 = self.length - self.idx
             l2 = len(data) - l1
             self.data[-l1:] = data[:l1]
             self.data[:l2] = data[l1:]
@@ -230,10 +277,17 @@ class RingBuffer(object):
         Returns
         -------
         data : ndarray
+            the full contents of the ring buffer if the buffer is emtpy
+            an empty ndarray is returned
 
         """
+        # no data has ever been appended to this ringbuffer
+        if self.data is None:
+            return np.array([])
+        # the ringbuffer wrapped around at least once
         if self.full:
             return np.concatenate([self.data[self.idx:], self.data[:self.idx]], axis=0)
+        # the ringbuffer hansn't been filled completely yet
         else:
             return self.data[:self.idx].copy()
 
