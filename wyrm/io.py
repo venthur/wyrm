@@ -44,7 +44,8 @@ def load_brain_vision_data(vhdr):
 
     Raises
     ------
-    AssertionError : If one of the consistency checks fails
+    AssertionError
+        If one of the consistency checks fails
 
     Examples
     --------

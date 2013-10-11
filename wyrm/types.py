@@ -91,8 +91,8 @@ class Data(object):
 
         Raises
         ------
-        AssertionError : if the lengths of the parameters are not
-            correct.
+        AssertionError
+            if the lengths of the parameters are not correct.
 
         """
         assert data.ndim == len(axes) == len(names) == len(units)

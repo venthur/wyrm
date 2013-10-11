@@ -190,7 +190,7 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
 
     Raises
     ------
-    AssertionError :
+    AssertionError
         if ``dat`` has not ``.fs`` or ``.markers`` attribute or if
         ``ival[0] > ival[1]``.
 
@@ -278,13 +278,14 @@ def append(dat, dat2, axis=0, extra=None):
 
     Raises
     ------
-    AssertionError : if one of the following is true:
-        * the dimensions of ``.data`` do not match
-        * ``names`` are not equal
-        * ``units`` are not equal
-        * ``data.shape[i]`` are not equal for all i except ``i == axis``
-        * ``axes[i]`` are not equal for all i except ``i == axis``
-    TypeError:
+    AssertionError
+        if one of the following is true:
+            * the dimensions of ``.data`` do not match
+            * ``names`` are not equal
+            * ``units`` are not equal
+            * ``data.shape[i]`` are not equal for all i except ``i == axis``
+            * ``axes[i]`` are not equal for all i except ``i == axis``
+    TypeError
         * if one of the attributes in ``extra`` does not have the same
           type in ``dat`` and ``dat2``
         * if one of the attributes in ``extra`` has an unsupported type
@@ -390,7 +391,7 @@ def append_epo(dat, dat2, classaxis=0, extra=None):
 
     Raises
     ------
-    ValueError :
+    ValueError
         if both objects have a ``class_names`` attribute, they must be
         equal
 
@@ -516,7 +517,8 @@ def select_epochs(dat, indices, invert=False, classaxis=0):
 
     Raises
     ------
-    AssertionError : if ``dat`` has no ``.class_names`` attribute.
+    AssertionError
+        if ``dat`` has no ``.class_names`` attribute.
 
     See Also
     --------
@@ -597,7 +599,8 @@ def select_classes(dat, indices, invert=False, classaxis=0):
 
     Raises
     ------
-    AssertionError : if ``dat`` has no ``.class_names`` attribute.
+    AssertionError
+        if ``dat`` has no ``.class_names`` attribute.
 
     See Also
     --------
@@ -700,9 +703,10 @@ def subsample(dat, freq, timeaxis=-2):
 
     Raises
     ------
-    AssertionError : if ``freq`` is not a whole number divisor of ``dat.fs``
-    AssertionError : if ``dat`` has no ``.fs`` attribute
-    AssertionError : if ``dat.data.shape[timeaxis] != len(dat.axes[timeaxis])``
+    AssertionError
+        * if ``freq`` is not a whole number divisor of ``dat.fs``
+        * if ``dat`` has no ``.fs`` attribute
+        * if ``dat.data.shape[timeaxis] != len(dat.axes[timeaxis])``
 
     """
     assert hasattr(dat, 'fs')
@@ -880,7 +884,8 @@ def calculate_classwise_average(dat, classaxis=0):
 
     Raises
     ------
-    AssertionError : if the ``dat`` has no ``.class_names`` attribute.
+    AssertionError
+        if the ``dat`` has no ``.class_names`` attribute.
 
     Examples
     --------
