@@ -86,7 +86,10 @@ marker is a tuple of <tt class="docutils literal"><span class="pre">(time</span>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last"><strong>AssertionError</strong> : If one of the consistency checks fails</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>If one of the consistency checks fails</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -236,17 +239,21 @@ well. Currently the attributes must have the types <tt class="docutils literal">
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> : if one of the following is true:</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote>
-<div><ul class="simple">
+<div><dl class="docutils">
+<dt>if one of the following is true:</dt>
+<dd><ul class="first last simple">
 <li>the dimensions of <tt class="docutils literal"><span class="pre">.data</span></tt> do not match</li>
 <li><tt class="docutils literal"><span class="pre">names</span></tt> are not equal</li>
 <li><tt class="docutils literal"><span class="pre">units</span></tt> are not equal</li>
 <li><tt class="docutils literal"><span class="pre">data.shape[i]</span></tt> are not equal for all i except <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">axis</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">axes[i]</span></tt> are not equal for all i except <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">axis</span></tt></li>
 </ul>
+</dd>
+</dl>
 </div></blockquote>
-<p><strong>TypeError:</strong> :</p>
+<p><strong>TypeError</strong> :</p>
 <blockquote class="last">
 <div><ul class="simple">
 <li>if one of the attributes in <tt class="docutils literal"><span class="pre">extra</span></tt> does not have the same
@@ -325,7 +332,7 @@ have the <tt class="docutils literal"><span class="pre">markers</span></tt> attr
 <tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>ValueError :</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
 <blockquote class="last">
 <div><p>if both objects have a <tt class="docutils literal"><span class="pre">class_names</span></tt> attribute, they must be
 equal</p>
@@ -402,7 +409,10 @@ the number of different classes.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last"><strong>AssertionError</strong> : if the <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>if the <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -824,7 +834,7 @@ included, the endpoint is not (like: <tt class="docutils literal"><span class="p
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError :</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>if <tt class="docutils literal"><span class="pre">dat</span></tt> has not <tt class="docutils literal"><span class="pre">.fs</span></tt> or <tt class="docutils literal"><span class="pre">.markers</span></tt> attribute or if
 <tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pre">&gt;</span> <span class="pre">ival[1]</span></tt>.</p>
@@ -945,7 +955,10 @@ included.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -1006,7 +1019,10 @@ included.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -1181,9 +1197,14 @@ sub-sampling.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">freq</span></tt> is not a whole number divisor of <tt class="docutils literal"><span class="pre">dat.fs</span></tt></p>
-<p><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.fs</span></tt> attribute</p>
-<p class="last"><strong>AssertionError</strong> : if <tt class="docutils literal"><span class="pre">dat.data.shape[timeaxis]</span> <span class="pre">!=</span> <span class="pre">len(dat.axes[timeaxis])</span></tt></p>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>if <tt class="docutils literal"><span class="pre">freq</span></tt> is not a whole number divisor of <tt class="docutils literal"><span class="pre">dat.fs</span></tt></li>
+<li>if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.fs</span></tt> attribute</li>
+<li>if <tt class="docutils literal"><span class="pre">dat.data.shape[timeaxis]</span> <span class="pre">!=</span> <span class="pre">len(dat.axes[timeaxis])</span></tt></li>
+</ul>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -1282,7 +1303,8 @@ removed and <tt class="docutils literal"><span class="pre">timeaxis</span></tt> 
 <div class="section" id="module-wyrm.types">
 <span id="types-module"></span><h2><a class="reference external" href="http://docs.python.org/library/types.html#types" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">types</span></tt></a> Module<a class="headerlink" href="#module-wyrm.types" title="Permalink to this headline">¶</a></h2>
 <p>Data type definitions.</p>
-<p>This module provides the basic data types for Wyrm.</p>
+<p>This module provides the basic data types for Wyrm, like the
+<a class="reference internal" href="#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-class docutils literal"><span class="pre">Data</span></tt></a> and <a class="reference internal" href="#wyrm.types.RingBuffer" title="wyrm.types.RingBuffer"><tt class="xref py py-class docutils literal"><span class="pre">RingBuffer</span></tt></a> classes.</p>
 <dl class="class">
 <dt id="wyrm.types.Data">
 <em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">Data</tt><big>(</big><em>data</em>, <em>axes</em>, <em>names</em>, <em>units</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#Data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.Data" title="Permalink to this definition">¶</a></dt>
@@ -1420,7 +1442,7 @@ pairs after the shallow- and before the deep copy. If no
 
 <dl class="class">
 <dt id="wyrm.types.RingBuffer">
-<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">RingBuffer</tt><big>(</big><em>shape</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">RingBuffer</tt><big>(</big><em>length</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Circular Buffer implementation.</p>
 <p>This implementation has a guaranteed upper bound for read and write
@@ -1434,14 +1456,56 @@ with 1kHz and 128 channels (~60MB), reading a full buffer will take
 once. Writing will be usually much faster, as one stores usually
 only a few milliseconds of data per run. In that case writing will
 be a fraction of a millisecond.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>length</strong> : int</p>
+<blockquote class="last">
+<div><p>the length of the ring buffer in samples</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Examples</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">rb</span> <span class="o">=</span> <span class="n">RingBuffer</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">rb</span> <span class="o">=</span> <span class="n">RingBuffer</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">rb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
 <span class="gp">... </span>    <span class="n">buffered</span> <span class="o">=</span> <span class="n">rb</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 <span class="gp">... </span>    <span class="c"># do something with buffered</span>
 </pre></div>
 </div>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="21%" />
+<col width="71%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>length</td>
+<td>int</td>
+<td>the length of the ring buffer in samples</td>
+</tr>
+<tr class="row-even"><td>data</td>
+<td>ndarray</td>
+<td>the contents of the ring buffer</td>
+</tr>
+<tr class="row-odd"><td>markers</td>
+<td>array of (int, str)</td>
+<td>the markers</td>
+</tr>
+<tr class="row-even"><td>full</td>
+<td>boolean</td>
+<td>indicates if the buffer has at least <tt class="docutils literal"><span class="pre">length</span></tt> elements stored</td>
+</tr>
+<tr class="row-odd"><td>idx</td>
+<td>int</td>
+<td>the starting position of the oldest data in the ring buffer</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -1449,23 +1513,39 @@ be a fraction of a millisecond.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.RingBuffer.append" title="wyrm.types.RingBuffer.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>(data)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.RingBuffer.append" title="wyrm.types.RingBuffer.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>(data[,&nbsp;markers])</td>
 <td>Append data to the Ringbuffer, overwriting old data if necessary.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#wyrm.types.RingBuffer.get" title="wyrm.types.RingBuffer.get"><tt class="xref py py-obj docutils literal"><span class="pre">get</span></tt></a>()</td>
 <td>Get all buffered data.</td>
 </tr>
+<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.RingBuffer.move_markers" title="wyrm.types.RingBuffer.move_markers"><tt class="xref py py-obj docutils literal"><span class="pre">move_markers</span></tt></a>(markers,&nbsp;steps)</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="wyrm.types.RingBuffer.append">
-<tt class="descname">append</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer.append" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">append</tt><big>(</big><em>data</em>, <em>markers=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append data to the Ringbuffer, overwriting old data if necessary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>data</strong> : ndarray</td>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray</p>
+<p><strong>markers</strong> : array of (int, str)</p>
+<blockquote>
+<div><p>the markers. the first int is the position of the marker
+relative to the sample in <tt class="docutils literal"><span class="pre">data</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote class="last">
+<div><p>if the [1:]-dimensions (all but the first one) of <tt class="docutils literal"><span class="pre">data</span></tt>
+does not match the ring buffer dimensions</p>
+</div></blockquote>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1475,15 +1555,31 @@ be a fraction of a millisecond.</p>
 <dt id="wyrm.types.RingBuffer.get">
 <tt class="descname">get</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all buffered data.</p>
+<p>The returned data will have <em>at most</em> the length of <tt class="docutils literal"><span class="pre">length</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><strong>data</strong> : ndarray</td>
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray</p>
+<blockquote>
+<div><p>the full contents of the ring buffer if the buffer is emtpy
+an empty ndarray is returned</p>
+</div></blockquote>
+<p><strong>markers</strong> : array of (int, str)</p>
+<blockquote class="last">
+<div><p>the markers for the contents of the buffer with the
+positions relative to the samples in <tt class="docutils literal"><span class="pre">data</span></tt></p>
+</div></blockquote>
+</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="method">
+<dt id="wyrm.types.RingBuffer.move_markers">
+<tt class="descname">move_markers</tt><big>(</big><em>markers</em>, <em>steps</em><big>)</big><a class="headerlink" href="#wyrm.types.RingBuffer.move_markers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
