@@ -57,6 +57,7 @@ class TestRingBuffer(unittest.TestCase):
         np.testing.assert_array_equal(self.rb.get(), d0)
 
     def test_add_with_mismatching_dimensions(self):
+        """Appending data with mismatching dimension must raise a ValueError."""
         d0 = np.arange(8).reshape(2, 4)
         d1 = np.arange(6).reshape(2, 3)
         self.rb.append(d0)
