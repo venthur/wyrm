@@ -9,8 +9,11 @@ virtualenv:
 
 install: 
 # numpy fails to build in the travis environment as well as scipy
-  - "sudo apt-get install python-numpy python-scipy"
-  - "sudo apt-get install python3-numpy python3-scipy"
+  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev"
+  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev"
+#  - "sudo apt-get install python-scipy python3-scipy"
+#  - "sudo apt-get install python-numpy python-scipy"
+#- "sudo apt-get install python3-numpy python3-scipy"
   - "pip install -r requirements.txt --use-mirrors"
 
 script: "./testall.sh"
