@@ -1,20 +1,24 @@
 language: "python"
 
 python:
-  - "2.7"
-  - "3.3"
+    - 2.7
+    - 3.3
 
 virtualenv:
-  system_site_packages: true
+    system_site_packages: true
 
 before_install:
-  - sudo apt-get update
+    - sudo apt-get update
+    - sudo apt-get build-dep python-numpy
+    - sudo apt-get build-dep python-scipy
+    - sudo apt-get build-dep python-matplotlib
+    - sudo apt-get build-dep python-sklearn
 
 install: 
-  - sudo apt-get install python-numpy python3-numpy
-  - sudo apt-get install python-scipy python3-scipy
-  - sudo apt-get install python-matplotlib
-  - sudo apt-get install python-sklearn
+    #  - sudo apt-get install python-numpy python3-numpy
+    #  - sudo apt-get install python-scipy python3-scipy
+    #  - sudo apt-get install python-matplotlib
+    #  - sudo apt-get install python-sklearn
     ## numpy build-dependencies
     #  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev python-nose"
     ## numpy dependencdies
