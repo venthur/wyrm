@@ -1,3 +1,8 @@
+Wyrm
+====
+
+[![Build Status](https://travis-ci.org/venthur/wyrm.png)](https://travis-ci.org/venthur/wyrm)
+
 About
 =====
 
