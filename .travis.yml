@@ -5,7 +5,7 @@ python:
   - "3.3"
 
 install: 
-  - sudo apt-get install python-numpy, python3-numpy, python-scipy, python3-scipy, python-matplotlib, python3-matplotlib, python-sklearn
+  - sudo apt-get install python-numpy python3-numpy python-scipy python3-scipy python-matplotlib python3-matplotlib python-sklearn
     ## numpy build-dependencies
     #  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev python-nose"
     ## numpy dependencdies
