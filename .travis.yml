@@ -8,8 +8,8 @@ virtualenv:
   system_site_packages: true
 
 install: 
-# numpy fails to build in the travis environment
-  - "sudo apt-get install python-numpy"
+# numpy fails to build in the travis environment as well as scipy
+  - "sudo apt-get install python-numpy python-scipy"
   - "pip install -r requirements.txt --use-mirrors"
 
 script: "./testall"
