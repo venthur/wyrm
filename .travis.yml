@@ -4,16 +4,11 @@ python:
   - "2.7"
   - "3.3"
 
-virtualenv:
-  system_site_packages: true
-
 install: 
-# numpy fails to build in the travis environment as well as scipy
+# numpy dependencies
   - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev"
-  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev"
-#  - "sudo apt-get install python-scipy python3-scipy"
-#  - "sudo apt-get install python-numpy python-scipy"
-#- "sudo apt-get install python3-numpy python3-scipy"
+# scipy dependencies
+  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-dev"
   - "pip install -r requirements.txt --use-mirrors"
 
 script: "./testall.sh"
