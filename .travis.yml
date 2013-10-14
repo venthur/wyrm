@@ -5,10 +5,14 @@ python:
   - "3.3"
 
 install: 
-# numpy dependencies
+# numpy build-dependencies
   - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev"
-# scipy dependencies
+# numpy dependencdies
+  - "sudo apt-get install libblas3 liblapack3
+# scipy build-dependencies
   - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-dev"
+# scipy dependencies
+  - "sudo apt-get install libblas3 liblapack3
   - "pip install -r requirements.txt --use-mirrors"
 
 script: "./testall.sh"
