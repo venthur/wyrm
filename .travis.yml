@@ -27,7 +27,7 @@ install:
     #  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-base-dev"
     ## scipy dependencies
     #  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
-      - pip install -r requirements.txt --use-mirrors --upgrade
+      - pip install -r requirements.txt --use-mirrors
 
 script: ./testall.sh
 
