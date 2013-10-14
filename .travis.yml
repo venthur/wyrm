@@ -6,7 +6,7 @@ python:
 
 install: 
 # numpy build-dependencies
-  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev"
+  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev python-nose"
 # numpy dependencdies
   - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
 # scipy build-dependencies
