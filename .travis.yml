@@ -3,31 +3,25 @@ language: "python"
 python:
     - 2.7
     - 3.3
+    - pypy
 
 virtualenv:
     system_site_packages: true
 
 before_install:
     - sudo apt-get update
-      #    - sudo apt-get build-dep python-numpy
-      #    - sudo apt-get build-dep python-scipy
-      #    - sudo apt-get build-dep python-matplotlib
-      #    - sudo apt-get build-dep python-sklearn
     - sudo apt-get install python-numpy python3-numpy
     - sudo apt-get install python-scipy python3-scipy
     - sudo apt-get install python-matplotlib
     - sudo apt-get install python-sklearn
- 
-install: 
-   ## numpy build-dependencies
-    #  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev python-nose"
-    ## numpy dependencdies
-    #  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
-    ## scipy build-dependencies
-    #  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-base-dev"
-    ## scipy dependencies
-    #  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
-      - pip install -r requirements.txt --use-mirrors
+
+install:
+     - pip install -r requirements.txt --use-mirrors
+
+matrix:
+    allow_failures:
+        - python: 3.3
+        - python: pypy
 
 script: ./testall.sh
 
