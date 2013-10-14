@@ -4,6 +4,9 @@ python:
   - "2.7"
   - "3.3"
 
+virtualenv:
+  system_site_packages: true
+
 install: 
   - sudo apt-get install python-numpy python3-numpy
   - sudo apt-get install python-scipy python3-scipy
@@ -17,7 +20,7 @@ install:
     #  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-base-dev"
     ## scipy dependencies
     #  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
-  - "pip install -r requirements.txt --use-mirrors"
+  - pip install -r requirements.txt --use-mirrors
 
-script: "./testall.sh"
+script: ./testall.sh
 
