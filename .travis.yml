@@ -9,17 +9,17 @@ virtualenv:
 
 before_install:
     - sudo apt-get update
-    - sudo apt-get build-dep python-numpy
-    - sudo apt-get build-dep python-scipy
-    - sudo apt-get build-dep python-matplotlib
-    - sudo apt-get build-dep python-sklearn
-
+      #    - sudo apt-get build-dep python-numpy
+      #    - sudo apt-get build-dep python-scipy
+      #    - sudo apt-get build-dep python-matplotlib
+      #    - sudo apt-get build-dep python-sklearn
+    - sudo apt-get install python-numpy python3-numpy
+    - sudo apt-get install python-scipy python3-scipy
+    - sudo apt-get install python-matplotlib
+    - sudo apt-get install python-sklearn
+ 
 install: 
-    #  - sudo apt-get install python-numpy python3-numpy
-    #  - sudo apt-get install python-scipy python3-scipy
-    #  - sudo apt-get install python-matplotlib
-    #  - sudo apt-get install python-sklearn
-    ## numpy build-dependencies
+   ## numpy build-dependencies
     #  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev python-nose"
     ## numpy dependencdies
     #  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
