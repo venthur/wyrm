@@ -8,11 +8,11 @@ install:
 # numpy build-dependencies
   - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev"
 # numpy dependencdies
-  - "sudo apt-get install libblas3 liblapack3"
+  - "sudo apt-get install libblas3gf liblapack3gf"
 # scipy build-dependencies
   - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-dev"
 # scipy dependencies
-  - "sudo apt-get install libblas3 liblapack3"
+  - "sudo apt-get install libblas3gf liblapack3gf"
   - "pip install -r requirements.txt --use-mirrors"
 
 script: "./testall.sh"
