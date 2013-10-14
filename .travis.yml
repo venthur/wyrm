@@ -5,14 +5,15 @@ python:
   - "3.3"
 
 install: 
-# numpy build-dependencies
-  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev python-nose"
-# numpy dependencdies
-  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
-# scipy build-dependencies
-  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-base-dev"
-# scipy dependencies
-  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
+  - sudo apt-get install python-numpy, python3-numpy, python-scipy, python3-scipy, python-matplotlib, python3-matplotlib
+    ## numpy build-dependencies
+    #  - "sudo apt-get install python-all-dev python3-all-dev python-support gfortran libblas-dev liblapack-dev python-nose"
+    ## numpy dependencdies
+    #  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
+    ## scipy build-dependencies
+    #  - "sudo apt-get install python-all-dev python3-all-dev cython gfortran libblas-dev liblapack-dev libatlas-base-dev"
+    ## scipy dependencies
+    #  - "sudo apt-get install libblas3gf liblapack3gf libatlas3gf-base"
   - "pip install -r requirements.txt --use-mirrors"
 
 script: "./testall.sh"
