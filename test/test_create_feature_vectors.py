@@ -29,6 +29,12 @@ class TestCreateFeatureVectors(unittest.TestCase):
         self.assertTrue(all(dat.data[1] == 1))
         self.assertTrue(all(dat.data[2] == 2))
         self.assertEqual(dat.data.ndim, 2)
+        self.assertEqual(len(dat.axes), 2)
+        self.assertEqual(len(dat.names), 2)
+        self.assertEqual(len(dat.units), 2)
+        self.assertEqual(dat.names[-1], 'feature vector')
+        self.assertEqual(dat.units[-1], 'dl')
+        np.testing.assert_array_equal(dat.axes[-1], np.arange(dat.data.shape[-1]))
 
     def test_create_feature_vectors_copy(self):
         """create_feature_vectors must not modify argument."""

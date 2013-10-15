@@ -1075,11 +1075,11 @@ def create_feature_vectors(dat, classaxis=0):
     if classaxis != 0:
         dat = swapaxes(dat, 0, classaxis)
     data = dat.data.reshape(dat.data.shape[classaxis], -1)
-    axes = dat.axes[:]
+    axes = dat.axes[:2]
     axes[-1] = np.arange(data.shape[-1])
-    names = dat.names[:]
+    names = dat.names[:2]
     names[-1] = 'feature vector'
-    units = dat.units[:]
+    units = dat.units[:2]
     units[-1] = 'dl'
     return dat.copy(data=data, axes=axes, names=names, units=units)
 
