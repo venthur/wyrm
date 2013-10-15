@@ -10,9 +10,9 @@ virtualenv:
 
 before_install:
     - pip freeze
-    - pop freeze -l
     - sudo apt-get update -qq
     - sudo apt-get install -qq libatlas-base-dev liblapack-dev gfortran cython
+    - pip uninstall numpy
       #- sudo apt-get install python-numpy python3-numpy
       #- sudo apt-get install python-scipy python3-scipy
       #- sudo apt-get install python-matplotlib
