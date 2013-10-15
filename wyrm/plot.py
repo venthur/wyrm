@@ -65,7 +65,6 @@ def plot_spectrum(spectrum, freqs):
 
 def plot_spectrogram(spectrogram, freqs):
     extent = 0, len(spectrogram), freqs[0], freqs[-1]
-    print extent
     plt.imshow(spectrogram.transpose(),
         aspect='auto',
         origin='lower',
