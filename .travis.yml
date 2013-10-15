@@ -15,18 +15,10 @@ before_install:
       # due to a bug in matplotlib, numpy and matplotlib cannot be installed
       # together via requirements.txt, numpy has te be installed first
       # http://stackoverflow.com/questions/11797688/matplotlib-requirements-with-pip-install-in-virtualenv
-    - pip install numpy
-      #- sudo apt-get install -qq python-all-dev python3-all-dev python3-all-dev python-support
-      #- pip install nose
-      #- pip install pytz
-      #- pip install numpy
-      #- sudo apt-get install python-numpy python3-numpy
-      #- sudo apt-get install python-scipy python3-scipy
-      #- sudo apt-get install python-matplotlib
-      #- sudo apt-get install python-sklearn
+    - pip install numpy --quiet
 
 install:
-    - pip install -r requirements.txt --use-mirrors
+    - pip install -r requirements.txt --use-mirrors --quiet
 
 matrix:
     allow_failures:
