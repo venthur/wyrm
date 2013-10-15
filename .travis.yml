@@ -15,6 +15,7 @@ before_install:
     - sudo apt-get install -qq python-all-dev python3-all-dev python3-all-dev python-support
     - pip install nose
     - pip install pytz
+    - pip install numpy
       #- sudo apt-get install python-numpy python3-numpy
       #- sudo apt-get install python-scipy python3-scipy
       #- sudo apt-get install python-matplotlib
