@@ -15,10 +15,10 @@ before_install:
       # due to a bug in matplotlib, numpy and matplotlib cannot be installed
       # together via requirements.txt, numpy has te be installed first
       # http://stackoverflow.com/questions/11797688/matplotlib-requirements-with-pip-install-in-virtualenv
-    - pip install numpy --quiet
+    - pip install numpy
 
 install:
-    - pip install -r requirements.txt --use-mirrors --quiet
+    - pip install -r requirements.txt --use-mirrors
 
 matrix:
     allow_failures:
