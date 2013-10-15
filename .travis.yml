@@ -9,14 +9,16 @@ virtualenv:
     system_site_packages: true
 
 before_install:
-    - sudo apt-get update
-    - sudo apt-get install python-numpy python3-numpy
-    - sudo apt-get install python-scipy python3-scipy
-    - sudo apt-get install python-matplotlib
-    - sudo apt-get install python-sklearn
+    - pip freeze
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq libatlas-base-dev liblapack-dev gfortran cython
+      # due to a bug in matplotlib, numpy and matplotlib cannot be installed
+      # together via requirements.txt, numpy has te be installed first
+      # http://stackoverflow.com/questions/11797688/matplotlib-requirements-with-pip-install-in-virtualenv
+    - pip install numpy
 
 install:
-     - pip install -r requirements.txt --use-mirrors
+    - pip install -r requirements.txt --use-mirrors
 
 matrix:
     allow_failures:
