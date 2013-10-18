@@ -150,7 +150,7 @@ def remove_channels(*args, **kwargs):
     return select_channels(*args, invert=True, **kwargs)
 
 
-def segment_dat(dat, marker_def, ival, timeaxis=-2):
+def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
     """Convert a continuous data object to an epoched one.
 
     Given a continuous data object, a definition of classes, and an
@@ -167,9 +167,14 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
     dat.data will be an empty array with the expected number of
     dimensions (``dat.data.ndim + 1``).
 
+    This method is also suitable for **online processing**, please read
+    the documentation for the ``newsamples`` parameter and have a look
+    at the Examples below.
+
     Parameters
     ----------
     dat : Data
+        the data object to be segmented
     marker_def : dict
         The keys are class names, the values are lists of markers
     ival : [int, int]
@@ -180,6 +185,24 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
         200ms before the marker until 100ms after the marker do:
         ``[-200, 100]`` Only negative or positive values are possible
         (i.e. ``[-500, -100]``)
+    newsamples : int, optional
+        consider the last `newsamples` samples as new data and only
+        return epochs which are possible with the old **and** the new
+        data (i.e. don't include epochs which where possible without the
+        new data).
+
+        If this parameter is ``None`` (default) ``segment_dat`` will
+        always process the whole ``dat``, this is what you want for
+        offline experiments where you process the whole data from a file
+        at once. In online experiments however one usually gets the data
+        incrementally, stores it in a ringbuffer to get the last n
+        milliseconds. Consequently ``segment_dat`` gets overlapping data
+        in each iteration (the amount of overlap is exactly the data -
+        the new samples. To make sure each epoch appears only once
+        within all iterations, ``segment_dat`` needs to know the number
+        of new samples.
+
+
     timeaxis : int, optional
         the axis along which the segmentation will take place
 
@@ -191,11 +214,15 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
     Raises
     ------
     AssertionError
-        if ``dat`` has not ``.fs`` or ``.markers`` attribute or if
-        ``ival[0] > ival[1]``.
+        * if ``dat`` has not ``.fs`` or ``.markers`` attribute or if
+          ``ival[0] > ival[1]``.
+        * if ``newsamples`` is not ``None`` or positive
 
     Examples
     --------
+
+    Offline Experiment
+
     >>> # Define the markers belonging to class 1 and 2
     >>> md = {'class 1': ['S1', 'S2'],
     ...       'class 2': ['S3', 'S4']
@@ -204,16 +231,54 @@ def segment_dat(dat, marker_def, ival, timeaxis=-2):
     >>> # md
     >>> epo = segment_dat(cnt, md, [-500, 700])
 
+    Online Experiment
+
+    >>> # Define the markers belonging to class 1 and 2
+    >>> md = {'class 1': ['S1', 'S2'],
+    ...       'class 2': ['S3', 'S4']
+    ...      }
+    >>> # define the interval to epoch around a marker
+    >>> ival = [0, 300]
+    >>> while 1:
+    ...     dat, mrk = amp.get_data()
+    ...     newsamples = len(dat)
+    ...     # the ringbuffer shall keep the last 2000 milliseconds,
+    ...     # which is way bigger than our ival...
+    ...     ringbuffer.append(dat, mrk)
+    ...     cnt, mrk = ringbuffer.get()
+    ...     # cnt contains now data up to 2000 millisecons, to make sure
+    ...     # we don't see old markers again and again until they where
+    ...     # pushed out of the ringbuffer, we need to tell segment_dat
+    ...     # how many samples of cnt are actually new
+    ...     epo = segment_dat(cnt, md, ival, newsamples=newsamples)
+
     """
     assert hasattr(dat, 'fs')
     assert hasattr(dat, 'markers')
     assert ival[0] <= ival[1]
+    if newsamples is not None:
+        assert newsamples >= 0
+    # calculate the minimum time a marker must have (only used when
+    # newsamples is not None
+    if newsamples is not None:
+        if ival[1] > 0:
+            t_ = dat.axes[timeaxis][-newsamples] - ival[1]
+            mival = dat.axes[timeaxis][(dat.axes[timeaxis] > t_)]
+        else:
+            mival = dat.axes[timeaxis][-newsamples:]
+        if newsamples == 0:
+            mival = []
+        assert len(mival) >= newsamples
     # the expected length of each cnt in the resulted epo
     expected_samples = dat.fs * (ival[1] - ival[0]) / 1000
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
     for t, m in dat.markers:
+        # if newsamples is given, don't recognize markers outside of
+        # mival
+        if newsamples is not None and t not in mival:
+            continue
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
                 mask = (t+ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < t+ival[1])
