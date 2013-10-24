@@ -9,11 +9,14 @@ This module contains various plotting methods.
 from __future__ import division
 
 import numpy as np
+import random as rnd
 from matplotlib import pyplot as plt
+from wyrm.types import Data
 from scipy import interpolate
 
 import tentensystem as tts
 
+### The old plotting functions #########################################################
 
 def plot_scalp(v, channel):
     """Plot the values v for channel ``channel`` on a scalp."""
@@ -127,3 +130,83 @@ def interpolate_2d(x, y, z):
     f = interpolate.LinearNDInterpolator(zip(x, y), z)
     Z = f(X, Y)
     return X, Y, Z
+
+### The new plotting functions #############################################
+
+# automated creation of more realistic test data ##########
+# test function: (x^3 * cos(x)) / 20, x in [-5, -2] (with variations)
+
+def create_data(channel_count = 2, steps = 100):
+
+    data = np.zeros([steps, channel_count])
+    channels = []
+    for i in range(channel_count):
+        data[:,i] = create_channel(steps)
+        channels.append('ch' + str(i))
+        
+    axes = [np.arange(0,steps*10, 10), channels]
+    names = ["time", "channel"]
+    units = ["ms", "stuff"]
+    dat = Data(data, axes, names, units)
+    return (dat)
+    
+def create_channel(steps = 100):
+    steps = float(steps)
+    a = -5
+    b = -2
+    rnd_fac1 = rnd.randrange(25, 200) / 100.
+    rnd_fac2 = rnd.randrange(-200, 200) / 100.
+    rnd_fac3 = rnd.randrange(-100, 100) / 100.
+    range_x = np.arange(a, b, np.absolute(a-b)/steps)
+    range_y = np.zeros(steps)
+    
+    cnt = 0
+    for i in range_x:
+        range_y[cnt] = (i**3 * np.cos(i - rnd_fac3) / 20) * rnd_fac1 - rnd_fac2
+        cnt += 1
+    
+    return range_y
+
+# plots a simple time_interval with the given data
+
+def plot_data(data, highlights=None, legend=True):
+
+
+    # plotting of highlights
+    if highlights != None:
+        draw_highlights(highlights)
+
+    plt.plot(data.axes[0], data.data)
+
+    # labeling of axes
+    plt.xlabel(data.units[0])
+    plt.ylabel("$\mu$V", rotation = 0)
+    # labeling of channels
+    if legend: plt.legend(data.axes[1])
+        
+    plt.grid(True)
+    plt.show()
+
+def highlight(start, end, color, alpha):
+    plt.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
+    # the edges of the box are at the moment white. transparent edges would be better.
+
+# draws all highlights in list like [[start1, end1], ..., [startn, endn]]
+def draw_highlights(obj_highlight):
+    for hl in obj_highlight.spans:
+        highlight(hl[0], hl[1], color=obj_highlight.color, alpha=obj_highlight.alpha)
+
+class Highlight(object):
+
+    def __init__(self, spans, color='#b3b3b3', alpha=0.5):
+        for hl in spans:
+            if len(hl) != 2:
+                print("'spans' has wrong form. Usage: [[start1, end1], ..., [startn, endn]].")
+                self.spans = None
+                break
+        else:
+            self.spans = spans
+        self.color = color
+        self.alpha = alpha
+
+
