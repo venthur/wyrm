@@ -7,6 +7,8 @@ import numpy as np
 from wyrm.types import Data
 from wyrm.processing import subsample
 from wyrm.processing import swapaxes
+from wyrm.processing import append
+
 
 class TestSubsample(unittest.TestCase):
 
@@ -43,6 +45,41 @@ class TestSubsample(unittest.TestCase):
         # multiples of 50.
         zeros = dat.data[:, 0] % 50
         self.assertFalse(np.any(zeros))
+
+    def test_online_subsampling(self):
+        """subsample must work correctly with online data."""
+        offline_result = subsample(self.dat, 10)
+        slices = []
+        for i in range(self.dat.data.shape[0]):
+            ax = self.dat.axes[:]
+            ax[0] = np.array([ax[0][i]])
+            d = self.dat.data[i]
+            d = d[np.newaxis, :]
+            slice_ = self.dat.copy(data=d, axes=ax)
+            slices.append(slice_)
+        online_result, state = subsample(slices[0], 10, state=0)
+        for i in range(1, len(slices)):
+            res, state = subsample(slices[i], 10, state=state)
+            online_result = append(offline_result, res)
+        self.assertEqual(online_result, offline_result)
+
+    def test_online_subsampling_with_swapped_axis(self):
+        """subsample must work correctly with online data and nonstandard timeaxis."""
+        dat = swapaxes(self.dat, 0, 1)
+        offline_result = subsample(dat, 10, timeaxis=1)
+        slices = []
+        for i in range(dat.data.shape[1]):
+            ax = dat.axes[:]
+            ax[1] = np.array([ax[1][i]])
+            d = dat.data[:, i]
+            d = d[:, np.newaxis]
+            slice_ = dat.copy(data=d, axes=ax)
+            slices.append(slice_)
+        online_result, state = subsample(slices[0], 10, state=0, timeaxis=1)
+        for i in range(1, len(slices)):
+            res, state = subsample(slices[i], 10, state=state, timeaxis=1)
+            online_result = append(offline_result, res, axis=1)
+        self.assertEqual(online_result, offline_result)
 
     def test_subsample_with_epo(self):
         """subsample must work with epoched data."""

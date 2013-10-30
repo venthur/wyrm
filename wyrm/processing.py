@@ -723,13 +723,48 @@ def remove_classes(*args, **kwargs):
     return select_classes(*args, invert=True, **kwargs)
 
 
-def subsample(dat, freq, timeaxis=-2):
+def subsample(dat, freq, timeaxis=-2, state=None):
     """Subsample the data to ``freq`` Hz.
 
     This method subsamples data along ``timeaxis`` by taking every ``n``
     th element starting with the first one and ``n`` being ``dat.fs /
     freq``. Please note that ``freq`` must be a whole number divisor of
     ``dat.fs``.
+
+    This method is suitable for offline and online subsampling. Offline
+    subsampling is the subsampling of the complete data at once. In that
+    case no special consideration is necessary. In the online case it is
+    necessary to give :func:`subsample` an additional ``state``
+    paramter. In order to understand what this is about, let's see how
+    subsampling actually works: Assume you have data in 100Hz and want
+    to subsample to 10Hz. After bandpass filtering the original 100Hz
+    data, the actual subsampling means you take every 10th sample and
+    throw away the rest.
+
+    In Python terms it looks like this:
+
+    >>> data = range(100)
+    >>> data[::10]
+    [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+
+    The problem with online subsampling is, that :func:`subsample`'s
+    input looks more like:
+
+    >>> [0, 1, 2], [3, 4, 5, 6, 7], [8, 9, 10, 11, 12] # etc
+
+    In order to get the same result you have to tell :func:`subsample`
+    at which position in the overall stream you currently are, so it can
+    perform something like (assuming that ``10`` is our downscale factor):
+
+    >>> data[-state % 10::10]
+
+    which is essentially the same as the above slicing except we don't
+    start with the first element but with the element number ``i`` for
+    some ``i`` in ``[0..10)`` depending on the length of the processed
+    input so far.
+
+    Results of offline subsampling of ``data`` and online subsampling of
+    an arbitrarly chunked version of ``data`` are identical.
 
     Note that this method does not low-pass filter the data before
     sub-sampling.
@@ -742,11 +777,20 @@ def subsample(dat, freq, timeaxis=-2):
         the target frequency in Hz
     timeaxis : int, optional
         the axis along which to subsample
+    state : int, optional
+        the number of processed samples so far modulo the internal
+        ``factor``. This parameter is necessary if you want to perform
+        online subsampling.
 
     Returns
     -------
     dat : Data
         copy of ``dat`` with subsampled frequency
+    state : int (only returned if the ``state`` parameter is not ``None``)
+        this is the length of the processed data so far modulo the
+        internal ``factor``. In an online setup you can use this value
+        as the input for the next iteration of :func:`subsample` (See
+        example below).
 
     See Also
     --------
@@ -766,6 +810,16 @@ def subsample(dat, freq, timeaxis=-2):
     >>> dat.fs
     100.0
 
+    Online Subsampling
+
+    >>> # initialize the subsampling state to 0
+    >>> ss_state = 0
+    >>> while 1:
+    ...     # the imaginary get_data method returns small chunks of data
+    ...     dat = get_data()
+    ...     dat, ss_state = subsample(dat, 100, state=ss_state)
+
+
     Raises
     ------
     AssertionError
@@ -778,11 +832,17 @@ def subsample(dat, freq, timeaxis=-2):
     assert dat.data.shape[timeaxis] == len(dat.axes[timeaxis])
     assert dat.fs % freq == 0
     factor = int(dat.fs / freq)
-    idxmask = np.arange(dat.data.shape[timeaxis], step=factor)
+    if state is None:
+        idxmask = np.arange(dat.data.shape[timeaxis], step=factor)
+    else:
+        idxmask = np.arange(-state % factor, dat.data.shape[timeaxis], step=factor)
     data = dat.data.take(idxmask, timeaxis)
     axes = dat.axes[:]
     axes[timeaxis] =  axes[timeaxis].take(idxmask)
-    return dat.copy(data=data, axes=axes, fs=freq)
+    if state is None:
+        return dat.copy(data=data, axes=axes, fs=freq)
+    else:
+        return dat.copy(data=data, axes=axes, fs=freq), (dat.data.shape[timeaxis] + state) % factor
 
 
 def spectrum(cnt):
