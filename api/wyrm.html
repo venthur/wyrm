@@ -353,7 +353,7 @@ equal</p>
 
 <dl class="function">
 <dt id="wyrm.processing.band_pass">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">band_pass</tt><big>(</big><em>dat</em>, <em>low</em>, <em>high</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#band_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.band_pass" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">band_pass</tt><big>(</big><em>dat</em>, <em>low</em>, <em>high</em>, <em>zi=None</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#band_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.band_pass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Band pass filter the data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -790,7 +790,7 @@ paramerter set to <tt class="docutils literal"><span class="pre">True</span></tt
 
 <dl class="function">
 <dt id="wyrm.processing.segment_dat">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">segment_dat</tt><big>(</big><em>dat</em>, <em>marker_def</em>, <em>ival</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#segment_dat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.segment_dat" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">segment_dat</tt><big>(</big><em>dat</em>, <em>marker_def</em>, <em>ival</em>, <em>newsamples=None</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#segment_dat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.segment_dat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a continuous data object to an epoched one.</p>
 <p>Given a continuous data object, a definition of classes, and an
 interval, this method looks for markers as defined in <tt class="docutils literal"><span class="pre">marker_def</span></tt>
@@ -803,11 +803,17 @@ ignored.</p>
 in <tt class="docutils literal"><span class="pre">marker_def</span></tt> could not be found in <tt class="docutils literal"><span class="pre">dat</span></tt>, the resulting
 dat.data will be an empty array with the expected number of
 dimensions (<tt class="docutils literal"><span class="pre">dat.data.ndim</span> <span class="pre">+</span> <span class="pre">1</span></tt>).</p>
+<p>This method is also suitable for <strong>online processing</strong>, please read
+the documentation for the <tt class="docutils literal"><span class="pre">newsamples</span></tt> parameter and have a look
+at the Examples below.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>the data object to be segmented</p>
+</div></blockquote>
 <p><strong>marker_def</strong> : dict</p>
 <blockquote>
 <div><p>The keys are class names, the values are lists of markers</p>
@@ -821,6 +827,23 @@ included, the endpoint is not (like: <tt class="docutils literal"><span class="p
 200ms before the marker until 100ms after the marker do:
 <tt class="docutils literal"><span class="pre">[-200,</span> <span class="pre">100]</span></tt> Only negative or positive values are possible
 (i.e. <tt class="docutils literal"><span class="pre">[-500,</span> <span class="pre">-100]</span></tt>)</p>
+</div></blockquote>
+<p><strong>newsamples</strong> : int, optional</p>
+<blockquote>
+<div><p>consider the last <cite>newsamples</cite> samples as new data and only
+return epochs which are possible with the old <strong>and</strong> the new
+data (i.e. don&#8217;t include epochs which where possible without the
+new data).</p>
+<p>If this parameter is <tt class="docutils literal"><span class="pre">None</span></tt> (default) <tt class="docutils literal"><span class="pre">segment_dat</span></tt> will
+always process the whole <tt class="docutils literal"><span class="pre">dat</span></tt>, this is what you want for
+offline experiments where you process the whole data from a file
+at once. In online experiments however one usually gets the data
+incrementally, stores it in a ringbuffer to get the last n
+milliseconds. Consequently <tt class="docutils literal"><span class="pre">segment_dat</span></tt> gets overlapping data
+in each iteration (the amount of overlap is exactly the data -
+the new samples. To make sure each epoch appears only once
+within all iterations, <tt class="docutils literal"><span class="pre">segment_dat</span></tt> needs to know the number
+of new samples.</p>
 </div></blockquote>
 <p><strong>timeaxis</strong> : int, optional</p>
 <blockquote>
@@ -836,14 +859,18 @@ included, the endpoint is not (like: <tt class="docutils literal"><span class="p
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
-<div><p>if <tt class="docutils literal"><span class="pre">dat</span></tt> has not <tt class="docutils literal"><span class="pre">.fs</span></tt> or <tt class="docutils literal"><span class="pre">.markers</span></tt> attribute or if
-<tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pre">&gt;</span> <span class="pre">ival[1]</span></tt>.</p>
+<div><ul class="simple">
+<li>if <tt class="docutils literal"><span class="pre">dat</span></tt> has not <tt class="docutils literal"><span class="pre">.fs</span></tt> or <tt class="docutils literal"><span class="pre">.markers</span></tt> attribute or if
+<tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pre">&gt;</span> <span class="pre">ival[1]</span></tt>.</li>
+<li>if <tt class="docutils literal"><span class="pre">newsamples</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt> or positive</li>
+</ul>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
+<p>Offline Experiment</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Define the markers belonging to class 1 and 2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;class 1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">],</span>
 <span class="gp">... </span>      <span class="s">&#39;class 2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S3&#39;</span><span class="p">,</span> <span class="s">&#39;S4&#39;</span><span class="p">]</span>
@@ -851,6 +878,27 @@ included, the endpoint is not (like: <tt class="docutils literal"><span class="p
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># Epoch the data -500ms and +700ms around the markers defined in</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># md</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">segment_dat</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="mi">700</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Online Experiment</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Define the markers belonging to class 1 and 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;class 1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">],</span>
+<span class="gp">... </span>      <span class="s">&#39;class 2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;S3&#39;</span><span class="p">,</span> <span class="s">&#39;S4&#39;</span><span class="p">]</span>
+<span class="gp">... </span>     <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># define the interval to epoch around a marker</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ival</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">dat</span><span class="p">,</span> <span class="n">mrk</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">newsamples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c"># the ringbuffer shall keep the last 2000 milliseconds,</span>
+<span class="gp">... </span>    <span class="c"># which is way bigger than our ival...</span>
+<span class="gp">... </span>    <span class="n">ringbuffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">mrk</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">cnt</span><span class="p">,</span> <span class="n">mrk</span> <span class="o">=</span> <span class="n">ringbuffer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="c"># cnt contains now data up to 2000 millisecons, to make sure</span>
+<span class="gp">... </span>    <span class="c"># we don&#39;t see old markers again and again until they where</span>
+<span class="gp">... </span>    <span class="c"># pushed out of the ringbuffer, we need to tell segment_dat</span>
+<span class="gp">... </span>    <span class="c"># how many samples of cnt are actually new</span>
+<span class="gp">... </span>    <span class="n">epo</span> <span class="o">=</span> <span class="n">segment_dat</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">ival</span><span class="p">,</span> <span class="n">newsamples</span><span class="o">=</span><span class="n">newsamples</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1165,12 +1213,44 @@ binned from 0 to f_nyquist</p>
 
 <dl class="function">
 <dt id="wyrm.processing.subsample">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">subsample</tt><big>(</big><em>dat</em>, <em>freq</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#subsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.subsample" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">subsample</tt><big>(</big><em>dat</em>, <em>freq</em>, <em>timeaxis=-2</em>, <em>state=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#subsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.subsample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subsample the data to <tt class="docutils literal"><span class="pre">freq</span></tt> Hz.</p>
 <p>This method subsamples data along <tt class="docutils literal"><span class="pre">timeaxis</span></tt> by taking every <tt class="docutils literal"><span class="pre">n</span></tt>
 th element starting with the first one and <tt class="docutils literal"><span class="pre">n</span></tt> being <tt class="docutils literal"><span class="pre">dat.fs</span> <span class="pre">/</span>
 <span class="pre">freq</span></tt>. Please note that <tt class="docutils literal"><span class="pre">freq</span></tt> must be a whole number divisor of
 <tt class="docutils literal"><span class="pre">dat.fs</span></tt>.</p>
+<p>This method is suitable for offline and online subsampling. Offline
+subsampling is the subsampling of the complete data at once. In that
+case no special consideration is necessary. In the online case it is
+necessary to give <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a> an additional <tt class="docutils literal"><span class="pre">state</span></tt>
+paramter. In order to understand what this is about, let&#8217;s see how
+subsampling actually works: Assume you have data in 100Hz and want
+to subsample to 10Hz. After bandpass filtering the original 100Hz
+data, the actual subsampling means you take every 10th sample and
+throw away the rest.</p>
+<p>In Python terms it looks like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[::</span><span class="mi">10</span><span class="p">]</span>
+<span class="go">[0, 10, 20, 30, 40, 50, 60, 70, 80, 90]</span>
+</pre></div>
+</div>
+<p>The problem with online subsampling is, that <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a>&#8216;s
+input looks more like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span> <span class="c"># etc</span>
+</pre></div>
+</div>
+<p>In order to get the same result you have to tell <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a>
+at which position in the overall stream you currently are, so it can
+perform something like (assuming that <tt class="docutils literal"><span class="pre">10</span></tt> is our downscale factor):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">state</span> <span class="o">%</span> <span class="mi">10</span><span class="p">::</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>which is essentially the same as the above slicing except we don&#8217;t
+start with the first element but with the element number <tt class="docutils literal"><span class="pre">i</span></tt> for
+some <tt class="docutils literal"><span class="pre">i</span></tt> in <tt class="docutils literal"><span class="pre">[0..10)</span></tt> depending on the length of the processed
+input so far.</p>
+<p>Results of offline subsampling of <tt class="docutils literal"><span class="pre">data</span></tt> and online subsampling of
+an arbitrarly chunked version of <tt class="docutils literal"><span class="pre">data</span></tt> are identical.</p>
 <p>Note that this method does not low-pass filter the data before
 sub-sampling.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1189,11 +1269,24 @@ sub-sampling.</p>
 <blockquote>
 <div><p>the axis along which to subsample</p>
 </div></blockquote>
+<p><strong>state</strong> : int, optional</p>
+<blockquote>
+<div><p>the number of processed samples so far modulo the internal
+<tt class="docutils literal"><span class="pre">factor</span></tt>. This parameter is necessary if you want to perform
+online subsampling.</p>
+</div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with subsampled frequency</p>
+</div></blockquote>
+<p><strong>state</strong> : int (only returned if the <tt class="docutils literal"><span class="pre">state</span></tt> parameter is not <tt class="docutils literal"><span class="pre">None</span></tt>)</p>
+<blockquote>
+<div><p>this is the length of the processed data so far modulo the
+internal <tt class="docutils literal"><span class="pre">factor</span></tt>. In an online setup you can use this value
+as the input for the next iteration of <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a> (See
+example below).</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1223,6 +1316,15 @@ to 100Hz.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
 <span class="go">100.0</span>
+</pre></div>
+</div>
+<p>Online Subsampling</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># initialize the subsampling state to 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ss_state</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c"># the imaginary get_data method returns small chunks of data</span>
+<span class="gp">... </span>    <span class="n">dat</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">dat</span><span class="p">,</span> <span class="n">ss_state</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">ss_state</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1490,11 +1592,13 @@ be a fraction of a millisecond.</p>
 </tr>
 <tr class="row-even"><td>data</td>
 <td>ndarray</td>
-<td>the contents of the ring buffer</td>
+<td>the contents of the ring buffer, you should not read or write
+this attribute directly but via the <a class="reference internal" href="#wyrm.types.RingBuffer.get" title="wyrm.types.RingBuffer.get"><tt class="xref py py-meth docutils literal"><span class="pre">RingBuffer.get()</span></tt></a> and
+<a class="reference internal" href="#wyrm.types.RingBuffer.append" title="wyrm.types.RingBuffer.append"><tt class="xref py py-meth docutils literal"><span class="pre">RingBuffer.append()</span></tt></a> methods</td>
 </tr>
 <tr class="row-odd"><td>markers</td>
-<td>array of (int, str)</td>
-<td>the markers</td>
+<td>array of [int, str]</td>
+<td>the markers belonging to the data currently in the ring buffer</td>
 </tr>
 <tr class="row-even"><td>full</td>
 <td>boolean</td>
@@ -1513,20 +1617,17 @@ be a fraction of a millisecond.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.RingBuffer.append" title="wyrm.types.RingBuffer.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>(data[,&nbsp;markers])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.RingBuffer.append" title="wyrm.types.RingBuffer.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>(dat)</td>
 <td>Append data to the Ringbuffer, overwriting old data if necessary.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#wyrm.types.RingBuffer.get" title="wyrm.types.RingBuffer.get"><tt class="xref py py-obj docutils literal"><span class="pre">get</span></tt></a>()</td>
 <td>Get all buffered data.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.RingBuffer.move_markers" title="wyrm.types.RingBuffer.move_markers"><tt class="xref py py-obj docutils literal"><span class="pre">move_markers</span></tt></a>(markers,&nbsp;steps)</td>
-<td></td>
-</tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="wyrm.types.RingBuffer.append">
-<tt class="descname">append</tt><big>(</big><em>data</em>, <em>markers=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer.append" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">append</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append data to the Ringbuffer, overwriting old data if necessary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1575,11 +1676,6 @@ positions relative to the samples in <tt class="docutils literal"><span class="p
 </tbody>
 </table>
 </dd></dl>
-
-<dl class="method">
-<dt id="wyrm.types.RingBuffer.move_markers">
-<tt class="descname">move_markers</tt><big>(</big><em>markers</em>, <em>steps</em><big>)</big><a class="headerlink" href="#wyrm.types.RingBuffer.move_markers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
