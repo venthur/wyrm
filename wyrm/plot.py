@@ -10,9 +10,10 @@ from __future__ import division
 
 import numpy as np
 import random as rnd
+import inspect
 from matplotlib import pyplot as plt
 from wyrm.types import Data
-from scipy import interpolate
+#from scipy import interpolate
 
 import tentensystem as tts
 
@@ -136,6 +137,9 @@ def interpolate_2d(x, y, z):
 # automated creation of more realistic test data ##########
 # test function: (x^3 * cos(x)) / 20, x in [-5, -2] (with variations)
 
+figures = []
+plots = []
+
 def create_data(channel_count = 2, steps = 100):
 
     data = np.zeros([steps, channel_count])
@@ -169,7 +173,7 @@ def create_channel(steps = 100):
 
 # plots a simple time_interval with the given data
 
-def plot_data(data, highlights=None, legend=True):
+def plot_data(data, highlights=None, legend=True, show=True):
 
 
     # plotting of highlights
@@ -177,6 +181,9 @@ def plot_data(data, highlights=None, legend=True):
         draw_highlights(highlights)
 
     plt.plot(data.axes[0], data.data)
+    global plots, figures
+    plots = [plt.gca()]
+    figures = [plt.gcf()]
 
     # labeling of axes
     plt.xlabel(data.units[0])
@@ -185,18 +192,29 @@ def plot_data(data, highlights=None, legend=True):
     if legend: plt.legend(data.axes[1])
         
     plt.grid(True)
-    plt.show()
+    if show: plt.show()
 
-def highlight(start, end, color, alpha):
-    plt.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
-    # the edges of the box are at the moment white. transparent edges would be better.
 
-# draws all highlights in list like [[start1, end1], ..., [startn, endn]]
-def draw_highlights(obj_highlight):
-    for hl in obj_highlight.spans:
-        highlight(hl[0], hl[1], color=obj_highlight.color, alpha=obj_highlight.alpha)
+# Adds highlights to the specified axes.
+# plots: a list of axes
+# obj_highlight: an instance of the Highlight class
+def add_highlights(obj_highlight, plots = plots):
+    
+    def highlight(start, end, axes, color, alpha):
+        axes.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
+        # the edges of the box are at the moment white. transparent edges would be better.
+    
+    # check if obj_highlight is an instance of the Highlight class
+    #if inspect.isinstance(obj_highlight, type(Highlight())):
+    for p in plots:
+        for hl in obj_highlight.spans:
+            highlight(hl[0], hl[1], axes = p, color=obj_highlight.color, alpha=obj_highlight.alpha)
 
-class Highlight(object):
+# class for highlights.
+# spans: list of two-element lists "[[start1, end1], ..., [startn, endn]]"
+# color: color of the highlighted area
+# alpha: transparency of the highlighted area
+class Highlight:
 
     def __init__(self, spans, color='#b3b3b3', alpha=0.5):
         for hl in spans:
