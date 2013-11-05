@@ -175,19 +175,21 @@ def create_channel(steps = 100):
 
 def plot_data(data, highlights=None, legend=True, show=True):
 
-
-    # plotting of highlights
-    if highlights != None:
-        draw_highlights(highlights)
-
+    # plotting of the data
     plt.plot(data.axes[0], data.data)
+    
+    # filling of global lists for figures and axes (plots) 
     global plots, figures
-    plots = [plt.gca()]
     figures = [plt.gcf()]
+    plots = [plt.gca()]
+    
+    # plotting of highlights
+    add_highlights(highlights)
 
     # labeling of axes
     plt.xlabel(data.units[0])
     plt.ylabel("$\mu$V", rotation = 0)
+    
     # labeling of channels
     if legend: plt.legend(data.axes[1])
         
@@ -198,17 +200,22 @@ def plot_data(data, highlights=None, legend=True, show=True):
 # Adds highlights to the specified axes.
 # plots: a list of axes
 # obj_highlight: an instance of the Highlight class
-def add_highlights(obj_highlight, plots = plots):
+def add_highlights(obj_highlight, axes = None):
     
-    def highlight(start, end, axes, color, alpha):
-        axes.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
+    global plots
+    if axes is None:
+        axes = plots
+    
+    def highlight(start, end, axis, color, alpha):
+        axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
         # the edges of the box are at the moment white. transparent edges would be better.
     
     # check if obj_highlight is an instance of the Highlight class
-    #if inspect.isinstance(obj_highlight, type(Highlight())):
-    for p in plots:
-        for hl in obj_highlight.spans:
-            highlight(hl[0], hl[1], axes = p, color=obj_highlight.color, alpha=obj_highlight.alpha)
+    if isinstance(obj_highlight, type(Highlight())):
+        #print('instance found')
+        for p in axes:
+            for hl in obj_highlight.spans:
+                highlight(hl[0], hl[1], axis = p, color=obj_highlight.color, alpha=obj_highlight.alpha)
 
 # class for highlights.
 # spans: list of two-element lists "[[start1, end1], ..., [startn, endn]]"
@@ -216,7 +223,7 @@ def add_highlights(obj_highlight, plots = plots):
 # alpha: transparency of the highlighted area
 class Highlight:
 
-    def __init__(self, spans, color='#b3b3b3', alpha=0.5):
+    def __init__(self, spans=[], color='#b3b3b3', alpha=0.5):
         for hl in spans:
             if len(hl) != 2:
                 print("'spans' has wrong form. Usage: [[start1, end1], ..., [startn, endn]].")
@@ -227,4 +234,6 @@ class Highlight:
         self.color = color
         self.alpha = alpha
 
-
+    def toString(self):
+        s = ['spans: ' + str(self.spans), 'color: ' + str(self.color), 'alpha: ' + str(self.alpha)]
+        print(', '.join(s))
