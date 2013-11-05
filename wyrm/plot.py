@@ -154,26 +154,26 @@ def create_data(channel_count = 2, steps = 100):
     dat = Data(data, axes, names, units)
     return (dat)
     
-def create_channel(steps = 100):
-    steps = float(steps)
-    a = -5
-    b = -2
-    rnd_fac1 = rnd.randrange(25, 200) / 100.
-    rnd_fac2 = rnd.randrange(-200, 200) / 100.
-    rnd_fac3 = rnd.randrange(-100, 100) / 100.
-    range_x = np.arange(a, b, np.absolute(a-b)/steps)
-    range_y = np.zeros(steps)
-    
-    cnt = 0
-    for i in range_x:
-        range_y[cnt] = (i**3 * np.cos(i - rnd_fac3) / 20) * rnd_fac1 - rnd_fac2
-        cnt += 1
-    
-    return range_y
+    def create_channel(steps = 100):
+        steps = float(steps)
+        a = -5
+        b = -2
+        rnd_fac1 = rnd.randrange(25, 200) / 100.
+        rnd_fac2 = rnd.randrange(-200, 200) / 100.
+        rnd_fac3 = rnd.randrange(-100, 100) / 100.
+        range_x = np.arange(a, b, np.absolute(a-b)/steps)
+        range_y = np.zeros(steps)
+        
+        cnt = 0
+        for i in range_x:
+            range_y[cnt] = (i**3 * np.cos(i - rnd_fac3) / 20) * rnd_fac1 - rnd_fac2
+            cnt += 1
+        
+        return range_y
 
 # plots a simple time_interval with the given data
 
-def plot_data(data, highlights=None, legend=True, show=True):
+def plot_timeinterval(data, highlights=None, legend=True, show=True):
 
     # plotting of the data
     plt.plot(data.axes[0], data.data)
@@ -198,7 +198,7 @@ def plot_data(data, highlights=None, legend=True, show=True):
 
 
 # Adds highlights to the specified axes.
-# plots: a list of axes
+# axes: a list of axes
 # obj_highlight: an instance of the Highlight class
 def add_highlights(obj_highlight, axes = None):
     
