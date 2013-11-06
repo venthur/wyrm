@@ -134,43 +134,64 @@ def interpolate_2d(x, y, z):
 
 ### The new plotting functions #############################################
 
-# automated creation of more realistic test data ##########
-# test function: (x^3 * cos(x)) / 20, x in [-5, -2] (with variations)
-
+# globals for storing figures and plots(axes)
 figures = []
 plots = []
 
-def create_data(channel_count = 2, steps = 100):
-
-    def create_channel(steps = 100):
-        steps = float(steps)
-        a = -5
-        b = -2
-        rnd_fac1 = rnd.randrange(25, 200) / 100.
-        rnd_fac2 = rnd.randrange(-200, 200) / 100.
-        rnd_fac3 = rnd.randrange(-100, 100) / 100.
-        range_x = np.arange(a, b, np.absolute(a-b)/steps)
-        range_y = np.zeros(steps)
-        
-        cnt = 0
-        for i in range_x:
-            range_y[cnt] = (i**3 * np.cos(i - rnd_fac3) / 20) * rnd_fac1 - rnd_fac2
-            cnt += 1
-        
-        return range_y
+# automated creation of more realistic test data ##########
+# test function: (x^3 * cos(x)) / 20, x in [-5, -2] (with variations)
+def create_data_ti(channel_count = 2, steps = 100):
     
     data = np.zeros([steps, channel_count])
     channels = []
     for i in range(channel_count):
-        data[:,i] = create_channel(steps)
+        data[:,i] = _create_channel(steps)
         channels.append('ch' + str(i))
         
     axes = [np.arange(0,steps*10, 10), channels]
     names = ["time", "channel"]
-    units = ["ms", "stuff"]
+    units = ["ms", "channel_stuff"]
     dat = Data(data, axes, names, units)
     return (dat)
 
+def create_epoched_data_ti(class_count = 4, channel_count = 2, steps = 100):
+    data = np.zeros([class_count, steps, channel_count])
+    for i in range(class_count):
+        for o in range(channel_count):
+            data[i,:,o] = _create_channel(steps)
+            
+    # create the channel labels
+    channels = []
+    for i in range(channel_count):
+        channels.append('ch' + str(i))
+        
+    # create the class labels
+    classes = []
+    for i in range(class_count):
+        classes.append('class' + str(i))
+        
+    axes = [classes, np.arange(0,steps*10, 10), channels]
+    names = ["class", "time", "channel"]
+    units = ["class_stuff", "ms", "channel_stuff"]
+    dat = Data(data, axes, names, units)
+    return(dat)
+
+def _create_channel(steps = 100):
+    steps = float(steps)
+    a = -5
+    b = -2
+    rnd_fac1 = rnd.randrange(25, 200) / 100.
+    rnd_fac2 = rnd.randrange(-200, 200) / 100.
+    rnd_fac3 = rnd.randrange(-100, 100) / 100.
+    range_x = np.arange(a, b, np.absolute(a-b)/steps)
+    range_y = np.zeros(steps)
+    
+    cnt = 0
+    for i in range_x:
+        range_y[cnt] = (i**3 * np.cos(i - rnd_fac3) / 20) * rnd_fac1 - rnd_fac2
+        cnt += 1
+    
+    return range_y
 
 # plots a simple time_interval with the given data
 def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval', save_path=None):
@@ -204,7 +225,6 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
         
     plt.grid(True)
     if show: plt.show()
-
 
 # Adds highlights to the specified axes.
 # axes: a list of axes
