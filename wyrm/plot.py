@@ -224,6 +224,51 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
             plt.savefig(save_path + save_name, bbox_inches='tight')
         
     plt.grid(True)
+    
+    # showing if specified
+    if show: plt.show()
+
+# adds a subplot to the current figure at the specified position.
+# data: wyrm Data
+# position: position of the subplot
+def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
+    
+    # plotting of the data
+    plt.subplot(position)
+    plt.plot(data.axes[len(data.axes) - 2], data.data[epoch])
+    
+    # filling of global lists for figures and axes (plots) 
+    global plots
+    plots.append(plt.gca())
+    
+    # plotting of highlights
+    add_highlights(highlights)
+
+    # labeling of axes
+    plt.xlabel(data.units[len(data.axes) - 2])
+    plt.ylabel("$\mu$V", rotation = 0)
+    
+    # labeling of channels
+    if legend: plt.legend(data.axes[len(data.axes) - 1])
+    
+    plt.grid(True)
+    
+def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='epoched_timeinterval', save_path=None):
+    plt.clf()
+    
+    # iterate over epochs
+    for i in range(len(data.data)):
+        pos = int('1' + str(len(data.data)) + str(i+1))
+        _subplot_timeinterval(data, pos, i, highlights, legend)
+        
+    # saving if specified
+    if save:
+        if save_path is None:
+            plt.savefig(save_name, bbox_inches='tight')
+        else:
+            plt.savefig(save_path + save_name, bbox_inches='tight')
+    
+    # showing if specified
     if show: plt.show()
 
 # Adds highlights to the specified axes.
