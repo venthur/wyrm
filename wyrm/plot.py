@@ -142,18 +142,6 @@ plots = []
 
 def create_data(channel_count = 2, steps = 100):
 
-    data = np.zeros([steps, channel_count])
-    channels = []
-    for i in range(channel_count):
-        data[:,i] = create_channel(steps)
-        channels.append('ch' + str(i))
-        
-    axes = [np.arange(0,steps*10, 10), channels]
-    names = ["time", "channel"]
-    units = ["ms", "stuff"]
-    dat = Data(data, axes, names, units)
-    return (dat)
-    
     def create_channel(steps = 100):
         steps = float(steps)
         a = -5
@@ -170,10 +158,24 @@ def create_data(channel_count = 2, steps = 100):
             cnt += 1
         
         return range_y
+    
+    data = np.zeros([steps, channel_count])
+    channels = []
+    for i in range(channel_count):
+        data[:,i] = create_channel(steps)
+        channels.append('ch' + str(i))
+        
+    axes = [np.arange(0,steps*10, 10), channels]
+    names = ["time", "channel"]
+    units = ["ms", "stuff"]
+    dat = Data(data, axes, names, units)
+    return (dat)
+
 
 # plots a simple time_interval with the given data
+def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval', save_path=None):
 
-def plot_timeinterval(data, highlights=None, legend=True, show=True):
+    plt.clf()
 
     # plotting of the data
     plt.plot(data.axes[0], data.data)
@@ -192,6 +194,13 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True):
     
     # labeling of channels
     if legend: plt.legend(data.axes[1])
+    
+    # saving if specified
+    if save:
+        if save_path is None:
+            plt.savefig(save_name, bbox_inches='tight')
+        else:
+            plt.savefig(save_path + save_name, bbox_inches='tight')
         
     plt.grid(True)
     if show: plt.show()
