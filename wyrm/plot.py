@@ -134,10 +134,6 @@ def interpolate_2d(x, y, z):
 
 ### The new plotting functions #############################################
 
-# globals for storing figures and plots(axes)
-figures = []
-plots = []
-
 # automated creation of more realistic test data ##########
 # test function: (x^3 * cos(x)) / 20, x in [-5, -2] (with variations)
 def create_data_ti(channel_count = 2, steps = 100):
@@ -201,11 +197,6 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
     # plotting of the data
     plt.plot(data.axes[0], data.data)
     
-    # filling of global lists for figures and axes (plots) 
-    global plots, figures
-    figures = [plt.gcf()]
-    plots = [plt.gca()]
-    
     # plotting of highlights
     add_highlights(highlights)
 
@@ -236,10 +227,6 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
     # plotting of the data
     plt.subplot(position)
     plt.plot(data.axes[len(data.axes) - 2], data.data[epoch])
-    
-    # filling of global lists for figures and axes (plots) 
-    global plots
-    plots.append(plt.gca())
     
     # plotting of highlights
     add_highlights(highlights, axes=[plt.gca()])
@@ -276,9 +263,8 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
 # obj_highlight: an instance of the Highlight class
 def add_highlights(obj_highlight, axes = None):
     
-    global plots
     if axes is None:
-        axes = plots
+        axes = plt.gcf().axes
     
     def highlight(start, end, axis, color, alpha):
         axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
@@ -286,7 +272,6 @@ def add_highlights(obj_highlight, axes = None):
     
     # check if obj_highlight is an instance of the Highlight class
     if isinstance(obj_highlight, type(Highlight())):
-        #print('instance found')
         for p in axes:
             for hl in obj_highlight.spans:
                 highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
