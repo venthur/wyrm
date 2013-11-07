@@ -242,7 +242,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
     plots.append(plt.gca())
     
     # plotting of highlights
-    add_highlights(highlights)
+    add_highlights(highlights, axes=[plt.gca()])
 
     # labeling of axes
     plt.xlabel(data.units[len(data.axes) - 2])
@@ -289,7 +289,7 @@ def add_highlights(obj_highlight, axes = None):
         #print('instance found')
         for p in axes:
             for hl in obj_highlight.spans:
-                highlight(hl[0], hl[1], axis = p, color=obj_highlight.color, alpha=obj_highlight.alpha)
+                highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
 
 # class for highlights.
 # spans: list of two-element lists "[[start1, end1], ..., [startn, endn]]"
