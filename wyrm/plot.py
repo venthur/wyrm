@@ -164,7 +164,7 @@ def create_epoched_data_ti(class_count = 4, channel_count = 2, steps = 100):
     # create the class labels
     classes = []
     for i in range(class_count):
-        classes.append('class' + str(i))
+        classes.append('class' + str(i%2))
         
     axes = [classes, np.arange(0,steps*10, 10), channels]
     names = ["class", "time", "channel"]
@@ -248,6 +248,9 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
         pos = int('1' + str(len(data.data)) + str(i+1))
         _subplot_timeinterval(data, pos, i, highlights, legend)
         
+    # adjust the spacing
+    plt.subplots_adjust(left=0.05, right=0.97, top=0.97, bottom=0.04, hspace=0.3, wspace=0.3)
+    
     # saving if specified
     if save:
         if save_path is None:
