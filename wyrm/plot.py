@@ -17,7 +17,7 @@ from wyrm.types import Data
 
 import tentensystem as tts
 
-### The old plotting functions #########################################################
+### The old plotting functions ############################################################################################33
 
 def plot_scalp(v, channel):
     """Plot the values v for channel ``channel`` on a scalp."""
@@ -132,9 +132,9 @@ def interpolate_2d(x, y, z):
     Z = f(X, Y)
     return X, Y, Z
 
-### The new plotting functions #############################################
+### The new plotting functions ###########################################################################################
 
-# automated creation of more realistic test data ##########
+# automated creation of more realistic test data #######################################################
 # test function: (x^3 * cos(x)) / 20, x in [-5, -2] (with variations)
 def create_data_ti(channel_count = 2, steps = 100):
     
@@ -149,6 +149,7 @@ def create_data_ti(channel_count = 2, steps = 100):
     units = ["ms", "channel_stuff"]
     dat = Data(data, axes, names, units)
     return (dat)
+
 
 def create_epoched_data_ti(class_count = 4, channel_count = 2, steps = 100):
     data = np.zeros([class_count, steps, channel_count])
@@ -189,7 +190,17 @@ def _create_channel(steps = 100):
     
     return range_y
 
+# \automated creation of more realistic test data ######################################################
+
+
 # plots a simple time_interval with the given data
+# data: wyrm.types.Data object containing the data to plot
+# highlights (optional): a wyrm.plot.Highlight object to create highlights
+# legend (optional): boolean to switch the legend on or off
+# show (optional): boolean to switch immediate showing after creation
+# save (optional): boolean to switch saving the created figure
+# save_name (optional): String to specify the name the figure is saved as
+# save_path (optional): String to specify the path the figure is saved to (usage: '/path/')  
 def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval', save_path=None):
 
     plt.clf()
@@ -198,12 +209,10 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
     plt.plot(data.axes[0], data.data)
     
     # plotting of highlights
-    add_highlights(highlights)
+    set_highlights(highlights)
 
     # labeling of axes
-    add_labels(data.units[0], "$\mu$V")
-    #plt.xlabel(data.units[0])
-    #plt.ylabel("$\mu$V", rotation = 0)
+    set_labels(data.units[0], "$\mu$V", draw=False)
     
     # labeling of channels
     if legend: plt.legend(data.axes[1])
@@ -219,42 +228,35 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
     
     # showing if specified
     if show: plt.show()
-
-# adds a subplot to the current figure at the specified position.
-# data: wyrm Data
-# position: position of the subplot
-# epoch: specifies the epoch to plot
+    
+    
+# plots a series of time_intervals with the given epoched data
+# data: wyrm.types.Data object containing the epoched data to plot
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
-# legend (optional): boolean to switch the legend on or off 
-def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
-    
-    # plotting of the data
-    plt.subplot(position)
-    plt.plot(data.axes[len(data.axes) - 2], data.data[epoch])
-    
-    # plotting of highlights
-    add_highlights(highlights, axes=[plt.gca()])
-
-    # labeling of axes
-    plt.xlabel(data.units[len(data.axes) - 2])
-    plt.ylabel("$\mu$V", rotation = 0)
-    
-    # labeling of channels
-    if legend: plt.legend(data.axes[len(data.axes) - 1])
-    
-    plt.grid(True)
-    
+# legend (optional): boolean to switch the legend on or off
+# show (optional): boolean to switch immediate showing after creation
+# save (optional): boolean to switch saving the created figure
+# save_name (optional): String to specify the name the figure is saved as
+# save_path (optional): String to specify the path the figure is saved to (usage: '/path/') 
 def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='epoched_timeinterval', save_path=None):
     
     plt.clf()
     
-    # iterate over epochs
-    for i in range(len(data.data)):
-        pos = int('1' + str(len(data.data)) + str(i+1))
-        _subplot_timeinterval(data, pos, i, highlights, legend)
+    # check of data is epoched
+    if(len(data.data.shape) > 2):
+        # iterate over epochs
+        for i in range(len(data.data)):
+            pos = int('1' + str(len(data.data)) + str(i+1))
+            _subplot_timeinterval(data, pos, i, highlights, legend)
+    else:
+        pos = 111
+        _subplot_timeinterval(data, pos, -1, highlights, legend)
+        
+    # add labels
+    set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
         
     # adjust the spacing
-    plt.subplots_adjust(left=0.05, right=0.97, top=0.97, bottom=0.04, hspace=0.3, wspace=0.3)
+    plt.subplots_adjust(left=0.1, right=0.97, top=0.97, bottom=0.1, hspace=0.3, wspace=0.3)
     
     # saving if specified
     if save:
@@ -265,11 +267,42 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     
     # showing if specified
     if show: plt.show()
+    
+    
+# adds a subplot to the current figure at the specified position.
+# data: wyrm Data
+# position: position of the subplot
+# epoch: specifies the epoch to plot
+# highlights (optional): a wyrm.plot.Highlight object to create highlights
+# legend (optional): boolean to switch the legend on or off 
+def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
+    
+    # plotting of the data
+    plt.subplot(position)
+    
+    # epoch is -1 when there are no epochs
+    if(epoch == -1):
+        plt.plot(data.axes[0], data.data)
+    else:
+        plt.plot(data.axes[len(data.axes) - 2], data.data[epoch])
+    
+    # plotting of highlights
+    set_highlights(highlights, axes=[plt.gca()])
+
+    # labeling of axes
+    #plt.xlabel(data.units[len(data.axes) - 2])
+    #plt.ylabel("$\mu$V", rotation = 0)
+    
+    # labeling of channels
+    if legend: plt.legend(data.axes[len(data.axes) - 1])
+    
+    plt.grid(True)
+    
 
 # Adds highlights to the specified axes.
 # obj_highlight: an instance of the Highlight class
 # axes (optional): a list of axes
-def add_highlights(obj_highlight, axes=None):
+def set_highlights(obj_highlight, axes=None):
     
     if axes is None:
         axes = plt.gcf().axes
@@ -284,11 +317,13 @@ def add_highlights(obj_highlight, axes=None):
             for hl in obj_highlight.spans:
                 highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
                 
+                
 # Adds labels to the specified axes (default: all axes of current figure)
 # xLabels: String to label the x-axis
 # yLabels: String to label the y-axis
-# axes (optional): List of matplotlib.Axes to apply the labels on 
-def add_labels(xLabel, yLabel, axes=None):
+# axes (optional): List of matplotlib.Axes to apply the labels on
+# draw (optional): boolean to switch immediate drawing  
+def set_labels(xLabel, yLabel, axes=None, draw=True):
     
     if axes is None:
         axes = plt.gcf().axes
@@ -297,6 +332,9 @@ def add_labels(xLabel, yLabel, axes=None):
     for ax in axes:
         ax.set_xlabel(xLabel)
         ax.set_ylabel(yLabel, rotation = 0)
+        
+    if draw: plt.draw()
+        
 
 # class for highlights.
 # spans: list of two-element lists "[[start1, end1], ..., [startn, endn]]"
