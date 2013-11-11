@@ -300,6 +300,7 @@ def plot_tenten():
     for i in range(len(data.axes[1])):
         plt.subplot2grid((5,7),(chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]))
         plt.plot(data.axes[0], data.data[:, i])
+        plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
         
     plt.show()
     
