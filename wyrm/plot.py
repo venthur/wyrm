@@ -268,6 +268,41 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     # showing if specified
     if show: plt.show()
     
+def plot_tenten():
+    chan_pos = {'A1'  : (2, 0),
+                'A2'  : (2, 6),
+                'C3'  : (2, 2),
+                'C4'  : (2, 4),
+                'Cz'  : (2, 3),
+                'Fp1' : (0, 2),
+                'Fp2' : (0, 4),
+                'F3'  : (1, 2),
+                'F4'  : (1, 4),
+                'F7'  : (1, 1),
+                'F8'  : (1, 5),
+                'Fz'  : (1, 3),
+                'O1'  : (4, 2),
+                'O2'  : (4, 4),
+                'P3'  : (3, 2),
+                'P4'  : (3, 4),
+                'Pz'  : (3, 3),
+                'T3'  : (2, 1),
+                'T4'  : (2, 5),
+                'T5'  : (3, 1),
+                'T6'  : (3, 5)}
+    
+    data = create_data_ti(21)
+    chan_names = ['A1', 'A2', 'C3', 'C4', 'Cz', 'Fp1', 'Fp2', 'F3', 'F4', 'F7', 'F8', 'Fz', 'O1', 'O2', 'P3', 'P4', 'Pz', 'T3', 'T4', 'T5', 'T6']
+    data.axes[1] = chan_names
+    
+    plt.clf()
+    
+    for i in range(len(data.axes[1])):
+        plt.subplot2grid((5,7),(chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]))
+        plt.plot(data.axes[0], data.data[:, i])
+        
+    plt.show()
+    
     
 # adds a subplot to the current figure at the specified position.
 # data: wyrm Data
