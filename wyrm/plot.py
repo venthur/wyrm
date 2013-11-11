@@ -195,17 +195,18 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
     plt.clf()
 
     # plotting of the data
-    plt.plot(data.axes[0], data.data)
+    #plt.plot(data.axes[0], data.data)
+    _subplot_timeinterval(data, '111', 0, highlights, legend)
     
     # plotting of highlights
-    add_highlights(highlights)
+    #add_highlights(highlights)
 
     # labeling of axes
-    plt.xlabel(data.units[0])
-    plt.ylabel("$\mu$V", rotation = 0)
+    #plt.xlabel(data.units[0])
+    #plt.ylabel("$\mu$V", rotation = 0)
     
     # labeling of channels
-    if legend: plt.legend(data.axes[1])
+    #if legend: plt.legend(data.axes[1])
     
     # saving if specified
     if save:
@@ -214,7 +215,7 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
         else:
             plt.savefig(save_path + save_name, bbox_inches='tight')
         
-    plt.grid(True)
+    #plt.grid(True)
     
     # showing if specified
     if show: plt.show()
@@ -241,6 +242,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
     plt.grid(True)
     
 def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='epoched_timeinterval', save_path=None):
+    
     plt.clf()
     
     # iterate over epochs
@@ -264,7 +266,7 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
 # Adds highlights to the specified axes.
 # axes: a list of axes
 # obj_highlight: an instance of the Highlight class
-def add_highlights(obj_highlight, axes = None):
+def add_highlights(obj_highlight, axes=None):
     
     if axes is None:
         axes = plt.gcf().axes
@@ -278,6 +280,20 @@ def add_highlights(obj_highlight, axes = None):
         for p in axes:
             for hl in obj_highlight.spans:
                 highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
+                
+# Adds labels to the specified axes (default: all axes of current figure)
+# xLabels: Array containing the labels for the x-axis
+# yLabels: Array containing the labels for the y-axis
+# axes: List of matplotlib.Axes to apply the labels on 
+def add_labels(xLabel, yLabel, axes=None):
+    
+    if axes is None:
+        axes = plt.gcf().axes
+        
+    # labeling of axes
+    for ax in axes:
+        ax.xlabel(xLabels)
+        ax.ylabel(yLabels, rotation = 0)
 
 # class for highlights.
 # spans: list of two-element lists "[[start1, end1], ..., [startn, endn]]"
