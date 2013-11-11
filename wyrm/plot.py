@@ -195,18 +195,18 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
     plt.clf()
 
     # plotting of the data
-    #plt.plot(data.axes[0], data.data)
-    _subplot_timeinterval(data, '111', 0, highlights, legend)
+    plt.plot(data.axes[0], data.data)
     
     # plotting of highlights
-    #add_highlights(highlights)
+    add_highlights(highlights)
 
     # labeling of axes
+    add_labels(data.units[0], "$\mu$V")
     #plt.xlabel(data.units[0])
     #plt.ylabel("$\mu$V", rotation = 0)
     
     # labeling of channels
-    #if legend: plt.legend(data.axes[1])
+    if legend: plt.legend(data.axes[1])
     
     # saving if specified
     if save:
@@ -215,7 +215,7 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
         else:
             plt.savefig(save_path + save_name, bbox_inches='tight')
         
-    #plt.grid(True)
+    plt.grid(True)
     
     # showing if specified
     if show: plt.show()
@@ -223,6 +223,9 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
 # adds a subplot to the current figure at the specified position.
 # data: wyrm Data
 # position: position of the subplot
+# epoch: specifies the epoch to plot
+# highlights (optional): a wyrm.plot.Highlight object to create highlights
+# legend (optional): boolean to switch the legend on or off 
 def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
     
     # plotting of the data
@@ -264,8 +267,8 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     if show: plt.show()
 
 # Adds highlights to the specified axes.
-# axes: a list of axes
 # obj_highlight: an instance of the Highlight class
+# axes (optional): a list of axes
 def add_highlights(obj_highlight, axes=None):
     
     if axes is None:
@@ -282,9 +285,9 @@ def add_highlights(obj_highlight, axes=None):
                 highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
                 
 # Adds labels to the specified axes (default: all axes of current figure)
-# xLabels: Array containing the labels for the x-axis
-# yLabels: Array containing the labels for the y-axis
-# axes: List of matplotlib.Axes to apply the labels on 
+# xLabels: String to label the x-axis
+# yLabels: String to label the y-axis
+# axes (optional): List of matplotlib.Axes to apply the labels on 
 def add_labels(xLabel, yLabel, axes=None):
     
     if axes is None:
@@ -292,13 +295,13 @@ def add_labels(xLabel, yLabel, axes=None):
         
     # labeling of axes
     for ax in axes:
-        ax.xlabel(xLabels)
-        ax.ylabel(yLabels, rotation = 0)
+        ax.set_xlabel(xLabel)
+        ax.set_ylabel(yLabel, rotation = 0)
 
 # class for highlights.
 # spans: list of two-element lists "[[start1, end1], ..., [startn, endn]]"
-# color: color of the highlighted area
-# alpha: transparency of the highlighted area
+# color (optional): color of the highlighted area
+# alpha (optional): transparency of the highlighted area
 class Highlight:
 
     def __init__(self, spans=[], color='#b3b3b3', alpha=0.5):
