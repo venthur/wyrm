@@ -151,9 +151,9 @@ def create_data_ti(channel_count = 2, steps = 100):
     return (dat)
 
 
-def create_epoched_data_ti(class_count = 4, channel_count = 2, steps = 100):
-    data = np.zeros([class_count, steps, channel_count])
-    for i in range(class_count):
+def create_epoched_data_ti(epoch_count=4, channel_count=2, steps=100):
+    data = np.zeros([epoch_count, steps, channel_count])
+    for i in range(epoch_count):
         for o in range(channel_count):
             data[i,:,o] = _create_channel(steps)
             
@@ -164,7 +164,7 @@ def create_epoched_data_ti(class_count = 4, channel_count = 2, steps = 100):
         
     # create the class labels
     classes = []
-    for i in range(class_count):
+    for i in range(epoch_count):
         classes.append('class' + str(i%2))
         
     axes = [classes, np.arange(0,steps*10, 10), channels]
@@ -172,6 +172,29 @@ def create_epoched_data_ti(class_count = 4, channel_count = 2, steps = 100):
     units = ["class_stuff", "ms", "channel_stuff"]
     dat = Data(data, axes, names, units)
     return(dat)
+
+def create_tenten_data(channel_count=21, steps=100):
+    data = np.zeros([steps, channel_count])
+    channels = []
+    chan_names = ['A1', 'A2', 'C3', 'C4', 'Cz', 'Fp1', 'Fp2', 'F3', 'F4', 'F7', 'F8', 'Fz', 'O1', 'O2', 'P3', 'P4', 'Pz', 'T3', 'T4', 'T5', 'T6']
+         
+    for i in range(channel_count):
+        data[:,i] = _create_channel(steps)
+        
+    if channel_count <= len(chan_names):
+        channels = chan_names[:channel_count]
+    else:
+        channels = chan_names
+        i = len(chan_names)
+        while (i < channel_count):
+            channels.append('ch' + str(i))
+            i = i+1
+
+    axes = [np.arange(0,steps*10, 10), channels]
+    names = ["time", "channel"]
+    units = ["ms", "channel_stuff"]
+    dat = Data(data, axes, names, units)
+    return (dat)
 
 def _create_channel(steps = 100):
     steps = float(steps)
@@ -271,7 +294,7 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     
 # plots all channels of the 10-10 system according to their position on the scalp.
 # only channels with the following identifiers are plotted: 'A1, A2, C3, C4, Cz, Fp1, Fp2, F3, F4, F7, F8, Fz, O1, O2, P3, P4, Pz, T3, T4, T5, T6'
-def plot_tenten():
+def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_name='epoched_timeinterval', save_path=None):
     chan_pos = {'A1'  : (2, 0),
                 'A2'  : (2, 6),
                 'C3'  : (2, 2),
@@ -294,21 +317,26 @@ def plot_tenten():
                 'T5'  : (3, 1),
                 'T6'  : (3, 5)}
     
-    #### TEST PURPOSES ###
-    data = create_data_ti(21)
-    chan_names = ['A1', 'A2', 'C3', 'C4', 'Cz', 'Fp1', 'Fp2', 'F3', 'F4', 'F7', 'F8', 'Fz', 'O1', 'O2', 'P3', 'P4', 'Pz', 'T3', 'T4', 'T5', 'T6']
-    data.axes[1] = chan_names
-    #### \TEST PURPOSES ###
-    
     plt.clf()
     
     for i in range(len(data.axes[1])):
         if data.axes[1][i] in chan_pos:
             plt.subplot2grid((5,7),(chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]))
             plt.plot(data.axes[0], data.data[:, i])
+            # at this moment just to show what's what
             plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
-        
-    plt.show()
+
+    set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
+    
+    # saving if specified
+    if save:
+        if save_path is None:
+            plt.savefig(save_name, bbox_inches='tight')
+        else:
+            plt.savefig(save_path + save_name, bbox_inches='tight')
+    
+    # showing if specified
+    if show: plt.show()
     
     
 # adds a subplot to the current figure at the specified position.
