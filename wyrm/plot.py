@@ -268,6 +268,9 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     # showing if specified
     if show: plt.show()
     
+    
+# plots all channels of the 10-10 system according to their position on the scalp.
+# only channels with the following identifiers are plotted: 'A1, A2, C3, C4, Cz, Fp1, Fp2, F3, F4, F7, F8, Fz, O1, O2, P3, P4, Pz, T3, T4, T5, T6'
 def plot_tenten():
     chan_pos = {'A1'  : (2, 0),
                 'A2'  : (2, 6),
@@ -291,16 +294,19 @@ def plot_tenten():
                 'T5'  : (3, 1),
                 'T6'  : (3, 5)}
     
+    #### TEST PURPOSES ###
     data = create_data_ti(21)
     chan_names = ['A1', 'A2', 'C3', 'C4', 'Cz', 'Fp1', 'Fp2', 'F3', 'F4', 'F7', 'F8', 'Fz', 'O1', 'O2', 'P3', 'P4', 'Pz', 'T3', 'T4', 'T5', 'T6']
     data.axes[1] = chan_names
+    #### \TEST PURPOSES ###
     
     plt.clf()
     
     for i in range(len(data.axes[1])):
-        plt.subplot2grid((5,7),(chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]))
-        plt.plot(data.axes[0], data.data[:, i])
-        plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
+        if data.axes[1][i] in chan_pos:
+            plt.subplot2grid((5,7),(chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]))
+            plt.plot(data.axes[0], data.data[:, i])
+            plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
         
     plt.show()
     
