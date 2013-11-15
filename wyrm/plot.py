@@ -12,6 +12,7 @@ import numpy as np
 import random as rnd
 import inspect
 from matplotlib import pyplot as plt
+import matplotlib.gridspec as gridspec
 from wyrm.types import Data
 #from scipy import interpolate
 
@@ -224,12 +225,16 @@ def _create_channel(steps = 100):
 # save (optional): boolean to switch saving the created figure
 # save_name (optional): String to specify the name the figure is saved as
 # save_path (optional): String to specify the path the figure is saved to (usage: '/path/')  
-def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval', save_path=None):
+# channel (optional): used for plotting only one specific channel
+def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval', save_path=None, channel=None):
 
     plt.clf()
 
     # plotting of the data
-    plt.plot(data.axes[0], data.data)
+    if channel is None:
+        plt.plot(data.axes[0], data.data)
+    else:
+        plt.plot(data.axes[0], data.data[:, channel])
     
     # plotting of highlights
     set_highlights(highlights)
@@ -238,7 +243,11 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
     set_labels(data.units[0], "$\mu$V", draw=False)
     
     # labeling of channels
-    if legend: plt.legend(data.axes[1])
+    if legend:
+        if channel is None:
+            plt.legend(data.axes[1])
+        else:
+            plt.legend([data.axes[1][channel]])
     
     # saving if specified
     if save:
@@ -321,10 +330,14 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
     
     for i in range(len(data.axes[1])):
         if data.axes[1][i] in chan_pos:
-            plt.subplot2grid((5,7),(chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]))
-            plt.plot(data.axes[0], data.data[:, i])
+            gs = gridspec.GridSpec(5, 7)
+            _subplot_timeinterval(data, gs[chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]], epoch=-1, highlights=highlights, legend=legend, channel=i)
+            
             # at this moment just to show what's what
             plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
+            
+            # adjust the spacing
+            plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, hspace=0.2, wspace=0.2)
 
     set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
     
@@ -345,16 +358,23 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
 # epoch: specifies the epoch to plot
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
 # legend (optional): boolean to switch the legend on or off 
-def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
+# channel (optional): used for plotting only one specific channel
+def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None):
     
     # plotting of the data
     plt.subplot(position)
     
     # epoch is -1 when there are no epochs
     if(epoch == -1):
-        plt.plot(data.axes[0], data.data)
+        if channel is None:
+            plt.plot(data.axes[0], data.data)
+        else:
+            plt.plot(data.axes[0], data.data[:, channel])
     else:
-        plt.plot(data.axes[len(data.axes) - 2], data.data[epoch])
+        if channel is None:
+            plt.plot(data.axes[len(data.axes) - 2], data.data[epoch])
+        else:
+            plt.plot(data.axes[len(data.axes) - 2], data.data[epoch, channel])
     
     # plotting of highlights
     set_highlights(highlights, axes=[plt.gca()])
@@ -364,7 +384,11 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True):
     #plt.ylabel("$\mu$V", rotation = 0)
     
     # labeling of channels
-    if legend: plt.legend(data.axes[len(data.axes) - 1])
+    if legend:
+        if channel is None:
+            plt.legend(data.axes[len(data.axes) - 1])
+        else:
+            plt.legend([data.axes[len(data.axes) - 1][channel]])
     
     plt.grid(True)
     
