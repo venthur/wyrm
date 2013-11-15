@@ -194,6 +194,8 @@ class RingBuffer(object):
 
     Attributes
     ----------
+    length_ms : int
+        the length of the ring buffer in milliseconds
     length : int
         the length of the ring buffer in samples
     data : ndarray
@@ -219,19 +221,25 @@ class RingBuffer(object):
 
     """
 
-    def __init__(self, length):
+    def __init__(self, length_ms):
         """Initialize the Ringbuffer.
 
         Parameters
         ----------
         length : int
-            the length of the data and maximum length of the buffer
+            the length of the ring buffer in milliseconds
 
         """
-        # the maximum length of the ring buffer
-        self.length = length
+        # the maximum length of the ring buffer in ms
+        self.length_ms = length_ms
+        # the length of the buffer in samples
+        self.length = None
         self.data = None
         self.markers = []
+        self.axes = []
+        self.units = []
+        self.names = []
+        self.fs = None
         # indicate if the buffer write was wrapped around at least once
         self.full = False
         # the index where to insert new data (= the start of the oldest
@@ -239,31 +247,31 @@ class RingBuffer(object):
         self.idx = 0
 
     def _move_markers(self, markers, steps):
-        """Move marker indices to the left or right.
+        """Move marker `steps` samples to the left or right.
+
+        This method respects the sampling frequency of the data.
 
         Parameters
         ----------
-        markers : list of (int, str)
+        markers : list of (float, str)
         steps : int
-            the number of steps to move the markers (a negative value
+            the number of samples to move the markers (a negative value
             moves the indices to the left)
 
         Returns
         -------
-        markers : list of (int, str)
+        markers : list of (float, str)
 
         """
-        return map(lambda x: [x[0] + steps, x[1]], markers)
+        return map(lambda x: [x[0] + steps / self.fs * 1000, x[1]], markers)
 
-    def append(self, data, markers=None):
+    def append(self, dat):
         """Append data to the Ringbuffer, overwriting old data if necessary.
 
         Parameters
         ----------
-        data : ndarray
-        markers : array of (int, str)
-            the markers. the first int is the position of the marker
-            relative to the sample in ``data``
+        dat : Data
+            a continuous data object
 
         Raises
         ------
@@ -272,17 +280,28 @@ class RingBuffer(object):
             does not match the ring buffer dimensions
 
         """
+        assert hasattr(dat, 'markers')
+        assert hasattr(dat, 'fs')
+        data = dat.data.copy()
+        markers = dat.markers[:]
         # we have nothing to append
         if len(data) == 0:
+            if markers:
+                logger.error('discarding markers!')
+                logger.error(markers)
             return
-        if markers is None:
-            markers = []
         # we append the first time, initialize .data with the correct
         # shape
         if self.data is None:
+            self.fs = dat.fs
+            self.length = self.length_ms / 1000 * self.fs
             buffershape = list(data.shape)
             buffershape[0] = self.length
             self.data = np.empty(buffershape)
+            self.axes = dat.axes[:]
+            self.axes[0] = np.linspace(0, 1000 * self.length / self.fs, self.length, endpoint=False)
+            self.names = dat.names[:]
+            self.units = dat.units[:]
         # incoming data is bigger than the buffer's capacity
         if len(data) > self.length:
             surplus = len(data) - self.length
@@ -302,7 +321,7 @@ class RingBuffer(object):
             move = self.length - (size + len(data))
             self.markers = self._move_markers(self.markers, move)
         # remove all markers outside of 0..self.length-1
-        self.markers = filter(lambda x: 0 <= x[0] < self.length, self.markers)
+        self.markers = filter(lambda x: 0 <= x[0] < self.length_ms, self.markers)
         # /end of markers
         # we can write without wrapping around the buffer's end
         if self.idx + len(data) < self.length:
@@ -324,23 +343,25 @@ class RingBuffer(object):
 
         Returns
         -------
-        data : ndarray
-            the full contents of the ring buffer if the buffer is emtpy
-            an empty ndarray is returned
-        markers : array of (int, str)
-            the markers for the contents of the buffer with the
-            positions relative to the samples in ``data``
+        data : Data
+            the full contents of the ring buffer
 
         """
         # no data has ever been appended to this ring buffer
         if self.data is None:
             data = np.array([])
+            axes = []
         # the ringbuffer wrapped around at least once
         elif self.full:
             data = np.concatenate([self.data[self.idx:], self.data[:self.idx]], axis=0)
+            axes = self.axes[:]
         # the ring buffer hasn't been filled completely yet
         else:
             data = self.data[:self.idx].copy()
-        return data, self.markers[:]
-
+            axes = self.axes[:]
+            axes[0] = axes[0][:self.idx]
+        d = Data(data=data, axes=axes, names=self.names[:], units=self.units[:])
+        d.markers = self.markers[:]
+        d.fs = self.fs
+        return d
 
