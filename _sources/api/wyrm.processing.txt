@@ -18,6 +18,7 @@ wyrm.processing
       calculate_signed_r_square
       correct_for_baseline
       create_feature_vectors
+      filter
       jumping_means
       logarithm
       rectify_channels

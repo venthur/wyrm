@@ -627,6 +627,90 @@ classaxis moved to dimension 0</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.filter">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">filter</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>zi=None</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter data using the filter defined by the filter coefficients.</p>
+<p>This method mainly delegates the call to
+<tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>the data to be filtered</p>
+</div></blockquote>
+<p><strong>b</strong> : 1-d array</p>
+<blockquote>
+<div><p>the numerator coefficient vector</p>
+</div></blockquote>
+<p><strong>a</strong> : 1-d array</p>
+<blockquote>
+<div><p>the denominator cefficient vector</p>
+</div></blockquote>
+<p><strong>zi</strong> : nd array, optional</p>
+<blockquote>
+<div><p>the initial conditions for the filter delay. If zi is <tt class="docutils literal"><span class="pre">None</span></tt>
+or not given, initial rest is assumed.</p>
+</div></blockquote>
+<p><strong>timeaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the axes in <tt class="docutils literal"><span class="pre">data</span></tt> to filter along to</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>the filtered output</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt></p>
+</div>
+<p class="rubric">Examples</p>
+<p>Generate and use a Butterworth bandpass filter for complete
+(off-line data):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># the sampling frequency of our data in Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># calculate the nyquist frequency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fn</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># the desired low and high frequencies in Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_low</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">13</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># the order of the filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">butter_ord</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># calculate the filter coefficients</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">f_low</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">/</span> <span class="n">fn</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similar to the above this time in an on-line setting:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># pre-calculate the filter coefficients and the initial filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># state</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">f_low</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">/</span> <span class="n">fn</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filter_state</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">lfilter_zi</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Our input will be N-dimensional (N == number of channels), so</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># we have to create the state for each dimension of the input</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filter_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_state</span> <span class="k">for</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">CHANNELS</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">data</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="c"># convert incoming data into ``Data`` object</span>
+<span class="gp">... </span>    <span class="n">cnt</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c"># filter the data, note how filter now also returns the</span>
+<span class="gp">... </span>    <span class="c"># filter state which we feed back into the next call of</span>
+<span class="gp">... </span>    <span class="c"># ``filter``</span>
+<span class="gp">... </span>    <span class="n">cnt</span><span class="p">,</span> <span class="n">filter_state</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">filter_state</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.jumping_means">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">jumping_means</tt><big>(</big><em>dat</em>, <em>ivals</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#jumping_means"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.jumping_means" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the jumping means.</p>
@@ -801,8 +885,7 @@ those slices and the class each slice belongs to.</p>
 ignored.</p>
 <p>If the segmentation does not result in any epochs (i.e. the markers
 in <tt class="docutils literal"><span class="pre">marker_def</span></tt> could not be found in <tt class="docutils literal"><span class="pre">dat</span></tt>, the resulting
-dat.data will be an empty array with the expected number of
-dimensions (<tt class="docutils literal"><span class="pre">dat.data.ndim</span> <span class="pre">+</span> <span class="pre">1</span></tt>).</p>
+dat.data will be an empty array.</p>
 <p>This method is also suitable for <strong>online processing</strong>, please read
 the documentation for the <tt class="docutils literal"><span class="pre">newsamples</span></tt> parameter and have a look
 at the Examples below.</p>
@@ -1438,10 +1521,11 @@ epoched continuous EEG data which looks like this: <tt class="docutils literal">
 <dt>Feature Vector:</dt>
 <dd>Similar to Epoched Data, with classes in the first dimension.</dd>
 </dl>
-<p>A <tt class="xref py py-func docutils literal"><span class="pre">__eq__()</span></tt> function is providet to test for equality of two
-Data objects (via <tt class="docutils literal"><span class="pre">==</span></tt>). This method only checks for the known
-attributes and does not guaranty correct result if the Data object
-contains custom attributes. It is mainly used in unittests.</p>
+<p><tt class="xref py py-meth docutils literal"><span class="pre">Data.__eq__()</span></tt> and <tt class="xref py py-meth docutils literal"><span class="pre">Data.__ne__()</span></tt> functions are provided
+to test for equality of two Data objects (via <tt class="docutils literal"><span class="pre">==</span></tt> and <tt class="docutils literal"><span class="pre">!=</span></tt>).
+This method only checks for the known attributes and does not
+guaranty correct result if the Data object contains custom
+attributes. It is mainly used in unittests.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1457,17 +1541,19 @@ contains custom attributes. It is mainly used in unittests.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="5%" />
-<col width="18%" />
-<col width="76%" />
+<col width="6%" />
+<col width="21%" />
+<col width="74%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>data</td>
 <td>ndarray</td>
-<td>n-dimensional data array</td>
+<td>n-dimensional data array if the array is empty
+(i.e. <tt class="docutils literal"><span class="pre">data.size</span> <span class="pre">==</span> <span class="pre">0</span></tt>), the <tt class="docutils literal"><span class="pre">Data</span></tt> object is assumed to be
+empty</td>
 </tr>
 <tr class="row-even"><td>axes</td>
-<td>nlist of 1darrays</td>
+<td>nlist of 1-darrays</td>
 <td>each element of corresponds to a dimension of <tt class="docutils literal"><span class="pre">.data</span></tt> (i.e.
 the first one in <tt class="docutils literal"><span class="pre">.axes</span></tt> to the first dimension in <tt class="docutils literal"><span class="pre">.data</span></tt>
 and so on). The 1-dimensional arrays contain the description of
@@ -1477,7 +1563,8 @@ an array of timesteps and <tt class="docutils literal"><span class="pre">.axes[1
 </tr>
 <tr class="row-odd"><td>names</td>
 <td>nlist of strings</td>
-<td>the human readable description of each axis, like &#8216;time&#8217;, or &#8216;channel&#8217;</td>
+<td>the human readable description of each axis, like &#8216;time&#8217;, or
+&#8216;channel&#8217;</td>
 </tr>
 <tr class="row-even"><td>units</td>
 <td>nlist of strings</td>
@@ -1544,7 +1631,7 @@ pairs after the shallow- and before the deep copy. If no
 
 <dl class="class">
 <dt id="wyrm.types.RingBuffer">
-<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">RingBuffer</tt><big>(</big><em>length</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">RingBuffer</tt><big>(</big><em>length_ms</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Circular Buffer implementation.</p>
 <p>This implementation has a guaranteed upper bound for read and write
@@ -1562,9 +1649,9 @@ be a fraction of a millisecond.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>length</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>length_ms</strong> : int</p>
 <blockquote class="last">
-<div><p>the length of the ring buffer in samples</p>
+<div><p>the length of the ring buffer in milliseconds</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1581,30 +1668,34 @@ be a fraction of a millisecond.</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="8%" />
+<col width="10%" />
 <col width="21%" />
-<col width="71%" />
+<col width="69%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>length</td>
+<tr class="row-odd"><td>length_ms</td>
+<td>int</td>
+<td>the length of the ring buffer in milliseconds</td>
+</tr>
+<tr class="row-even"><td>length</td>
 <td>int</td>
 <td>the length of the ring buffer in samples</td>
 </tr>
-<tr class="row-even"><td>data</td>
+<tr class="row-odd"><td>data</td>
 <td>ndarray</td>
 <td>the contents of the ring buffer, you should not read or write
 this attribute directly but via the <a class="reference internal" href="#wyrm.types.RingBuffer.get" title="wyrm.types.RingBuffer.get"><tt class="xref py py-meth docutils literal"><span class="pre">RingBuffer.get()</span></tt></a> and
 <a class="reference internal" href="#wyrm.types.RingBuffer.append" title="wyrm.types.RingBuffer.append"><tt class="xref py py-meth docutils literal"><span class="pre">RingBuffer.append()</span></tt></a> methods</td>
 </tr>
-<tr class="row-odd"><td>markers</td>
+<tr class="row-even"><td>markers</td>
 <td>array of [int, str]</td>
 <td>the markers belonging to the data currently in the ring buffer</td>
 </tr>
-<tr class="row-even"><td>full</td>
+<tr class="row-odd"><td>full</td>
 <td>boolean</td>
 <td>indicates if the buffer has at least <tt class="docutils literal"><span class="pre">length</span></tt> elements stored</td>
 </tr>
-<tr class="row-odd"><td>idx</td>
+<tr class="row-even"><td>idx</td>
 <td>int</td>
 <td>the starting position of the oldest data in the ring buffer</td>
 </tr>
@@ -1633,11 +1724,9 @@ this attribute directly but via the <a class="reference internal" href="#wyrm.ty
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray</p>
-<p><strong>markers</strong> : array of (int, str)</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
-<div><p>the markers. the first int is the position of the marker
-relative to the sample in <tt class="docutils literal"><span class="pre">data</span></tt></p>
+<div><p>a continuous data object</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1661,15 +1750,9 @@ does not match the ring buffer dimensions</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray</p>
-<blockquote>
-<div><p>the full contents of the ring buffer if the buffer is emtpy
-an empty ndarray is returned</p>
-</div></blockquote>
-<p><strong>markers</strong> : array of (int, str)</p>
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>data</strong> : Data</p>
 <blockquote class="last">
-<div><p>the markers for the contents of the buffer with the
-positions relative to the samples in <tt class="docutils literal"><span class="pre">data</span></tt></p>
+<div><p>the full contents of the ring buffer</p>
 </div></blockquote>
 </td>
 </tr>
