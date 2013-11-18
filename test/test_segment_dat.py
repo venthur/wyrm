@@ -44,13 +44,12 @@ class TestSegmentDat(unittest.TestCase):
         self.assertEqual(epo.axes[-2][-1], 390)
 
     def test_segment_dat_with_nonexisting_markers(self):
-        """Segmentation without result should return empty .data with correct number of dimensions."""
+        """Segmentation without result should return empty .data"""
         mrk_def = {'class 1': ['FUU1'],
                    'class 2': ['FUU2', 'FUU3']
                   }
         epo = segment_dat(self.dat, mrk_def, [-400, 400])
-        self.assertEqual(epo.data.ndim, 3)
-        self.assertEqual(epo.data.shape, (0, 0, 0))
+        self.assertEqual(epo.data.shape[0], 0)
 
     def test_segment_dat_with_unequally_sized_data(self):
         """Segmentation must ignore too short or too long chunks in the result."""
