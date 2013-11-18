@@ -48,8 +48,12 @@ class TestData(unittest.TestCase):
         with self.assertRaises(AssertionError):
             Data(self.data, self.axes, self.names, units)
 
-    def test_emtpy(self):
-        pass
+    def test_truth_value(self):
+        """Test __nonzero__."""
+        d = Data(np.array([]), [], [], [])
+        self.assertFalse(d)
+        d = Data(self.data, self.axes, self.names, self.units)
+        self.assertTrue(d)
 
     def test_equality(self):
         """Test the various (in)equalities."""

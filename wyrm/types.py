@@ -177,6 +177,30 @@ class Data(object):
         """
         return not self.__eq__(other)
 
+    def __nonzero__(self):
+        """Return the truth value for the object instance.
+
+        Similar to Python's built in types we return ``False`` if the
+        data instance is empty and ``True`` otherwise. Please note that
+        we only check for the size of ``.data`` and ignore other
+        attributes like ``.markers`` which might not be empty.
+
+        Examples
+        --------
+
+        Easy checking if a data object contains data or not:
+
+        >>> if not cnt:
+        ...     continue
+
+        Returns
+        -------
+        nonzero : int
+            ``self.data.size``
+
+        """
+        return self.data.size
+
     def __str__(self):
         """Human readable representation for a data object.
 
