@@ -122,16 +122,34 @@ class Data(object):
             True if ``self`` and ``other`` are equal, False if not.
 
         """
-        if (sorted(self.__dict__.keys()) == sorted(other.__dict__.keys()) and
-            np.array_equal(self.data, other.data) and
-            len(self.axes) == len(other.axes) and
-            all([self.axes[i].shape == other.axes[i].shape for i in range(len(self.axes))]) and
-            all([(self.axes[i] == other.axes[i]).all() for i in range(len(self.axes))]) and
-            self.names == other.names and
-            self.units == other.units
-           ):
-            return True
-        return False
+        # check if both have the same attributes
+        if sorted(self.__dict__.keys()) != sorted(other.__dict__.keys()):
+            return False
+        # .data
+        if not np.array_equal(self.data, other.data):
+            return False
+        # .axes
+        if len(self.axes) != len(other.axes):
+            return False
+        for i in range(len(self.axes)):
+            if self.axes[i].shape != other.axes[i].shape:
+                return False
+            if not (self.axes[i] == other.axes[i]).all():
+                return False
+        # .names
+        if self.names != other.names:
+            return False
+        # .units
+        if self.units != other.units:
+            return False
+        # optional extra attributes
+        if hasattr(self, 'markers') and self.markers != other.markers:
+            return False
+        if hasattr(self, 'fs') and self.fs != other.fs:
+            return False
+        # the stuff we care about seems to be equal, this does not mean
+        # the rest we didn't check is, but anyways...
+        return True
 
     def __ne__(self, other):
         """Test for inequality.
@@ -154,7 +172,6 @@ class Data(object):
             otherwise.
 
         """
-
         return not self.__eq__(other)
 
     def __str__(self):

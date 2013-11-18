@@ -49,24 +49,49 @@ class TestData(unittest.TestCase):
     def test_equality(self):
         """Test the various (in)equalities."""
         d1 = Data(self.data, self.axes, self.names, self.units)
+        # known extra attributes
         d1.markers = [[123, 'foo'], [234, 'bar']]
+        d1.fs = 100
+        # unknown extra attribute
+        d1.foo = 'bar'
+        # so far, so equal
         d2 = d1.copy()
         self.assertEqual(d1, d2)
-        #
+        # different shape
+        d2 = d1.copy()
+        d2.data = np.arange(20).reshape(5, 4)
+        self.assertNotEqual(d1, d2)
+        # different data
+        d2 = d1.copy()
+        d2.data[0, 0] = 42
+        self.assertNotEqual(d1, d2)
+        # different axes
         d2 = d1.copy()
         d2.axes[0] = np.arange(100)
         self.assertNotEqual(d1, d2)
-        #
+        # different names
         d2 = d1.copy()
         d2.names[0] = 'baz'
         self.assertNotEqual(d1, d2)
-        #
+        # different untis
         d2 = d1.copy()
         d2.units[0] = 'u3'
         self.assertNotEqual(d1, d2)
-        #
+        # different known extra attribute
         d2 = d1.copy()
         d2.markers[0] = [123, 'baz']
+        self.assertNotEqual(d1, d2)
+        # different known extra attribute
+        d2 = d1.copy()
+        d2.fs = 10
+        self.assertNotEqual(d1, d2)
+        # different unknown extra attribute
+        d2 = d1.copy()
+        d2.baz = 'baz'
+        self.assertNotEqual(d1, d2)
+        # different new unknown extra attribute
+        d2 = d1.copy()
+        d2.bar = 42
         self.assertNotEqual(d1, d2)
 
     def test_eq_and_ne(self):
