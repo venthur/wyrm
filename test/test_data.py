@@ -103,7 +103,16 @@ class TestData(unittest.TestCase):
         self.assertFalse(d1 == d2 and d1 != d2)
 
     def test_copy(self):
-        pass
+        """Copy must work."""
+        d1 = Data(self.data, self.axes, self.names, self.units)
+        d2 = d1.copy()
+        self.assertEqual(d1, d2)
+        # we can't really check of all references to be different in
+        # depth recursively, so we only check on the first level
+        for k in d1.__dict__:
+            self.assertNotEqual(id(getattr(d1, k)), id(getattr(d2, k)))
+        d2 = d1.copy(foo='bar')
+        self.assertEqual(d2.foo, 'bar')
 
 
 
