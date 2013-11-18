@@ -277,7 +277,8 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
     for t, m in dat.markers:
         # if newsamples is given, don't recognize markers outside of
         # mival
-        if newsamples is not None and t not in mival:
+        if (newsamples == 0 or
+            newsamples is not None and (t < mival[0] or t >= mival[-1])):
             continue
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
