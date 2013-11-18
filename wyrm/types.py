@@ -68,9 +68,10 @@ class Data(object):
     Attributes
     ----------
     data : ndarray
-        n-dimensional data array if the array is emtpy (size == 0), the
-        ``Data`` object is assumed to be emtpy
-    axes : nlist of 1darrays
+        n-dimensional data array if the array is empty
+        (i.e. ``data.size == 0``), the ``Data`` object is assumed to be
+        empty
+    axes : nlist of 1-darrays
         each element of corresponds to a dimension of ``.data`` (i.e.
         the first one in ``.axes`` to the first dimension in ``.data``
         and so on). The 1-dimensional arrays contain the description of
@@ -78,7 +79,8 @@ class Data(object):
         ``.data`` contains Continuous Data, then ``.axes[0]`` should be
         an array of timesteps and ``.axes[1]`` an array of channel names
     names : nlist of strings
-        the human readable description of each axis, like 'time', or 'channel'
+        the human readable description of each axis, like 'time', or
+        'channel'
     units : nlist of strings
         the human readable description of the unit used for the data in
         ``.axes``
@@ -193,6 +195,11 @@ class Data(object):
         >>> if not cnt:
         ...     continue
 
+        is equivalent to:
+
+        >>> if cnt.data.size == 0:
+        ...     continue
+
         Returns
         -------
         nonzero : int
@@ -273,8 +280,8 @@ class RingBuffer(object):
 
     Parameters
     ----------
-    length : int
-        the length of the ring buffer in samples
+    length_ms : int
+        the length of the ring buffer in milliseconds
 
     Attributes
     ----------
