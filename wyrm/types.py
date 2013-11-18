@@ -68,7 +68,8 @@ class Data(object):
     Attributes
     ----------
     data : ndarray
-        n-dimensional data array
+        n-dimensional data array if the array is emtpy (size == 0), the
+        ``Data`` object is assumed to be emtpy
     axes : nlist of 1darrays
         each element of corresponds to a dimension of ``.data`` (i.e.
         the first one in ``.axes`` to the first dimension in ``.data``
@@ -96,10 +97,11 @@ class Data(object):
             if the lengths of the parameters are not correct.
 
         """
-        assert data.ndim == len(axes) == len(names) == len(units)
-        for i in range(data.ndim):
-            if data.shape[i] != len(axes[i]):
-                raise AssertionError("Axis '%s' (%i) not as long as corresponding axis in 'data' (%i)" % (names[i], len(axes[i]), data.shape[i]))
+        if data.size == 0:
+            assert len(axes) == len(names) == len(units) == 0
+        else:
+            assert data.ndim == len(axes) == len(names) == len(units)
+            assert [len(a) for a in axes] == list(data.shape)
         self.data = data
         self.axes = [np.array(i) for i in axes]
         self.names = names
@@ -167,6 +169,7 @@ class Data(object):
         other : Data
 
         Returns
+        -------
         equal : Boolean
             True if ``self`` and ``other`` are not equal, False
             otherwise.

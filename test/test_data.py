@@ -25,6 +25,11 @@ class TestData(unittest.TestCase):
         self.assertEqual(self.names, d.names)
         self.assertEqual(self.units, d.units)
 
+    def test_init_emtpy(self):
+        """Test init with empty data."""
+        d = Data(np.array([]), [], [], [])
+        self.assertFalse(d)
+
     def test_init_with_inconsistent_values(self):
         """Test init with inconsistent values."""
         data = self.data[np.newaxis, :]
