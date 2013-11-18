@@ -52,10 +52,11 @@ class Data(object):
     Feature Vector:
         Similar to Epoched Data, with classes in the first dimension.
 
-    A :func:`__eq__` function is providet to test for equality of two
-    Data objects (via ``==``). This method only checks for the known
-    attributes and does not guaranty correct result if the Data object
-    contains custom attributes. It is mainly used in unittests.
+    :meth:`Data.__eq__` and :meth:`Data.__ne__` functions are provided
+    to test for equality of two Data objects (via ``==`` and ``!=``).
+    This method only checks for the known attributes and does not
+    guaranty correct result if the Data object contains custom
+    attributes. It is mainly used in unittests.
 
     Parameters
     ----------
@@ -131,6 +132,30 @@ class Data(object):
            ):
             return True
         return False
+
+    def __ne__(self, other):
+        """Test for inequality.
+
+        If :func:`__eq__` is implemented and :func:`__ne__` is not,
+        strange comparisons evaluate to True like:
+
+        >>> d1 == d2 and d1 != d2
+
+        This method just returns the negation of :meth:`__eq__`. So the
+        same restrictions of :meth:`__eq__` about its reliability apply.
+
+        Parameters
+        ----------
+        other : Data
+
+        Returns
+        equal : Boolean
+            True if ``self`` and ``other`` are not equal, False
+            otherwise.
+
+        """
+
+        return not self.__eq__(other)
 
     def __str__(self):
         """Human readable representation for a data object.

@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+
+import unittest
+
+import numpy as np
+
+from wyrm.types import Data
+
+
+class TestData(unittest.TestCase):
+
+    def setUp(self):
+        self.data = np.arange(20).reshape(4, 5)
+        self.axes = [np.arange(4), np.arange(5)]
+        self.names = ['foo', 'bar']
+        self.units = ['u1', 'u2']
+
+    def test_init(self):
+        """Test init with correct values."""
+        d = Data(self.data, self.axes, self.names, self.units)
+        np.testing.assert_array_equal(d.data, self.data)
+        for a, b in zip(d.axes, self.axes):
+            np.testing.assert_array_equal(a, b)
+        self.assertEqual(self.names, d.names)
+        self.assertEqual(self.units, d.units)
+
+    def test_init_with_inconsistent_values(self):
+        """Test init with inconsistent values."""
+        data = self.data[np.newaxis, :]
+        with self.assertRaises(AssertionError):
+            Data(data, self.axes, self.names, self.units)
+        axes = self.axes[:]
+        axes[0] = np.arange(100)
+        with self.assertRaises(AssertionError):
+            Data(self.data, axes, self.names, self.units)
+        names = self.names[:]
+        names.append('baz')
+        with self.assertRaises(AssertionError):
+            Data(self.data, self.axes, names, self.units)
+        units = self.units[:]
+        units.append('u3')
+        with self.assertRaises(AssertionError):
+            Data(self.data, self.axes, self.names, units)
+
+    def test_emtpy(self):
+        pass
+
+    def test_equality(self):
+        """Test the various (in)equalities."""
+        d1 = Data(self.data, self.axes, self.names, self.units)
+        d1.markers = [[123, 'foo'], [234, 'bar']]
+        d2 = d1.copy()
+        self.assertEqual(d1, d2)
+        #
+        d2 = d1.copy()
+        d2.axes[0] = np.arange(100)
+        self.assertNotEqual(d1, d2)
+        #
+        d2 = d1.copy()
+        d2.names[0] = 'baz'
+        self.assertNotEqual(d1, d2)
+        #
+        d2 = d1.copy()
+        d2.units[0] = 'u3'
+        self.assertNotEqual(d1, d2)
+        #
+        d2 = d1.copy()
+        d2.markers[0] = [123, 'baz']
+        self.assertNotEqual(d1, d2)
+
+    def test_eq_and_ne(self):
+        """Check if __ne__ is properly implemented."""
+        d1 = Data(self.data, self.axes, self.names, self.units)
+        d2 = d1.copy()
+        # if __eq__ is implemented and __ne__ is not, this evaluates to
+        # True!
+        self.assertFalse(d1 == d2 and d1 != d2)
+
+    def test_copy(self):
+        pass
+
+
+
+if __name__ == '__main__':
+    unittest.main()
+
