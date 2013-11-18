@@ -132,6 +132,21 @@ class Data(object):
             return True
         return False
 
+    def __str__(self):
+        """Human readable representation for a data object.
+
+        Returns
+        -------
+        str : str
+            a human readable representation of the data object
+
+        """
+        data = 'Data: \n%s' % self.data
+        axes = 'Axes: \n%s' % self.axes
+        names = 'Names: \n%s' % self.names
+        units = 'Units: \n%s' % self.units
+        return '\n'.join([data, axes, names, units])
+
     def copy(self, **kwargs):
         """Return a memory efficient deep copy of ``self``.
 
