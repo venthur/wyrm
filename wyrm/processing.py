@@ -319,6 +319,12 @@ def append(dat, dat2, axis=0, extra=None):
     ``dat`` and deals with the attributes it knows about, namely:
     ``data``, ``axes``, ``names``, and ``units``.
 
+    .. warning::
+        This method is really low level and stupid. It does not know
+        about markers or timeaxes, etc. it just appends two data
+        objects. If you want to append continuous or epoched data
+        consider using :func:`append_cnt` and :func:`append_epo`.
+
     Parameters
     ----------
     dat, dat2 : Data
@@ -353,7 +359,9 @@ def append(dat, dat2, axis=0, extra=None):
     Examples
     --------
 
-    >>> # concatenate two continuous data objects, and their markers
+    >>> # concatenate two continuous data objects, and their markers,
+    >>> # please note how the resulting marker is not correct, just
+    >>> # appended
     >>> cnt.markers
     [[0, 'a'], [10, 'b']]
     >>> cnt2.markers
