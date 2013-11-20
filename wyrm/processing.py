@@ -376,6 +376,9 @@ def append(dat, dat2, axis=0, extra=None):
 
     """
     assert dat.data.ndim == dat2.data.ndim
+    # convert negative axis to the equivalent positive one
+    if axis < 0:
+        axis = dat.data.ndim + axis
     for i in range(dat.data.ndim):
         assert dat.names[i] == dat2.names[i]
         assert dat.units[i] == dat2.units[i]
