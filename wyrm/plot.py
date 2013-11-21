@@ -513,17 +513,18 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
     print("dimx: " + str(dim_x) + ", dimy: " + str(dim_y))
     
     plt.clf()
+    gs = gridspec.GridSpec(dim_x, dim_y)
+    
+    ### this has to be changed completely to work with the new above! ###
     
     for i in range(len(data.axes[1])):
-        if data.axes[1][i] in chan_pos:
-            gs = gridspec.GridSpec(5, 7)
-            _subplot_timeinterval(data, gs[chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]], epoch=-1, highlights=highlights, legend=legend, channel=i)
-            
-            # at this moment just to show what's what
-            plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
-            
-            # adjust the spacing
-            plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, hspace=0.2, wspace=0.2)
+        _subplot_timeinterval(data, gs[chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]], epoch=-1, highlights=highlights, legend=legend, channel=i)
+        
+        # at this moment just to show what's what
+        plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
+        
+        # adjust the spacing
+        plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, hspace=0.2, wspace=0.2)
 
     set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
     
