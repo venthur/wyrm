@@ -14,8 +14,7 @@ import inspect
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from wyrm.types import Data
-#from scipy import interpolate
-
+from scipy import interpolate
 import tentensystem as tts
 
 ### The old plotting functions ############################################################################################33
@@ -301,30 +300,217 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     if show: plt.show()
     
     
-# plots all channels of the 10-10 system according to their position on the scalp.
-# only channels with the following identifiers are plotted: 'A1, A2, C3, C4, Cz, Fp1, Fp2, F3, F4, F7, F8, Fz, O1, O2, P3, P4, Pz, T3, T4, T5, T6'
-def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_name='epoched_timeinterval', save_path=None):
-    chan_pos = {'A1'  : (2, 0),
-                'A2'  : (2, 6),
-                'C3'  : (2, 2),
-                'C4'  : (2, 4),
-                'Cz'  : (2, 3),
-                'Fp1' : (0, 2),
-                'Fp2' : (0, 4),
-                'F3'  : (1, 2),
-                'F4'  : (1, 4),
-                'F7'  : (1, 1),
-                'F8'  : (1, 5),
-                'Fz'  : (1, 3),
-                'O1'  : (4, 2),
-                'O2'  : (4, 4),
-                'P3'  : (3, 2),
-                'P4'  : (3, 4),
-                'Pz'  : (3, 3),
-                'T3'  : (2, 1),
-                'T4'  : (2, 5),
-                'T5'  : (3, 1),
-                'T6'  : (3, 5)}
+# plots all recognized channels of the system according to their position on the scalp in a grid.
+def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_name='system_plot', save_path=None):
+#     chan_pos = {'A1'  : (2, 0),
+#                 'A2'  : (2, 6),
+#                 'C3'  : (2, 2),
+#                 'C4'  : (2, 4),
+#                 'Cz'  : (2, 3),
+#                 'Fp1' : (0, 2),
+#                 'Fp2' : (0, 4),
+#                 'F3'  : (1, 2),
+#                 'F4'  : (1, 4),
+#                 'F7'  : (1, 1),
+#                 'F8'  : (1, 5),
+#                 'Fz'  : (1, 3),
+#                 'O1'  : (4, 2),
+#                 'O2'  : (4, 4),
+#                 'P3'  : (3, 2),
+#                 'P4'  : (3, 4),
+#                 'Pz'  : (3, 3),
+#                 'T3'  : (2, 1),
+#                 'T4'  : (2, 5),
+#                 'T5'  : (3, 1),
+#                 'T6'  : (3, 5)}
+
+    # create the channel ordering
+    ordering = {4.0  : 0,
+                3.5  : 0,
+                3.0  : 1,
+                2.5  : 2,
+                2.0  : 3,
+                1.5  : 4,
+                1.0  : 5,
+                0.5  : 6,
+                0.0  : 7,
+                -0.5 : 8,
+                -1.0 : 9,
+                -1.5 : 10,
+                -2.0 : 11,
+                -2.5 : 12,
+                -2.6 : 13,
+                -3.0 : 14,
+                -3.5 : 15,
+                -4.0 : 16,
+                -4.5 : 16,
+                -5.0 : 17}
+    
+    system = {
+        'Fpz' : (0.0, 4.0),
+        'Fp1' : (-4.0, 3.5),
+        'AFp1' : (-1.5, 3.5),
+        'AFp2' : (1.5, 3.5),
+        'Fp2' : (4.0, 3.5),
+        'AF7' : (-4.0, 3.0),
+        'AF5' : (-3.0, 3.0),
+        'AF3' : (-2.0, 3.0),
+        'AFz' : (0.0, 3.0),
+        'AF4' : (2.0, 3.0),
+        'AF6' : (3.0, 3.0),
+        'AF8' : (4.0, 3.0),
+        'FAF5' : (-2.5, 2.5),
+        'FAF1' : (-0.65, 2.5),
+        'FAF2' : (0.65, 2.5),
+        'FAF6' : (2.5, 2.5),
+        'F9' : (-5.0, 2.0),
+        'F7' : (-4.0, 2.0),
+        'F5' : (-3.0, 2.0),
+        'F3' : (-2.0, 2.0),
+        'F1' : (-1.0, 2.0),
+        'Fz' : (0.0, 2.0),
+        'F2' : (1.0, 2.0),
+        'F4' : (2.0, 2.0),
+        'F6' : (3.0, 2.0),
+        'F8' : (4.0, 2.0),
+        'F10' : (5.0, 2.0),
+        'FFC9' : (-4.5, 1.5),
+        'FFC7' : (-3.5, 1.5),
+        'FFC5' : (-2.5, 1.5),
+        'FFC3' : (-1.5, 1.5),
+        'FFC1' : (-0.5, 1.5),
+        'FFC2' : (0.5, 1.5),
+        'FFC4' : (1.5, 1.5),
+        'FFC6' : (2.5, 1.5),
+        'FFC8' : (3.5, 1.5),
+        'FFC10' : (4.5, 1.5),
+        'FT9' : (-5.0, 1.0),
+        'FT7' : (-4.0, 1.0),
+        'FC5' : (-3.0, 1.0),
+        'FC3' : (-2.0, 1.0),
+        'FC1' : (-1.0, 1.0),
+        'FCz' : (0.0, 1.0),
+        'FC2' : (1.0, 1.0),
+        'FC4' : (2.0, 1.0),
+        'FC6' : (3.0, 1.0),
+        'FT8' : (4.0, 1.0),
+        'FT10' : (5.0, 1.0),
+        'CFC9' : (-4.5, 0.5),
+        'CFC7' : (-3.5, 0.5),
+        'CFC5' : (-2.5, 0.5),
+        'CFC3' : (-1.5, 0.5),
+        'CFC1' : (-0.5, 0.5),
+        'CFC2' : (0.5, 0.5),
+        'CFC4' : (1.5, 0.5),
+        'CFC6' : (2.5, 0.5),
+        'CFC8' : (3.5, 0.5),
+        'CFC10' : (4.5, 0.5),
+        'T9' : (-5.0, 0.0),
+        'T7' : (-4.0, 0.0),
+        'C5' : (-3.0, 0.0),
+        'C3' : (-2.0, 0.0),
+        'C1' : (-1.0, 0.0),
+        'Cz' : (0.0, 0.0),
+        'C2' : (1.0, 0.0),
+        'C4' : (2.0, 0.0),
+        'C6' : (3.0, 0.0),
+        'T8' : (4.0, 0.0),
+        'T10' : (5.0, 0.0),
+        'A1' : (-5.0, -0.5),
+        'CCP7' : (-3.5, -0.5),
+        'CCP5' : (-2.5, -0.5),
+        'CCP3' : (-1.5, -0.5),
+        'CCP1' : (-0.5, -0.5),
+        'CCP2' : (0.5, -0.5),
+        'CCP4' : (1.5, -0.5),
+        'CCP6' : (2.5, -0.5),
+        'CCP8' : (3.5, -0.5),
+        'A2' : (5.0, -0.5),
+        'TP9' : (-5.0, -1.0),
+        'TP7' : (-4.0, -1.0),
+        'CP5' : (-3.0, -1.0),
+        'CP3' : (-2.0, -1.0),
+        'CP1' : (-1.0, -1.0),
+        'CPz' : (0.0, -1.0),
+        'CP2' : (1.0, -1.0),
+        'CP4' : (2.0, -1.0),
+        'CP6' : (3.0, -1.0),
+        'TP8' : (4.0, -1.0),
+        'TP10' : (5.0, -1.0),
+        'PCP9' : (-4.5, -1.5),
+        'PCP7' : (-3.5, -1.5),
+        'PCP5' : (-2.5, -1.5),
+        'PCP3' : (-1.5, -1.5),
+        'PCP1' : (-0.5, -1.5),
+        'PCP2' : (0.5, -1.5),
+        'PCP4' : (1.5, -1.5),
+        'PCP6' : (2.5, -1.5),
+        'PCP8' : (3.5, -1.5),
+        'PCP10' : (4.5, -1.5),
+        'P9' : (-5.0, -2.0),
+        'P7' : (-4.0, -2.0),
+        'P5' : (-3.0, -2.0),
+        'P3' : (-2.0, -2.0),
+        'P1' : (-1.0, -2.0),
+        'Pz' : (0.0, -2.0),
+        'P2' : (1.0, -2.0),
+        'P4' : (2.0, -2.0),
+        'P6' : (3.0, -2.0),
+        'P8' : (4.0, -2.0),
+        'P10' : (5.0, -2.0),
+        'PPO7' : (-4.5, -2.5),
+        'PPO5' : (-3.0, -2.5),
+        'PPO3' : (-2.0, -2.5),
+        'PPO1' : (-0.65, -2.5),
+        'PPO2' : (0.65, -2.5),
+        'PPO4' : (2.0, -2.5),
+        'PPO6' : (3.0, -2.5),
+        'PPO8' : (4.5, -2.5),
+        'PO9' : (-5.5, -2.6),
+        'PO7' : (-4.0, -3),
+        'PO5' : (-3.0, -3),
+        'PO3' : (-2.0, -3),
+        'PO1' : (-1.0, -3),
+        'POz' : (0.0, -3),
+        'PO2' : (1.0, -3),
+        'PO4' : (2.0, -3),
+        'PO6' : (3.0, -3),
+        'PO8' : (4.0, -3),
+        'PO10' : (5.5, -2.6),
+        'OPO1' : (-1.5, -3.5),
+        'OPO2' : (1.5, -3.5),
+        'O9' : (-6.5, -3.5),
+        'O1' : (-4.0, -3.5),
+        'O2' : (4.0, -3.5),
+        'O10' : (6.5, -3.5),
+        'Oz' : (0.0, -4.0),
+        'OI1' : (1.5, -4.5),
+        'OI2' : (-1.5, -4.5),
+        'I1' : (1.0, -5),
+        'Iz' : (0.0, -5),
+        'I2' : (-1, -5)}
+    
+    # create list with 17 empty lists
+    channel_lists=[]
+    for i in range(18):
+        channel_lists.append([])
+    
+    # distribute the channels to the lists by their y-position
+    for c in data.axes[1]:
+        if c in tts.channels:
+            channel_lists[ordering[system[c][1]]].append((c, system[c][0]))
+            
+    # sort the lists of channels by their x-position
+    for l in channel_lists:
+        l.sort(key = lambda list: list[1])
+    print(channel_lists)
+    
+    # calculate the needed dimensions of the grid
+    dim_x = max(map(len, channel_lists))
+    dim_y = 0
+    for l in channel_lists:
+        if len(l) > 0 :dim_y = dim_y + 1
+    print("dimx: " + str(dim_x) + ", dimy: " + str(dim_y))
     
     plt.clf()
     

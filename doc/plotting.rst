@@ -40,7 +40,7 @@ These functions create a new figure and subplots according to their specificatio
 Set-functions
 -------------
 
-These functions alter certain attributes of given subplots (matplotlib.Axes). These functions can be called after a plot-functions has been called to create an active plot.
+These functions alter attributes of previously created subplots (matplotlib.Axes). These functions can be called after a plot-function has created an active plot.
 
 Usage
 -----
