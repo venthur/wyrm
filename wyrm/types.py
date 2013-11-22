@@ -14,6 +14,8 @@ import logging
 
 import numpy as np
 
+from wyrm.processing import append_cnt
+
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
@@ -455,4 +457,104 @@ class RingBuffer(object):
         d.markers = self.markers[:]
         d.fs = self.fs
         return d
+
+
+class BlockBuffer(object):
+    """A buffer that returns data chunks in multiples of a block length.
+
+    This buffer is a first-in-first-out (FIFO) buffer that returns data
+    in multiples of a desired block length.
+
+    Parameters
+    ----------
+    block_legnth : int, optional
+        the desired block length in ms
+
+    Examples
+    --------
+
+    >>> bbuffer = BlockBuffer(10)
+    >>> ...
+    >>> while 1:
+    ... cnt = some_aquisition_method()
+    ... # How to use the BlockBuffer
+    ... bbuffer.append(cnt)
+    ... cnt = bbuffer.get()
+    ... if not cnt:
+    ...     continue
+    ... # after here cnt is guaranteed to be in multiples of 10ms
+
+    """
+
+    def __init__(self, block_length=50):
+        """Initialize the Block Buffer.
+
+        Paramters
+        ---------
+        block_length : int, optional
+            the desired block length in ms
+
+        """
+        self.block_length = block_length
+        self.dat = Data(np.array([]), [], [], [])
+
+    def append(self, dat):
+        """Append data to the Block Buffer.
+
+        This method accumulates the incoming data.
+
+        Parameters
+        ----------
+        dat : Data
+            continuous Data object
+
+        """
+        if not self.dat:
+            self.dat = dat.copy()
+        elif not dat:
+            pass
+        else:
+            self.dat = append_cnt(self.dat, dat)
+
+    def get(self):
+        """Pop the contents of the Block Buffer.
+
+        The data returned has a length of multiples of ``block_length``.
+        If there is a fraction of ``block_length`` data more in the
+        buffer, that data is kept and future :meth:`append` operations
+        will append new data to it.
+
+        Returns
+        -------
+        dat : Data
+            continuous Data object
+
+        """
+        empty = Data(np.array([]), [], [], [])
+        if not self.dat:
+            return empty
+        samples = self.block_length * self.dat.fs / 1000
+        if self.dat.data.shape[0] < samples:
+            return empty
+        if self.dat.data.shape[0] % samples == 0:
+            ret = self.dat.copy()
+            self.dat = empty
+            return ret
+        else:
+            remaining = self.dat.data.shape[0] % samples
+            dat2 = self.dat.copy()
+            dat2.data = dat2.data[-remaining:]
+            dat2.axes[0] = dat2.axes[0][-remaining:]
+            dat2.markers = filter(lambda x: dat2.axes[0][0] <= x[0], dat2.markers)
+
+            dat1 = self.dat.copy()
+            dat1.data = dat1.data[:-remaining]
+            dat1.axes[0] = dat1.axes[0][:-remaining]
+            dat1.markers = filter(lambda x: dat1.axes[0][0] <= x[0] < dat2.axes[0][0], dat1.markers)
+
+            dat2.markers = map(lambda x: [x[0] - dat2.axes[0][0], x[1]], dat2.markers)
+            dat2.axes[0] -= dat2.axes[0][0]
+
+            self.dat = dat2
+            return dat1
 
