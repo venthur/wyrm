@@ -734,8 +734,26 @@ def subsample(dat, freq, timeaxis=-2):
     freq``. Please note that ``freq`` must be a whole number divisor of
     ``dat.fs``.
 
-    Note that this method does not low-pass filter the data before
-    sub-sampling.
+    .. note::
+        Note that this method does not low-pass filter the data before
+        sub-sampling.
+
+    .. note::
+        If you use this method in an on-line setting (i.e. where you
+        process the data in chunks and not as a whole), you should make
+        sure that ``subsample`` does not drop "half samples" by ensuring
+        the source data's length is in multiples of the target data's
+        sample length.
+
+        Let's assume your source data is sampled in 1kHz and you want to
+        subsample down to 100Hz. One sample of the source data is 1ms
+        long, while the target samples will be 10ms long. In order to
+        ensure that ``subsample`` does not eat fractions of samples at
+        the end of your data, you have to make sure that your source
+        data is multiples of 10ms (i.e. 1010, 1020, etc) long. You might
+        want to use :class:`wyrm.types.BlockBuffer` for this (see
+        Examples below).
+
 
     Parameters
     ----------
@@ -768,6 +786,21 @@ def subsample(dat, freq, timeaxis=-2):
     >>> dat = subsample(dat, 100)
     >>> dat.fs
     100.0
+
+    Online Experiment
+
+    >>> bbuffer = BlockBuffer(10) # 10 ms is the target block size
+    >>> while 1:
+    ...     cnt = ... # get 1kHz continous data from your amp
+    ...     # put the data into the block buffer
+    ...     # bbget will onlry return the data in multiples of 10ms or
+    ...     # nothing
+    ...     bbuffer.append(cnt)
+    ...     cnt = bbuffer.get()
+    ...     if not cnt:
+    ...         continue
+    ...     # filter, etc
+    ...     subsample(cnt, 100)
 
     Raises
     ------
