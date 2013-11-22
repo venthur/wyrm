@@ -407,9 +407,14 @@ def append(dat, dat2, axis=0, extra=None):
 def append_cnt(dat, dat2, timeaxis=-2, extra=None):
     """Append two continuous data objects.
 
-    This method just calls :func:`append`. If both ``dat`` and ``dat2``
-    have the ``markers`` attribute it will add ``'markers'`` to
-    ``extra``.
+    This method uses :func:`append` to append to continuous data
+    objects. It also takes care that the resulting continuous will have
+    a correct ``.axes[timeaxis]``. For that it uses the ``.fs``
+    attribute and the length of the data to recalculate the timeaxis.
+
+    If both ``dat`` and ``dat2`` have the ``markers`` attribute, the
+    markers will be treated properly (i.e. by moving the markers of
+    ``dat2`` by ``dat`` milliseconds to the right.
 
     Parameters
     ----------
@@ -420,6 +425,13 @@ def append_cnt(dat, dat2, timeaxis=-2, extra=None):
     Returns
     -------
     dat : Data
+        the resulting combination of ``dat`` and ``dat2``
+
+    Raises
+    ------
+    AssertionError
+        if at least one of the ``Data`` parameters has not the ``.fs``
+        attribute or if the ``.fs`` attributes are not equal.
 
     See Also
     --------
@@ -428,15 +440,30 @@ def append_cnt(dat, dat2, timeaxis=-2, extra=None):
     Examples
     --------
 
+    >>> cnt.axis[0]
+    [0, 1, 2]
+    >>> cnt2.axis[0]
+    [0, 1, 2]
+    >>> cnt.fs
+    1000
     >>> cnt = append_cnt(cnt, cnt2)
+    >>> cnt.axis[0]
+    [0, 1, 2, 3, 4, 5]
 
     """
-    if hasattr(dat, 'markers') and hasattr(dat2, 'markers'):
-        if extra is None:
-            extra=['markers']
-        else:
-            extra.append('markers')
+    assert hasattr(dat, 'fs') and hasattr(dat2, 'fs')
+    assert dat.fs == dat2.fs
     cnt = append(dat, dat2, axis=timeaxis, extra=extra)
+    if hasattr(dat, 'markers') and hasattr(dat2, 'markers'):
+        # move the markers from dat2 to the right by dat-milliseconds
+        ms = dat.data.shape[timeaxis] / dat.fs * 1000
+        markers1 = dat.markers[:]
+        markers2 = map(lambda x: [x[0]+ms, x[1]], dat2.markers)
+        markers1.extend(markers2)
+        cnt.markers = markers1
+    # fix the timeaxis from 0, 1, 2, 0, 1, 2 -> 0, 1, 2, 3, 4, 5
+    ms = cnt.data.shape[timeaxis] / cnt.fs * 1000
+    cnt.axes[timeaxis] = np.linspace(0, ms, cnt.data.shape[timeaxis], endpoint=False)
     return cnt
 
 
