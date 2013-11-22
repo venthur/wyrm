@@ -302,27 +302,6 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     
 # plots all recognized channels of the system according to their position on the scalp in a grid.
 def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_name='system_plot', save_path=None):
-#     chan_pos = {'A1'  : (2, 0),
-#                 'A2'  : (2, 6),
-#                 'C3'  : (2, 2),
-#                 'C4'  : (2, 4),
-#                 'Cz'  : (2, 3),
-#                 'Fp1' : (0, 2),
-#                 'Fp2' : (0, 4),
-#                 'F3'  : (1, 2),
-#                 'F4'  : (1, 4),
-#                 'F7'  : (1, 1),
-#                 'F8'  : (1, 5),
-#                 'Fz'  : (1, 3),
-#                 'O1'  : (4, 2),
-#                 'O2'  : (4, 4),
-#                 'P3'  : (3, 2),
-#                 'P4'  : (3, 4),
-#                 'Pz'  : (3, 3),
-#                 'T3'  : (2, 1),
-#                 'T4'  : (2, 5),
-#                 'T5'  : (3, 1),
-#                 'T6'  : (3, 5)}
 
     # create the channel ordering
     ordering = {4.0  : 0,
@@ -496,9 +475,12 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
         channel_lists.append([])
     
     # distribute the channels to the lists by their y-position
+    count = 0
     for c in data.axes[1]:
         if c in tts.channels:
-            channel_lists[ordering[system[c][1]]].append((c, system[c][0]))
+            # entries in channel_lists: (<channel_name>, <x-position>, <position in Data>
+            channel_lists[ordering[system[c][1]]].append((c, system[c][0], count))
+        count = count + 1
             
     # sort the lists of channels by their x-position
     for l in channel_lists:
@@ -506,27 +488,28 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
     print(channel_lists)
     
     # calculate the needed dimensions of the grid
-    dim_x = max(map(len, channel_lists))
-    dim_y = 0
+    columns = max(map(len, channel_lists))
+    rows = 0
     for l in channel_lists:
-        if len(l) > 0 :dim_y = dim_y + 1
-    print("dimx: " + str(dim_x) + ", dimy: " + str(dim_y))
+        if len(l) > 0: rows = rows + 1
+    print("rows: " + str(rows) + ", columns: " + str(columns))
     
     plt.clf()
-    gs = gridspec.GridSpec(dim_x, dim_y)
+    gs = gridspec.GridSpec(rows, columns)
     
-    ### this has to be changed completely to work with the new above! ###
+    row=0
+    for l in channel_lists:
+        if len(l) > 0:
+            for i in range(len(l)):
+                col_pos = int(i + ((columns-len(l)) - np.ceil((columns-len(l))/2.)))
+                _subplot_timeinterval(data, gs[row, col_pos], epoch=-1, highlights=highlights, legend=True, channel=l[i][2])
+                
+                # at this moment just to show what's what
+                plt.gca().annotate(l[i][0], (20, 20), xycoords='axes pixels')
+            row=row+1
     
-    for i in range(len(data.axes[1])):
-        _subplot_timeinterval(data, gs[chan_pos[data.axes[1][i]][0], chan_pos[data.axes[1][i]][1]], epoch=-1, highlights=highlights, legend=legend, channel=i)
-        
-        # at this moment just to show what's what
-        plt.gca().annotate(data.axes[1][i], (20, 20), xycoords='axes pixels')
-        
-        # adjust the spacing
-        plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, hspace=0.2, wspace=0.2)
-
-    set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
+    # adjust the spacing
+    plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, hspace=0.2, wspace=0.2)
     
     # saving if specified
     if save:
