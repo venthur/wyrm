@@ -61,6 +61,18 @@
 <p>Data type definitions.</p>
 <p>This module provides the basic data types for Wyrm, like the
 <a class="reference internal" href="wyrm.html#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-class docutils literal"><span class="pre">Data</span></tt></a> and <a class="reference internal" href="wyrm.html#wyrm.types.RingBuffer" title="wyrm.types.RingBuffer"><tt class="xref py py-class docutils literal"><span class="pre">RingBuffer</span></tt></a> classes.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">append_cnt</span></tt>(dat,&nbsp;dat2[,&nbsp;timeaxis,&nbsp;extra])</td>
+<td>Append two continuous data objects.</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -68,10 +80,13 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-obj docutils literal"><span class="pre">Data</span></tt></a>(data,&nbsp;axes,&nbsp;names,&nbsp;units)</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.types.BlockBuffer" title="wyrm.types.BlockBuffer"><tt class="xref py py-obj docutils literal"><span class="pre">BlockBuffer</span></tt></a>([block_length])</td>
+<td>A buffer that returns data chunks in multiples of a block length.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-obj docutils literal"><span class="pre">Data</span></tt></a>(data,&nbsp;axes,&nbsp;names,&nbsp;units)</td>
 <td>Generic, self-describing data container.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.types.RingBuffer" title="wyrm.types.RingBuffer"><tt class="xref py py-obj docutils literal"><span class="pre">RingBuffer</span></tt></a>(length_ms)</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.types.RingBuffer" title="wyrm.types.RingBuffer"><tt class="xref py py-obj docutils literal"><span class="pre">RingBuffer</span></tt></a>(length_ms)</td>
 <td>Circular Buffer implementation.</td>
 </tr>
 </tbody>

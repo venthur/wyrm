@@ -5,6 +5,12 @@ wyrm.types
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      append_cnt
+   
    
 
    
@@ -13,6 +19,7 @@ wyrm.types
 
    .. autosummary::
    
+      BlockBuffer
       Data
       RingBuffer
    

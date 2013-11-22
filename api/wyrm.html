@@ -214,6 +214,13 @@ and <tt class="docutils literal"><span class="pre">axes</span></tt> match and te
 <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt> might have, it only copies the attributes of
 <tt class="docutils literal"><span class="pre">dat</span></tt> and deals with the attributes it knows about, namely:
 <tt class="docutils literal"><span class="pre">data</span></tt>, <tt class="docutils literal"><span class="pre">axes</span></tt>, <tt class="docutils literal"><span class="pre">names</span></tt>, and <tt class="docutils literal"><span class="pre">units</span></tt>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This method is really low level and stupid. It does not know
+about markers or timeaxes, etc. it just appends two data
+objects. If you want to append continuous or epoched data
+consider using <a class="reference internal" href="#wyrm.processing.append_cnt" title="wyrm.processing.append_cnt"><tt class="xref py py-func docutils literal"><span class="pre">append_cnt()</span></tt></a> and <a class="reference internal" href="#wyrm.processing.append_epo" title="wyrm.processing.append_epo"><tt class="xref py py-func docutils literal"><span class="pre">append_epo()</span></tt></a>.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -270,7 +277,9 @@ type in <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt c
 <p class="last"><a class="reference internal" href="#wyrm.processing.append_cnt" title="wyrm.processing.append_cnt"><tt class="xref py py-obj docutils literal"><span class="pre">append_cnt</span></tt></a>, <a class="reference internal" href="#wyrm.processing.append_epo" title="wyrm.processing.append_epo"><tt class="xref py py-obj docutils literal"><span class="pre">append_epo</span></tt></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># concatenate two continuous data objects, and their markers</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># concatenate two continuous data objects, and their markers,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># please note how the resulting marker is not correct, just</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># appended</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">markers</span>
 <span class="go">[[0, &#39;a&#39;], [10, &#39;b&#39;]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cnt2</span><span class="o">.</span><span class="n">markers</span>
@@ -286,9 +295,13 @@ type in <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt c
 <dt id="wyrm.processing.append_cnt">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">append_cnt</tt><big>(</big><em>dat</em>, <em>dat2</em>, <em>timeaxis=-2</em>, <em>extra=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#append_cnt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.append_cnt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append two continuous data objects.</p>
-<p>This method just calls <a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-func docutils literal"><span class="pre">append()</span></tt></a>. If both <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt>
-have the <tt class="docutils literal"><span class="pre">markers</span></tt> attribute it will add <tt class="docutils literal"><span class="pre">'markers'</span></tt> to
-<tt class="docutils literal"><span class="pre">extra</span></tt>.</p>
+<p>This method uses <a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-func docutils literal"><span class="pre">append()</span></tt></a> to append to continuous data
+objects. It also takes care that the resulting continuous will have
+a correct <tt class="docutils literal"><span class="pre">.axes[timeaxis]</span></tt>. For that it uses the <tt class="docutils literal"><span class="pre">.fs</span></tt>
+attribute and the length of the data to recalculate the timeaxis.</p>
+<p>If both <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt> have the <tt class="docutils literal"><span class="pre">markers</span></tt> attribute, the
+markers will be treated properly (i.e. by moving the markers of
+<tt class="docutils literal"><span class="pre">dat2</span></tt> by <tt class="docutils literal"><span class="pre">dat</span></tt> milliseconds to the right.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -298,7 +311,17 @@ have the <tt class="docutils literal"><span class="pre">markers</span></tt> attr
 <p><strong>extra: list of strings, optional</strong> :</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>the resulting combination of <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>if at least one of the <tt class="docutils literal"><span class="pre">Data</span></tt> parameters has not the <tt class="docutils literal"><span class="pre">.fs</span></tt>
+attribute or if the <tt class="docutils literal"><span class="pre">.fs</span></tt> attributes are not equal.</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -308,7 +331,15 @@ have the <tt class="docutils literal"><span class="pre">markers</span></tt> attr
 <p class="last"><a class="reference internal" href="#wyrm.processing.append" title="wyrm.processing.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>, <a class="reference internal" href="#wyrm.processing.append_epo" title="wyrm.processing.append_epo"><tt class="xref py py-obj docutils literal"><span class="pre">append_epo</span></tt></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">append_cnt</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[0, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt2</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[0, 1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">fs</span>
+<span class="go">1000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">append_cnt</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cnt</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[0, 1, 2, 3, 4, 5]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1296,46 +1327,33 @@ binned from 0 to f_nyquist</p>
 
 <dl class="function">
 <dt id="wyrm.processing.subsample">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">subsample</tt><big>(</big><em>dat</em>, <em>freq</em>, <em>timeaxis=-2</em>, <em>state=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#subsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.subsample" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">subsample</tt><big>(</big><em>dat</em>, <em>freq</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#subsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.subsample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subsample the data to <tt class="docutils literal"><span class="pre">freq</span></tt> Hz.</p>
 <p>This method subsamples data along <tt class="docutils literal"><span class="pre">timeaxis</span></tt> by taking every <tt class="docutils literal"><span class="pre">n</span></tt>
 th element starting with the first one and <tt class="docutils literal"><span class="pre">n</span></tt> being <tt class="docutils literal"><span class="pre">dat.fs</span> <span class="pre">/</span>
 <span class="pre">freq</span></tt>. Please note that <tt class="docutils literal"><span class="pre">freq</span></tt> must be a whole number divisor of
 <tt class="docutils literal"><span class="pre">dat.fs</span></tt>.</p>
-<p>This method is suitable for offline and online subsampling. Offline
-subsampling is the subsampling of the complete data at once. In that
-case no special consideration is necessary. In the online case it is
-necessary to give <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a> an additional <tt class="docutils literal"><span class="pre">state</span></tt>
-paramter. In order to understand what this is about, let&#8217;s see how
-subsampling actually works: Assume you have data in 100Hz and want
-to subsample to 10Hz. After bandpass filtering the original 100Hz
-data, the actual subsampling means you take every 10th sample and
-throw away the rest.</p>
-<p>In Python terms it looks like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[::</span><span class="mi">10</span><span class="p">]</span>
-<span class="go">[0, 10, 20, 30, 40, 50, 60, 70, 80, 90]</span>
-</pre></div>
-</div>
-<p>The problem with online subsampling is, that <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a>&#8216;s
-input looks more like:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span> <span class="c"># etc</span>
-</pre></div>
-</div>
-<p>In order to get the same result you have to tell <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a>
-at which position in the overall stream you currently are, so it can
-perform something like (assuming that <tt class="docutils literal"><span class="pre">10</span></tt> is our downscale factor):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">state</span> <span class="o">%</span> <span class="mi">10</span><span class="p">::</span><span class="mi">10</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>which is essentially the same as the above slicing except we don&#8217;t
-start with the first element but with the element number <tt class="docutils literal"><span class="pre">i</span></tt> for
-some <tt class="docutils literal"><span class="pre">i</span></tt> in <tt class="docutils literal"><span class="pre">[0..10)</span></tt> depending on the length of the processed
-input so far.</p>
-<p>Results of offline subsampling of <tt class="docutils literal"><span class="pre">data</span></tt> and online subsampling of
-an arbitrarly chunked version of <tt class="docutils literal"><span class="pre">data</span></tt> are identical.</p>
-<p>Note that this method does not low-pass filter the data before
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note that this method does not low-pass filter the data before
 sub-sampling.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you use this method in an on-line setting (i.e. where you
+process the data in chunks and not as a whole), you should make
+sure that <tt class="docutils literal"><span class="pre">subsample</span></tt> does not drop &#8220;half samples&#8221; by ensuring
+the source data&#8217;s length is in multiples of the target data&#8217;s
+sample length.</p>
+<p class="last">Let&#8217;s assume your source data is sampled in 1kHz and you want to
+subsample down to 100Hz. One sample of the source data is 1ms
+long, while the target samples will be 10ms long. In order to
+ensure that <tt class="docutils literal"><span class="pre">subsample</span></tt> does not eat fractions of samples at
+the end of your data, you have to make sure that your source
+data is multiples of 10ms (i.e. 1010, 1020, etc) long. You might
+want to use <a class="reference internal" href="#wyrm.types.BlockBuffer" title="wyrm.types.BlockBuffer"><tt class="xref py py-class docutils literal"><span class="pre">wyrm.types.BlockBuffer</span></tt></a> for this (see
+Examples below).</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1352,24 +1370,11 @@ sub-sampling.</p>
 <blockquote>
 <div><p>the axis along which to subsample</p>
 </div></blockquote>
-<p><strong>state</strong> : int, optional</p>
-<blockquote>
-<div><p>the number of processed samples so far modulo the internal
-<tt class="docutils literal"><span class="pre">factor</span></tt>. This parameter is necessary if you want to perform
-online subsampling.</p>
-</div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with subsampled frequency</p>
-</div></blockquote>
-<p><strong>state</strong> : int (only returned if the <tt class="docutils literal"><span class="pre">state</span></tt> parameter is not <tt class="docutils literal"><span class="pre">None</span></tt>)</p>
-<blockquote>
-<div><p>this is the length of the processed data so far modulo the
-internal <tt class="docutils literal"><span class="pre">factor</span></tt>. In an online setup you can use this value
-as the input for the next iteration of <a class="reference internal" href="#wyrm.processing.subsample" title="wyrm.processing.subsample"><tt class="xref py py-func docutils literal"><span class="pre">subsample()</span></tt></a> (See
-example below).</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1401,13 +1406,19 @@ to 100Hz.</p>
 <span class="go">100.0</span>
 </pre></div>
 </div>
-<p>Online Subsampling</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># initialize the subsampling state to 0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ss_state</span> <span class="o">=</span> <span class="mi">0</span>
+<p>Online Experiment</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">bbuffer</span> <span class="o">=</span> <span class="n">BlockBuffer</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c"># 10 ms is the target block size</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="c"># the imaginary get_data method returns small chunks of data</span>
-<span class="gp">... </span>    <span class="n">dat</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">()</span>
-<span class="gp">... </span>    <span class="n">dat</span><span class="p">,</span> <span class="n">ss_state</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">ss_state</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">cnt</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># get 1kHz continous data from your amp</span>
+<span class="gp">... </span>    <span class="c"># put the data into the block buffer</span>
+<span class="gp">... </span>    <span class="c"># bbget will onlry return the data in multiples of 10ms or</span>
+<span class="gp">... </span>    <span class="c"># nothing</span>
+<span class="gp">... </span>    <span class="n">bbuffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">cnt</span> <span class="o">=</span> <span class="n">bbuffer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">cnt</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">continue</span>
+<span class="gp">... </span>    <span class="c"># filter, etc</span>
+<span class="gp">... </span>    <span class="n">subsample</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1490,6 +1501,96 @@ removed and <tt class="docutils literal"><span class="pre">timeaxis</span></tt> 
 <p>Data type definitions.</p>
 <p>This module provides the basic data types for Wyrm, like the
 <a class="reference internal" href="#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-class docutils literal"><span class="pre">Data</span></tt></a> and <a class="reference internal" href="#wyrm.types.RingBuffer" title="wyrm.types.RingBuffer"><tt class="xref py py-class docutils literal"><span class="pre">RingBuffer</span></tt></a> classes.</p>
+<dl class="class">
+<dt id="wyrm.types.BlockBuffer">
+<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">BlockBuffer</tt><big>(</big><em>block_length=50</em><big>)</big><a class="headerlink" href="#wyrm.types.BlockBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A buffer that returns data chunks in multiples of a block length.</p>
+<p>This buffer is a first-in-first-out (FIFO) buffer that returns data
+in multiples of a desired block length.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>block_legnth</strong> : int, optional</p>
+<blockquote class="last">
+<div><p>the desired block length in ms</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">bbuffer</span> <span class="o">=</span> <span class="n">BlockBuffer</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">some_aquisition_method</span><span class="p">()</span>
+<span class="gp">... </span><span class="c"># How to use the BlockBuffer</span>
+<span class="gp">... </span><span class="n">bbuffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">bbuffer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">... </span><span class="k">if</span> <span class="ow">not</span> <span class="n">cnt</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">continue</span>
+<span class="gp">... </span><span class="c"># after here cnt is guaranteed to be in multiples of 10ms</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.BlockBuffer.append" title="wyrm.types.BlockBuffer.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>(dat)</td>
+<td>Append data to the Block Buffer.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wyrm.types.BlockBuffer.get" title="wyrm.types.BlockBuffer.get"><tt class="xref py py-obj docutils literal"><span class="pre">get</span></tt></a>()</td>
+<td>Pop the contents of the Block Buffer.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="wyrm.types.BlockBuffer.append">
+<tt class="descname">append</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.types.BlockBuffer.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append data to the Block Buffer.</p>
+<p>This method accumulates the incoming data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>continuous Data object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.types.BlockBuffer.get">
+<tt class="descname">get</tt><big>(</big><big>)</big><a class="headerlink" href="#wyrm.types.BlockBuffer.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pop the contents of the Block Buffer.</p>
+<p>The data returned has a length of multiples of <tt class="docutils literal"><span class="pre">block_length</span></tt>.
+If there is a fraction of <tt class="docutils literal"><span class="pre">block_length</span></tt> data more in the
+buffer, that data is kept and future <a class="reference internal" href="#wyrm.types.BlockBuffer.append" title="wyrm.types.BlockBuffer.append"><tt class="xref py py-meth docutils literal"><span class="pre">append()</span></tt></a> operations
+will append new data to it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>continuous Data object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="wyrm.types.Data">
 <em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">Data</tt><big>(</big><em>data</em>, <em>axes</em>, <em>names</em>, <em>units</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#Data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.Data" title="Permalink to this definition">¶</a></dt>
