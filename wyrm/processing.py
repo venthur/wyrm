@@ -257,28 +257,14 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
     assert ival[0] <= ival[1]
     if newsamples is not None:
         assert newsamples >= 0
-    # calculate the minimum time a marker must have (only used when
-    # newsamples is not None
-    if newsamples is not None:
-        if ival[1] > 0:
-            t_ = dat.axes[timeaxis][-newsamples] - ival[1]
-            mival = dat.axes[timeaxis][(dat.axes[timeaxis] > t_)]
-        else:
-            mival = dat.axes[timeaxis][-newsamples:]
-        if newsamples == 0:
-            mival = []
-        assert len(mival) >= newsamples
+        # the times of the `newsamples`
+        new_sample_times = dat.axes[timeaxis][-newsamples:] if newsamples > 0 else []
     # the expected length of each cnt in the resulted epo
     expected_samples = dat.fs * (ival[1] - ival[0]) / 1000
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
     for t, m in dat.markers:
-        # if newsamples is given, don't recognize markers outside of
-        # mival
-        if (newsamples == 0 or
-            newsamples is not None and (t < mival[0] or t >= mival[-1])):
-            continue
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
                 mask = (t+ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < t+ival[1])
@@ -287,6 +273,17 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
                 if d.shape[timeaxis] != expected_samples:
                     # result is too short or too long, ignore it
                     continue
+                # check if the new cnt shares at least one timepoint
+                # with the new samples. attention: we don't only have to
+                # check the ival but also the marker if it is on the
+                # right side of the ival!
+                times = dat.axes[timeaxis].compress(mask)
+                if newsamples is not None:
+                    if newsamples == 0:
+                        continue
+                    if (len(np.intersect1d(times, new_sample_times)) == 0 and
+                        t < new_sample_times[0]):
+                        continue
                 data.append(d)
                 classes.append(class_idx)
     data = np.concatenate(data, axis=0) if len(data) > 0 else np.array(data)
