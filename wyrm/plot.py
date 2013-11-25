@@ -318,12 +318,12 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
                 -1.5 : 10,
                 -2.0 : 11,
                 -2.5 : 12,
-                -2.6 : 13,
-                -3.0 : 14,
-                -3.5 : 15,
-                -4.0 : 16,
-                -4.5 : 16,
-                -5.0 : 17}
+                -2.6 : 12,
+                -3.0 : 13,
+                -3.5 : 14,
+                -4.0 : 15,
+                -4.5 : 15,
+                -5.0 : 16}
     
     system = {
         'Fpz' : (0.0, 4.0),
@@ -504,8 +504,12 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
                 col_pos = int(i + ((columns-len(l)) - np.ceil((columns-len(l))/2.)))
                 _subplot_timeinterval(data, gs[row, col_pos], epoch=-1, highlights=highlights, legend=True, channel=l[i][2])
                 
+                # hide the axes
+                plt.gca().get_xaxis().set_visible(False)
+                plt.gca().get_yaxis().set_visible(False)
+                
                 # at this moment just to show what's what
-                plt.gca().annotate(l[i][0], (20, 20), xycoords='axes pixels')
+                #plt.gca().annotate(l[i][0], (20, 20), xycoords='axes pixels')
             row=row+1
     
     # adjust the spacing
