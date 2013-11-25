@@ -95,7 +95,7 @@ class TestRingBuffer(unittest.TestCase):
     def test_add_with_markers(self):
         # add three elements to empty buffer pluss three markers
         m = [[0, '0'], [20, '2']]
-        d3 = data_factory(np.arange(3))
+        d3 = data_factory(np.arange(9).reshape(3, 3))
         d3_w_markers = d3.copy(markers=m)
         self.rb.append(d3_w_markers)
         data = self.rb.get()
@@ -116,13 +116,13 @@ class TestRingBuffer(unittest.TestCase):
         data = self.rb.get()
         self.assertEqual(data.markers, [])
         m = [[0, '0'], [90, '9'], [100, '10']]
-        d11_w_markers = data_factory(np.arange(11), markers=m)
+        d11_w_markers = data_factory(np.arange(33).reshape(11, 3), markers=m)
         self.rb.append(d11_w_markers)
         data = self.rb.get()
         self.assertEqual(data.markers, [[80, '9'], [90, '10']])
         # test overfull add on empty buffer
         m0 = [[i * 10, i] for i in range(11)]
-        d0_w_markers = data_factory(np.arange(11), markers=m0)
+        d0_w_markers = data_factory(np.arange(33).reshape(11, 3), markers=m0)
         self.rb = RingBuffer(100)
         self.rb.append(d0_w_markers)
         data = self.rb.get()
@@ -130,9 +130,9 @@ class TestRingBuffer(unittest.TestCase):
         # test full add on full buffer
         self.rb = RingBuffer(100)
         m0 = [[i, i] for i in range(10)]
-        self.rb.append(data_factory(np.arange(10), markers=m0))
+        self.rb.append(data_factory(np.arange(30).reshape(10, 3), markers=m0))
         m0 = map(lambda x: [x[0], x[1]+10], m0)
-        self.rb.append(data_factory(np.arange(10), markers=m0))
+        self.rb.append(data_factory(np.arange(30).reshape(10, 3), markers=m0))
         data = self.rb.get()
         self.assertEqual(data.markers, m0)
 

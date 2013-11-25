@@ -14,7 +14,7 @@ import logging
 
 import numpy as np
 
-from wyrm.processing import append_cnt
+from wyrm.processing import append_cnt, clear_markers
 
 
 logging.basicConfig(level=logging.NOTSET)
@@ -457,6 +457,7 @@ class RingBuffer(object):
         d = Data(data=data, axes=axes, names=self.names[:], units=self.units[:])
         d.markers = self.markers[:]
         d.fs = self.fs
+        d = clear_markers(d)
         return d
 
 
