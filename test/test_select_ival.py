@@ -36,7 +36,7 @@ class TestSelectIval(unittest.TestCase):
     def test_select_ival_with_markers(self):
         """Selecting Intervals with markers."""
         # normal case
-        good_markers = [[-499,99, 'x'], [-500, 'x'], [-00001, 'x']]
+        good_markers = [[-499,99, 'x'], [-500, 'x'], [-0.0001, 'x']]
         bad_markers = [[501, 'y'], [0, 'y'], [1, 'y']]
         self.dat.markers = good_markers[:]
         self.dat.markers.extend(bad_markers)
