@@ -15,6 +15,7 @@ class TestBlockBuffer(unittest.TestCase):
         data = np.array([0, 0])
         self.dat_1 = Data(np.array([0, 0])[np.newaxis, :], [np.array([0]), np.array(['ch1', 'ch2'])], ['time', 'channel'], ['ms', '#'])
         self.dat_1.fs = 1000
+        self.dat_1.markers = [[0, 'x']]
         self.dat_5 = reduce(append_cnt, [self.dat_1 for i in range(5)])
 
     def test_append_empty(self):
@@ -38,6 +39,18 @@ class TestBlockBuffer(unittest.TestCase):
         b.append(self.dat_1)
         ret = b.get()
         self.assertEqual(self.dat_5, ret)
+
+    def test_append_with_markers(self):
+        """Check if markers are handled correctly."""
+        markers = [[i, 'x'] for i in range(5)]
+        b = BlockBuffer(5)
+        for i in range(4):
+            b.append(self.dat_1)
+        ret = b.get()
+        self.assertEqual(self.empty_dat, ret)
+        b.append(self.dat_1)
+        ret = b.get()
+        self.assertEqual(ret.markers, markers)
 
 
 if __name__ == '__main__':

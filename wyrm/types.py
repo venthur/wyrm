@@ -544,19 +544,20 @@ class BlockBuffer(object):
             return ret
         else:
             remaining = self.dat.data.shape[0] % samples
-            dat2 = self.dat.copy()
-            dat2.data = dat2.data[-remaining:]
-            dat2.axes[0] = dat2.axes[0][-remaining:]
-            dat2.markers = filter(lambda x: dat2.axes[0][0] <= x[0], dat2.markers)
-
+            # first part
             dat1 = self.dat.copy()
             dat1.data = dat1.data[:-remaining]
             dat1.axes[0] = dat1.axes[0][:-remaining]
-            dat1.markers = filter(lambda x: dat1.axes[0][0] <= x[0] < dat2.axes[0][0], dat1.markers)
-
-            dat2.markers = map(lambda x: [x[0] - dat2.axes[0][0], x[1]], dat2.markers)
-            dat2.axes[0] -= dat2.axes[0][0]
-
+            dat1 = clear_markers(dat1)
+            # remaining (incomplete) part
+            dat2 = self.dat.copy()
+            dat2.data = dat2.data[-remaining:]
+            dat2.axes[0] = dat2.axes[0][-remaining:]
+            t0 = dat2.axes[0][0]
+            dat2.axes[0] -= t0
+            dat2.markers = map(lambda x: [x[0] - t0, x[1]], dat2.markers)
+            dat2 = clear_markers(dat2)
+            #
             self.dat = dat2
             return dat1
 
