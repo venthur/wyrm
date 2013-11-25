@@ -7,11 +7,11 @@ from scipy.fftpack import rfft, rfftfreq
 from scipy.signal import butter
 
 from wyrm.types import Data
-from wyrm.processing import filter
+from wyrm.processing import lfilter
 from wyrm.processing import swapaxes
 
 
-class TestFilter(unittest.TestCase):
+class TestLFilter(unittest.TestCase):
 
     def setUp(self):
         # create some data
@@ -32,7 +32,7 @@ class TestFilter(unittest.TestCase):
         # bandpass around the middle frequency
         fn = self.dat.fs / 2
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
-        ans = filter(self.dat, b, a)
+        ans = lfilter(self.dat, b, a)
         # the amplitudes
         fourier = np.abs(rfft(ans.data, axis=0) * 2 / self.dat.data.shape[0])
         ffreqs = rfftfreq(ans.data.shape[0], 1/ans.fs)
@@ -45,21 +45,21 @@ class TestFilter(unittest.TestCase):
                 for k in j:
                     self.assertAlmostEqual(k, 0., delta=.1)
 
-    def test_filter_copy(self):
-        """filter must not modify argument."""
+    def test_lfilter_copy(self):
+        """lfilter must not modify argument."""
         cpy = self.dat.copy()
         fn = self.dat.fs / 2
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
-        filter(self.dat, b, a)
+        lfilter(self.dat, b, a)
         self.assertEqual(cpy, self.dat)
 
-    def test_filter_swapaxes(self):
-        """filter must work with nonstandard timeaxis."""
+    def test_lfilter_swapaxes(self):
+        """lfilter must work with nonstandard timeaxis."""
         fn = self.dat.fs / 2
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
-        dat = filter(swapaxes(self.dat, 0, 1), b, a, timeaxis=1)
+        dat = lfilter(swapaxes(self.dat, 0, 1), b, a, timeaxis=1)
         dat = swapaxes(dat, 0, 1)
-        dat2 = filter(self.dat, b, a)
+        dat2 = lfilter(self.dat, b, a)
         self.assertEqual(dat, dat2)
 
 

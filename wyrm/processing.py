@@ -507,7 +507,7 @@ def append_epo(dat, dat2, classaxis=0, extra=None):
     return epo
 
 
-def filter(dat, b, a, zi=None, timeaxis=-2):
+def lfilter(dat, b, a, zi=None, timeaxis=-2):
     """
     Filter data using the filter defined by the filter coefficients.
 
@@ -555,7 +555,7 @@ def filter(dat, b, a, zi=None, timeaxis=-2):
     >>> butter_ord = 4
     >>> # calculate the filter coefficients
     >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
-    >>> filtered = filter(dat, b, a)
+    >>> filtered = lfilter(dat, b, a)
 
     Similar to the above this time in an on-line setting:
 
@@ -574,7 +574,7 @@ def filter(dat, b, a, zi=None, timeaxis=-2):
     ...     # filter the data, note how filter now also returns the
     ...     # filter state which we feed back into the next call of
     ...     # ``filter``
-    ...     cnt, filter_state = filter(cnt, b, a, zi=filter_state)
+    ...     cnt, filter_state = lfilter(cnt, b, a, zi=filter_state)
     ...     ...
 
     """
@@ -840,7 +840,7 @@ def subsample(dat, freq, timeaxis=-2):
 
     See Also
     --------
-    filter
+    lfilter
 
     Examples
     --------
@@ -853,7 +853,7 @@ def subsample(dat, freq, timeaxis=-2):
     1000.0
     >>> fn = dat.fs / 2 # nyquist frequ
     >>> b, a = butter(4, [8 / fn, 40 / fn], btype='band')
-    >>> dat = filter(dat, b, a)
+    >>> dat = lfilter(dat, b, a)
     >>> dat = subsample(dat, 100)
     >>> dat.fs
     100.0
