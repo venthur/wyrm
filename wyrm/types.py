@@ -102,7 +102,7 @@ class Data(object):
 
         """
         if data.size == 0:
-            assert len(axes) == len(names) == len(units) == 0
+            pass
         else:
             assert data.ndim == len(axes) == len(names) == len(units)
             assert [len(a) for a in axes] == list(data.shape)

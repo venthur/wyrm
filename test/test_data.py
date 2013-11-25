@@ -30,6 +30,11 @@ class TestData(unittest.TestCase):
         d = Data(np.array([]), [], [], [])
         self.assertFalse(d)
 
+    def test_init_emtpy2(self):
+        """With emtpy data it does not matter what the rest is."""
+        d = Data(np.array([]), [1, 2, 3], [1, 1, 2], [1, 2, 3])
+        self.assertFalse(d)
+
     def test_init_with_inconsistent_values(self):
         """Test init with inconsistent values."""
         data = self.data[np.newaxis, :]
