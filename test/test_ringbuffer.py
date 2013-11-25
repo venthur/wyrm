@@ -6,7 +6,6 @@ import unittest
 import numpy as np
 
 from wyrm.types import RingBuffer, Data
-from wyrm.processing import append
 
 
 def data_factory(data, axes=None, names=None, units=None, markers=None):
