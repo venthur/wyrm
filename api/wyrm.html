@@ -383,35 +383,6 @@ equal</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wyrm.processing.band_pass">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">band_pass</tt><big>(</big><em>dat</em>, <em>low</em>, <em>high</em>, <em>zi=None</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#band_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.band_pass" title="Permalink to this definition">¶</a></dt>
-<dd><p>Band pass filter the data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Date</p>
-<p><strong>low, high</strong> : int</p>
-<blockquote>
-<div><p>the low, and high borders of the desired frequency band</p>
-</div></blockquote>
-<p><strong>timeaxis</strong> : int, optional</p>
-<blockquote>
-<div><p>the axis in <tt class="docutils literal"><span class="pre">dat.data</span></tt> to filter</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
-<blockquote class="last">
-<div><p>the band pass filtered data</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="wyrm.processing.calculate_classwise_average">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_classwise_average</tt><big>(</big><em>dat</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_classwise_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_classwise_average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the classwise average.</p>
@@ -561,6 +532,51 @@ the <tt class="docutils literal"><span class="pre">dat</span></tt> parameter, th
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.clear_markers">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">clear_markers</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.clear_markers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove markers that are outside of the <tt class="docutils literal"><span class="pre">dat</span></tt> time interval.</p>
+<p>This method removes the markers that are out of the time interval
+described in the <tt class="docutils literal"><span class="pre">dat</span></tt> object.</p>
+<p>If the <tt class="docutils literal"><span class="pre">dat</span></tt> object has not <tt class="docutils literal"><span class="pre">markers</span></tt> attribute or the markers
+are empty, simply a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> is returned.</p>
+<p>If <tt class="docutils literal"><span class="pre">dat.data</span></tt> is empty, but has markers, all markers are removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<p><strong>timeaxis</strong> : int, optional</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>a copy of the Data object, with the respective markers removed</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>if the given <tt class="docutils literal"><span class="pre">dat</span></tt> has not <tt class="docutils literal"><span class="pre">fs</span></tt> attribute</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">array([-5., -4., -3., -2., -1.,  0.,  1.,  2.,  3.,  4.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
+<span class="go">1000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">markers</span>
+<span class="go">[[-6, &#39;a&#39;], [-5, &#39;b&#39;], [0, &#39;c&#39;], [4.9999, &#39;d&#39;], [5, &#39;e&#39;]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">clear_markers</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">markers</span>
+<span class="go">[[-5, &#39;b&#39;], [0, &#39;c&#39;], [4.9999, &#39;d&#39;]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.correct_for_baseline">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">correct_for_baseline</tt><big>(</big><em>dat</em>, <em>ival</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#correct_for_baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.correct_for_baseline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subtract the baseline.</p>
@@ -658,8 +674,40 @@ classaxis moved to dimension 0</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wyrm.processing.filter">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">filter</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>zi=None</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.filter" title="Permalink to this definition">¶</a></dt>
+<dt id="wyrm.processing.jumping_means">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">jumping_means</tt><big>(</big><em>dat</em>, <em>ivals</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#jumping_means"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.jumping_means" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the jumping means.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<p><strong>ivals</strong> : array of [float, float]</p>
+<blockquote>
+<div><p>the intervals for which to calculate the means. Start is
+included end is not (like <tt class="docutils literal"><span class="pre">[start,</span> <span class="pre">end)</span></tt>).</p>
+</div></blockquote>
+<p><strong>timeaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the axis along which to calculate the jumping means</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the jumping means along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt>.
+<tt class="docutils literal"><span class="pre">dat.name[timeaxis]</span></tt> and <tt class="docutils literal"><span class="pre">dat.axes[timeaxis]</span></tt> Are modified
+too to reflect the intervals used for the data points.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.lfilter">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lfilter</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>zi=None</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.lfilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter data using the filter defined by the filter coefficients.</p>
 <p>This method mainly delegates the call to
 <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>.</p>
@@ -700,7 +748,7 @@ or not given, initial rest is assumed.</p>
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt></p>
+<p class="last"><tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butterord()</span></tt></p>
 </div>
 <p class="rubric">Examples</p>
 <p>Generate and use a Butterworth bandpass filter for complete
@@ -716,7 +764,7 @@ or not given, initial rest is assumed.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">butter_ord</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># calculate the filter coefficients</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">f_low</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">/</span> <span class="n">fn</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Similar to the above this time in an on-line setting:</p>
@@ -735,42 +783,10 @@ or not given, initial rest is assumed.</p>
 <span class="gp">... </span>    <span class="c"># filter the data, note how filter now also returns the</span>
 <span class="gp">... </span>    <span class="c"># filter state which we feed back into the next call of</span>
 <span class="gp">... </span>    <span class="c"># ``filter``</span>
-<span class="gp">... </span>    <span class="n">cnt</span><span class="p">,</span> <span class="n">filter_state</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">filter_state</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">cnt</span><span class="p">,</span> <span class="n">filter_state</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">filter_state</span><span class="p">)</span>
 <span class="gp">... </span>    <span class="o">...</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="function">
-<dt id="wyrm.processing.jumping_means">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">jumping_means</tt><big>(</big><em>dat</em>, <em>ivals</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#jumping_means"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.jumping_means" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the jumping means.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
-<p><strong>ivals</strong> : array of [float, float]</p>
-<blockquote>
-<div><p>the intervals for which to calculate the means. Start is
-included end is not (like <tt class="docutils literal"><span class="pre">[start,</span> <span class="pre">end)</span></tt>).</p>
-</div></blockquote>
-<p><strong>timeaxis</strong> : int, optional</p>
-<blockquote>
-<div><p>the axis along which to calculate the jumping means</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
-<blockquote class="last">
-<div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the jumping means along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt>.
-<tt class="docutils literal"><span class="pre">dat.name[timeaxis]</span></tt> and <tt class="docutils literal"><span class="pre">dat.axes[timeaxis]</span></tt> Are modified
-too to reflect the intervals used for the data points.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="function">
@@ -1216,7 +1232,9 @@ included.</p>
 <dt id="wyrm.processing.select_ival">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">select_ival</tt><big>(</big><em>dat</em>, <em>ival</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#select_ival"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.select_ival" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select interval from data.</p>
-<p>This method selects the time segment(s) defined by <tt class="docutils literal"><span class="pre">ival</span></tt>.</p>
+<p>This method selects the time segment(s) defined by <tt class="docutils literal"><span class="pre">ival</span></tt>. It will
+also automatically remove markers outside of the desired interval in
+the returned Data object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1392,7 +1410,7 @@ Examples below).</p>
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#wyrm.processing.band_pass" title="wyrm.processing.band_pass"><tt class="xref py py-obj docutils literal"><span class="pre">band_pass</span></tt></a></p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.lfilter" title="wyrm.processing.lfilter"><tt class="xref py py-obj docutils literal"><span class="pre">lfilter</span></tt></a></p>
 </div>
 <p class="rubric">Examples</p>
 <p>Load some EEG data with 1kHz, bandpass filter it and downsample it
@@ -1400,7 +1418,9 @@ to 100Hz.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">load_brain_vision_data</span><span class="p">(</span><span class="s">&#39;some/path&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
 <span class="go">1000.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">band_pass</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fn</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span> <span class="c"># nyquist frequ</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">8</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span> <span class="mi">40</span> <span class="o">/</span> <span class="n">fn</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
 <span class="go">100.0</span>

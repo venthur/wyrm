@@ -12,14 +12,14 @@ wyrm.processing
       append
       append_cnt
       append_epo
-      band_pass
       calculate_classwise_average
       calculate_csp
       calculate_signed_r_square
+      clear_markers
       correct_for_baseline
       create_feature_vectors
-      filter
       jumping_means
+      lfilter
       logarithm
       rectify_channels
       remove_channels

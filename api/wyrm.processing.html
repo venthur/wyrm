@@ -76,17 +76,17 @@
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.append_epo" title="wyrm.processing.append_epo"><tt class="xref py py-obj docutils literal"><span class="pre">append_epo</span></tt></a>(dat,&nbsp;dat2[,&nbsp;classaxis,&nbsp;extra])</td>
 <td>Append two epoched data objects.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.band_pass" title="wyrm.processing.band_pass"><tt class="xref py py-obj docutils literal"><span class="pre">band_pass</span></tt></a>(dat,&nbsp;low,&nbsp;high[,&nbsp;zi,&nbsp;timeaxis])</td>
-<td>Band pass filter the data.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_classwise_average" title="wyrm.processing.calculate_classwise_average"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_classwise_average</span></tt></a>(dat[,&nbsp;classaxis])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_classwise_average" title="wyrm.processing.calculate_classwise_average"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_classwise_average</span></tt></a>(dat[,&nbsp;classaxis])</td>
 <td>Calculate the classwise average.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_csp" title="wyrm.processing.calculate_csp"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_csp</span></tt></a>(class1,&nbsp;class2)</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_csp" title="wyrm.processing.calculate_csp"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_csp</span></tt></a>(class1,&nbsp;class2)</td>
 <td>Calculate the Common Spatial Pattern (CSP) for two classes.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_signed_r_square" title="wyrm.processing.calculate_signed_r_square"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_signed_r_square</span></tt></a>(dat[,&nbsp;classaxis])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.calculate_signed_r_square" title="wyrm.processing.calculate_signed_r_square"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_signed_r_square</span></tt></a>(dat[,&nbsp;classaxis])</td>
 <td>Calculate the signed r**2 values.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.clear_markers" title="wyrm.processing.clear_markers"><tt class="xref py py-obj docutils literal"><span class="pre">clear_markers</span></tt></a>(dat[,&nbsp;timeaxis])</td>
+<td>Remove markers that are outside of the <tt class="docutils literal"><span class="pre">dat</span></tt> time interval.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.correct_for_baseline" title="wyrm.processing.correct_for_baseline"><tt class="xref py py-obj docutils literal"><span class="pre">correct_for_baseline</span></tt></a>(dat,&nbsp;ival[,&nbsp;timeaxis])</td>
 <td>Subtract the baseline.</td>
@@ -94,11 +94,11 @@
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.create_feature_vectors" title="wyrm.processing.create_feature_vectors"><tt class="xref py py-obj docutils literal"><span class="pre">create_feature_vectors</span></tt></a>(dat[,&nbsp;classaxis])</td>
 <td>Create feature vectors from epoched data.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.filter" title="wyrm.processing.filter"><tt class="xref py py-obj docutils literal"><span class="pre">filter</span></tt></a>(dat,&nbsp;b,&nbsp;a[,&nbsp;zi,&nbsp;timeaxis])</td>
-<td>Filter data using the filter defined by the filter coefficients.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.jumping_means" title="wyrm.processing.jumping_means"><tt class="xref py py-obj docutils literal"><span class="pre">jumping_means</span></tt></a>(dat,&nbsp;ivals[,&nbsp;timeaxis])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.jumping_means" title="wyrm.processing.jumping_means"><tt class="xref py py-obj docutils literal"><span class="pre">jumping_means</span></tt></a>(dat,&nbsp;ivals[,&nbsp;timeaxis])</td>
 <td>Calculate the jumping means.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.processing.lfilter" title="wyrm.processing.lfilter"><tt class="xref py py-obj docutils literal"><span class="pre">lfilter</span></tt></a>(dat,&nbsp;b,&nbsp;a[,&nbsp;zi,&nbsp;timeaxis])</td>
+<td>Filter data using the filter defined by the filter coefficients.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.processing.logarithm" title="wyrm.processing.logarithm"><tt class="xref py py-obj docutils literal"><span class="pre">logarithm</span></tt></a>(dat)</td>
 <td>Computes the element wise natural logarithm of <tt class="docutils literal"><span class="pre">dat.data</span></tt></td>

@@ -10,6 +10,7 @@ wyrm.types
    .. autosummary::
    
       append_cnt
+      clear_markers
    
    
 
