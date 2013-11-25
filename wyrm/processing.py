@@ -507,41 +507,83 @@ def append_epo(dat, dat2, classaxis=0, extra=None):
     return epo
 
 
-def band_pass(dat, low, high, timeaxis=-2):
-    """Band pass filter the data.
+def filter(dat, b, a, zi=None, timeaxis=-2):
+    """
+    Filter data using the filter defined by the filter coefficients.
+
+    This method mainly delegates the call to
+    :func:`scipy.signal.lfilter`.
 
     Parameters
     ----------
-    dat : Date
-    low, high : int
-        the low, and high borders of the desired frequency band
+    dat : Data
+        the data to be filtered
+    b : 1-d array
+        the numerator coefficient vector
+    a : 1-d array
+        the denominator cefficient vector
+    zi : nd array, optional
+        the initial conditions for the filter delay. If zi is ``None``
+        or not given, initial rest is assumed.
     timeaxis : int, optional
-        the axis in ``dat.data`` to filter
+        the axes in ``data`` to filter along to
 
     Returns
     -------
     dat : Data
-        the band pass filtered data
+        the filtered output
+
+    See Also
+    --------
+    :func:`scipy.signal.lfilter`, :func:`scipy.signal.butter`,
+    :func:`scipy.signal.butterord`
+
+    Examples
+    --------
+
+    Generate and use a Butterworth bandpass filter for complete
+    (off-line data):
+
+    >>> # the sampling frequency of our data in Hz
+    >>> dat.fs
+    100
+    >>> # calculate the nyquist frequency
+    >>> fn = dat.fs / 2
+    >>> # the desired low and high frequencies in Hz
+    >>> f_low, f_high = 2, 13
+    >>> # the order of the filter
+    >>> butter_ord = 4
+    >>> # calculate the filter coefficients
+    >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
+    >>> filtered = filter(dat, b, a)
+
+    Similar to the above this time in an on-line setting:
+
+    >>> # pre-calculate the filter coefficients and the initial filter
+    >>> # state
+    >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
+    >>> filter_state = proc.signal.lfilter_zi(b, a)
+    >>> # Our input will be N-dimensional (N == number of channels), so
+    >>> # we have to create the state for each dimension of the input
+    >>> # data
+    >>> filter_state = np.array([filter_state for in range(CHANNELS)])
+    >>> while 1:
+    ...     data, markers = amp.get_data()
+    ...     # convert incoming data into ``Data`` object
+    ...     cnt = Data(data, ...)
+    ...     # filter the data, note how filter now also returns the
+    ...     # filter state which we feed back into the next call of
+    ...     # ``filter``
+    ...     cnt, filter_state = filter(cnt, b, a, zi=filter_state)
+    ...     ...
 
     """
-    # band pass filter the data
-    fs_n = dat.fs * 0.5
-    #logger.debug('Calculating butter order...')
-    #butter_ord, f_butter = signal.buttord(ws=[(low - .1) / fs_n, (high + .1) / fs_n],
-    #                                      wp=[low / fs_n, high / fs_n],
-    #                                      gpass=0.1,
-    #                                      gstop=3.0
-    #                                      )
-
-    #logger.debug("order: {ord} fbutter: {fbutter} low: {low} high: {high}".format(**{'ord': butter_ord,
-    #                                                      'fbutter': f_butter,
-    #                                                      'low': low / fs_n,
-    #                                                      'high': high / fs_n}))
-    logger.warning('Using fixed order for butterworth filter.')
-    butter_ord = 4
-    b, a = signal.butter(butter_ord, [low / fs_n, high / fs_n], btype='band')
-    data = signal.lfilter(b, a, dat.data, axis=timeaxis)
-    return dat.copy(data=data)
+    if zi is None:
+        data = signal.lfilter(b, a, dat.data, axis=timeaxis)
+        return dat.copy(data=data)
+    else:
+        data, zo = signal.lfilter(b, a, dat.data, zi=zi, axis=timeaxis)
+        return dat.copy(data=data), zo
 
 
 def select_ival(dat, ival, timeaxis=-2):
@@ -798,7 +840,7 @@ def subsample(dat, freq, timeaxis=-2):
 
     See Also
     --------
-    band_pass
+    filter
 
     Examples
     --------
@@ -809,7 +851,9 @@ def subsample(dat, freq, timeaxis=-2):
     >>> dat = load_brain_vision_data('some/path')
     >>> dat.fs
     1000.0
-    >>> dat = band_pass(dat, 8, 40)
+    >>> fn = dat.fs / 2 # nyquist frequ
+    >>> b, a = butter(4, [8 / fn, 40 / fn], btype='band')
+    >>> dat = filter(dat, b, a)
     >>> dat = subsample(dat, 100)
     >>> dat.fs
     100.0
