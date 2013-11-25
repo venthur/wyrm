@@ -586,6 +586,61 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
         return dat.copy(data=data), zo
 
 
+def clear_markers(dat, timeaxis=-2):
+    """Remove markers that are outside of the ``dat`` time interval.
+
+    This method removes the markers that are out of the time interval
+    described in the ``dat`` object.
+
+    If the ``dat`` object has not ``markers`` attribute or the markers
+    are empty, simply a copy of ``dat`` is returned.
+
+    If ``dat.data`` is empty, but has markers, all markers are removed.
+
+    Parameters
+    ----------
+    dat : Data
+    timeaxis : int, optional
+
+    Returns
+    -------
+    dat : Data
+        a copy of the Data object, with the respective markers removed
+
+    Raises
+    ------
+    AssertionError
+        if the given ``dat`` has not ``fs`` attribute
+
+    Examples
+    --------
+
+    >>> dat.axes[0]
+    array([-5., -4., -3., -2., -1.,  0.,  1.,  2.,  3.,  4.])
+    >>> dat.fs
+    1000
+    >>> dat.markers
+    [[-6, 'a'], [-5, 'b'], [0, 'c'], [4.9999, 'd'], [5, 'e']]
+    >>> dat = clear_markers(dat)
+    >>> dat.markers
+    [[-5, 'b'], [0, 'c'], [4.9999, 'd']]
+
+    """
+    if not hasattr(dat, 'markers') or not dat.markers:
+        # nothing to do, we don't have any markers
+        return dat.copy()
+    if not dat:
+        # we don't have any data, and thus no time interval, we remove
+        # all markers
+        return dat.copy(markers=[])
+    assert hasattr(dat, 'fs')
+    sample_len = 1000 / dat.fs
+    markers = dat.markers[:]
+    min, max = dat.axes[timeaxis][0], dat.axes[timeaxis][-1] + sample_len
+    markers = filter(lambda x: min <= x[0] < max, markers)
+    return dat.copy(markers=markers)
+
+
 def select_ival(dat, ival, timeaxis=-2):
     """Select interval from data.
 
