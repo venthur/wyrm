@@ -552,10 +552,6 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
     
     # plotting of highlights
     set_highlights(highlights, axes=[plt.gca()])
-
-    # labeling of axes
-    #plt.xlabel(data.units[len(data.axes) - 2])
-    #plt.ylabel("$\mu$V", rotation = 0)
     
     # labeling of channels
     if legend:
