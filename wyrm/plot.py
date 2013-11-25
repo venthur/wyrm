@@ -485,14 +485,14 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
     # sort the lists of channels by their x-position
     for l in channel_lists:
         l.sort(key = lambda list: list[1])
-    print(channel_lists)
+    #print(channel_lists)
     
     # calculate the needed dimensions of the grid
     columns = max(map(len, channel_lists))
     rows = 0
     for l in channel_lists:
         if len(l) > 0: rows = rows + 1
-    print("rows: " + str(rows) + ", columns: " + str(columns))
+    #print("rows: " + str(rows) + ", columns: " + str(columns))
     
     plt.clf()
     gs = gridspec.GridSpec(rows, columns)
