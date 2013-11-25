@@ -380,8 +380,8 @@ class RingBuffer(object):
         # we have nothing to append
         if len(data) == 0:
             if markers:
-                logger.error('discarding markers!')
-                logger.error(markers)
+                logger.warning('Received Empty Data with markers. Discarding markers.')
+                logger.warning(markers)
             return
         # we append the first time, initialize .data with the correct
         # shape
@@ -397,6 +397,7 @@ class RingBuffer(object):
             self.units = dat.units[:]
         # incoming data is bigger than the buffer's capacity
         if len(data) > self.length:
+            logger.warning('Discarding data that was longer than the ring buffer.')
             surplus = len(data) - self.length
             data = data[surplus:]
             markers = self._move_markers(markers, -surplus)
