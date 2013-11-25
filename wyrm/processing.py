@@ -644,7 +644,9 @@ def clear_markers(dat, timeaxis=-2):
 def select_ival(dat, ival, timeaxis=-2):
     """Select interval from data.
 
-    This method selects the time segment(s) defined by ``ival``.
+    This method selects the time segment(s) defined by ``ival``. It will
+    also automatically remove markers outside of the desired interval in
+    the returned Data object.
 
     Parameters
     ----------
@@ -683,7 +685,9 @@ def select_ival(dat, ival, timeaxis=-2):
     data = dat.data.compress(mask, timeaxis)
     axes = dat.axes[:]
     axes[timeaxis] = dat.axes[timeaxis].compress(mask)
-    return dat.copy(data=data, axes=axes)
+    dat = dat.copy(data=data, axes=axes)
+    dat = clear_markers(dat)
+    return dat
 
 
 def select_epochs(dat, indices, invert=False, classaxis=0):
