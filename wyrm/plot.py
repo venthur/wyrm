@@ -12,7 +12,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy import interpolate
 
-import tentensystem as tts
+from wyrm import tentensystem as tts
 
 
 def plot_scalp(v, channel):
