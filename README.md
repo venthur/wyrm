@@ -1,15 +1,17 @@
 Wyrm
 ====
 
+Wyrm is a Brain Computer Interface (BCI) toolbox written in Python. Wyrm is
+suitable for running on-line BCI experiments as well as off-line analysis of EEG
+data.
+
+Online documentation is available [here][wyrmdoc].
+
+  [wyrmdoc]: http://venthur.github.io/wyrm
+
+
 [![Build Status](https://travis-ci.org/venthur/wyrm.png)](https://travis-ci.org/venthur/wyrm)
 
-About
-=====
-
-Wyrm is a Brain Computer Interface (BCI) toolbox written in Python.
-
-Using it
-========
 
 Installation
 ------------
@@ -30,13 +32,6 @@ $ pip install wyrm
 ```
 
 
-Online Documentation
---------------------
-
-Online documentation is available [here][wyrmdoc].
-
-  [wyrmdoc]: http://venthur.github.io/wyrm
-
 Running it
 ----------
 
@@ -44,7 +39,7 @@ Please refer to the examples in wyrm/examples.
 
 
 Related Software
-================
+----------------
 
 For a complete BCI system written in Python use Wyrm together with
 [Mushu][mushu] and [Pyff][pyff]. Mushu is a BCI signal acquisition and Pyff a
