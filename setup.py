@@ -10,7 +10,7 @@ setup(
     name='Wyrm',
     version=wyrm.__version__,
     description='Toolbox for Brain Computer Interfacing Experiments.',
-    long_description='A Python toolbox of on-line BCI experiments and off-line BCI data analysis.',
+    long_description='A Python toolbox for on-line BCI experiments and off-line BCI data analysis.',
     author='Bastian Venthur',
     author_email='bastian.venthur@tu-berlin.de',
     url='http://github.com/venthur/wyrm/',
