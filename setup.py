@@ -16,6 +16,6 @@ setup(
     url='http://github.com/venthur/wyrm/',
     download_url='http://github.com/venthur/wyrm/',
     license='GPL2',
-    platform='any',
+    platforms='any',
     packages=['wyrm'],
 )
