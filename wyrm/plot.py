@@ -19,23 +19,23 @@ import tentensystem as tts
 
 ### The old plotting functions ############################################################################################33
 
-def plot_scalp(v, channel):
-    """Plot the values v for channel ``channel`` on a scalp."""
-
-    channelpos = [tts.channels[c] for c in channel]
-    points = [calculate_stereographic_projection(i) for i in channelpos]
-    x = [i[0] for i in points]
-    y = [i[1] for i in points]
-    z = v
-    X, Y, Z = interpolate_2d(x, y, z)
-    plt.contour(X, Y, Z, 20)
-    plt.contourf(X, Y, Z, 20)
-    #plt.clabel(im)
-    plt.colorbar()
-    plt.gca().add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
-    plt.plot(x, y, 'bo')
-    for i in zip(channel, zip(x,y)):
-        plt.annotate(i[0], i[1])
+# def plot_scalp(v, channel):
+#     """Plot the values v for channel ``channel`` on a scalp."""
+# 
+#     channelpos = [tts.channels[c] for c in channel]
+#     points = [calculate_stereographic_projection(i) for i in channelpos]
+#     x = [i[0] for i in points]
+#     y = [i[1] for i in points]
+#     z = v
+#     X, Y, Z = interpolate_2d(x, y, z)
+#     plt.contour(X, Y, Z, 20)
+#     plt.contourf(X, Y, Z, 20)
+#     #plt.clabel(im)
+#     plt.colorbar()
+#     plt.gca().add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
+#     plt.plot(x, y, 'bo')
+#     for i in zip(channel, zip(x,y)):
+#         plt.annotate(i[0], i[1])
 
 
 def plot_channels(dat, chanaxis=-1, otheraxis=-2):
@@ -525,9 +525,61 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
     # showing if specified
     if show: plt.show()
     
+
+# plots the values of a single point of time on a scalp
+# data: wyrm.types.Data object containing the data to plot
+# time: the point in time to plot. (types.Data.data[time])
+def plot_scalp(data, time, annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
+    plt.clf()
     
-# adds a subplot to the current figure at the specified position.
-# data: wyrm Data
+    _subplot_scalp(data.data[time], data.axes[1], annotate=annotate)
+    
+    if show:
+        plt.show()
+    
+    # saving if specified
+    if save:
+        if save_path is None:
+            plt.savefig(save_name, bbox_inches='tight')
+        else:
+            plt.savefig(save_path + save_name, bbox_inches='tight')
+    
+    # showing if specified
+    if show: plt.show()
+    
+    
+def _subplot_scalp(v, channel, position=None, annotate=True):
+
+    channelpos = [tts.channels[c] for c in channel]
+    points = [calculate_stereographic_projection(i) for i in channelpos]
+    x = [i[0] for i in points]
+    y = [i[1] for i in points]
+    z = v
+    X, Y, Z = interpolate_2d(x, y, z)
+    plt.contour(X, Y, Z, 20)
+    plt.contourf(X, Y, Z, 20)
+    
+    #plt.clabel(im)
+    plt.colorbar()
+    plt.gca().add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
+    
+    # add a nose
+    plt.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=3)
+    plt.plot([0.1, 0], [0.99, 1.1], 'k-', lw=3)
+    
+    # add markers at channel positions
+    plt.plot(x, y, 'k+', ms=15, mew=1.5)
+    
+    # set the axes limits, so the figure is centered on the scalp
+    plt.gca().set_ylim([-1.3, 1.3])
+    plt.gca().set_xlim([-1.4, 1.4])
+    if annotate:
+        for i in zip(channel, zip(x,y)):
+            plt.annotate(" " + i[0], i[1])
+
+    
+# adds a timeinterval subplot to the current figure at the specified position.
+# data: wyrm.types.Data
 # position: position of the subplot
 # epoch: specifies the epoch to plot
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
