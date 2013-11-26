@@ -303,7 +303,7 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
 # plots all recognized channels of the system according to their position on the scalp in a grid.
 def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_name='system_plot', save_path=None):
 
-    # create the channel ordering
+    # this dictionary determines which y-position corresponds with which row in the grid
     ordering = {4.0  : 0,
                 3.5  : 0,
                 3.0  : 1,
@@ -325,6 +325,7 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
                 -4.5 : 15,
                 -5.0 : 16}
     
+    # all the channels with their x- and y-position
     system = {
         'Fpz' : (0.0, 4.0),
         'Fp1' : (-4.0, 3.5),
@@ -469,7 +470,7 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
         'Iz' : (0.0, -5),
         'I2' : (-1, -5)}
     
-    # create list with 17 empty lists
+    # create list with 17 empty lists. one for every potential row of channels.
     channel_lists=[]
     for i in range(18):
         channel_lists.append([])
