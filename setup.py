@@ -13,7 +13,7 @@ setup(
     long_description='A Python toolbox for on-line BCI experiments and off-line BCI data analysis.',
     author='Bastian Venthur',
     author_email='bastian.venthur@tu-berlin.de',
-    url='http://github.com/venthur/wyrm/',
+    url='http://venthur.github.io/wyrm/',
     download_url='http://github.com/venthur/wyrm/',
     license='GPL2',
     platforms='any',
