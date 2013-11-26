@@ -20,6 +20,7 @@ Use distutils to install Wyrm into your `PYTHONPATH`:
 $ git clone http://github.com/venthur/wyrm
 $ cd wyrm
 $ python setyp.py install --user
+```
 
 this will always give you the latest development version of Wyrm. A slightly
 outdated but maybe more stable version can be easily installed via:
@@ -27,6 +28,7 @@ outdated but maybe more stable version can be easily installed via:
 ```bash
 $ pip install wyrm
 ```
+
 
 Online Documentation
 --------------------
