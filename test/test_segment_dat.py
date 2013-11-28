@@ -201,5 +201,11 @@ class TestSegmentDat(unittest.TestCase):
         epo2 = segment_dat(self.dat, self.mrk_def, [-400, 400])
         self.assertEqual(epo, epo2)
 
+    def test_equivalent_axes(self):
+        """Segmentation must deal with equivalent axis indices correctly."""
+        epo0 = segment_dat(self.dat, self.mrk_def, [-400, 400], timeaxis=-2)
+        epo1 = segment_dat(self.dat, self.mrk_def, [-400, 400], timeaxis=0)
+        self.assertEqual(epo0, epo1)
+
 if __name__ == '__main__':
     unittest.main()
