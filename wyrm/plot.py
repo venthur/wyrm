@@ -13,6 +13,8 @@ import random as rnd
 import inspect
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
+from matplotlib.path import Path
+import matplotlib.patches as patches
 from wyrm.types import Data
 from scipy import interpolate
 import tentensystem as tts
@@ -149,6 +151,19 @@ def create_data_ti(channel_count = 2, steps = 100):
     units = ["ms", "channel_stuff"]
     dat = Data(data, axes, names, units)
     return (dat)
+
+def create_data_all():
+    d = create_data_ti(channel_count=141)
+    d.axes[1] = np.array(['Fp1','AFp1','Fpz','AFp2','Fp2','AF7','AF5','AF3','AFz','AF4','AF6','AF8','FAF5','FAF1','FAF2','FAF6',
+'F9','F7','F5','F3','F1','Fz','F2','F4','F6','F8','F10','FFC9','FFC7','FFC5','FFC3','FFC1','FFC2',
+'FFC4','FFC6','FFC8','FFC10','FT9','FT7','FC5','FC1','FCz','FC2','FC4','FC6','FT8','FT10','CFC9',
+'CFC7','CFC5','CFC3','CFC1','CFC2','CFC4','CFC6','CFC8','CFC10','T9','T7','C5','C3','C1','Cz','C2',
+'C4','C6','T8','T10','A1','CCP7','CCP5','CCP3','CCP1','CCP2','CCP4','CCP6','CCP8','A2','TP9','TP7','CP5',
+'CP3','CP1','CPz','CP2','CP4','CP6','TP8','TP10','PCP9','PCP7','PCP5','PCP3','PCP1','PCP2','PCP4','PCP6',
+'PCP8','PCP10','P9','P7','P5','P3','P1','Pz','P2','P4','P6','P8','P10','PO9','PPO7','PPO5','PPO3','PPO1',
+'PPO2','PPO4','PPO6','PPO8','PO10','PO7','PO5','PO3','PO1','POz','PO2','PO4','PO6','PO8','O9','O1',
+'OPO1','OPO2','O2','O10','OI2','Oz','OI1','I1','Iz','I2'])
+    return d
 
 
 def create_epoched_data_ti(epoch_count=4, channel_count=2, steps=100):
@@ -530,6 +545,7 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
 # plots the values of a single point of time on a scalp
 # data: wyrm.types.Data object containing the data to plot
 # time: the point in time to plot. (types.Data.data[time])
+# annotate (optional): boolean to switch channell annotations
 def plot_scalp(data, time, annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
     plt.clf()
     
@@ -568,12 +584,41 @@ def _subplot_scalp(v, channel, position=None, annotate=True):
     plt.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=3)
     plt.plot([0.1, 0], [0.99, 1.1], 'k-', lw=3)
     
+    # add ears
+    vertsr = [
+    (0.99, 0.13),  # P0
+    (1.10, 0.3), # P1
+    (1.10, -0.3), # P2
+    (0.99, -0.13), # P3
+    ]
+    
+    vertsl = [
+    (-0.99, 0.13),  # P0
+    (-1.10, 0.3), # P1
+    (-1.10, -0.3), # P2
+    (-0.99, -0.13), # P3
+    ]
+    
+    codes = [Path.MOVETO,
+         Path.CURVE4,
+         Path.CURVE4,
+         Path.CURVE4,
+         ]
+
+    pathr = Path(vertsr, codes)
+    pathl = Path(vertsl, codes)
+    patchr = patches.PathPatch(pathr, facecolor='none', lw=2)
+    patchl = patches.PathPatch(pathl, facecolor='none', lw=2)
+    plt.gca().add_patch(patchr)
+    plt.gca().add_patch(patchl)
+    
     # add markers at channel positions
     plt.plot(x, y, 'k+', ms=15, mew=1.5)
     
     # set the axes limits, so the figure is centered on the scalp
     plt.gca().set_ylim([-1.3, 1.3])
     plt.gca().set_xlim([-1.4, 1.4])
+    
     if annotate:
         for i in zip(channel, zip(x,y)):
             plt.annotate(" " + i[0], i[1])
