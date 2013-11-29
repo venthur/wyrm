@@ -264,29 +264,43 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
+    masks = []
     for t, m in dat.markers:
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
                 mask = (t+ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < t+ival[1])
-                d = dat.data.compress(mask, timeaxis)
-                d = np.expand_dims(d, axis=0)
-                if d.shape[timeaxis] != expected_samples:
+                # this one is quite expensive, we should move this stuff
+                # out of the loop, or eliminate the loop completely
+                # e.g. np.digitize for the marker to timeaxis mapping
+                mask = np.flatnonzero(mask)
+                if len(mask) != expected_samples:
                     # result is too short or too long, ignore it
                     continue
                 # check if the new cnt shares at least one timepoint
                 # with the new samples. attention: we don't only have to
                 # check the ival but also the marker if it is on the
                 # right side of the ival!
-                times = dat.axes[timeaxis].compress(mask)
+                times = dat.axes[timeaxis].take(mask)
                 if newsamples is not None:
                     if newsamples == 0:
                         continue
                     if (len(np.intersect1d(times, new_sample_times)) == 0 and
                         t < new_sample_times[0]):
                         continue
-                data.append(d)
+                masks.append(mask)
                 classes.append(class_idx)
-    data = np.concatenate(data, axis=0) if len(data) > 0 else np.array(data)
+    if len(masks) == 0:
+        data = np.array([])
+    else:
+        # np.take inserts a new dimension at `axis`...
+        data = dat.data.take(masks, axis=timeaxis)
+        # we want that new dimension at axis 0 so we have to swap it.
+        # before that we have to convert the netagive axis indices to
+        # their equivalent positive one, otherwise swapaxis will be one
+        # off.
+        if timeaxis < 0:
+            timeaxis = dat.data.ndim + timeaxis
+        data = data.swapaxes(0, timeaxis)
     axes = dat.axes[:]
     time = np.linspace(ival[0], ival[1], (ival[1] - ival[0]) / 1000 * dat.fs, endpoint=False)
     axes[timeaxis] = time
