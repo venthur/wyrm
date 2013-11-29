@@ -165,6 +165,11 @@ def create_data_all():
 'OPO1','OPO2','O2','O10','OI2','Oz','OI1','I1','Iz','I2'])
     return d
 
+def create_data_some():
+    d = create_data_ti(channel_count=25)
+    d.axes[1] = np.array(['Fpz','AF7','AF8','FFC9','FFC10','AF5','AF6','FFC5','FFC6','T7','T8','C3','C4','Cz','TP7','TP8','P1','P2','P7','P8','PO5','PO6','PO7','PO8','Oz'])
+    return d
+
 
 def create_epoched_data_ti(epoch_count=4, channel_count=2, steps=100):
     data = np.zeros([epoch_count, steps, channel_count])
@@ -545,11 +550,12 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
 # plots the values of a single point of time on a scalp
 # data: wyrm.types.Data object containing the data to plot
 # time: the point in time to plot. (types.Data.data[time])
-# annotate (optional): boolean to switch channell annotations
-def plot_scalp(data, time, annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
+# annotate (optional): boolean to switch channel annotations
+# levels (optional): number of levels in the contour plot
+def plot_scalp(data, time, levels=25, annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
     plt.clf()
     
-    _subplot_scalp(data.data[time], data.axes[1], annotate=annotate)
+    _subplot_scalp(data.data[time], data.axes[1], levels=levels, annotate=annotate)
     
     if show:
         plt.show()
@@ -565,7 +571,7 @@ def plot_scalp(data, time, annotate=True, show=True, save=False, save_name='syst
     if show: plt.show()
     
     
-def _subplot_scalp(v, channel, position=None, annotate=True):
+def _subplot_scalp(v, channel, levels=25, position=None, annotate=True):
 
     channelpos = [tts.channels[c] for c in channel]
     points = [calculate_stereographic_projection(i) for i in channelpos]
@@ -573,16 +579,16 @@ def _subplot_scalp(v, channel, position=None, annotate=True):
     y = [i[1] for i in points]
     z = v
     X, Y, Z = interpolate_2d(x, y, z)
-    plt.contour(X, Y, Z, 20)
-    plt.contourf(X, Y, Z, 20)
+    plt.contour(X, Y, Z, levels, zorder=1)
+    plt.contourf(X, Y, Z, levels, zorder=1)
     
     #plt.clabel(im)
     plt.colorbar()
     plt.gca().add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
     
     # add a nose
-    plt.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=3)
-    plt.plot([0.1, 0], [0.99, 1.1], 'k-', lw=3)
+    plt.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=2)
+    plt.plot([0.1, 0], [0.99, 1.1], 'k-', lw=2)
     
     # add ears
     vertsr = [
