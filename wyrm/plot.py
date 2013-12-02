@@ -625,6 +625,10 @@ def _subplot_scalp(v, channel, levels=25, position=None, annotate=True):
     plt.gca().set_ylim([-1.3, 1.3])
     plt.gca().set_xlim([-1.4, 1.4])
     
+    # hide the axes
+    plt.gca().get_xaxis().set_visible(False)
+    plt.gca().get_yaxis().set_visible(False)
+    
     if annotate:
         for i in zip(channel, zip(x,y)):
             plt.annotate(" " + i[0], i[1])
