@@ -32,10 +32,15 @@ $ pip install wyrm
 ```
 
 
-Running it
-----------
+Examples
+--------
 
-Please refer to the examples in wyrm/examples.
+In `wyrm/examples` you'll find an example for classification with a P300 Matrix
+Speller. The data used for that experiment is from the [BCI Competition 3, Data
+Set 2][bcicomp3ds2]. If you want to run that experiment on your machine, you
+need to download the data, and follow the instructions in the example script.
+
+  [bcicomp3ds2]: http://www.bbci.de/competition/iii/#data_set_ii
 
 
 Related Software
