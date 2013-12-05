@@ -11,7 +11,7 @@ from __future__ import division
 import numpy as np
 import random as rnd
 import inspect
-from matplotlib.colors import Normalize
+from matplotlib import colors
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.path import Path
@@ -105,7 +105,7 @@ def calculate_stereographic_projection(p):
 
     """
     # P' = P * (2r / r + z)
-    mu = 1 / (1 + p[2])
+    mu = 1 / (1.25 + p[2])
     x = p[0] * mu
     y = p[1] * mu
     return x, y
@@ -571,6 +571,29 @@ def plot_scalp(data, time, levels=25, annotate=True, show=True, save=False, save
     # showing if specified
     if show: plt.show()
     
+
+# creating my own colormap ----------------------
+cdict = {'red':   [(0.0,   0.0, 0.0),
+                   (0.25,  0.0, 0.0),
+                   (0.5,   1.0, 1.0),
+                   (0.75,  1.0, 1.0),
+                   (1.0,   0.5, 0.5)],
+
+         'green': [(0.0,   0.0, 0.0),
+                   (0.15,  0.0, 0.0),
+                   (0.25,  1.0, 1.0),
+                   (0.5,   1.0, 1.0),
+                   (0.75,  1.0, 1.0),
+                   (0.85,  0.0, 0.0),
+                   (1.0,   0.0, 0.0)],
+
+         'blue':  [(0.0,   0.5, 0.5),
+                   (0.25,  1.0, 1.0),
+                   (0.5,   1.0, 1.0),
+                   (0.75,  0.00, 0.00),
+                   (1.0,   0.0, 0.0)]}
+my_cmap = colors.LinearSegmentedColormap('my_colormap',cdict,256)
+    
     
 def _subplot_scalp(v, channel, levels=25, position=None, annotate=True):
 
@@ -580,9 +603,9 @@ def _subplot_scalp(v, channel, levels=25, position=None, annotate=True):
     y = [i[1] for i in points]
     z = v
     X, Y, Z = interpolate_2d(x, y, z)
-    #t = np.linspace(-1, 1, 3, endpoint=True)
+
     plt.contour(X, Y, Z, levels, zorder=1, colors="k")
-    plt.contourf(X, Y, Z, levels, zorder=1, cmap=plt.cm.jet)
+    plt.contourf(X, Y, Z, levels, zorder=1, cmap=my_cmap)
     
     #plt.clabel(im)
     #plt.clim(-10,10)
