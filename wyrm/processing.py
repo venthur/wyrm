@@ -965,24 +965,67 @@ def subsample(dat, freq, timeaxis=-2):
     return dat.copy(data=data, axes=axes, fs=freq)
 
 
-def spectrum(cnt):
-    """Calculate the normalized spectrum of a continuous data object.
+def spectrum(dat, timeaxis=-2):
+    """Calculate the spectrum of a data object.
 
+    This method performs a fast fourier transform on the data along the
+    timeaxis and returns a new `Data` object which is transformed into
+    the frequency domain. The values are the amplitudes of of the
+    respective frequencies.
+
+    Parameters
+    ----------
+    dat : Data
+        Data object with `.fs` attribute
+    timeaxis : int, optional
+        axis to perform the fft along
 
     Returns
     -------
-    fourier : ndarray
-    freqs : ndarray
+    dat : Data
+        Data object with the timeaxis transformed into the frequency
+        domain. The values of the spectrum are the amplitudes of the
+        respective frequencies.
+
+    Examples
+    --------
+    >>> # dat can be continuous or epoched
+    >>> dat.axes
+    ['time', 'channel']
+    >>> spm = spectrum(dat)
+    >>> spm.axes
+    ['frequency', 'channel']
+
+    Raises
+    ------
+    AssertionError
+        if the `dat` paramter has no `.fs` attribute
 
     See Also
     --------
     spectrogram, stft
 
     """
-    fourier = np.array([sp.fftpack.rfft(cnt.data[:,i]) for i in range(cnt.data.shape[-1])])
-    fourier *= (2 / cnt.data.shape[-2])
-    freqs = sp.fftpack.rfftfreq(cnt.data.shape[-2], 1/cnt.fs)
-    return fourier, freqs
+    # oh look at that! a dumb idea just found a friend.
+    assert hasattr(dat, 'fs')
+    # number of samples of our data
+    length = dat.data.shape[timeaxis]
+    fourier = sp.fftpack.fft(dat.data, axis=timeaxis)
+    fourier = fourier.take(np.arange(length)[1:length/2], axis=timeaxis)
+    amps = 2 * fourier / length
+    amps = np.abs(amps)
+    freqs = sp.fftpack.fftfreq(length, 1/dat.fs)
+    freqs = freqs[1:length/2]
+    axes = dat.axes[:]
+    axes[timeaxis] = freqs
+    names = dat.names[:]
+    names[timeaxis] = 'frequency'
+    units = dat.units[:]
+    units[timeaxis] = 'dl'
+    # TODO: units in original unit or dimensionles?)
+    spm = dat.copy(data=amps, axes=axes, names=names, units=units)
+    delattr(spm, 'fs')
+    return spm
 
 
 def spectrogram(cnt):
