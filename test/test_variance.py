@@ -28,6 +28,7 @@ class TestVariance(unittest.TestCase):
         # each epoch should have a variance of zero, test if the var of
         # all epochs is 0
         self.assertEqual(dat.data.var(), 0)
+        self.assertEqual(len(dat.axes), len(self.dat.axes)-1)
 
     def test_variance_with_cnt(self):
         """variance must work with cnt argument."""
@@ -38,6 +39,7 @@ class TestVariance(unittest.TestCase):
         dat = self.dat.copy(data=data, axes=axes, names=names, units=units)
         dat = variance(dat)
         self.assertEqual(dat.data.var(), 0)
+        self.assertEqual(len(dat.axes), len(self.dat.axes)-2)
 
     def test_variance_swapaxes(self):
         """variance must work with nonstandard timeaxis."""

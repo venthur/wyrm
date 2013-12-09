@@ -1444,6 +1444,8 @@ def logarithm(dat):
 def variance(dat, timeaxis=-2):
     """Compute the variance along the ``timeaxis`` of ``dat``.
 
+    This method reduces the dimensions of `dat.data` by one.
+
     Parameters
     ----------
     dat : Data
@@ -1465,8 +1467,11 @@ def variance(dat, timeaxis=-2):
 
     """
     data = np.var(dat.data, axis=timeaxis)
-    axes = dat.axes[:].pop(timeaxis)
-    names = dat.names[:].pop(timeaxis)
-    units = dat.units[:].pop(timeaxis)
+    axes = dat.axes[:]
+    axes.pop(timeaxis)
+    names = dat.names[:]
+    names.pop(timeaxis)
+    units = dat.units[:]
+    units.pop(timeaxis)
     return dat.copy(data=data, axes=axes, names=names, units=units)
 
