@@ -11,6 +11,7 @@ from __future__ import division
 import numpy as np
 import random as rnd
 import inspect
+from matplotlib import colorbar
 from matplotlib import colors
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -590,7 +591,7 @@ cdict = {'red':   [(0.0,   0.0, 0.0),
          'blue':  [(0.0,   0.5, 0.5),
                    (0.25,  1.0, 1.0),
                    (0.5,   1.0, 1.0),
-                   (0.75,  0.00, 0.00),
+                   (0.75,  0.0, 0.0),
                    (1.0,   0.0, 0.0)]}
 my_cmap = colors.LinearSegmentedColormap('my_colormap',cdict,256)
     
@@ -603,13 +604,17 @@ def _subplot_scalp(v, channel, levels=25, position=None, annotate=True):
     y = [i[1] for i in points]
     z = v
     X, Y, Z = interpolate_2d(x, y, z)
-
-    plt.contour(X, Y, Z, levels, zorder=1, colors="k")
-    plt.contourf(X, Y, Z, levels, zorder=1, cmap=my_cmap)
     
-    #plt.clabel(im)
-    #plt.clim(-10,10)
-    plt.colorbar()
+    norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
+
+    v = np.linspace(-10.0, 10.0, 5, endpoint=True)
+    plt.contour(X, Y, Z, levels, zorder=1, colors="k", norm=norm)
+    plt.contourf(X, Y, Z, levels, zorder=1, cmap=my_cmap, norm=norm)
+    
+    #ax_cb1 = plt.gcf().add_axes((0.85, 0.125, 0.03, 0.75))
+    #colorbar.ColorbarBase(plt.gca(), cmap=my_cmap, norm=norm, orientation='vertical')
+    cb = plt.colorbar(ticks=v)
+
     plt.gca().add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
     
     # add a nose
