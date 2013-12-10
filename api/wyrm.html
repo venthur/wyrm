@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>wyrm Package &mdash; Wyrm 0.1.2.beta documentation</title>
+    <title>wyrm Package &mdash; Wyrm 0.2.beta documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1.2.beta',
+        VERSION:     '0.2.beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
-    <link rel="top" title="Wyrm 0.1.2.beta documentation" href="../index.html" /> 
+    <link rel="top" title="Wyrm 0.2.beta documentation" href="../index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm 0.1.2.beta documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wyrm 0.2.beta documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1289,14 +1289,38 @@ or <tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pr
 
 <dl class="function">
 <dt id="wyrm.processing.spectrum">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">spectrum</tt><big>(</big><em>cnt</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.spectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the normalized spectrum of a continuous data object.</p>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">spectrum</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the spectrum of a data object.</p>
+<p>This method performs a fast fourier transform on the data along the
+timeaxis and returns a new <cite>Data</cite> object which is transformed into
+the frequency domain. The values are the amplitudes of of the
+respective frequencies.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>fourier</strong> : ndarray</p>
-<p class="last"><strong>freqs</strong> : ndarray</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>Data object with <cite>.fs</cite> attribute</p>
+</div></blockquote>
+<p><strong>timeaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>axis to perform the fft along</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>Data object with the timeaxis transformed into the frequency
+domain. The values of the spectrum are the amplitudes of the
+respective frequencies.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<blockquote class="last">
+<div><p>if the <cite>dat</cite> paramter has no <cite>.fs</cite> attribute</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -1304,6 +1328,15 @@ or <tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pr
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="#wyrm.processing.spectrogram" title="wyrm.processing.spectrogram"><tt class="xref py py-obj docutils literal"><span class="pre">spectrogram</span></tt></a>, <a class="reference internal" href="#wyrm.processing.stft" title="wyrm.processing.stft"><tt class="xref py py-obj docutils literal"><span class="pre">stft</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># dat can be continuous or epoched</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span>
+<span class="go">[&#39;time&#39;, &#39;channel&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spm</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spm</span><span class="o">.</span><span class="n">axes</span>
+<span class="go">[&#39;frequency&#39;, &#39;channel&#39;]</span>
+</pre></div>
 </div>
 </dd></dl>
 
@@ -1486,6 +1519,7 @@ appropriate <tt class="docutils literal"><span class="pre">.data</span></tt>, <t
 <dt id="wyrm.processing.variance">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">variance</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.variance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the variance along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt> of <tt class="docutils literal"><span class="pre">dat</span></tt>.</p>
+<p>This method reduces the dimensions of <cite>dat.data</cite> by one.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1936,7 +1970,7 @@ does not match the ring buffer dimensions</p>
         <li class="right" >
           <a href="../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm 0.1.2.beta documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wyrm 0.2.beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
