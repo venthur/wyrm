@@ -21,26 +21,6 @@ from wyrm.types import Data
 from scipy import interpolate
 import tentensystem as tts
 
-### The old plotting functions ############################################################################################33
-
-# def plot_scalp(v, channel):
-#     """Plot the values v for channel ``channel`` on a scalp."""
-# 
-#     channelpos = [tts.channels[c] for c in channel]
-#     points = [calculate_stereographic_projection(i) for i in channelpos]
-#     x = [i[0] for i in points]
-#     y = [i[1] for i in points]
-#     z = v
-#     X, Y, Z = interpolate_2d(x, y, z)
-#     plt.contour(X, Y, Z, 20)
-#     plt.contourf(X, Y, Z, 20)
-#     #plt.clabel(im)
-#     plt.colorbar()
-#     plt.gca().add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
-#     plt.plot(x, y, 'bo')
-#     for i in zip(channel, zip(x,y)):
-#         plt.annotate(i[0], i[1])
-
 
 def plot_channels(dat, chanaxis=-1, otheraxis=-2):
     """Plot all channels for a continuous.
@@ -137,9 +117,26 @@ def interpolate_2d(x, y, z):
     Z = f(X, Y)
     return X, Y, Z
 
-### The new plotting functions ###########################################################################################
 
-# automated creation of more realistic test data #######################################################
+# automated creation of test data
+def _create_channel(steps = 100):
+    steps = float(steps)
+    a = -5
+    b = -2
+    rnd_fac1 = rnd.randrange(25, 200) / 100.
+    rnd_fac2 = rnd.randrange(-200, 200) / 100.
+    rnd_fac3 = rnd.randrange(-100, 100) / 100.
+    range_x = np.arange(a, b, np.absolute(a-b)/steps)
+    range_y = np.zeros(steps)
+    
+    cnt = 0
+    for i in range_x:
+        range_y[cnt] = (i**3 * np.cos(i - rnd_fac3) / 20) * rnd_fac1 - rnd_fac2
+        cnt += 1
+    
+    return range_y
+
+
 # test function: (x^3 * cos(x)) / 20, x in [-5, -2] (with variations)
 def create_data_ti(channel_count = 2, steps = 100):
     
@@ -156,29 +153,13 @@ def create_data_ti(channel_count = 2, steps = 100):
     return (dat)
 
 def create_data_all():
-    d = create_data_ti(channel_count=141)
-    d.axes[1] = np.array(['Fp1','AFp1','Fpz','AFp2','Fp2','AF7','AF5','AF3','AFz','AF4','AF6','AF8','FAF5','FAF1','FAF2','FAF6',
-'F9','F7','F5','F3','F1','Fz','F2','F4','F6','F8','F10','FFC9','FFC7','FFC5','FFC3','FFC1','FFC2',
-'FFC4','FFC6','FFC8','FFC10','FT9','FT7','FC5','FC1','FCz','FC2','FC4','FC6','FT8','FT10','CFC9',
-'CFC7','CFC5','CFC3','CFC1','CFC2','CFC4','CFC6','CFC8','CFC10','T9','T7','C5','C3','C1','Cz','C2',
-'C4','C6','T8','T10','A1','CCP7','CCP5','CCP3','CCP1','CCP2','CCP4','CCP6','CCP8','A2','TP9','TP7','CP5',
-'CP3','CP1','CPz','CP2','CP4','CP6','TP8','TP10','PCP9','PCP7','PCP5','PCP3','PCP1','PCP2','PCP4','PCP6',
-'PCP8','PCP10','P9','P7','P5','P3','P1','Pz','P2','P4','P6','P8','P10','PO9','PPO7','PPO5','PPO3','PPO1',
-'PPO2','PPO4','PPO6','PPO8','PO10','PO7','PO5','PO3','PO1','POz','PO2','PO4','PO6','PO8','O9','O1',
-'OPO1','OPO2','O2','O10','OI2','Oz','OI1','I1','Iz','I2'])
+    d = create_data_ti(channel_count=142)
+    d.axes[1] = np.array(tts.channels.keys())
     return d
 
 def create_data_scalp(t=0):
-    d = create_data_ti(channel_count=141)
-    chans = np.array(['Fp1','AFp1','Fpz','AFp2','Fp2','AF7','AF5','AF3','AFz','AF4','AF6','AF8','FAF5','FAF1','FAF2','FAF6',
-'F9','F7','F5','F3','F1','Fz','F2','F4','F6','F8','F10','FFC9','FFC7','FFC5','FFC3','FFC1','FFC2',
-'FFC4','FFC6','FFC8','FFC10','FT9','FT7','FC5','FC1','FCz','FC2','FC4','FC6','FT8','FT10','CFC9',
-'CFC7','CFC5','CFC3','CFC1','CFC2','CFC4','CFC6','CFC8','CFC10','T9','T7','C5','C3','C1','Cz','C2',
-'C4','C6','T8','T10','A1','CCP7','CCP5','CCP3','CCP1','CCP2','CCP4','CCP6','CCP8','A2','TP9','TP7','CP5',
-'CP3','CP1','CPz','CP2','CP4','CP6','TP8','TP10','PCP9','PCP7','PCP5','PCP3','PCP1','PCP2','PCP4','PCP6',
-'PCP8','PCP10','P9','P7','P5','P3','P1','Pz','P2','P4','P6','P8','P10','PO9','PPO7','PPO5','PPO3','PPO1',
-'PPO2','PPO4','PPO6','PPO8','PO10','PO7','PO5','PO3','PO1','POz','PO2','PO4','PO6','PO8','O9','O1',
-'OPO1','OPO2','O2','O10','OI2','Oz','OI1','I1','Iz','I2'])
+    d = create_data_ti(channel_count=142)
+    chans = np.array(tts.channels.keys())
     return (d.data[t], chans)
 
 def create_data_some():
@@ -232,24 +213,6 @@ def create_tenten_data(channel_count=21, steps=100):
     dat = Data(data, axes, names, units)
     return (dat)
 
-def _create_channel(steps = 100):
-    steps = float(steps)
-    a = -5
-    b = -2
-    rnd_fac1 = rnd.randrange(25, 200) / 100.
-    rnd_fac2 = rnd.randrange(-200, 200) / 100.
-    rnd_fac3 = rnd.randrange(-100, 100) / 100.
-    range_x = np.arange(a, b, np.absolute(a-b)/steps)
-    range_y = np.zeros(steps)
-    
-    cnt = 0
-    for i in range_x:
-        range_y[cnt] = (i**3 * np.cos(i - rnd_fac3) / 20) * rnd_fac1 - rnd_fac2
-        cnt += 1
-    
-    return range_y
-
-# \automated creation of more realistic test data ######################################################
 
 # some custom colormaps
 # blue - white - red
@@ -604,7 +567,7 @@ def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None, anno
     gs = gridspec.GridSpec(1, 2, width_ratios=[10,1])
     
     _subplot_scalp(v, channel, gs[0,0], levels=levels, annotate=annotate)
-    _subplot_colorbar(gs[0,1], colormap=bwr_cmap(), ticks=None)
+    _subplot_colorbar(gs[0,1], colormap=bwr_cmap(), ticks=ticks, norm=norm)
     
     if show:
         plt.show()
@@ -623,7 +586,6 @@ def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None, anno
 def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
     ax = plt.subplot(position)
     cb = colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
-    ax = colorbar.make_axes(ax, shrink=0.2)
     
     
 def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
@@ -664,6 +626,7 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
     (-0.99, -0.13), # P3
     ]
     
+    # in combination with Path this creates a bezier-curve with 2 fix-points and 2 control-points
     codes = [Path.MOVETO,
          Path.CURVE4,
          Path.CURVE4,
@@ -691,7 +654,7 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
     if annotate:
         for i in zip(channel, zip(x,y)):
             plt.annotate(" " + i[0], i[1])
-
+            
     
 # adds a timeinterval subplot to the current figure at the specified position.
 # data: wyrm.types.Data
