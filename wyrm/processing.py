@@ -1420,7 +1420,7 @@ def calculate_signed_r_square(dat, classaxis=0):
 
 
 def logarithm(dat):
-    """Computes the element wise natural logarithm of ``dat.data``
+    """Computes the element wise natural logarithm of ``dat.data``.
 
     Calling this method is equivalent to calling
 
@@ -1429,6 +1429,7 @@ def logarithm(dat):
     Parameters
     ----------
     dat : Data
+        a Data object
 
     Returns
     -------
