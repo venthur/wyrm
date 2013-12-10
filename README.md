@@ -1,5 +1,4 @@
-Wyrm
-====
+# Wyrm
 
 Wyrm is a Brain Computer Interface (BCI) toolbox written in Python. Wyrm is
 suitable for running on-line BCI experiments as well as off-line analysis of EEG
@@ -13,8 +12,7 @@ Online documentation is available [here][wyrmdoc].
 [![Build Status](https://travis-ci.org/venthur/wyrm.png)](https://travis-ci.org/venthur/wyrm)
 
 
-Installation
-------------
+## Installation
 
 Use distutils to install Wyrm into your `PYTHONPATH`:
 
@@ -32,19 +30,27 @@ $ pip install wyrm
 ```
 
 
-Examples
---------
+## Examples
 
-In `wyrm/examples` you'll find an example for classification with a P300 Matrix
-Speller. The data used for that experiment is from the [BCI Competition 3, Data
-Set 2][bcicomp3ds2]. If you want to run that experiment on your machine, you
-need to download the data, and follow the instructions in the example script.
+In the `examples` directory, you'll find, among others, examples for various BCI
+tasks using publicly available BCI datasets from the [BCI Competition][bcicomp].
 
+* An example for classification of motor imagery in ECoG recordings. For that
+  example the [BCI Competition3, Data Set 1][bcicompds1] was used.
+
+* An example for classification with a P300 Matrix Speller in EEG recordings.
+  The [BCI Competition 3, Data Set 2][bcicomp3ds2] was used for that example.
+
+You can follow those examples by downloading the data and copying the files to
+the appropriate places.
+
+
+  [bcicomp]: http://www.bbci.de/competition
+  [bcicomp3ds1]: http://www.bbci.de/competition/iii/#data_set_i
   [bcicomp3ds2]: http://www.bbci.de/competition/iii/#data_set_ii
 
 
-Related Software
-----------------
+## Related Software
 
 For a complete BCI system written in Python use Wyrm together with
 [Mushu][mushu] and [Pyff][pyff]. Mushu is a BCI signal acquisition and Pyff a
