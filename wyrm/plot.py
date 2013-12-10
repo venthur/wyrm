@@ -106,7 +106,8 @@ def calculate_stereographic_projection(p):
 
     """
     # P' = P * (2r / r + z)
-    mu = 1 / (1.25 + p[2])
+    # changed the values to move the point of projection further below the south pole
+    mu = 1 / (1.3 + p[2])
     x = p[0] * mu
     y = p[1] * mu
     return x, y
@@ -166,6 +167,19 @@ def create_data_all():
 'PPO2','PPO4','PPO6','PPO8','PO10','PO7','PO5','PO3','PO1','POz','PO2','PO4','PO6','PO8','O9','O1',
 'OPO1','OPO2','O2','O10','OI2','Oz','OI1','I1','Iz','I2'])
     return d
+
+def create_data_scalp(t=0):
+    d = create_data_ti(channel_count=141)
+    chans = np.array(['Fp1','AFp1','Fpz','AFp2','Fp2','AF7','AF5','AF3','AFz','AF4','AF6','AF8','FAF5','FAF1','FAF2','FAF6',
+'F9','F7','F5','F3','F1','Fz','F2','F4','F6','F8','F10','FFC9','FFC7','FFC5','FFC3','FFC1','FFC2',
+'FFC4','FFC6','FFC8','FFC10','FT9','FT7','FC5','FC1','FCz','FC2','FC4','FC6','FT8','FT10','CFC9',
+'CFC7','CFC5','CFC3','CFC1','CFC2','CFC4','CFC6','CFC8','CFC10','T9','T7','C5','C3','C1','Cz','C2',
+'C4','C6','T8','T10','A1','CCP7','CCP5','CCP3','CCP1','CCP2','CCP4','CCP6','CCP8','A2','TP9','TP7','CP5',
+'CP3','CP1','CPz','CP2','CP4','CP6','TP8','TP10','PCP9','PCP7','PCP5','PCP3','PCP1','PCP2','PCP4','PCP6',
+'PCP8','PCP10','P9','P7','P5','P3','P1','Pz','P2','P4','P6','P8','P10','PO9','PPO7','PPO5','PPO3','PPO1',
+'PPO2','PPO4','PPO6','PPO8','PO10','PO7','PO5','PO3','PO1','POz','PO2','PO4','PO6','PO8','O9','O1',
+'OPO1','OPO2','O2','O10','OI2','Oz','OI1','I1','Iz','I2'])
+    return (d.data[t], chans)
 
 def create_data_some():
     d = create_data_ti(channel_count=25)
@@ -236,6 +250,32 @@ def _create_channel(steps = 100):
     return range_y
 
 # \automated creation of more realistic test data ######################################################
+
+# some custom colormaps
+# blue - white - red
+def bwr_cmap():
+    
+    cdict = {'red':   [(0.0,   0.0, 0.0),
+                       (0.25,  0.0, 0.0),
+                       (0.5,   1.0, 1.0),
+                       (0.75,  1.0, 1.0),
+                       (1.0,   0.5, 0.5)],
+    
+             'green': [(0.0,   0.0, 0.0),
+                       (0.15,  0.0, 0.0),
+                       (0.25,  1.0, 1.0),
+                       (0.5,   1.0, 1.0),
+                       (0.75,  1.0, 1.0),
+                       (0.85,  0.0, 0.0),
+                       (1.0,   0.0, 0.0)],
+    
+             'blue':  [(0.0,   0.5, 0.5),
+                       (0.25,  1.0, 1.0),
+                       (0.5,   1.0, 1.0),
+                       (0.75,  0.0, 0.0),
+                       (1.0,   0.0, 0.0)]}
+
+    return colors.LinearSegmentedColormap('bwr_colormap',cdict,256)
 
 
 # plots a simple time_interval with the given data
@@ -554,10 +594,17 @@ def plot_tenten(data, highlights=None, legend=True, show=True, save=False, save_
 # time: the point in time to plot. (types.Data.data[time])
 # annotate (optional): boolean to switch channel annotations
 # levels (optional): number of levels in the contour plot
-def plot_scalp(data, time, levels=25, annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
+def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
     plt.clf()
     
-    _subplot_scalp(data.data[time], data.axes[1], levels=levels, annotate=annotate)
+    if colormap is None: colormap=bwr_cmap()
+    if norm is None: norm=colors.Normalize(vmin=-10, vmax=10, clip=False)
+    if ticks is None: ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
+    
+    gs = gridspec.GridSpec(1, 2, width_ratios=[10,1])
+    
+    _subplot_scalp(v, channel, gs[0,0], levels=levels, annotate=annotate)
+    _subplot_colorbar(gs[0,1], colormap=bwr_cmap(), ticks=None)
     
     if show:
         plt.show()
@@ -573,30 +620,13 @@ def plot_scalp(data, time, levels=25, annotate=True, show=True, save=False, save
     if show: plt.show()
     
 
-# creating my own colormap ----------------------
-cdict = {'red':   [(0.0,   0.0, 0.0),
-                   (0.25,  0.0, 0.0),
-                   (0.5,   1.0, 1.0),
-                   (0.75,  1.0, 1.0),
-                   (1.0,   0.5, 0.5)],
-
-         'green': [(0.0,   0.0, 0.0),
-                   (0.15,  0.0, 0.0),
-                   (0.25,  1.0, 1.0),
-                   (0.5,   1.0, 1.0),
-                   (0.75,  1.0, 1.0),
-                   (0.85,  0.0, 0.0),
-                   (1.0,   0.0, 0.0)],
-
-         'blue':  [(0.0,   0.5, 0.5),
-                   (0.25,  1.0, 1.0),
-                   (0.5,   1.0, 1.0),
-                   (0.75,  0.0, 0.0),
-                   (1.0,   0.0, 0.0)]}
-my_cmap = colors.LinearSegmentedColormap('my_colormap',cdict,256)
+def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
+    ax = plt.subplot(position)
+    cb = colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
+    ax = colorbar.make_axes(ax, shrink=0.2)
     
     
-def _subplot_scalp(v, channel, levels=25, position=None, annotate=True):
+def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
 
     channelpos = [tts.channels[c] for c in channel]
     points = [calculate_stereographic_projection(i) for i in channelpos]
@@ -605,17 +635,15 @@ def _subplot_scalp(v, channel, levels=25, position=None, annotate=True):
     z = v
     X, Y, Z = interpolate_2d(x, y, z)
     
-    norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
+    ax1 = plt.subplot(position)
 
-    v = np.linspace(-10.0, 10.0, 5, endpoint=True)
-    plt.contour(X, Y, Z, levels, zorder=1, colors="k", norm=norm)
-    plt.contourf(X, Y, Z, levels, zorder=1, cmap=my_cmap, norm=norm)
+    ax1.contour(X, Y, Z, levels, zorder=1, colors="k", norm=norm)
+    ax1.contourf(X, Y, Z, levels, zorder=1, cmap=my_cmap, norm=norm)
     
     #ax_cb1 = plt.gcf().add_axes((0.85, 0.125, 0.03, 0.75))
-    #colorbar.ColorbarBase(plt.gca(), cmap=my_cmap, norm=norm, orientation='vertical')
-    cb = plt.colorbar(ticks=v)
+    #plt.colorbar(ticks=v)
 
-    plt.gca().add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
+    ax1.add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
     
     # add a nose
     plt.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=2)
