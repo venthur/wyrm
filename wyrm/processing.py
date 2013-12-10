@@ -1436,8 +1436,40 @@ def logarithm(dat):
         a copy of ``dat`` with the element wise natural logarithms of
         the values in ``.data``
 
+    See Also
+    --------
+    :func:`square`
+
     """
     data = np.log(dat.data)
+    return dat.copy(data=data)
+
+
+def square(dat):
+    """Computes the element wise square of ``dat.data``.
+
+    Calling this method is equivalent to calling
+
+    >>> dat.copy(data=np.square(dat.data))
+
+    Parameters
+    ----------
+    dat : Data
+        a Data object
+
+
+    Returns
+    -------
+    dat : Data
+        a copy of ``dat`` with the element wise squares of the values in
+        ``.data``
+
+    See Also
+    --------
+    :func:`logarithm`
+
+    """
+    data = np.square(dat.data)
     return dat.copy(data=data)
 
 
