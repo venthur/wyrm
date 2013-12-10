@@ -50,6 +50,18 @@ the appropriate places.
   [bcicomp3ds2]: http://www.bbci.de/competition/iii/#data_set_ii
 
 
+## Python 3 Support
+
+Wyrm is mainly developed under Python 2.7, however since people will eventually
+move on to Python 3 we try to be forward compatible. There is also a [Python 3
+branch][python3branch] where we try to keep the unit tests happy. The
+differences between this and the main branch are minimal. Although we can't
+recommend using the Python 3 branch as is in production, it should be relatively
+painless to fix the remaining bits and make Wyrm completely Python 3 compatible.
+
+  [python3branch]: https://github.com/venthur/wyrm/tree/python3
+
+
 ## Related Software
 
 For a complete BCI system written in Python use Wyrm together with
