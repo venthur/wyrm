@@ -36,7 +36,7 @@ In the `examples` directory, you'll find, among others, examples for various BCI
 tasks using publicly available BCI datasets from the [BCI Competition][bcicomp].
 
 * An example for classification of motor imagery in ECoG recordings. For that
-  example the [BCI Competition3, Data Set 1][bcicompds1] was used.
+  example the [BCI Competition3, Data Set 1][bcicomp3ds1] was used.
 
 * An example for classification with a P300 Matrix Speller in EEG recordings.
   The [BCI Competition 3, Data Set 2][bcicomp3ds2] was used for that example.
