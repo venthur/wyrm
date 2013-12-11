@@ -14,6 +14,8 @@ Online documentation is available [here][wyrmdoc].
 
 ## Installation
 
+### Using git
+
 Use distutils to install Wyrm into your `PYTHONPATH`:
 
 ```bash
@@ -22,12 +24,19 @@ $ cd wyrm
 $ python setyp.py install --user
 ```
 
-this will always give you the latest development version of Wyrm. A slightly
-outdated but maybe more stable version can be easily installed via:
+this will always give you the latest development version of Wyrm.
+
+
+### Using PyPI
+
+Wyrm is also available on the [Python Package Index (PyPI)][pypi] and can be
+easily installed via:
 
 ```bash
 $ pip install wyrm
 ```
+
+  [pypi]: https://pypi.python.org/pypi/Wyrm
 
 
 ## Examples
