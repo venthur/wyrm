@@ -600,7 +600,7 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
     ax1 = plt.subplot(position)
 
     ax1.contour(X, Y, Z, levels, zorder=1, colors="k", norm=norm)
-    ax1.contourf(X, Y, Z, levels, zorder=1, cmap=my_cmap, norm=norm)
+    ax1.contourf(X, Y, Z, levels, zorder=1, cmap=bwr_cmap(), norm=norm)
     
     #ax_cb1 = plt.gcf().add_axes((0.85, 0.125, 0.03, 0.75))
     #plt.colorbar(ticks=v)
