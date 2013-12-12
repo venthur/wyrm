@@ -164,8 +164,7 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
 
     If the segmentation does not result in any epochs (i.e. the markers
     in ``marker_def`` could not be found in ``dat``, the resulting
-    dat.data will be an empty array with the expected number of
-    dimensions (``dat.data.ndim + 1``).
+    dat.data will be an empty array.
 
     This method is also suitable for **online processing**, please read
     the documentation for the ``newsamples`` parameter and have a look
@@ -258,43 +257,50 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
     assert ival[0] <= ival[1]
     if newsamples is not None:
         assert newsamples >= 0
-    # calculate the minimum time a marker must have (only used when
-    # newsamples is not None
-    if newsamples is not None:
-        if ival[1] > 0:
-            t_ = dat.axes[timeaxis][-newsamples] - ival[1]
-            mival = dat.axes[timeaxis][(dat.axes[timeaxis] > t_)]
-        else:
-            mival = dat.axes[timeaxis][-newsamples:]
-        if newsamples == 0:
-            mival = []
-        assert len(mival) >= newsamples
+        # the times of the `newsamples`
+        new_sample_times = dat.axes[timeaxis][-newsamples:] if newsamples > 0 else []
     # the expected length of each cnt in the resulted epo
     expected_samples = dat.fs * (ival[1] - ival[0]) / 1000
     data = []
     classes = []
     class_names = sorted(marker_def.keys())
+    masks = []
     for t, m in dat.markers:
-        # if newsamples is given, don't recognize markers outside of
-        # mival
-        if newsamples is not None and t not in mival:
-            continue
         for class_idx, classname in enumerate(class_names):
             if m in marker_def[classname]:
                 mask = (t+ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < t+ival[1])
-                d = dat.data.compress(mask, timeaxis)
-                d = np.expand_dims(d, axis=0)
-                if d.shape[timeaxis] != expected_samples:
+                # this one is quite expensive, we should move this stuff
+                # out of the loop, or eliminate the loop completely
+                # e.g. np.digitize for the marker to timeaxis mapping
+                mask = np.flatnonzero(mask)
+                if len(mask) != expected_samples:
                     # result is too short or too long, ignore it
                     continue
-                data.append(d)
+                # check if the new cnt shares at least one timepoint
+                # with the new samples. attention: we don't only have to
+                # check the ival but also the marker if it is on the
+                # right side of the ival!
+                times = dat.axes[timeaxis].take(mask)
+                if newsamples is not None:
+                    if newsamples == 0:
+                        continue
+                    if (len(np.intersect1d(times, new_sample_times)) == 0 and
+                        t < new_sample_times[0]):
+                        continue
+                masks.append(mask)
                 classes.append(class_idx)
-    if data == []:
-        # we found no results, so we create an empy array with the
-        # correct number of dimensions (dat.data.ndim + 1)
-        data = np.array([]).reshape([0 for i in range(dat.data.ndim + 1)])
+    if len(masks) == 0:
+        data = np.array([])
     else:
-        data = np.concatenate(data, axis=0)
+        # np.take inserts a new dimension at `axis`...
+        data = dat.data.take(masks, axis=timeaxis)
+        # we want that new dimension at axis 0 so we have to swap it.
+        # before that we have to convert the netagive axis indices to
+        # their equivalent positive one, otherwise swapaxis will be one
+        # off.
+        if timeaxis < 0:
+            timeaxis = dat.data.ndim + timeaxis
+        data = data.swapaxes(0, timeaxis)
     axes = dat.axes[:]
     time = np.linspace(ival[0], ival[1], (ival[1] - ival[0]) / 1000 * dat.fs, endpoint=False)
     axes[timeaxis] = time
@@ -323,6 +329,12 @@ def append(dat, dat2, axis=0, extra=None):
     ``dat`` and ``dat2`` might have, it only copies the attributes of
     ``dat`` and deals with the attributes it knows about, namely:
     ``data``, ``axes``, ``names``, and ``units``.
+
+    .. warning::
+        This method is really low level and stupid. It does not know
+        about markers or timeaxes, etc. it just appends two data
+        objects. If you want to append continuous or epoched data
+        consider using :func:`append_cnt` and :func:`append_epo`.
 
     Parameters
     ----------
@@ -358,7 +370,9 @@ def append(dat, dat2, axis=0, extra=None):
     Examples
     --------
 
-    >>> # concatenate two continuous data objects, and their markers
+    >>> # concatenate two continuous data objects, and their markers,
+    >>> # please note how the resulting marker is not correct, just
+    >>> # appended
     >>> cnt.markers
     [[0, 'a'], [10, 'b']]
     >>> cnt2.markers
@@ -373,6 +387,9 @@ def append(dat, dat2, axis=0, extra=None):
 
     """
     assert dat.data.ndim == dat2.data.ndim
+    # convert negative axis to the equivalent positive one
+    if axis < 0:
+        axis = dat.data.ndim + axis
     for i in range(dat.data.ndim):
         assert dat.names[i] == dat2.names[i]
         assert dat.units[i] == dat2.units[i]
@@ -404,9 +421,14 @@ def append(dat, dat2, axis=0, extra=None):
 def append_cnt(dat, dat2, timeaxis=-2, extra=None):
     """Append two continuous data objects.
 
-    This method just calls :func:`append`. If both ``dat`` and ``dat2``
-    have the ``markers`` attribute it will add ``'markers'`` to
-    ``extra``.
+    This method uses :func:`append` to append to continuous data
+    objects. It also takes care that the resulting continuous will have
+    a correct ``.axes[timeaxis]``. For that it uses the ``.fs``
+    attribute and the length of the data to recalculate the timeaxis.
+
+    If both ``dat`` and ``dat2`` have the ``markers`` attribute, the
+    markers will be treated properly (i.e. by moving the markers of
+    ``dat2`` by ``dat`` milliseconds to the right.
 
     Parameters
     ----------
@@ -417,6 +439,13 @@ def append_cnt(dat, dat2, timeaxis=-2, extra=None):
     Returns
     -------
     dat : Data
+        the resulting combination of ``dat`` and ``dat2``
+
+    Raises
+    ------
+    AssertionError
+        if at least one of the ``Data`` parameters has not the ``.fs``
+        attribute or if the ``.fs`` attributes are not equal.
 
     See Also
     --------
@@ -425,15 +454,30 @@ def append_cnt(dat, dat2, timeaxis=-2, extra=None):
     Examples
     --------
 
+    >>> cnt.axis[0]
+    [0, 1, 2]
+    >>> cnt2.axis[0]
+    [0, 1, 2]
+    >>> cnt.fs
+    1000
     >>> cnt = append_cnt(cnt, cnt2)
+    >>> cnt.axis[0]
+    [0, 1, 2, 3, 4, 5]
 
     """
-    if hasattr(dat, 'markers') and hasattr(dat2, 'markers'):
-        if extra is None:
-            extra=['markers']
-        else:
-            extra.append('markers')
+    assert hasattr(dat, 'fs') and hasattr(dat2, 'fs')
+    assert dat.fs == dat2.fs
     cnt = append(dat, dat2, axis=timeaxis, extra=extra)
+    if hasattr(dat, 'markers') and hasattr(dat2, 'markers'):
+        # move the markers from dat2 to the right by dat-milliseconds
+        ms = dat.data.shape[timeaxis] / dat.fs * 1000
+        markers1 = dat.markers[:]
+        markers2 = map(lambda x: [x[0]+ms, x[1]], dat2.markers)
+        markers1.extend(markers2)
+        cnt.markers = markers1
+    # fix the timeaxis from 0, 1, 2, 0, 1, 2 -> 0, 1, 2, 3, 4, 5
+    ms = cnt.data.shape[timeaxis] / cnt.fs * 1000
+    cnt.axes[timeaxis] = np.linspace(0, ms, cnt.data.shape[timeaxis], endpoint=False)
     return cnt
 
 
@@ -477,47 +521,146 @@ def append_epo(dat, dat2, classaxis=0, extra=None):
     return epo
 
 
-def band_pass(dat, low, high, timeaxis=-2):
-    """Band pass filter the data.
+def lfilter(dat, b, a, zi=None, timeaxis=-2):
+    """
+    Filter data using the filter defined by the filter coefficients.
+
+    This method mainly delegates the call to
+    :func:`scipy.signal.lfilter`.
 
     Parameters
     ----------
-    dat : Date
-    low, high : int
-        the low, and high borders of the desired frequency band
+    dat : Data
+        the data to be filtered
+    b : 1-d array
+        the numerator coefficient vector
+    a : 1-d array
+        the denominator cefficient vector
+    zi : nd array, optional
+        the initial conditions for the filter delay. If zi is ``None``
+        or not given, initial rest is assumed.
     timeaxis : int, optional
-        the axis in ``dat.data`` to filter
+        the axes in ``data`` to filter along to
 
     Returns
     -------
     dat : Data
-        the band pass filtered data
+        the filtered output
+
+    See Also
+    --------
+    :func:`scipy.signal.lfilter`, :func:`scipy.signal.butter`,
+    :func:`scipy.signal.butterord`
+
+    Examples
+    --------
+
+    Generate and use a Butterworth bandpass filter for complete
+    (off-line data):
+
+    >>> # the sampling frequency of our data in Hz
+    >>> dat.fs
+    100
+    >>> # calculate the nyquist frequency
+    >>> fn = dat.fs / 2
+    >>> # the desired low and high frequencies in Hz
+    >>> f_low, f_high = 2, 13
+    >>> # the order of the filter
+    >>> butter_ord = 4
+    >>> # calculate the filter coefficients
+    >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
+    >>> filtered = lfilter(dat, b, a)
+
+    Similar to the above this time in an on-line setting:
+
+    >>> # pre-calculate the filter coefficients and the initial filter
+    >>> # state
+    >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
+    >>> filter_state = proc.signal.lfilter_zi(b, a)
+    >>> # Our input will be N-dimensional (N == number of channels), so
+    >>> # we have to create the state for each dimension of the input
+    >>> # data
+    >>> filter_state = np.array([filter_state for in range(CHANNELS)])
+    >>> while 1:
+    ...     data, markers = amp.get_data()
+    ...     # convert incoming data into ``Data`` object
+    ...     cnt = Data(data, ...)
+    ...     # filter the data, note how filter now also returns the
+    ...     # filter state which we feed back into the next call of
+    ...     # ``filter``
+    ...     cnt, filter_state = lfilter(cnt, b, a, zi=filter_state)
+    ...     ...
 
     """
-    # band pass filter the data
-    fs_n = dat.fs * 0.5
-    #logger.debug('Calculating butter order...')
-    #butter_ord, f_butter = signal.buttord(ws=[(low - .1) / fs_n, (high + .1) / fs_n],
-    #                                      wp=[low / fs_n, high / fs_n],
-    #                                      gpass=0.1,
-    #                                      gstop=3.0
-    #                                      )
+    if zi is None:
+        data = signal.lfilter(b, a, dat.data, axis=timeaxis)
+        return dat.copy(data=data)
+    else:
+        data, zo = signal.lfilter(b, a, dat.data, zi=zi, axis=timeaxis)
+        return dat.copy(data=data), zo
 
-    #logger.debug("order: {ord} fbutter: {fbutter} low: {low} high: {high}".format(**{'ord': butter_ord,
-    #                                                      'fbutter': f_butter,
-    #                                                      'low': low / fs_n,
-    #                                                      'high': high / fs_n}))
-    logger.warning('Using fixed order for butterworth filter.')
-    butter_ord = 4
-    b, a = signal.butter(butter_ord, [low / fs_n, high / fs_n], btype='band')
-    data = signal.lfilter(b, a, dat.data, axis=timeaxis)
-    return dat.copy(data=data)
+
+def clear_markers(dat, timeaxis=-2):
+    """Remove markers that are outside of the ``dat`` time interval.
+
+    This method removes the markers that are out of the time interval
+    described in the ``dat`` object.
+
+    If the ``dat`` object has not ``markers`` attribute or the markers
+    are empty, simply a copy of ``dat`` is returned.
+
+    If ``dat.data`` is empty, but has markers, all markers are removed.
+
+    Parameters
+    ----------
+    dat : Data
+    timeaxis : int, optional
+
+    Returns
+    -------
+    dat : Data
+        a copy of the Data object, with the respective markers removed
+
+    Raises
+    ------
+    AssertionError
+        if the given ``dat`` has not ``fs`` attribute
+
+    Examples
+    --------
+
+    >>> dat.axes[0]
+    array([-5., -4., -3., -2., -1.,  0.,  1.,  2.,  3.,  4.])
+    >>> dat.fs
+    1000
+    >>> dat.markers
+    [[-6, 'a'], [-5, 'b'], [0, 'c'], [4.9999, 'd'], [5, 'e']]
+    >>> dat = clear_markers(dat)
+    >>> dat.markers
+    [[-5, 'b'], [0, 'c'], [4.9999, 'd']]
+
+    """
+    if not hasattr(dat, 'markers') or not dat.markers:
+        # nothing to do, we don't have any markers
+        return dat.copy()
+    if not dat:
+        # we don't have any data, and thus no time interval, we remove
+        # all markers
+        return dat.copy(markers=[])
+    assert hasattr(dat, 'fs')
+    sample_len = 1000 / dat.fs
+    markers = dat.markers[:]
+    min, max = dat.axes[timeaxis][0], dat.axes[timeaxis][-1] + sample_len
+    markers = filter(lambda x: min <= x[0] < max, markers)
+    return dat.copy(markers=markers)
 
 
 def select_ival(dat, ival, timeaxis=-2):
     """Select interval from data.
 
-    This method selects the time segment(s) defined by ``ival``.
+    This method selects the time segment(s) defined by ``ival``. It will
+    also automatically remove markers outside of the desired interval in
+    the returned Data object.
 
     Parameters
     ----------
@@ -556,7 +699,9 @@ def select_ival(dat, ival, timeaxis=-2):
     data = dat.data.compress(mask, timeaxis)
     axes = dat.axes[:]
     axes[timeaxis] = dat.axes[timeaxis].compress(mask)
-    return dat.copy(data=data, axes=axes)
+    dat = dat.copy(data=data, axes=axes)
+    dat = clear_markers(dat)
+    return dat
 
 
 def select_epochs(dat, indices, invert=False, classaxis=0):
@@ -731,8 +876,26 @@ def subsample(dat, freq, timeaxis=-2):
     freq``. Please note that ``freq`` must be a whole number divisor of
     ``dat.fs``.
 
-    Note that this method does not low-pass filter the data before
-    sub-sampling.
+    .. note::
+        Note that this method does not low-pass filter the data before
+        sub-sampling.
+
+    .. note::
+        If you use this method in an on-line setting (i.e. where you
+        process the data in chunks and not as a whole), you should make
+        sure that ``subsample`` does not drop "half samples" by ensuring
+        the source data's length is in multiples of the target data's
+        sample length.
+
+        Let's assume your source data is sampled in 1kHz and you want to
+        subsample down to 100Hz. One sample of the source data is 1ms
+        long, while the target samples will be 10ms long. In order to
+        ensure that ``subsample`` does not eat fractions of samples at
+        the end of your data, you have to make sure that your source
+        data is multiples of 10ms (i.e. 1010, 1020, etc) long. You might
+        want to use :class:`wyrm.types.BlockBuffer` for this (see
+        Examples below).
+
 
     Parameters
     ----------
@@ -750,7 +913,7 @@ def subsample(dat, freq, timeaxis=-2):
 
     See Also
     --------
-    band_pass
+    lfilter
 
     Examples
     --------
@@ -761,10 +924,27 @@ def subsample(dat, freq, timeaxis=-2):
     >>> dat = load_brain_vision_data('some/path')
     >>> dat.fs
     1000.0
-    >>> dat = band_pass(dat, 8, 40)
+    >>> fn = dat.fs / 2 # nyquist frequ
+    >>> b, a = butter(4, [8 / fn, 40 / fn], btype='band')
+    >>> dat = lfilter(dat, b, a)
     >>> dat = subsample(dat, 100)
     >>> dat.fs
     100.0
+
+    Online Experiment
+
+    >>> bbuffer = BlockBuffer(10) # 10 ms is the target block size
+    >>> while 1:
+    ...     cnt = ... # get 1kHz continous data from your amp
+    ...     # put the data into the block buffer
+    ...     # bbget will onlry return the data in multiples of 10ms or
+    ...     # nothing
+    ...     bbuffer.append(cnt)
+    ...     cnt = bbuffer.get()
+    ...     if not cnt:
+    ...         continue
+    ...     # filter, etc
+    ...     subsample(cnt, 100)
 
     Raises
     ------
@@ -785,24 +965,67 @@ def subsample(dat, freq, timeaxis=-2):
     return dat.copy(data=data, axes=axes, fs=freq)
 
 
-def spectrum(cnt):
-    """Calculate the normalized spectrum of a continuous data object.
+def spectrum(dat, timeaxis=-2):
+    """Calculate the spectrum of a data object.
 
+    This method performs a fast fourier transform on the data along the
+    timeaxis and returns a new `Data` object which is transformed into
+    the frequency domain. The values are the amplitudes of of the
+    respective frequencies.
+
+    Parameters
+    ----------
+    dat : Data
+        Data object with `.fs` attribute
+    timeaxis : int, optional
+        axis to perform the fft along
 
     Returns
     -------
-    fourier : ndarray
-    freqs : ndarray
+    dat : Data
+        Data object with the timeaxis transformed into the frequency
+        domain. The values of the spectrum are the amplitudes of the
+        respective frequencies.
+
+    Examples
+    --------
+    >>> # dat can be continuous or epoched
+    >>> dat.axes
+    ['time', 'channel']
+    >>> spm = spectrum(dat)
+    >>> spm.axes
+    ['frequency', 'channel']
+
+    Raises
+    ------
+    AssertionError
+        if the `dat` paramter has no `.fs` attribute
 
     See Also
     --------
     spectrogram, stft
 
     """
-    fourier = np.array([sp.fftpack.rfft(cnt.data[:,i]) for i in range(cnt.data.shape[-1])])
-    fourier *= (2 / cnt.data.shape[-2])
-    freqs = sp.fftpack.rfftfreq(cnt.data.shape[-2], 1/cnt.fs)
-    return fourier, freqs
+    # oh look at that! a dumb idea just found a friend.
+    assert hasattr(dat, 'fs')
+    # number of samples of our data
+    length = dat.data.shape[timeaxis]
+    fourier = sp.fftpack.fft(dat.data, axis=timeaxis)
+    fourier = fourier.take(np.arange(length)[1:length/2], axis=timeaxis)
+    amps = 2 * fourier / length
+    amps = np.abs(amps)
+    freqs = sp.fftpack.fftfreq(length, 1/dat.fs)
+    freqs = freqs[1:length/2]
+    axes = dat.axes[:]
+    axes[timeaxis] = freqs
+    names = dat.names[:]
+    names[timeaxis] = 'frequency'
+    units = dat.units[:]
+    units[timeaxis] = 'dl'
+    # TODO: units in original unit or dimensionles?)
+    spm = dat.copy(data=amps, axes=axes, names=names, units=units)
+    delattr(spm, 'fs')
+    return spm
 
 
 def spectrogram(cnt):
@@ -1197,7 +1420,7 @@ def calculate_signed_r_square(dat, classaxis=0):
 
 
 def logarithm(dat):
-    """Computes the element wise natural logarithm of ``dat.data``
+    """Computes the element wise natural logarithm of ``dat.data``.
 
     Calling this method is equivalent to calling
 
@@ -1206,6 +1429,7 @@ def logarithm(dat):
     Parameters
     ----------
     dat : Data
+        a Data object
 
     Returns
     -------
@@ -1213,13 +1437,47 @@ def logarithm(dat):
         a copy of ``dat`` with the element wise natural logarithms of
         the values in ``.data``
 
+    See Also
+    --------
+    :func:`square`
+
     """
     data = np.log(dat.data)
     return dat.copy(data=data)
 
 
+def square(dat):
+    """Computes the element wise square of ``dat.data``.
+
+    Calling this method is equivalent to calling
+
+    >>> dat.copy(data=np.square(dat.data))
+
+    Parameters
+    ----------
+    dat : Data
+        a Data object
+
+
+    Returns
+    -------
+    dat : Data
+        a copy of ``dat`` with the element wise squares of the values in
+        ``.data``
+
+    See Also
+    --------
+    :func:`logarithm`
+
+    """
+    data = np.square(dat.data)
+    return dat.copy(data=data)
+
+
 def variance(dat, timeaxis=-2):
     """Compute the variance along the ``timeaxis`` of ``dat``.
+
+    This method reduces the dimensions of `dat.data` by one.
 
     Parameters
     ----------
@@ -1242,8 +1500,11 @@ def variance(dat, timeaxis=-2):
 
     """
     data = np.var(dat.data, axis=timeaxis)
-    axes = dat.axes[:].pop(timeaxis)
-    names = dat.names[:].pop(timeaxis)
-    units = dat.units[:].pop(timeaxis)
+    axes = dat.axes[:]
+    axes.pop(timeaxis)
+    names = dat.names[:]
+    names.pop(timeaxis)
+    units = dat.units[:]
+    units.pop(timeaxis)
     return dat.copy(data=data, axes=axes, names=names, units=units)
 

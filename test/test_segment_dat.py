@@ -44,13 +44,12 @@ class TestSegmentDat(unittest.TestCase):
         self.assertEqual(epo.axes[-2][-1], 390)
 
     def test_segment_dat_with_nonexisting_markers(self):
-        """Segmentation without result should return empty .data with correct number of dimensions."""
+        """Segmentation without result should return empty .data"""
         mrk_def = {'class 1': ['FUU1'],
                    'class 2': ['FUU2', 'FUU3']
                   }
         epo = segment_dat(self.dat, mrk_def, [-400, 400])
-        self.assertEqual(epo.data.ndim, 3)
-        self.assertEqual(epo.data.shape, (0, 0, 0))
+        self.assertEqual(epo.data.shape[0], 0)
 
     def test_segment_dat_with_unequally_sized_data(self):
         """Segmentation must ignore too short or too long chunks in the result."""
@@ -75,80 +74,110 @@ class TestSegmentDat(unittest.TestCase):
     # change something please make sure you fully understand the problem
     def test_segment_dat_with_restriction_to_new_data_ival_zero_pos(self):
         """Online Segmentation with ival 0..+something must work correctly."""
+        # [   0.,  100.,  200.,  300.,  400.,  500.,  600.,  700.,  800.]
+        #         M100                                600
+        #                M200                                700
+        #                       M299                                799
+        #                       M300                                800
+        #                       M301                                801
         data = np.ones((9, 3))
         time = np.linspace(0, 900, 9, endpoint=False)
         channels = 'a', 'b', 'c'
-        markers = [[100, 'x'], [200, 'x'], [300, 'x']]
+        markers = [[100, 'x'], [200, 'x'], [299, 'x'], [300, 'x'], [301, 'x']]
         dat = Data(data, [time, channels], ['time', 'channels'], ['ms', '#'])
         dat.fs = 10
         dat.markers = markers
         mrk_def = {'class 1': ['x']}
         # each tuple has (number of new samples, expected epocs)
-        samples_epos = [(0, 0), (1, 0), (2, 1), (3, 2), (4, 3), (5, 3)]
+        samples_epos = [(0, 0), (1, 1), (2, 3), (3, 4), (4, 5), (5, 5)]
         for s, e in samples_epos:
             epo = segment_dat(dat, mrk_def, [0, 500], newsamples=s)
             self.assertEqual(epo.data.shape[0], e)
 
     def test_segment_dat_with_restriction_to_new_data_ival_pos_pos(self):
         """Online Segmentation with ival +something..+something must work correctly."""
+        # [   0.,  100.,  200.,  300.,  400.,  500.,  600.,  700.,  800.]
+        #         M100    200                         600
+        #                M200    300                         700
+        #                       M299    399                         799
+        #                       M300    400                         800
+        #                       M301    401                         801
         data = np.ones((9, 3))
         time = np.linspace(0, 900, 9, endpoint=False)
         channels = 'a', 'b', 'c'
-        markers = [[100, 'x'], [200, 'x'], [300, 'x']]
+        markers = [[100, 'x'], [200, 'x'], [299, 'x'], [300, 'x'], [301, 'x']]
         dat = Data(data, [time, channels], ['time', 'channels'], ['ms', '#'])
         dat.fs = 10
         dat.markers = markers
         mrk_def = {'class 1': ['x']}
         # each tuple has (number of new samples, expected epocs)
-        samples_epos = [(0, 0), (1, 0), (2, 1), (3, 2), (4, 3), (5, 3)]
+        samples_epos = [(0, 0), (1, 1), (2, 3), (3, 4), (4, 5), (5, 5)]
         for s, e in samples_epos:
             epo = segment_dat(dat, mrk_def, [100, 500], newsamples=s)
             self.assertEqual(epo.data.shape[0], e)
 
     def test_segment_dat_with_restriction_to_new_data_ival_neg_pos(self):
         """Online Segmentation with ival -something..+something must work correctly."""
+        # [   0.,  100.,  200.,  300.,  400.,  500.,  600.,  700.,  800.]
+        #          100                 M400           600
+        #                 200                 M500           700
+        #                        299                 M599           799
+        #                        300                 M600           800
+        #                        301                 M601           801
         data = np.ones((9, 3))
         time = np.linspace(0, 900, 9, endpoint=False)
         channels = 'a', 'b', 'c'
-        markers = [[400, 'x'], [500, 'x'], [600, 'x']]
+        markers = [[400, 'x'], [500, 'x'], [599, 'x'], [600, 'x'], [601, 'x']]
         dat = Data(data, [time, channels], ['time', 'channels'], ['ms', '#'])
         dat.fs = 10
         dat.markers = markers
         mrk_def = {'class 1': ['x']}
         # each tuple has (number of new samples, expected epocs)
-        samples_epos = [(0, 0), (1, 0), (2, 1), (3, 2), (4, 3), (5, 3)]
+        samples_epos = [(0, 0), (1, 1), (2, 3), (3, 4), (4, 5), (5, 5)]
         for s, e in samples_epos:
             epo = segment_dat(dat, mrk_def, [-300, 200], newsamples=s)
             self.assertEqual(epo.data.shape[0], e)
 
     def test_segment_dat_with_restriction_to_new_data_ival_neg_zero(self):
         """Online Segmentation with ival -something..0 must work correctly."""
+        # [   0.,  100.,  200.,  300.,  400.,  500.,  600.,  700.,  800.]
+        #          100                        M500
+        #                 200                        M600
+        #                        299                        M699
+        #                        300                        M700
+        #                        301                        M701
         data = np.ones((9, 3))
         time = np.linspace(0, 900, 9, endpoint=False)
         channels = 'a', 'b', 'c'
-        markers = [[500, 'x'], [600, 'x'], [700, 'x']]
+        markers = [[500, 'x'], [600, 'x'], [699, 'x'], [700, 'x'], [701, 'x']]
         dat = Data(data, [time, channels], ['time', 'channels'], ['ms', '#'])
         dat.fs = 10
         dat.markers = markers
         mrk_def = {'class 1': ['x']}
         # each tuple has (number of new samples, expected epocs)
-        samples_epos = [(0, 0), (1, 0), (2, 1), (3, 2), (4, 3), (5, 3)]
+        samples_epos = [(0, 0), (1, 0), (2, 2), (3, 4), (4, 5), (5, 5)]
         for s, e in samples_epos:
             epo = segment_dat(dat, mrk_def, [-400, 0], newsamples=s)
             self.assertEqual(epo.data.shape[0], e)
 
     def test_segment_dat_with_restriction_to_new_data_ival_neg_neg(self):
         """Online Segmentation with ival -something..-something must work correctly."""
+        # [   0.,  100.,  200.,  300.,  400.,  500.,  600.,  700.,  800.]
+        #          100                  400   M500
+        #                 200                  500   M600
+        #                        299                  599   M699
+        #                        300                  600   M700
+        #                        301                  600   M701
         data = np.ones((9, 3))
         time = np.linspace(0, 900, 9, endpoint=False)
         channels = 'a', 'b', 'c'
-        markers = [[500, 'x'], [600, 'x'], [700, 'x']]
+        markers = [[500, 'x'], [600, 'x'], [699, 'x'], [700, 'x'], [701, 'x']]
         dat = Data(data, [time, channels], ['time', 'channels'], ['ms', '#'])
         dat.fs = 10
         dat.markers = markers
         mrk_def = {'class 1': ['x']}
         # each tuple has (number of new samples, expected epocs)
-        samples_epos = [(0, 0), (1, 0), (2, 1), (3, 2), (4, 3), (5, 3)]
+        samples_epos = [(0, 0), (1, 0), (2, 2), (3, 4), (4, 5), (5, 5)]
         for s, e in samples_epos:
             epo = segment_dat(dat, mrk_def, [-400, -100], newsamples=s)
             self.assertEqual(epo.data.shape[0], e)
@@ -171,6 +200,12 @@ class TestSegmentDat(unittest.TestCase):
         epo = swapaxes(epo, 1, 2)
         epo2 = segment_dat(self.dat, self.mrk_def, [-400, 400])
         self.assertEqual(epo, epo2)
+
+    def test_equivalent_axes(self):
+        """Segmentation must deal with equivalent axis indices correctly."""
+        epo0 = segment_dat(self.dat, self.mrk_def, [-400, 400], timeaxis=-2)
+        epo1 = segment_dat(self.dat, self.mrk_def, [-400, 400], timeaxis=0)
+        self.assertEqual(epo0, epo1)
 
 if __name__ == '__main__':
     unittest.main()

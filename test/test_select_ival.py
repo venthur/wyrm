@@ -19,6 +19,7 @@ class TestSelectIval(unittest.TestCase):
         # three cnts: 1s, -1s, and 0s
         data = np.array([ones, ones * -1, ones * 0])
         self.dat = Data(data, [classes, time, channels], ['class', 'time', 'channel'], ['#', 'ms', '#'])
+        self.dat.fs = 10
 
     def test_select_ival(self):
         """Selecting Intervals."""
@@ -31,6 +32,16 @@ class TestSelectIval(unittest.TestCase):
         self.assertEqual(dat.axes[1][0], self.dat.axes[1][0])
         self.assertEqual(dat.axes[1][-1], self.dat.axes[1][-1])
         np.testing.assert_array_equal(dat.data, self.dat.data)
+
+    def test_select_ival_with_markers(self):
+        """Selecting Intervals with markers."""
+        # normal case
+        good_markers = [[-499,99, 'x'], [-500, 'x'], [-0.0001, 'x']]
+        bad_markers = [[501, 'y'], [0, 'y'], [1, 'y']]
+        self.dat.markers = good_markers[:]
+        self.dat.markers.extend(bad_markers)
+        dat = select_ival(self.dat, [-500, 0])
+        self.assertEqual(dat.markers, good_markers)
 
     def test_ival_checks(self):
         """Test for malformed ival parameter."""

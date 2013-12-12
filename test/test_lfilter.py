@@ -4,12 +4,14 @@ import unittest
 
 import numpy as np
 from scipy.fftpack import rfft, rfftfreq
+from scipy.signal import butter
 
 from wyrm.types import Data
-from wyrm.processing import band_pass
+from wyrm.processing import lfilter
 from wyrm.processing import swapaxes
 
-class TestBandpass(unittest.TestCase):
+
+class TestLFilter(unittest.TestCase):
 
     def setUp(self):
         # create some data
@@ -25,10 +27,12 @@ class TestBandpass(unittest.TestCase):
         self.dat = Data(data, [t, channel], ['time', 'channel'], ['s', '#'])
         self.dat.fs = fs
 
-    def test_band_pass(self):
+    def test_bandpass(self):
         """Band pass filtering."""
         # bandpass around the middle frequency
-        ans = band_pass(self.dat, 6, 8)
+        fn = self.dat.fs / 2
+        b, a = butter(4, [6 / fn, 8 / fn], btype='band')
+        ans = lfilter(self.dat, b, a)
         # the amplitudes
         fourier = np.abs(rfft(ans.data, axis=0) * 2 / self.dat.data.shape[0])
         ffreqs = rfftfreq(ans.data.shape[0], 1/ans.fs)
@@ -41,17 +45,21 @@ class TestBandpass(unittest.TestCase):
                 for k in j:
                     self.assertAlmostEqual(k, 0., delta=.1)
 
-    def test_band_pass_copy(self):
-        """band_pass must not modify argument."""
+    def test_lfilter_copy(self):
+        """lfilter must not modify argument."""
         cpy = self.dat.copy()
-        band_pass(self.dat, 2, 3, timeaxis=0)
+        fn = self.dat.fs / 2
+        b, a = butter(4, [6 / fn, 8 / fn], btype='band')
+        lfilter(self.dat, b, a)
         self.assertEqual(cpy, self.dat)
 
-    def test_band_pass_swapaxes(self):
-        """band_pass must work with nonstandard timeaxis."""
-        dat = band_pass(swapaxes(self.dat, 0, 1), 6, 8, timeaxis=1)
+    def test_lfilter_swapaxes(self):
+        """lfilter must work with nonstandard timeaxis."""
+        fn = self.dat.fs / 2
+        b, a = butter(4, [6 / fn, 8 / fn], btype='band')
+        dat = lfilter(swapaxes(self.dat, 0, 1), b, a, timeaxis=1)
         dat = swapaxes(dat, 0, 1)
-        dat2 = band_pass(self.dat, 6, 8)
+        dat2 = lfilter(self.dat, b, a)
         self.assertEqual(dat, dat2)
 
 

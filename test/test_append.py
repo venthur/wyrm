@@ -96,6 +96,15 @@ class TestAppend(unittest.TestCase):
         np.testing.assert_array_equal(dat2.data, np.concatenate([dat.data, dat.data], axis=0))
         np.testing.assert_array_equal(dat2.axes[0], np.concatenate([dat.axes[0], dat.axes[0]], axis=0))
 
+    def test_append_with_negative_axis(self):
+        """Append must work correctly with a negative axis."""
+        dat2 = self.dat.copy()
+        dat2.data = dat2.data[:-1, ...]
+        dat2.axes[0] = dat2.axes[2][:-1]
+        a = append(self.dat, dat2, axis=0)
+        b = append(self.dat, dat2, axis=-3)
+        self.assertEqual(a, b)
+
     def test_append_swapaxes(self):
         """append must work with nonstandard timeaxis."""
         dat = append(swapaxes(self.dat, 0, 2), swapaxes(self.dat, 0, 2), axis=2)
