@@ -522,8 +522,7 @@ def append_epo(dat, dat2, classaxis=0, extra=None):
 
 
 def lfilter(dat, b, a, zi=None, timeaxis=-2):
-    """
-    Filter data using the filter defined by the filter coefficients.
+    """Filter data using the filter defined by the filter coefficients.
 
     This method mainly delegates the call to
     :func:`scipy.signal.lfilter`.
@@ -535,7 +534,7 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
     b : 1-d array
         the numerator coefficient vector
     a : 1-d array
-        the denominator cefficient vector
+        the denominator coefficient vector
     zi : nd array, optional
         the initial conditions for the filter delay. If zi is ``None``
         or not given, initial rest is assumed.
@@ -549,8 +548,8 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
 
     See Also
     --------
-    :func:`scipy.signal.lfilter`, :func:`scipy.signal.butter`,
-    :func:`scipy.signal.butterord`
+    :func:`filtfilt`, :func:`scipy.signal.lfilter`,
+    :func:`scipy.signal.butter`, :func:`scipy.signal.butterord`
 
     Examples
     --------
