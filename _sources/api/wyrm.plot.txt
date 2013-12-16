@@ -13,6 +13,7 @@ wyrm.plot
       interpolate_2d
       plot_channels
       plot_scalp
+      plot_spatio_temporal_r2_values
       plot_spectrogram
       plot_spectrum
    

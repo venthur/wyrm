@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>wyrm Package &mdash; Wyrm 0.2.beta documentation</title>
+    <title>wyrm Package &mdash; Wyrm 0.3.beta documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.beta',
+        VERSION:     '0.3.beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
-    <link rel="top" title="Wyrm 0.2.beta documentation" href="../index.html" /> 
+    <link rel="top" title="Wyrm 0.3.beta documentation" href="../index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm 0.2.beta documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wyrm 0.3.beta documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -183,6 +183,11 @@ the interpolated values as values.</p>
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channel</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the values v for channel <tt class="docutils literal"><span class="pre">channel</span></tt> on a scalp.</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.plot_spatio_temporal_r2_values">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spatio_temporal_r2_values</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.plot.plot_spatio_temporal_r2_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="wyrm.plot.plot_spectrogram">
@@ -674,6 +679,67 @@ classaxis moved to dimension 0</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.filtfilt">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">filtfilt</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.filtfilt" title="Permalink to this definition">¶</a></dt>
+<dd><p>A forward-backward filter.</p>
+<p>Filter data twice, once forward and once backwards, using the filter
+defined by the filter coefficients.</p>
+<p>This method mainly delegates the call to
+<tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.filtfilt()</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>the data to be filtered</p>
+</div></blockquote>
+<p><strong>b</strong> : 1-d array</p>
+<blockquote>
+<div><p>the numerator coefficient vector</p>
+</div></blockquote>
+<p><strong>a</strong> : 1-d array</p>
+<blockquote>
+<div><p>the denominator coefficient vector</p>
+</div></blockquote>
+<p><strong>timeaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the axes in <tt class="docutils literal"><span class="pre">data</span></tt> to filter along to</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>the filtered output</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.lfilter" title="wyrm.processing.lfilter"><tt class="xref py py-func docutils literal"><span class="pre">lfilter()</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>Generate and use a Butterworth bandpass filter for complete
+(off-line data):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># the sampling frequency of our data in Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># calculate the nyquist frequency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fn</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># the desired low and high frequencies in Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_low</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">13</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># the order of the filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">butter_ord</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># calculate the filter coefficients</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">f_low</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">/</span> <span class="n">fn</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.jumping_means">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">jumping_means</tt><big>(</big><em>dat</em>, <em>ivals</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#jumping_means"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.jumping_means" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the jumping means.</p>
@@ -725,7 +791,7 @@ too to reflect the intervals used for the data points.</p>
 </div></blockquote>
 <p><strong>a</strong> : 1-d array</p>
 <blockquote>
-<div><p>the denominator cefficient vector</p>
+<div><p>the denominator coefficient vector</p>
 </div></blockquote>
 <p><strong>zi</strong> : nd array, optional</p>
 <blockquote>
@@ -748,7 +814,7 @@ or not given, initial rest is assumed.</p>
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butterord()</span></tt></p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.filtfilt" title="wyrm.processing.filtfilt"><tt class="xref py py-func docutils literal"><span class="pre">filtfilt()</span></tt></a>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butterord()</span></tt></p>
 </div>
 <p class="rubric">Examples</p>
 <p>Generate and use a Butterworth bandpass filter for complete
@@ -792,7 +858,7 @@ or not given, initial rest is assumed.</p>
 <dl class="function">
 <dt id="wyrm.processing.logarithm">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">logarithm</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#logarithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.logarithm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the element wise natural logarithm of <tt class="docutils literal"><span class="pre">dat.data</span></tt></p>
+<dd><p>Computes the element wise natural logarithm of <tt class="docutils literal"><span class="pre">dat.data</span></tt>.</p>
 <p>Calling this method is equivalent to calling</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 </pre></div>
@@ -802,6 +868,9 @@ or not given, initial rest is assumed.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>a Data object</p>
+</div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
@@ -813,6 +882,10 @@ the values in <tt class="docutils literal"><span class="pre">.data</span></tt></
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.square" title="wyrm.processing.square"><tt class="xref py py-func docutils literal"><span class="pre">square()</span></tt></a></p>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -1279,7 +1352,7 @@ or <tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pr
 
 <dl class="function">
 <dt id="wyrm.processing.spectrogram">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">spectrogram</tt><big>(</big><em>cnt</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.spectrogram" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">spectrogram</tt><big>(</big><em>cnt</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.spectrogram" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the spectrogram of a continuous data object.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
@@ -1341,8 +1414,41 @@ respective frequencies.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.square">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">square</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.processing.square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the element wise square of <tt class="docutils literal"><span class="pre">dat.data</span></tt>.</p>
+<p>Calling this method is equivalent to calling</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p>a Data object</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the element wise squares of the values in
+<tt class="docutils literal"><span class="pre">.data</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.logarithm" title="wyrm.processing.logarithm"><tt class="xref py py-func docutils literal"><span class="pre">logarithm()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.stft">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">stft</tt><big>(</big><em>x</em>, <em>width</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#stft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.stft" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">stft</tt><big>(</big><em>x</em>, <em>width</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#stft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.stft" title="Permalink to this definition">¶</a></dt>
 <dd><p>Short time fourier transform of a real sequence.</p>
 <p>This method performs a discrete short time Fourier transform. It
 uses a sliding window to perform discrete Fourier transforms on the
@@ -1970,7 +2076,7 @@ does not match the ring buffer dimensions</p>
         <li class="right" >
           <a href="../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm 0.2.beta documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wyrm 0.3.beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
