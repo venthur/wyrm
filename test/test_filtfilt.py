@@ -7,7 +7,7 @@ from scipy.fftpack import rfft, rfftfreq
 from scipy.signal import butter
 
 from wyrm.types import Data
-from wyrm.processing import filtfilt
+from wyrm.processing import filtfilt, spectrum
 from wyrm.processing import swapaxes
 
 
@@ -33,17 +33,14 @@ class TestFiltFilt(unittest.TestCase):
         fn = self.dat.fs / 2
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
         ans = filtfilt(self.dat, b, a)
-        # the amplitudes
-        fourier = np.abs(rfft(ans.data, axis=0) * 2 / self.dat.data.shape[0])
+        # check if the desired band is not damped
+        dat = spectrum(self.dat)
+        mask = dat.axes[0] == 7
         ffreqs = rfftfreq(ans.data.shape[0], 1/ans.fs)
         # check if the outer freqs are damped close to zero
-        # freqs...
-        for i in self.freqs[0], self.freqs[-1]:
-            # buckets for freqs
-            for j in fourier[ffreqs == i]:
-                # channels
-                for k in j:
-                    self.assertAlmostEqual(k, 0., delta=.1)
+        self.assertTrue((dat.data[mask] > 6.5).all())
+        mask = (dat.axes[0] <= 6) & (dat.axes[0] > 8)
+        self.assertTrue((dat.data[mask] < .5).all())
 
     def test_filtfilt_copy(self):
         """filtfilt must not modify argument."""
