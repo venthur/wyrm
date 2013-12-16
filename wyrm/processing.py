@@ -600,6 +600,60 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
         return dat.copy(data=data), zo
 
 
+def filtfilt(dat, b, a, timeaxis=-2):
+    """A forward-backward filter.
+
+    Filter data twice, once forward and once backwards, using the filter
+    defined by the filter coefficients.
+
+    This method mainly delegates the call to
+    :func:`scipy.signal.filtfilt`.
+
+    Parameters
+    ----------
+    dat : Data
+        the data to be filtered
+    b : 1-d array
+        the numerator coefficient vector
+    a : 1-d array
+        the denominator coefficient vector
+    timeaxis : int, optional
+        the axes in ``data`` to filter along to
+
+    Returns
+    -------
+    dat : Data
+        the filtered output
+
+    See Also
+    --------
+    :func:`lfilter`
+
+    Examples
+    --------
+
+    Generate and use a Butterworth bandpass filter for complete
+    (off-line data):
+
+    >>> # the sampling frequency of our data in Hz
+    >>> dat.fs
+    100
+    >>> # calculate the nyquist frequency
+    >>> fn = dat.fs / 2
+    >>> # the desired low and high frequencies in Hz
+    >>> f_low, f_high = 2, 13
+    >>> # the order of the filter
+    >>> butter_ord = 4
+    >>> # calculate the filter coefficients
+    >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
+    >>> filtered = filtfilt(dat, b, a)
+
+    """
+    # TODO: should we use padlen and padtype?
+    data = signal.filtfilt(b, a, dat.data, axis=timeaxis)
+    return dat.copy(data=data)
+
+
 def clear_markers(dat, timeaxis=-2):
     """Remove markers that are outside of the ``dat`` time interval.
 
