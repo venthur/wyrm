@@ -121,9 +121,14 @@ def interpolate_2d(x, y, z):
 
 
 # some custom colormaps
-# blue - white - red
 def bwr_cmap():
-    
+    """Create a linear segmented colormap with transitions from blue over white to red.
+
+    Returns
+    -------
+    x : colormap
+        The matplotlib colormap.
+    """
     cdict = {'red':   [(0.0,   0.0, 0.0),
                        (0.25,  0.0, 0.0),
                        (0.5,   1.0, 1.0),
@@ -147,19 +152,32 @@ def bwr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap',cdict,256)
 
 
-# plots a simple time_interval with the given data
-# data: wyrm.types.Data object containing the data to plot
-# highlights (optional): a wyrm.plot.Highlight object to create highlights
-# legend (optional): boolean to switch the legend on or off
-# show (optional): boolean to switch immediate showing after creation
-# save (optional): boolean to switch saving the created figure
-# save_name (optional): String to specify the name the figure is saved as
-# save_path (optional): String to specify the path the figure is saved to (usage: '/path/')  
-# channel (optional): used for plotting only one specific channel
 def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval', save_path=None, channel=None):
+    """Plots a simple time interval for all channels in the given data object.
 
+    Parameters
+    ----------
+    data : wyrm.types.Data
+        data object containing the data to plot
+    
+    --- optional parameters ---
+    highlights : wyrm.plot.Highlight (default: None)
+        Highlight object containing information about areas to be highlighted
+    legend : Boolean (default: True)
+        Flag to switch plotting of the legend on or off
+    show : Boolean (default: True)
+        Flag to switch immediate showing of the plot on or off
+    save : Boolean (default: False)
+        Flag to switch saving the created figure after creation on or off
+    save_name: String (default: 'timeinterval')
+        The title of the saved plot.
+    save_path: String (default: None)
+        The path the plot will be saved to.
+    channel: int
+        A number to specify a single channel, which will then be plotted exclusively
+    """
+    
     plt.clf()
-
     # plotting of the data
     if channel is None:
         plt.plot(data.axes[0], data.data)
@@ -218,7 +236,7 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
         
     # adjust the spacing
-    plt.subplots_adjust(left=0.1, right=0.97, top=0.97, bottom=0.1, hspace=0.3, wspace=0.3)
+    plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.1, hspace=0.3, wspace=0.3)
     
     # saving if specified
     if save:
@@ -230,10 +248,29 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     # showing if specified
     if show: plt.show()
     
-    
 # plots all recognized channels of the system according to their position on the scalp in a grid.
 def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save_name='system_plot', save_path=None):
+    """Plots all recognized channels on a grid system according to their positions on the scalp.
 
+    Parameters
+    ----------
+    data : wyrm.types.Data
+        data object containing the data to plot
+    
+    --- optional parameters ---
+    highlights : wyrm.plot.Highlight (default: None)
+        Highlight object containing information about areas to be highlighted
+    legend : Boolean (default: True)
+        Flag to switch plotting of the legend on or off
+    show : Boolean (default: True)
+        Flag to switch immediate showing of the plot on or off
+    save : Boolean (default: False)
+        Flag to switch saving the created figure after creation on or off
+    save_name: String (default: 'timeinterval')
+        The title of the saved plot.
+    save_path: String (default: None)
+        The path the plot will be saved to.
+        """
     # this dictionary determines which y-position corresponds with which row in the grid
     ordering = {4.0  : 0,
                 3.5  : 0,
@@ -464,6 +501,35 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
 # annotate (optional): boolean to switch channel annotations
 # levels (optional): number of levels in the contour plot
 def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
+    """Plots the values v for channel 'channel' on a scalp as a contour plot.
+
+    Parameters
+    ----------
+    v : [values]
+        list containing the values of the channels
+    channel : [String]
+        list containing the channel names
+    
+    --- optional parameters ---
+    levels : int (default: 25)
+        The number of automatically created levels in the contour plot
+    colormap : matplotlib.colors.colormap (default: a blue-white-red colormap)
+        A colormap to define the color transitions
+    norm : matplotlib.colors.norm (default: values from -10 to 10)
+        A norm to define the min and max values
+    ticks : array([ints])
+        An array with values to define the ticks on the colorbar
+    annotate : Boolean (default: True)
+        Flag to switch channel annotations on or off
+    show : Boolean (default: True)
+        Flag to switch immediate showing of the plot on or off
+    save : Boolean (default: False)
+        Flag to switch saving the created figure after creation on or off
+    save_name: String (default: 'timeinterval')
+        The title of the saved plot.
+    save_path: String (default: None)
+        The path the plot will be saved to.
+        """
     plt.clf()
     
     if colormap is None: colormap=bwr_cmap()
@@ -599,11 +665,16 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
     plt.grid(True)
     
 
-# Adds highlights to the specified axes.
-# obj_highlight: an instance of the Highlight class
-# axes (optional): a list of axes
 def set_highlights(obj_highlight, axes=None):
-    
+    """Sets highlights in form of vertical boxes to an axes
+
+    Parameters
+    ----------
+    obj_highlight : wyrm.plot.Highlight
+        a highlight object containing information about the areas to highlight
+    axes : [matplotlib.Axes] (default: None)
+        list of axes to highlight, if default, all axes of the current figure will be highlighted.
+        """
     if axes is None:
         axes = plt.gcf().axes
     
@@ -635,13 +706,19 @@ def set_labels(xLabel, yLabel, axes=None, draw=True):
         
     if draw: plt.draw()
         
-
-# class for highlights.
-# spans: list of two-element lists "[[start1, end1], ..., [startn, endn]]"
-# color (optional): color of the highlighted area
-# alpha (optional): transparency of the highlighted area
+        
 class Highlight:
-
+    """Class for highlight objects.
+    
+    Attributes
+    ----------
+    spans : [[int,int]...]
+        list containing pairs of ints, representing start and end value of highlighted area
+    color : color
+        the color of the highlighted areas
+    alpha: float
+        the alpha value of the highlighted areas
+    """
     def __init__(self, spans=[], color='#b3b3b3', alpha=0.5):
         for hl in spans:
             if len(hl) != 2:
