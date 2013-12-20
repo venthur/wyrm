@@ -15,10 +15,68 @@ import re
 import numpy as np
 import scipy as sp
 from scipy import signal
+from sklearn.covariance import LedoitWolf as LW
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
+
+def lda_train(x, y, shrink=True):
+    """Train the LDA
+
+    Parameters
+    ----------
+    x : 2d array
+    y : 1d array
+    shrink : Boolean, optional
+
+    Returns
+    -------
+    w : 1d array
+    b : float
+
+    See Also
+    --------
+    lda_apply
+
+    """
+    assert len(np.unique(y)) == 2
+    mu1 = np.mean(x[y == 0], axis=0)
+    mu2 = np.mean(x[y == 1], axis=0)
+    # x' = x - m
+    m = np.empty(x.shape)
+    m[y == 0] = mu1
+    m[y == 1] = mu2
+    x2 = x - m
+    # w = cov(x)^-1(mu2 - mu1)
+    if shrink:
+        covm = LW().fit(x2).covariance_
+    else:
+        covm = np.cov(x2.T)
+    w = np.dot(np.linalg.pinv(covm), (mu2 - mu1))
+    # b = 1/2 x'(mu1 + mu2)
+    b = -0.5 * np.dot(w.T, (mu1 + mu2))
+    return w, b
+
+
+def lda_apply(clf, x):
+    """Apply LDA
+
+    Parameters
+    ----------
+    clf : (1d array, float)
+    x :
+
+    Returns
+    -------
+
+    See Also
+    --------
+    lda_train
+
+    """
+    w, b = clf
+    return np.dot(x, w) + b
 
 
 def swapaxes(dat, ax1, ax2):
