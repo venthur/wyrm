@@ -1374,9 +1374,9 @@ def correct_for_baseline(dat, ival, timeaxis=-2):
     assert dat.axes[timeaxis][0] <= ival[0] <= ival[1]
     mask = (ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < ival[1])
     # take all values from the dat except the ones not fitting the mask
-    # and calculate the average along the sampling axis
-    averages = np.average(dat.data.compress(mask, timeaxis), axis=timeaxis)
-    data = dat.data - np.expand_dims(averages, timeaxis)
+    # and calculate the mean along the sampling axis
+    means = np.mean(dat.data.compress(mask, timeaxis), axis=timeaxis)
+    data = dat.data - np.expand_dims(means, timeaxis)
     return dat.copy(data=data)
 
 
