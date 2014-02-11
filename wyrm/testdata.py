@@ -58,7 +58,6 @@ def create_data_some():
     d.axes[1] = np.array(['Fpz','AF7','AF8','FFC9','FFC10','AF5','AF6','FFC5','FFC6','T7','T8','C3','C4','Cz','TP7','TP8','P1','P2','P7','P8','PO5','PO6','PO7','PO8','Oz'])
     return d
 
-
 def create_epoched_data_ti(epoch_count=4, channel_count=2, steps=100):
     data = np.zeros([epoch_count, steps, channel_count])
     for i in range(epoch_count):

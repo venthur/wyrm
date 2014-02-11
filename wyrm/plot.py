@@ -468,7 +468,6 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     # sort the lists of channels by their x-position
     for l in channel_lists:
         l.sort(key=lambda list: list[1])
-    #print(channel_lists)
     
     # calculate the needed dimensions of the grid
     columns = max(map(len, channel_lists))
@@ -477,18 +476,33 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         if len(l) > 0:
             rows += 1
     #print("rows: " + str(rows) + ", columns: " + str(columns))
-    
+
+    for l in channel_lists:
+        if len(l) > 0:
+            #print(l, len(l))
+            if len(l) == columns:
+                columns += 1
+            break
+
+    print(columns)
     plt.clf()
     gs = gridspec.GridSpec(rows, columns)
-    
+
+    # axis used for sharing axes between channels
+    masterax = None
+
     row = 0
     for l in channel_lists:
         if len(l) > 0:
             for i in range(len(l)):
 
                 col_pos = int(i + ((columns-len(l)) - np.ceil((columns-len(l))/2.)))
-                _subplot_timeinterval(data, gs[row, col_pos], epoch=-1,
-                                      highlights=highlights, legend=legend, channel=l[i][2])
+                if masterax is None:
+                    masterax = _subplot_timeinterval(data, gs[row, col_pos], epoch=-1,
+                                                     highlights=highlights, legend=legend, channel=l[i][2])
+                else:
+                    _subplot_timeinterval(data, gs[row, col_pos], epoch=-1,
+                                          highlights=highlights, legend=legend, channel=l[i][2], shareaxis=masterax)
                 
                 # hide the axes
                 plt.gca().get_xaxis().set_visible(False)
@@ -496,6 +510,8 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 
                 # at this moment just to show what's what
                 plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
+
+                # todo: plot the far right upper corner subplot for showing the axis data stuff
             row += 1
     
     # adjust the spacing
@@ -575,7 +591,7 @@ def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None,
 
 def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
     ax = plt.subplot(position)
-    cb = colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
+    colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
     
     
 def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
@@ -650,10 +666,13 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
 # legend (optional): boolean to switch the legend on or off 
 # channel (optional): used for plotting only one specific channel
-def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None):
+def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None, shareaxis=None):
     
     # plotting of the data
-    plt.subplot(position)
+    if shareaxis is None:
+        plt.subplot(position)
+    else:
+        plt.subplot(position, sharex=shareaxis, sharey=shareaxis)
     
     # epoch is -1 when there are no epochs
     if epoch == -1:
@@ -678,6 +697,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
             plt.legend([data.axes[len(data.axes) - 1][channel]])
     
     plt.grid(True)
+    return plt.gca()
     
 
 def set_highlights(obj_highlight, axes=None):
