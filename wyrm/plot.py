@@ -484,7 +484,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 columns += 1
             break
 
-    print(columns)
+    #print(columns)
     plt.clf()
     gs = gridspec.GridSpec(rows, columns)
 
@@ -512,10 +512,12 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
 
                 # todo: plot the far right upper corner subplot for showing the axis data stuff
+                if row == 0 & i == len(l):
+                    plt.subplot(gs[row, col_pos], shareaxis=masterax, sharey=masterax)
             row += 1
     
     # adjust the spacing
-    plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, hspace=0.2, wspace=0.2)
+    plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
     
     # saving if specified
     if save:
