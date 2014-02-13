@@ -512,8 +512,9 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
 
                 # todo: plot the far right upper corner subplot for showing the axis data stuff
-                if row == 0 & i == len(l):
-                    plt.subplot(gs[row, col_pos], shareaxis=masterax, sharey=masterax)
+                if row == 0 and i == len(l)-1:
+                    plt.subplot(gs[row, columns-1])
+
             row += 1
     
     # adjust the spacing
@@ -668,7 +669,7 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
 # legend (optional): boolean to switch the legend on or off 
 # channel (optional): used for plotting only one specific channel
-def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None, shareaxis=None):
+def _subplot_timeinterval(data, position, epoch, askwhere=None, highlights=None, legend=True, channel=None, shareaxis=None):
     
     # plotting of the data
     if shareaxis is None:
