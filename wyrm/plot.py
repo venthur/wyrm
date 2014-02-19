@@ -239,10 +239,10 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
         # iterate over epochs
         for i in range(len(data.data)):
             pos = int('1' + str(len(data.data)) + str(i+1))
-            _subplot_timeinterval(data, pos, i, highlights, legend)
+            _subplot_timeinterval(data, pos, i, highlights=highlights, legend=legend)
     else:
         pos = 111
-        _subplot_timeinterval(data, pos, -1, highlights, legend)
+        _subplot_timeinterval(data, pos, -1, highlights=highlights, legend=legend)
         
     # add labels
     set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
@@ -669,7 +669,8 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
 # legend (optional): boolean to switch the legend on or off 
 # channel (optional): used for plotting only one specific channel
-def _subplot_timeinterval(data, position, epoch, askwhere=None, highlights=None, legend=True, channel=None, shareaxis=None):
+def _subplot_timeinterval(data, position, epoch, askwhere=None, highlights=None, legend=True, channel=None,
+                          shareaxis=None):
     
     # plotting of the data
     if shareaxis is None:
