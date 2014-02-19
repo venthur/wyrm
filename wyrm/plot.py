@@ -148,8 +148,8 @@ def bwr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
 
-def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval',
-                      save_path=None, channel=None):
+def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=True, save=False,
+                      save_name='timeinterval', save_path=None, channel=None):
     """Plots a simple time interval for all channels in the given data object.
 
     Parameters
@@ -175,31 +175,30 @@ def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False,
     """
     
     plt.clf()
-    # plotting of the data
-    if channel is None:
-        plt.plot(data.axes[0], data.data)
-    else:
-        plt.plot(data.axes[0], data.data[:, channel])
-    
-    # plotting of highlights
-    set_highlights(highlights)
 
-    # labeling of axes
-    set_labels(data.units[0], "$\mu$V", draw=False)
-    
-    # labeling of channels
-    if legend:
-        if channel is None:
-            plt.legend(data.axes[1])
-        else:
-            plt.legend([data.axes[1][channel]])
+    # plotting of the data
+    if askwhere is None:
+        _subplot_timeinterval(data, position=111, epoch=-1, highlights=highlights, legend=legend, channel=channel)
+    else:
+
+        askwhere = np.tile(askwhere, (1, 1))
+        gs = gridspec.GridSpec(2, 1, height_ratios=[12, 1])
+        _subplot_timeinterval(data, position=gs[0, 0], epoch=-1, highlights=highlights, legend=legend, channel=channel)
+
+        plt.gca().tick_params(direction='in', pad=40)
+        plt.subplot(gs[1, 0])
+        plt.imshow(askwhere, aspect='auto', interpolation='none')
+        plt.gca().get_xaxis().set_visible(False)
+        plt.gca().get_yaxis().set_visible(False)
+        # adjust the spacing
+        plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0, wspace=0.1)
     
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name, bbox_inches='tight')
+            plt.savefig(save_name + ".pdf", bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name, bbox_inches='tight')
+            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
         
     plt.grid(True)
     
@@ -253,9 +252,9 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name, bbox_inches='tight')
+            plt.savefig(save_name + ".pdf", bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name, bbox_inches='tight')
+            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
     
     # showing if specified
     if show:
@@ -523,9 +522,9 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name, bbox_inches='tight')
+            plt.savefig(save_name + ".pdf", bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name, bbox_inches='tight')
+            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
     
     # showing if specified
     if show:
@@ -583,9 +582,9 @@ def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None,
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name, bbox_inches='tight')
+            plt.savefig(save_name + ".pdf", bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name, bbox_inches='tight')
+            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
     
     # showing if specified
     if show:
@@ -669,7 +668,7 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
 # legend (optional): boolean to switch the legend on or off 
 # channel (optional): used for plotting only one specific channel
-def _subplot_timeinterval(data, position, epoch, askwhere=None, highlights=None, legend=True, channel=None,
+def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None,
                           shareaxis=None):
     
     # plotting of the data
@@ -692,6 +691,9 @@ def _subplot_timeinterval(data, position, epoch, askwhere=None, highlights=None,
     
     # plotting of highlights
     set_highlights(highlights, axes=[plt.gca()])
+
+    # labeling of axes
+    set_labels(data.units[0], "$\mu$V", draw=True)
     
     # labeling of channels
     if legend:
