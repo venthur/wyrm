@@ -117,6 +117,28 @@ def interpolate_2d(x, y, z):
     return xx, yy, zz
 
 
+def add_subplot_axes(ax, rect):
+    fig = plt.gcf()
+    box = ax.get_position()
+    width = box.width
+    height = box.height
+    inax_position = ax.transAxes.transform(rect[0:2])
+    transfigure = fig.transFigure.inverted()
+    infig_position = transfigure.transform(inax_position)
+    x = infig_position[0]
+    y = infig_position[1]
+    width *= rect[2]
+    height *= rect[3]
+    subax = fig.add_axes([x, y, width, height])
+    x_labelsize = subax.get_xticklabels()[0].get_size()
+    y_labelsize = subax.get_yticklabels()[0].get_size()
+    x_labelsize *= rect[2]**0.5
+    y_labelsize *= rect[3]**0.5
+    subax.xaxis.set_tick_params(labelsize=x_labelsize)
+    subax.yaxis.set_tick_params(labelsize=y_labelsize)
+    return subax
+
+
 def bwr_cmap():
     """Create a linear segmented colormap with transitions from blue over white to red.
 
@@ -174,24 +196,20 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
         A number to specify a single channel, which will then be plotted exclusively
     """
     
-    plt.clf()
+    plt.figure()
 
     # plotting of the data
     if askwhere is None:
-        _subplot_timeinterval(data, position=111, epoch=-1, highlights=highlights, legend=legend, channel=channel)
+        ax0 = _subplot_timeinterval(data, position=[.07, .07, .9, .9], epoch=-1, highlights=highlights,
+                                    legend=legend, channel=channel)
+        ax0.xaxis.labelpad = 0
     else:
+        ax0 = _subplot_timeinterval(data, position=[.07, .12, .9, .85], epoch=-1, highlights=highlights,
+                                    legend=legend, channel=channel)
+        ax1 = _subplot_askwhere(askwhere, position=[.07, .07, .9, .05])
 
-        askwhere = np.tile(askwhere, (1, 1))
-        gs = gridspec.GridSpec(2, 1, height_ratios=[12, 1])
-        _subplot_timeinterval(data, position=gs[0, 0], epoch=-1, highlights=highlights, legend=legend, channel=channel)
-
-        plt.gca().tick_params(direction='in', pad=40)
-        plt.subplot(gs[1, 0])
-        plt.imshow(askwhere, aspect='auto', interpolation='none')
-        plt.gca().get_xaxis().set_visible(False)
-        plt.gca().get_yaxis().set_visible(False)
-        # adjust the spacing
-        plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0, wspace=0.1)
+        ax0.tick_params(axis='x', direction='in', pad=25)
+        ax0.xaxis.labelpad = 0
     
     # saving if specified
     if save:
@@ -205,6 +223,11 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
     # showing if specified
     if show:
         plt.show()
+
+    if askwhere is None:
+        return ax0
+    else:
+        return ax0, ax1
     
     
 def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False,
@@ -670,40 +693,53 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
 # channel (optional): used for plotting only one specific channel
 def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None,
                           shareaxis=None):
-    
+
+    fig = plt.gcf()
+    ax = fig.add_axes(position)
+
     # plotting of the data
-    if shareaxis is None:
-        plt.subplot(position)
-    else:
-        plt.subplot(position, sharex=shareaxis, sharey=shareaxis)
+    #if shareaxis is None:
+    #    plt.subplot(position)
+    #else:
+    #    plt.subplot(position, sharex=shareaxis, sharey=shareaxis)
     
     # epoch is -1 when there are no epochs
     if epoch == -1:
         if channel is None:
-            plt.plot(data.axes[0], data.data)
+            ax.plot(data.axes[0], data.data)
         else:
-            plt.plot(data.axes[0], data.data[:, channel])
+            ax.plot(data.axes[0], data.data[:, channel])
     else:
         if channel is None:
-            plt.plot(data.axes[len(data.axes) - 2], data.data[epoch])
+            ax.plot(data.axes[len(data.axes) - 2], data.data[epoch])
         else:
-            plt.plot(data.axes[len(data.axes) - 2], data.data[epoch, channel])
+            ax.plot(data.axes[len(data.axes) - 2], data.data[epoch, channel])
     
     # plotting of highlights
-    set_highlights(highlights, axes=[plt.gca()])
+    set_highlights(highlights, axes=[ax])
 
     # labeling of axes
-    set_labels(data.units[0], "$\mu$V", draw=True)
+    set_labels(data.units[0], "$\mu$V", draw=False)
     
     # labeling of channels
     if legend:
         if channel is None:
-            plt.legend(data.axes[len(data.axes) - 1])
+            ax.legend(data.axes[len(data.axes) - 1])
         else:
-            plt.legend([data.axes[len(data.axes) - 1][channel]])
+            ax.legend([data.axes[len(data.axes) - 1][channel]])
     
-    plt.grid(True)
-    return plt.gca()
+    ax.grid(True)
+    return ax
+
+
+def _subplot_askwhere(data, position):
+    fig = plt.gcf()
+    ax = fig.add_axes(position)
+    data = np.tile(data, (1, 1))
+    ax.imshow(data, aspect='auto', interpolation='none')
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    return ax
     
 
 def set_highlights(obj_highlight, axes=None):
