@@ -178,7 +178,7 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
     ----------
     data : wyrm.types.Data
         data object containing the data to plot
-    
+
     --- optional parameters ---
     highlights : wyrm.plot.Highlight (default: None)
         Highlight object containing information about areas to be highlighted
@@ -554,15 +554,15 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         plt.show()
     
 
-def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None,
-               annotate=True, show=True, save=False, save_name='system_plot', save_path=None):
-    """Plots the values v for channel 'channel' on a scalp as a contour plot.
+def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
+               annotate=True, show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf'):
+    """Plots the values v for channels 'channels' on a scalp as a contour plot.
 
     Parameters
     ----------
     v : [values]
         list containing the values of the channels
-    channel : [String]
+    channels : [String]
         list containing the channel names
     
     --- optional parameters ---
@@ -585,7 +585,7 @@ def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None,
     save_path: String (default: None)
         The path the plot will be saved to.
         """
-    plt.clf()
+    plt.figure(figsize=[8, 6.5])
     
     if colormap is None:
         colormap = bwr_cmap()
@@ -594,10 +594,8 @@ def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None,
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
     
-    gs = gridspec.GridSpec(1, 2, width_ratios=[10, 1])
-    
-    _subplot_scalp(v, channel, gs[0, 0], levels=levels, annotate=annotate)
-    _subplot_colorbar(gs[0, 1], colormap=colormap, ticks=ticks, norm=norm)
+    ax1 = _subplot_scalp(v, channels, position=[.05, .05, .8, .9], levels=levels, annotate=annotate)
+    ax2 = _subplot_colorbar(position=[.9, .05, .05, .9], colormap=colormap, ticks=ticks, norm=norm)
     
     if show:
         plt.show()
@@ -605,42 +603,46 @@ def plot_scalp(v, channel, levels=25, colormap=None, norm=None, ticks=None,
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
     
     # showing if specified
     if show:
         plt.show()
+
+    return ax1, ax2
     
 
 def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
-    ax = plt.subplot(position)
-    colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
-    
-    
-def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
 
-    channelpos = [tts.channels[c] for c in channel]
+    fig = plt.gcf()
+    ax = fig.add_axes(position)
+    colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
+    return ax
+    
+    
+def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
+
+    fig = plt.gcf()
+    ax = fig.add_axes(position)
+    channelpos = [tts.channels[c] for c in channels]
     points = [calculate_stereographic_projection(i) for i in channelpos]
     x = [i[0] for i in points]
     y = [i[1] for i in points]
     z = v
     xx, yy, zz = interpolate_2d(x, y, z)
     
-    ax1 = plt.subplot(position)
+    #ax.subplot(position)
 
-    ax1.contour(xx, yy, zz, levels, zorder=1, colors="k", norm=norm)
-    ax1.contourf(xx, yy, zz, levels, zorder=1, cmap=bwr_cmap(), norm=norm)
-    
-    #ax_cb1 = plt.gcf().add_axes((0.85, 0.125, 0.03, 0.75))
-    #plt.colorbar(ticks=v)
+    ax.contourf(xx, yy, zz, levels, zorder=1, cmap=bwr_cmap(), norm=norm)
+    ax.contour(xx, yy, zz, levels, zorder=1, colors="k", norm=norm, linewidths=.1)
 
-    ax1.add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
+    ax.add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
     
     # add a nose
-    plt.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=2)
-    plt.plot([0.1, 0], [0.99, 1.1], 'k-', lw=2)
+    ax.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=2)
+    ax.plot([0.1, 0], [0.99, 1.1], 'k-', lw=2)
     
     # add ears
     vertsr = [
@@ -665,23 +667,25 @@ def _subplot_scalp(v, channel, position, levels=25, annotate=True, norm=None):
     pathl = Path(vertsl, codes)
     patchr = patches.PathPatch(pathr, facecolor='none', lw=2)
     patchl = patches.PathPatch(pathl, facecolor='none', lw=2)
-    plt.gca().add_patch(patchr)
-    plt.gca().add_patch(patchl)
+    ax.add_patch(patchr)
+    ax.add_patch(patchl)
     
-    # add markers at channel positions
-    plt.plot(x, y, 'k+', ms=8, mew=1.2)
+    # add markers at channels positions
+    ax.plot(x, y, 'k+', ms=8, mew=1.2)
     
     # set the axes limits, so the figure is centered on the scalp
-    plt.gca().set_ylim([-1.3, 1.3])
-    plt.gca().set_xlim([-1.4, 1.4])
+    ax.set_ylim([-1.3, 1.3])
+    ax.set_xlim([-1.4, 1.4])
     
     # hide the axes
-    plt.gca().get_xaxis().set_visible(False)
-    plt.gca().get_yaxis().set_visible(False)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
     
     if annotate:
-        for i in zip(channel, zip(x, y)):
-            plt.annotate(" " + i[0], i[1])
+        for i in zip(channels, zip(x, y)):
+            ax.annotate(" " + i[0], i[1])
+
+    return ax
             
     
 # adds a timeinterval subplot to the current figure at the specified position.
