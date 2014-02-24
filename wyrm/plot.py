@@ -14,7 +14,6 @@ from scipy import interpolate
 from matplotlib import colorbar
 from matplotlib import colors
 from matplotlib import pyplot as plt
-from matplotlib import gridspec as gridspec
 from matplotlib.path import Path
 from matplotlib import patches as patches
 
@@ -228,7 +227,6 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
         return ax0, ax1
 
 
-#todo: refactor for new subplot functionality
 def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False,
                               save_name='epoched_timeinterval', save_path=None, save_format='pdf'):
     """
@@ -253,14 +251,15 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     save_path: String (default: None)
         The path the plot will be saved to.
     """
-    plt.clf()
+    plt.figure()
     
     # check of data is epoched
     if len(data.data.shape) > 2:
         # iterate over epochs
         for i in range(len(data.data)):
-            pos = int('1' + str(len(data.data)) + str(i+1))
-            _subplot_timeinterval(data, pos, i, highlights=highlights, legend=legend)
+            grid = _calc_grid(len(data.data), 1, .04, .04)
+            #pos = int('1' + str(len(data.data)) + str(i+1))
+            _subplot_timeinterval(data, grid[i], i, highlights=highlights, legend=legend)
     else:
         pos = 111
         _subplot_timeinterval(data, pos, -1, highlights=highlights, legend=legend)
@@ -283,7 +282,6 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
         plt.show()
 
 
-#todo: refactor for new subplot functionality
 def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save_name='system_plot', save_path=None,
                 save_format='pdf'):
 
@@ -490,41 +488,30 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
             
     # sort the lists of channels by their x-position
     for l in channel_lists:
-        l.sort(key=lambda list: list[1])
+        l.sort(key=lambda c_list: c_list[1])
     
     # calculate the needed dimensions of the grid
-    columns = max(map(len, channel_lists))
-    rows = 0
-    for l in channel_lists:
-        if len(l) > 0:
-            rows += 1
-    #print("rows: " + str(rows) + ", columns: " + str(columns))
+    columns = map(len, channel_lists)
+    columns = [value for value in columns if value != 0]
 
-    for l in channel_lists:
-        if len(l) > 0:
-            #print(l, len(l))
-            if len(l) == columns:
-                columns += 1
-            break
+    # add another column on the top right if necessary
+    if columns[0] == max(columns):
+        columns[0] += 1
 
-    plt.clf()
-    gs = gridspec.GridSpec(rows, columns)
+    plt.figure()
+    grid = _calc_centered_grid(columns, hpad=.01, vpad=.01)
 
     # axis used for sharing axes between channels
     masterax = None
 
-    row = 0
+    #row = 0
+    k = 0
     for l in channel_lists:
         if len(l) > 0:
             for i in range(len(l)):
-
-                col_pos = int(i + ((columns-len(l)) - np.ceil((columns-len(l))/2.)))
-                if masterax is None:
-                    masterax = _subplot_timeinterval(data, gs[row, col_pos], epoch=-1,
-                                                     highlights=highlights, legend=legend, channel=l[i][2])
-                else:
-                    _subplot_timeinterval(data, gs[row, col_pos], epoch=-1,
-                                          highlights=highlights, legend=legend, channel=l[i][2], shareaxis=masterax)
+                _subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, legend=legend,
+                                      channel=l[i][2])
+                k += 1
                 
                 # hide the axes
                 plt.gca().get_xaxis().set_visible(False)
@@ -534,13 +521,13 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
 
                 # todo: plot the far right upper corner subplot for showing the axis data stuff
-                if row == 0 and i == len(l)-1:
-                    plt.subplot(gs[row, columns-1])
+                # if row == 0 and i == len(l)-1:
+                #     plt.subplot(gs[row, columns-1])
 
-            row += 1
+            #row += 1
     
     # adjust the spacing
-    plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
+    #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
     
     # saving if specified
     if save:
@@ -759,7 +746,23 @@ def _calc_grid(cols, rows, hpad=.05, vpad=.05):
             grid.append([xi, yj, w, h])
 
     return grid
-    
+
+
+def _calc_centered_grid(cols_list, hpad=.05, vpad=.05):
+    h = (1-((len(cols_list)+1)*vpad))/len(cols_list)
+    w = (1-((max(cols_list)+1)*hpad))/max(cols_list)
+    grid = []
+    col = 1
+    for l in cols_list:
+        yi = 1 - ((col * vpad) + (col * h))
+        for i in range(l):
+            # calculate margin on both sides
+            m = .5 - (((l * w) + ((l-1) * hpad)) / 2)
+            xi = m + (i * hpad) + (i * w)
+            grid.append([xi, yi, w, h])
+        col += 1
+    return grid
+
 
 def set_highlights(obj_highlight, axes=None):
     """Sets highlights in form of vertical boxes to an axes

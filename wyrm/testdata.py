@@ -127,11 +127,19 @@ def compose_package(path, save_format='pdf'):
     # p.plot_tenten(data=create_data_all(), save=True, show=False, save_path=path, save_name="tenten 04")
     t = create_data_scalp()
     p.plot_scalp(t[0], t[1], annotate=True, show=False, save=True, save_name="scalp 01", save_path=path,
-                 save_format=save_format, save_format=save_format)
+                 save_format=save_format)
     p.plot_scalp(t[0], t[1], annotate=False, show=False, save=True, save_name="scalp 02", save_path=path,
-                 save_format=save_format, save_format=save_format)
+                 save_format=save_format)
     # t = create_epoched_data_ti()
     # p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 01', save_path=path)
     # p.plot_epoched_timeinterval(t, legend=False, show=False, save=True, save_name='epoched 02', save_path=path)
     # p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 03', save_path=path,
     #                             highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
+
+
+def grid_test(cols=4, rows=3, hpad=.05, vpad=.05):
+    g = p._calc_grid(cols, rows, hpad, vpad)
+    p.plt.figure()
+    for r in g:
+        p._subplot_timeinterval(create_data_ti(), r, -1)
+    p.plt.show()
