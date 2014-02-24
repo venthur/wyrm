@@ -117,26 +117,26 @@ def interpolate_2d(x, y, z):
     return xx, yy, zz
 
 
-def add_subplot_axes(ax, rect):
-    fig = plt.gcf()
-    box = ax.get_position()
-    width = box.width
-    height = box.height
-    inax_position = ax.transAxes.transform(rect[0:2])
-    transfigure = fig.transFigure.inverted()
-    infig_position = transfigure.transform(inax_position)
-    x = infig_position[0]
-    y = infig_position[1]
-    width *= rect[2]
-    height *= rect[3]
-    subax = fig.add_axes([x, y, width, height])
-    x_labelsize = subax.get_xticklabels()[0].get_size()
-    y_labelsize = subax.get_yticklabels()[0].get_size()
-    x_labelsize *= rect[2]**0.5
-    y_labelsize *= rect[3]**0.5
-    subax.xaxis.set_tick_params(labelsize=x_labelsize)
-    subax.yaxis.set_tick_params(labelsize=y_labelsize)
-    return subax
+# def add_subplot_axes(ax, rect):
+#     fig = plt.gcf()
+#     box = ax.get_position()
+#     width = box.width
+#     height = box.height
+#     inax_position = ax.transAxes.transform(rect[0:2])
+#     transfigure = fig.transFigure.inverted()
+#     infig_position = transfigure.transform(inax_position)
+#     x = infig_position[0]
+#     y = infig_position[1]
+#     width *= rect[2]
+#     height *= rect[3]
+#     subax = fig.add_axes([x, y, width, height])
+#     x_labelsize = subax.get_xticklabels()[0].get_size()
+#     y_labelsize = subax.get_yticklabels()[0].get_size()
+#     x_labelsize *= rect[2]**0.5
+#     y_labelsize *= rect[3]**0.5
+#     subax.xaxis.set_tick_params(labelsize=x_labelsize)
+#     subax.yaxis.set_tick_params(labelsize=y_labelsize)
+#     return subax
 
 
 def bwr_cmap():
@@ -171,7 +171,7 @@ def bwr_cmap():
 
 
 def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=True, save=False,
-                      save_name='timeinterval', save_path=None, channel=None):
+                      save_name='timeinterval', save_path=None, save_format='pdf', channel=None):
     """Plots a simple time interval for all channels in the given data object.
 
     Parameters
@@ -195,8 +195,6 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
     channel: int
         A number to specify a single channel, which will then be plotted exclusively
     """
-    
-    plt.figure()
 
     # plotting of the data
     if askwhere is None:
@@ -214,9 +212,9 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
         
     plt.grid(True)
     
@@ -228,10 +226,11 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
         return ax0
     else:
         return ax0, ax1
-    
-    
+
+
+#todo: refactor for new subplot functionality
 def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False,
-                              save_name='epoched_timeinterval', save_path=None):
+                              save_name='epoched_timeinterval', save_path=None, save_format='pdf'):
     """
     Plots a series of time_intervals with the given epoched data.
 
@@ -275,16 +274,18 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
     
     # showing if specified
     if show:
         plt.show()
 
 
-def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save_name='system_plot', save_path=None):
+#todo: refactor for new subplot functionality
+def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save_name='system_plot', save_path=None,
+                save_format='pdf'):
 
     """Plots all recognized channels on a grid system according to their positions on the scalp.
 
@@ -506,7 +507,6 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 columns += 1
             break
 
-    #print(columns)
     plt.clf()
     gs = gridspec.GridSpec(rows, columns)
 
@@ -545,9 +545,9 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     # saving if specified
     if save:
         if save_path is None:
-            plt.savefig(save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
-            plt.savefig(save_path + save_name + ".pdf", bbox_inches='tight')
+            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
     
     # showing if specified
     if show:
@@ -695,6 +695,7 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
 # legend (optional): boolean to switch the legend on or off 
 # channel (optional): used for plotting only one specific channel
+#todo: reenable shareaxis
 def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None,
                           shareaxis=None):
 

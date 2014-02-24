@@ -112,24 +112,26 @@ def create_tenten_data(channel_count=21, steps=100):
     return dat
 
 
-def compose_package(path):
+def compose_package(path, save_format='pdf'):
     #def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval',
     # save_path=None, channel=None):
     t = create_data_ti()
-    p.plot_timeinterval(t, show=False, save=True, save_name="time interval 01", save_path=path)
-    p.plot_timeinterval(t, show=False, save=True, save_name="time interval 02", save_path=path, legend=False)
+    p.plot_timeinterval(t, show=False, save=True, save_name="time interval 01", save_path=path, save_format=save_format)
+    p.plot_timeinterval(t, show=False, save=True, save_name="time interval 02", save_path=path, legend=False, save_format=save_format)
     p.plot_timeinterval(t, show=False, save=True, save_name="time interval 03", save_path=path,
-                        highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
-    t = create_data_some()
-    p.plot_tenten(data=t, show=False, save=True, save_name="tenten 01", save_path=path)
-    p.plot_tenten(data=t, show=False, save=True, save_name="tenten 02", save_path=path,
-                  highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
-    p.plot_tenten(data=create_data_all(), save=True, show=False, save_path=path, save_name="tenten 04")
+                        highlights=p.Highlight(spans=[[200, 300], [700, 900]]), save_format=save_format)
+    # t = create_data_some()
+    # p.plot_tenten(data=t, show=False, save=True, save_name="tenten 01", save_path=path)
+    # p.plot_tenten(data=t, show=False, save=True, save_name="tenten 02", save_path=path,
+    #               highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
+    # p.plot_tenten(data=create_data_all(), save=True, show=False, save_path=path, save_name="tenten 04")
     t = create_data_scalp()
-    p.plot_scalp(t[0], t[1], annotate=True, show=False, save=True, save_name="scalp 01", save_path=path)
-    p.plot_scalp(t[0], t[1], annotate=False, show=False, save=True, save_name="scalp 02", save_path=path)
-    t = create_epoched_data_ti()
-    p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 01', save_path=path)
-    p.plot_epoched_timeinterval(t, legend=False, show=False, save=True, save_name='epoched 02', save_path=path)
-    p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 03', save_path=path,
-                                highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
+    p.plot_scalp(t[0], t[1], annotate=True, show=False, save=True, save_name="scalp 01", save_path=path,
+                 save_format=save_format, save_format=save_format)
+    p.plot_scalp(t[0], t[1], annotate=False, show=False, save=True, save_name="scalp 02", save_path=path,
+                 save_format=save_format, save_format=save_format)
+    # t = create_epoched_data_ti()
+    # p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 01', save_path=path)
+    # p.plot_epoched_timeinterval(t, legend=False, show=False, save=True, save_name='epoched 02', save_path=path)
+    # p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 03', save_path=path,
+    #                             highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
