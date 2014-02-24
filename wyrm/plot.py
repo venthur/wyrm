@@ -745,6 +745,20 @@ def _subplot_askwhere(data, position):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
     return ax
+
+
+def _calc_grid(cols, rows, hpad=.05, vpad=.05):
+    w = (1-((cols+1)*hpad))/cols
+    h = (1-((rows+1)*vpad))/rows
+
+    grid = []
+    for i in range(cols):
+        for j in range(rows):
+            xi = ((i % cols + 1) * hpad) + (i % cols * w)
+            yj = 1 - (((j % rows + 1) * vpad) + ((j % rows + 1) * h))
+            grid.append([xi, yj, w, h])
+
+    return grid
     
 
 def set_highlights(obj_highlight, axes=None):
