@@ -7,11 +7,11 @@ from scipy.fftpack import rfft, rfftfreq
 from scipy.signal import butter
 
 from wyrm.types import Data
-from wyrm.processing import lfilter, spectrum
+from wyrm.processing import filtfilt, spectrum
 from wyrm.processing import swapaxes
 
 
-class TestLFilter(unittest.TestCase):
+class TestFiltFilt(unittest.TestCase):
 
     def setUp(self):
         # create some data
@@ -32,7 +32,7 @@ class TestLFilter(unittest.TestCase):
         # bandpass around the middle frequency
         fn = self.dat.fs / 2
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
-        ans = lfilter(self.dat, b, a)
+        ans = filtfilt(self.dat, b, a)
         # check if the desired band is not damped
         dat = spectrum(self.dat)
         mask = dat.axes[0] == 7
@@ -42,21 +42,21 @@ class TestLFilter(unittest.TestCase):
         mask = (dat.axes[0] <= 6) & (dat.axes[0] > 8)
         self.assertTrue((dat.data[mask] < .5).all())
 
-    def test_lfilter_copy(self):
-        """lfilter must not modify argument."""
+    def test_filtfilt_copy(self):
+        """filtfilt must not modify argument."""
         cpy = self.dat.copy()
         fn = self.dat.fs / 2
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
-        lfilter(self.dat, b, a)
+        filtfilt(self.dat, b, a)
         self.assertEqual(cpy, self.dat)
 
-    def test_lfilter_swapaxes(self):
-        """lfilter must work with nonstandard timeaxis."""
+    def test_filtfilt_swapaxes(self):
+        """filtfilt must work with nonstandard timeaxis."""
         fn = self.dat.fs / 2
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
-        dat = lfilter(swapaxes(self.dat, 0, 1), b, a, timeaxis=1)
+        dat = filtfilt(swapaxes(self.dat, 0, 1), b, a, timeaxis=1)
         dat = swapaxes(dat, 0, 1)
-        dat2 = lfilter(self.dat, b, a)
+        dat2 = filtfilt(self.dat, b, a)
         self.assertEqual(dat, dat2)
 
 

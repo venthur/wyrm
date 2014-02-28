@@ -15,10 +15,68 @@ import re
 import numpy as np
 import scipy as sp
 from scipy import signal
+from sklearn.covariance import LedoitWolf as LW
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
+
+def lda_train(x, y, shrink=True):
+    """Train the LDA
+
+    Parameters
+    ----------
+    x : 2d array
+    y : 1d array
+    shrink : Boolean, optional
+
+    Returns
+    -------
+    w : 1d array
+    b : float
+
+    See Also
+    --------
+    lda_apply
+
+    """
+    assert len(np.unique(y)) == 2
+    mu1 = np.mean(x[y == 0], axis=0)
+    mu2 = np.mean(x[y == 1], axis=0)
+    # x' = x - m
+    m = np.empty(x.shape)
+    m[y == 0] = mu1
+    m[y == 1] = mu2
+    x2 = x - m
+    # w = cov(x)^-1(mu2 - mu1)
+    if shrink:
+        covm = LW().fit(x2).covariance_
+    else:
+        covm = np.cov(x2.T)
+    w = np.dot(np.linalg.pinv(covm), (mu2 - mu1))
+    # b = 1/2 x'(mu1 + mu2)
+    b = -0.5 * np.dot(w.T, (mu1 + mu2))
+    return w, b
+
+
+def lda_apply(clf, x):
+    """Apply LDA
+
+    Parameters
+    ----------
+    clf : (1d array, float)
+    x :
+
+    Returns
+    -------
+
+    See Also
+    --------
+    lda_train
+
+    """
+    w, b = clf
+    return np.dot(x, w) + b
 
 
 def swapaxes(dat, ax1, ax2):
@@ -522,8 +580,7 @@ def append_epo(dat, dat2, classaxis=0, extra=None):
 
 
 def lfilter(dat, b, a, zi=None, timeaxis=-2):
-    """
-    Filter data using the filter defined by the filter coefficients.
+    """Filter data using the filter defined by the filter coefficients.
 
     This method mainly delegates the call to
     :func:`scipy.signal.lfilter`.
@@ -535,7 +592,7 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
     b : 1-d array
         the numerator coefficient vector
     a : 1-d array
-        the denominator cefficient vector
+        the denominator coefficient vector
     zi : nd array, optional
         the initial conditions for the filter delay. If zi is ``None``
         or not given, initial rest is assumed.
@@ -549,8 +606,8 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
 
     See Also
     --------
-    :func:`scipy.signal.lfilter`, :func:`scipy.signal.butter`,
-    :func:`scipy.signal.butterord`
+    :func:`filtfilt`, :func:`scipy.signal.lfilter`,
+    :func:`scipy.signal.butter`, :func:`scipy.signal.butterord`
 
     Examples
     --------
@@ -598,6 +655,60 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
     else:
         data, zo = signal.lfilter(b, a, dat.data, zi=zi, axis=timeaxis)
         return dat.copy(data=data), zo
+
+
+def filtfilt(dat, b, a, timeaxis=-2):
+    """A forward-backward filter.
+
+    Filter data twice, once forward and once backwards, using the filter
+    defined by the filter coefficients.
+
+    This method mainly delegates the call to
+    :func:`scipy.signal.filtfilt`.
+
+    Parameters
+    ----------
+    dat : Data
+        the data to be filtered
+    b : 1-d array
+        the numerator coefficient vector
+    a : 1-d array
+        the denominator coefficient vector
+    timeaxis : int, optional
+        the axes in ``data`` to filter along to
+
+    Returns
+    -------
+    dat : Data
+        the filtered output
+
+    See Also
+    --------
+    :func:`lfilter`
+
+    Examples
+    --------
+
+    Generate and use a Butterworth bandpass filter for complete
+    (off-line data):
+
+    >>> # the sampling frequency of our data in Hz
+    >>> dat.fs
+    100
+    >>> # calculate the nyquist frequency
+    >>> fn = dat.fs / 2
+    >>> # the desired low and high frequencies in Hz
+    >>> f_low, f_high = 2, 13
+    >>> # the order of the filter
+    >>> butter_ord = 4
+    >>> # calculate the filter coefficients
+    >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
+    >>> filtered = filtfilt(dat, b, a)
+
+    """
+    # TODO: should we use padlen and padtype?
+    data = signal.filtfilt(b, a, dat.data, axis=timeaxis)
+    return dat.copy(data=data)
 
 
 def clear_markers(dat, timeaxis=-2):
@@ -1263,9 +1374,9 @@ def correct_for_baseline(dat, ival, timeaxis=-2):
     assert dat.axes[timeaxis][0] <= ival[0] <= ival[1]
     mask = (ival[0] <= dat.axes[timeaxis]) & (dat.axes[timeaxis] < ival[1])
     # take all values from the dat except the ones not fitting the mask
-    # and calculate the average along the sampling axis
-    averages = np.average(dat.data.compress(mask, timeaxis), axis=timeaxis)
-    data = dat.data - np.expand_dims(averages, timeaxis)
+    # and calculate the mean along the sampling axis
+    means = np.mean(dat.data.compress(mask, timeaxis), axis=timeaxis)
+    data = dat.data - np.expand_dims(means, timeaxis)
     return dat.copy(data=data)
 
 
