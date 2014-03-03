@@ -117,28 +117,6 @@ def interpolate_2d(x, y, z):
     return xx, yy, zz
 
 
-# def add_subplot_axes(ax, rect):
-#     fig = plt.gcf()
-#     box = ax.get_position()
-#     width = box.width
-#     height = box.height
-#     inax_position = ax.transAxes.transform(rect[0:2])
-#     transfigure = fig.transFigure.inverted()
-#     infig_position = transfigure.transform(inax_position)
-#     x = infig_position[0]
-#     y = infig_position[1]
-#     width *= rect[2]
-#     height *= rect[3]
-#     subax = fig.add_axes([x, y, width, height])
-#     x_labelsize = subax.get_xticklabels()[0].get_size()
-#     y_labelsize = subax.get_yticklabels()[0].get_size()
-#     x_labelsize *= rect[2]**0.5
-#     y_labelsize *= rect[3]**0.5
-#     subax.xaxis.set_tick_params(labelsize=x_labelsize)
-#     subax.yaxis.set_tick_params(labelsize=y_labelsize)
-#     return subax
-
-
 def bwr_cmap():
     """Create a linear segmented colormap with transitions from blue over white to red.
 
@@ -194,7 +172,8 @@ def wr_cmap():
 
 
 def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=True, save=False,
-                      save_name='timeinterval', save_path=None, save_format='pdf', channel=None):
+                      save_name='timeinterval', save_path=None, save_format='pdf', channel=None,
+                      position=None):
     """Plots a simple time interval for all channels in the given data object.
 
     Parameters
@@ -219,19 +198,32 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
         A number to specify a single channel, which will then be plotted exclusively
     """
 
-    ax0, ax1 = None
-    # plotting of the data
-    if askwhere is None:
-        ax0 = _subplot_timeinterval(data, position=[.07, .07, .9, .9], epoch=-1, highlights=highlights,
-                                    legend=legend, channel=channel)
-        ax0.xaxis.labelpad = 0
-    else:
-        ax0 = _subplot_timeinterval(data, position=[.07, .12, .9, .85], epoch=-1, highlights=highlights,
-                                    legend=legend, channel=channel)
-        ax1 = _subplot_askwhere(askwhere, position=[.07, .07, .9, .05])
+    rect_ti_solo = [.07, .07, .9, .9]
+    rect_ti_aw = [.07, .12, .9, .85]
+    rect_aw = [.07, .07, .9, .05]
 
-        ax0.tick_params(axis='x', direction='in', pad=25)
-        ax0.xaxis.labelpad = 0
+    if position is None:
+        if askwhere is None:
+            pos_ti = rect_ti_solo
+        else:
+            pos_ti = rect_ti_aw
+            pos_aw = rect_aw
+    else:
+        if askwhere is None:
+            pos_ti = _transform_rect(position, rect_ti_solo)
+        else:
+            pos_ti = _transform_rect(position, rect_ti_aw)
+            pos_aw = _transform_rect(position, rect_aw)
+
+    ax1 = None
+    # plotting of the data
+    ax0 = _subplot_timeinterval(data, position=pos_ti, epoch=-1, highlights=highlights,
+                                legend=legend, channel=channel)
+    ax0.xaxis.labelpad = 0
+    if askwhere is not None:
+        ax1 = _subplot_askwhere(askwhere, position=pos_aw)
+        ax0.tick_params(axis='x', direction='in', pad=30*pos_ti[3])
+        #ax0.xaxis.labelpad = 0
     
     # saving if specified
     if save:
@@ -568,6 +560,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         plt.show()
     
 
+#todo: make scalp positionable
 def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
                annotate=True, show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf'):
     """Plots the values v for channels 'channels' on a scalp as a contour plot.
@@ -608,8 +601,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
     
-    ax1 = _subplot_scalp(v, channels, position=[.05, .05, .8, .9], levels=levels, annotate=annotate)
-    ax2 = _subplot_colorbar(position=[.9, .05, .05, .9], colormap=colormap, ticks=ticks, norm=norm)
+    ax0 = _subplot_scalp(v, channels, position=[.05, .05, .8, .9], levels=levels, annotate=annotate)
+    ax1 = _subplot_colorbar(position=[.9, .05, .05, .9], colormap=colormap, ticks=ticks, norm=norm)
     
     if show:
         plt.show()
@@ -625,7 +618,7 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     if show:
         plt.show()
 
-    return ax1, ax2
+    return ax0, ax1
     
 
 def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
@@ -794,6 +787,15 @@ def _calc_centered_grid(cols_list, hpad=.05, vpad=.05):
             grid.append([xi, yi, w, h])
         col += 1
     return grid
+
+
+def _transform_rect(rect, template):
+    assert len(rect) == len(template) == 4
+    x = rect[0] + (template[0] * rect[2])
+    y = rect[1] + (template[1] * rect[3])
+    w = rect[2] * template[2]
+    h = rect[3] * template[3]
+    return [x, y, w, h]
 
 
 def set_highlights(obj_highlight, set_axes=None):
