@@ -11,6 +11,7 @@ from __future__ import division
 import numpy as np
 from scipy import interpolate
 
+from matplotlib import axes
 from matplotlib import colorbar
 from matplotlib import colors
 from matplotlib import pyplot as plt
@@ -509,8 +510,10 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     for l in channel_lists:
         if len(l) > 0:
             for i in range(len(l)):
-                _subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, legend=legend,
-                                      channel=l[i][2])
+                ax = _subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, legend=legend,
+                                           channel=l[i][2], shareaxis=masterax)
+                if masterax is None:
+                    masterax = ax
                 k += 1
                 
                 # hide the axes
@@ -682,12 +685,17 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
 # highlights (optional): a wyrm.plot.Highlight object to create highlights
 # legend (optional): boolean to switch the legend on or off 
 # channel (optional): used for plotting only one specific channel
-#todo: reenable shareaxis
 def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None,
                           shareaxis=None):
 
     fig = plt.gcf()
-    ax = fig.add_axes(position)
+
+    if shareaxis is None:
+        ax = fig.add_axes(position)
+    else:
+        ax = axes.Axes(fig, position, sharex=shareaxis, sharey=shareaxis)
+        fig.add_axes(ax)
+        # ax.set_aspect('auto', adjustable='box-forced')
 
     # plotting of the data
     #if shareaxis is None:
