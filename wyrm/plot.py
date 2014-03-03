@@ -170,6 +170,29 @@ def bwr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
 
+def wr_cmap():
+    """Create a linear segmented colormap with transitions from white to red.
+
+    Returns
+    -------
+    x : colormap
+        The matplotlib colormap.
+    """
+    cdict = {'red':   [(0.0,   1.0, 1.0),
+                       (0.75,  1.0, 1.0),
+                       (1.0,   .3, .3)],
+
+             'green': [(0.0,   1.0, 1.0),
+                       (0.75,  0.0, 0.0),
+                       (1.0,   0.0, 0.0)],
+
+             'blue':  [(0.0,   1.0, 1.0),
+                       (0.75,  0.0, 0.0),
+                       (1.0,   0.0, 0.0)]}
+
+    return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
+
+
 def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=True, save=False,
                       save_name='timeinterval', save_path=None, save_format='pdf', channel=None):
     """Plots a simple time interval for all channels in the given data object.
@@ -196,6 +219,7 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
         A number to specify a single channel, which will then be plotted exclusively
     """
 
+    ax0, ax1 = None
     # plotting of the data
     if askwhere is None:
         ax0 = _subplot_timeinterval(data, position=[.07, .07, .9, .9], epoch=-1, highlights=highlights,
@@ -716,7 +740,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
             ax.plot(data.axes[len(data.axes) - 2], data.data[epoch, channel])
     
     # plotting of highlights
-    set_highlights(highlights, axes=[ax])
+    set_highlights(highlights, set_axes=[ax])
 
     # labeling of axes
     set_labels(data.units[0], "$\mu$V", draw=False)
@@ -772,18 +796,18 @@ def _calc_centered_grid(cols_list, hpad=.05, vpad=.05):
     return grid
 
 
-def set_highlights(obj_highlight, axes=None):
+def set_highlights(obj_highlight, set_axes=None):
     """Sets highlights in form of vertical boxes to an axes
 
     Parameters
     ----------
     obj_highlight : wyrm.plot.Highlight
         a highlight object containing information about the areas to highlight
-    axes : [matplotlib.Axes] (default: None)
+    set_axes : [matplotlib.Axes] (default: None)
         list of axes to highlight, if default, all axes of the current figure will be highlighted.
         """
-    if axes is None:
-        axes = plt.gcf().axes
+    if set_axes is None:
+        set_axes = plt.gcf().axes
     
     def highlight(start, end, axis, color, alpha):
         axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
@@ -791,7 +815,7 @@ def set_highlights(obj_highlight, axes=None):
     
     # check if obj_highlight is an instance of the Highlight class
     if isinstance(obj_highlight, type(Highlight())):
-        for p in axes:
+        for p in set_axes:
             for hl in obj_highlight.spans:
                 highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
                 
@@ -801,13 +825,13 @@ def set_highlights(obj_highlight, axes=None):
 # ylabels: String to label the y-axis
 # axes (optional): List of matplotlib.Axes to apply the labels on
 # draw (optional): boolean to switch immediate drawing  
-def set_labels(xlabel, ylabel, axes=None, draw=True):
+def set_labels(xlabel, ylabel, set_axes=None, draw=True):
     
-    if axes is None:
-        axes = plt.gcf().axes
+    if set_axes is None:
+        set_axes = plt.gcf().axes
         
     # labeling of axes
-    for ax in axes:
+    for ax in set_axes:
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel, rotation=0)
         
@@ -824,7 +848,8 @@ class Highlight:
         list containing pairs of ints, representing start and end value of highlighted area
     color : color
         the color of the highlighted areas
-    alpha: float
+        (e.g. 'green' or '#b3b3b3')
+    alpha: float (0..1)
         the alpha value of the highlighted areas
     """
     def __init__(self, spans=None, color='#b3b3b3', alpha=0.5):
