@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+#todo: update all docstrings
+#todo: create scalp&timeinterval plot
 
 """Plotting methods.
 
@@ -171,7 +173,7 @@ def wr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
 
-def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=True, save=False,
+def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=True, save=False,
                       save_name='timeinterval', save_path=None, save_format='pdf', channel=None,
                       position=None):
     """Plots a simple time interval for all channels in the given data object.
@@ -199,29 +201,29 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
     """
 
     rect_ti_solo = [.07, .07, .9, .9]
-    rect_ti_aw = [.07, .12, .9, .85]
-    rect_aw = [.07, .07, .9, .05]
+    rect_ti_r2 = [.07, .12, .9, .85]
+    rect_r2 = [.07, .07, .9, .05]
 
     if position is None:
-        if askwhere is None:
+        if r_square is None:
             pos_ti = rect_ti_solo
         else:
-            pos_ti = rect_ti_aw
-            pos_aw = rect_aw
+            pos_ti = rect_ti_r2
+            pos_r2 = rect_r2
     else:
-        if askwhere is None:
+        if r_square is None:
             pos_ti = _transform_rect(position, rect_ti_solo)
         else:
-            pos_ti = _transform_rect(position, rect_ti_aw)
-            pos_aw = _transform_rect(position, rect_aw)
+            pos_ti = _transform_rect(position, rect_ti_r2)
+            pos_r2 = _transform_rect(position, rect_r2)
 
     ax1 = None
     # plotting of the data
     ax0 = _subplot_timeinterval(data, position=pos_ti, epoch=-1, highlights=highlights,
                                 legend=legend, channel=channel)
     ax0.xaxis.labelpad = 0
-    if askwhere is not None:
-        ax1 = _subplot_askwhere(askwhere, position=pos_aw)
+    if r_square is not None:
+        ax1 = _subplot_r_square(r_square, position=pos_r2)
         ax0.tick_params(axis='x', direction='in', pad=30*pos_ti[3])
         #ax0.xaxis.labelpad = 0
     
@@ -238,7 +240,7 @@ def plot_timeinterval(data, askwhere=None, highlights=None, legend=True, show=Tr
     if show:
         plt.show()
 
-    if askwhere is None:
+    if r_square is None:
         return ax0
     else:
         return ax0, ax1
@@ -560,9 +562,8 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         plt.show()
     
 
-#todo: make scalp positionable
-def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
-               annotate=True, show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf'):
+def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True,
+               save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
     """Plots the values v for channels 'channels' on a scalp as a contour plot.
 
     Parameters
@@ -592,7 +593,17 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     save_path: String (default: None)
         The path the plot will be saved to.
         """
+    rect_scalp = [.05, .05, .8, .9]
+    rect_colorbar = [.9, .05, .05, .9]
+
     plt.figure(figsize=[8, 6.5])
+
+    if position is None:
+        pos_scalp = rect_scalp
+        pos_colorbar = rect_colorbar
+    else:
+        pos_scalp = _transform_rect(position, rect_scalp)
+        pos_colorbar = _transform_rect(position, rect_colorbar)
     
     if colormap is None:
         colormap = bwr_cmap()
@@ -601,8 +612,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
     
-    ax0 = _subplot_scalp(v, channels, position=[.05, .05, .8, .9], levels=levels, annotate=annotate)
-    ax1 = _subplot_colorbar(position=[.9, .05, .05, .9], colormap=colormap, ticks=ticks, norm=norm)
+    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
+    ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
     
     if show:
         plt.show()
@@ -614,6 +625,74 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
         else:
             plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
     
+    # showing if specified
+    if show:
+        plt.show()
+
+    return ax0, ax1
+
+
+def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True,
+                  save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
+    rect_scalp = [.05, .05, .8, .9]
+    rect_colorbar = [.9, .05, .05, .9]
+    rect_head = [.065, .0227, .8696, .9091]
+
+    plt.figure(figsize=[16, 13])
+
+    if position is None:
+        #position = [0, 0, 1, 1]
+        pos_scalp = rect_scalp
+        pos_colorbar = rect_colorbar
+    else:
+        pos_scalp = _transform_rect(position, rect_scalp)
+        pos_colorbar = _transform_rect(position, rect_colorbar)
+
+    index_v = np.where(data.axes[0] == time)
+    v = data.data[index_v[0][0]]
+    channels = data.axes[1]
+
+    if colormap is None:
+        colormap = bwr_cmap()
+    if norm is None:
+        norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
+    if ticks is None:
+        ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
+
+    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
+    ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
+
+    # adding the timeinterval plots
+    s = _get_system()
+    channelpos = [s[c] for c in data.axes[1]]
+    points = [calculate_stereographic_projection(i) for i in channelpos]
+    x = [i[0] for i in points]
+    y = [i[1] for i in points]
+
+    for c in channels_ti:
+        if c in s:
+
+
+            xy = (s[c][0] + 6.5) * (1/13), (s[c][1] + 5) * (1/9)
+            pos_c = [xy[0] - scale_ti/2, xy[1] - scale_ti/2, scale_ti, scale_ti]
+
+            pos_head = _transform_rect(pos_scalp, rect_head)
+
+            pos_c = _transform_rect(pos_head, pos_c)
+
+            _subplot_timeinterval(data, position=pos_c, epoch=-1, highlights=None, legend=False,
+                                  channel=np.where(data.axes[1] == c)[0][0], shareaxis=None)
+
+    if show:
+        plt.show()
+
+    # saving if specified
+    if save:
+        if save_path is None:
+            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
+        else:
+            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
+
     # showing if specified
     if show:
         plt.show()
@@ -681,8 +760,8 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
     ax.plot(x, y, 'k+', ms=8, mew=1.2)
     
     # set the axes limits, so the figure is centered on the scalp
-    ax.set_ylim([-1.3, 1.3])
-    ax.set_xlim([-1.4, 1.4])
+    ax.set_ylim([-1.05, 1.15])
+    ax.set_xlim([-1.15, 1.15])
     
     # hide the axes
     ax.get_xaxis().set_visible(False)
@@ -749,7 +828,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
     return ax
 
 
-def _subplot_askwhere(data, position):
+def _subplot_r_square(data, position):
     fig = plt.gcf()
     ax = fig.add_axes(position)
     data = np.tile(data, (1, 1))
@@ -796,6 +875,153 @@ def _transform_rect(rect, template):
     w = rect[2] * template[2]
     h = rect[3] * template[3]
     return [x, y, w, h]
+
+
+def _get_system():
+    system = {
+        'Fpz': (0.0, 4.0),
+        'Fp1': (-4.0, 3.5),
+        'AFp1': (-1.5, 3.5),
+        'AFp2': (1.5, 3.5),
+        'Fp2': (4.0, 3.5),
+        'AF7': (-4.0, 3.0),
+        'AF5': (-3.0, 3.0),
+        'AF3': (-2.0, 3.0),
+        'AFz': (0.0, 3.0),
+        'AF4': (2.0, 3.0),
+        'AF6': (3.0, 3.0),
+        'AF8': (4.0, 3.0),
+        'FAF5': (-2.5, 2.5),
+        'FAF1': (-0.65, 2.5),
+        'FAF2': (0.65, 2.5),
+        'FAF6': (2.5, 2.5),
+        'F9': (-5.0, 2.0),
+        'F7': (-4.0, 2.0),
+        'F5': (-3.0, 2.0),
+        'F3': (-2.0, 2.0),
+        'F1': (-1.0, 2.0),
+        'Fz': (0.0, 2.0),
+        'F2': (1.0, 2.0),
+        'F4': (2.0, 2.0),
+        'F6': (3.0, 2.0),
+        'F8': (4.0, 2.0),
+        'F10': (5.0, 2.0),
+        'FFC9': (-4.5, 1.5),
+        'FFC7': (-3.5, 1.5),
+        'FFC5': (-2.5, 1.5),
+        'FFC3': (-1.5, 1.5),
+        'FFC1': (-0.5, 1.5),
+        'FFC2': (0.5, 1.5),
+        'FFC4': (1.5, 1.5),
+        'FFC6': (2.5, 1.5),
+        'FFC8': (3.5, 1.5),
+        'FFC10': (4.5, 1.5),
+        'FT9': (-5.0, 1.0),
+        'FT7': (-4.0, 1.0),
+        'FC5': (-3.0, 1.0),
+        'FC3': (-2.0, 1.0),
+        'FC1': (-1.0, 1.0),
+        'FCz': (0.0, 1.0),
+        'FC2': (1.0, 1.0),
+        'FC4': (2.0, 1.0),
+        'FC6': (3.0, 1.0),
+        'FT8': (4.0, 1.0),
+        'FT10': (5.0, 1.0),
+        'CFC9': (-4.5, 0.5),
+        'CFC7': (-3.5, 0.5),
+        'CFC5': (-2.5, 0.5),
+        'CFC3': (-1.5, 0.5),
+        'CFC1': (-0.5, 0.5),
+        'CFC2': (0.5, 0.5),
+        'CFC4': (1.5, 0.5),
+        'CFC6': (2.5, 0.5),
+        'CFC8': (3.5, 0.5),
+        'CFC10': (4.5, 0.5),
+        'T9': (-5.0, 0.0),
+        'T7': (-4.0, 0.0),
+        'C5': (-3.0, 0.0),
+        'C3': (-2.0, 0.0),
+        'C1': (-1.0, 0.0),
+        'Cz': (0.0, 0.0),
+        'C2': (1.0, 0.0),
+        'C4': (2.0, 0.0),
+        'C6': (3.0, 0.0),
+        'T8': (4.0, 0.0),
+        'T10': (5.0, 0.0),
+        'A1': (-5.0, -0.5),
+        'CCP7': (-3.5, -0.5),
+        'CCP5': (-2.5, -0.5),
+        'CCP3': (-1.5, -0.5),
+        'CCP1': (-0.5, -0.5),
+        'CCP2': (0.5, -0.5),
+        'CCP4': (1.5, -0.5),
+        'CCP6': (2.5, -0.5),
+        'CCP8': (3.5, -0.5),
+        'A2': (5.0, -0.5),
+        'TP9': (-5.0, -1.0),
+        'TP7': (-4.0, -1.0),
+        'CP5': (-3.0, -1.0),
+        'CP3': (-2.0, -1.0),
+        'CP1': (-1.0, -1.0),
+        'CPz': (0.0, -1.0),
+        'CP2': (1.0, -1.0),
+        'CP4': (2.0, -1.0),
+        'CP6': (3.0, -1.0),
+        'TP8': (4.0, -1.0),
+        'TP10': (5.0, -1.0),
+        'PCP9': (-4.5, -1.5),
+        'PCP7': (-3.5, -1.5),
+        'PCP5': (-2.5, -1.5),
+        'PCP3': (-1.5, -1.5),
+        'PCP1': (-0.5, -1.5),
+        'PCP2': (0.5, -1.5),
+        'PCP4': (1.5, -1.5),
+        'PCP6': (2.5, -1.5),
+        'PCP8': (3.5, -1.5),
+        'PCP10': (4.5, -1.5),
+        'P9': (-5.0, -2.0),
+        'P7': (-4.0, -2.0),
+        'P5': (-3.0, -2.0),
+        'P3': (-2.0, -2.0),
+        'P1': (-1.0, -2.0),
+        'Pz': (0.0, -2.0),
+        'P2': (1.0, -2.0),
+        'P4': (2.0, -2.0),
+        'P6': (3.0, -2.0),
+        'P8': (4.0, -2.0),
+        'P10': (5.0, -2.0),
+        'PPO7': (-4.5, -2.5),
+        'PPO5': (-3.0, -2.5),
+        'PPO3': (-2.0, -2.5),
+        'PPO1': (-0.65, -2.5),
+        'PPO2': (0.65, -2.5),
+        'PPO4': (2.0, -2.5),
+        'PPO6': (3.0, -2.5),
+        'PPO8': (4.5, -2.5),
+        'PO9': (-5.5, -2.6),
+        'PO7': (-4.0, -3),
+        'PO5': (-3.0, -3),
+        'PO3': (-2.0, -3),
+        'PO1': (-1.0, -3),
+        'POz': (0.0, -3),
+        'PO2': (1.0, -3),
+        'PO4': (2.0, -3),
+        'PO6': (3.0, -3),
+        'PO8': (4.0, -3),
+        'PO10': (5.5, -2.6),
+        'OPO1': (-1.5, -3.5),
+        'OPO2': (1.5, -3.5),
+        'O9': (-6.5, -3.5),
+        'O1': (-4.0, -3.5),
+        'O2': (4.0, -3.5),
+        'O10': (6.5, -3.5),
+        'Oz': (0.0, -4.0),
+        'OI1': (1.5, -4.5),
+        'OI2': (-1.5, -4.5),
+        'I1': (1.0, -5),
+        'Iz': (0.0, -5),
+        'I2': (-1, -5)}
+    return system
 
 
 def set_highlights(obj_highlight, set_axes=None):
