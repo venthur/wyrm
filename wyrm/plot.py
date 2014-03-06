@@ -127,25 +127,25 @@ def bwr_cmap():
     x : colormap
         The matplotlib colormap.
     """
-    cdict = {'red':   [(0.0,   0.0, 0.0),
-                       (0.25,  0.0, 0.0),
-                       (0.5,   1.0, 1.0),
-                       (0.75,  1.0, 1.0),
-                       (1.0,   0.5, 0.5)],
-    
-             'green': [(0.0,   0.0, 0.0),
-                       (0.15,  0.0, 0.0),
-                       (0.25,  1.0, 1.0),
-                       (0.5,   1.0, 1.0),
-                       (0.75,  1.0, 1.0),
-                       (0.85,  0.0, 0.0),
-                       (1.0,   0.0, 0.0)],
-    
-             'blue':  [(0.0,   0.5, 0.5),
-                       (0.25,  1.0, 1.0),
-                       (0.5,   1.0, 1.0),
-                       (0.75,  0.0, 0.0),
-                       (1.0,   0.0, 0.0)]}
+    cdict = {'red': [(0.0, 0.0, 0.0),
+                     (0.25, 0.0, 0.0),
+                     (0.5, 1.0, 1.0),
+                     (0.75, 1.0, 1.0),
+                     (1.0, 0.5, 0.5)],
+
+             'green': [(0.0, 0.0, 0.0),
+                       (0.15, 0.0, 0.0),
+                       (0.25, 1.0, 1.0),
+                       (0.5, 1.0, 1.0),
+                       (0.75, 1.0, 1.0),
+                       (0.85, 0.0, 0.0),
+                       (1.0, 0.0, 0.0)],
+
+             'blue': [(0.0, 0.5, 0.5),
+                      (0.25, 1.0, 1.0),
+                      (0.5, 1.0, 1.0),
+                      (0.75, 0.0, 0.0),
+                      (1.0, 0.0, 0.0)]}
 
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
@@ -158,17 +158,17 @@ def wr_cmap():
     x : colormap
         The matplotlib colormap.
     """
-    cdict = {'red':   [(0.0,   1.0, 1.0),
-                       (0.75,  1.0, 1.0),
-                       (1.0,   .3, .3)],
+    cdict = {'red': [(0.0, 1.0, 1.0),
+                     (0.75, 1.0, 1.0),
+                     (1.0, .3, .3)],
 
-             'green': [(0.0,   1.0, 1.0),
-                       (0.75,  0.0, 0.0),
-                       (1.0,   0.0, 0.0)],
+             'green': [(0.0, 1.0, 1.0),
+                       (0.75, 0.0, 0.0),
+                       (1.0, 0.0, 0.0)],
 
-             'blue':  [(0.0,   1.0, 1.0),
-                       (0.75,  0.0, 0.0),
-                       (1.0,   0.0, 0.0)]}
+             'blue': [(0.0, 1.0, 1.0),
+                      (0.75, 0.0, 0.0),
+                      (1.0, 0.0, 0.0)]}
 
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
@@ -224,18 +224,18 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
     ax0.xaxis.labelpad = 0
     if r_square is not None:
         ax1 = _subplot_r_square(r_square, position=pos_r2)
-        ax0.tick_params(axis='x', direction='in', pad=30*pos_ti[3])
+        ax0.tick_params(axis='x', direction='in', pad=30 * pos_ti[3])
         #ax0.xaxis.labelpad = 0
-    
+
     # saving if specified
     if save:
         if save_path is None:
             plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
             plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-        
+
     plt.grid(True)
-    
+
     # showing if specified
     if show:
         plt.show()
@@ -271,7 +271,7 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
         The path the plot will be saved to.
     """
     plt.figure()
-    
+
     # check of data is epoched
     if len(data.data.shape) > 2:
         # iterate over epochs
@@ -282,20 +282,20 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     else:
         pos = 111
         _subplot_timeinterval(data, pos, -1, highlights=highlights, legend=legend)
-        
+
     # add labels
     set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
-        
+
     # adjust the spacing
     plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.1, hspace=0.3, wspace=0.3)
-    
+
     # saving if specified
     if save:
         if save_path is None:
             plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
             plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-    
+
     # showing if specified
     if show:
         plt.show()
@@ -303,7 +303,6 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
 
 def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save_name='system_plot', save_path=None,
                 save_format='pdf'):
-
     """Plots all recognized channels on a grid system according to their positions on the scalp.
 
     Parameters
@@ -346,7 +345,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 -4.0: 15,
                 -4.5: 15,
                 -5.0: 16}
-    
+
     # all the channels with their x- and y-position
     system = {
         'Fpz': (0.0, 4.0),
@@ -491,12 +490,12 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         'I1': (1.0, -5),
         'Iz': (0.0, -5),
         'I2': (-1, -5)}
-    
+
     # create list with 17 empty lists. one for every potential row of channels.
     channel_lists = []
     for i in range(18):
         channel_lists.append([])
-    
+
     # distribute the channels to the lists by their y-position
     count = 0
     for c in data.axes[1]:
@@ -504,11 +503,11 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
             # entries in channel_lists: (<channel_name>, <x-position>, <position in Data>
             channel_lists[ordering[system[c][1]]].append((c, system[c][0], count))
         count += 1
-            
+
     # sort the lists of channels by their x-position
     for l in channel_lists:
         l.sort(key=lambda c_list: c_list[1])
-    
+
     # calculate the needed dimensions of the grid
     columns = map(len, channel_lists)
     columns = [value for value in columns if value != 0]
@@ -533,11 +532,11 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 if masterax is None:
                     masterax = ax
                 k += 1
-                
+
                 # hide the axes
                 plt.gca().get_xaxis().set_visible(False)
                 plt.gca().get_yaxis().set_visible(False)
-                
+
                 # at this moment just to show what's what
                 plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
 
@@ -545,22 +544,22 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 # if row == 0 and i == len(l)-1:
                 #     plt.subplot(gs[row, columns-1])
 
-            #row += 1
-    
+                #row += 1
+
     # adjust the spacing
     #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
-    
+
     # saving if specified
     if save:
         if save_path is None:
             plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
             plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-    
+
     # showing if specified
     if show:
         plt.show()
-    
+
 
 def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True,
                save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
@@ -604,27 +603,27 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     else:
         pos_scalp = _transform_rect(position, rect_scalp)
         pos_colorbar = _transform_rect(position, rect_colorbar)
-    
+
     if colormap is None:
         colormap = bwr_cmap()
     if norm is None:
         norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
-    
+
     ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
     ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
-    
+
     if show:
         plt.show()
-    
+
     # saving if specified
     if save:
         if save_path is None:
             plt.savefig(save_name + "." + save_format, bbox_inches='tight')
         else:
             plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-    
+
     # showing if specified
     if show:
         plt.show()
@@ -632,8 +631,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     return ax0, ax1
 
 
-def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True,
-                  save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
+def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True,
+                  show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
     rect_head = [.065, .0227, .8696, .9091]
@@ -664,21 +663,30 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
 
     # adding the timeinterval plots
     s = _get_system()
-    channelpos = [s[c] for c in data.axes[1]]
+    channelpos = [tts.channels[c] for c in data.axes[1]]
     points = [calculate_stereographic_projection(i) for i in channelpos]
     x = [i[0] for i in points]
     y = [i[1] for i in points]
 
     for c in channels_ti:
         if c in s:
+            minx = -1.15
+            maxx = 1.15
+            miny = -1.05
+            maxy = 1.15
+            xy = (tts.channels[c][0] + np.abs(minx)) * (1 / (np.abs(minx) + maxx)), \
+                tts.channels[c][1] + (np.abs(miny)) * (1 / (np.abs(miny) + maxy))
+            print('xy: ' + str(xy))
 
+            pos_c = [xy[0] - (scale_ti / 2), xy[1] - (scale_ti / 2), scale_ti, scale_ti]
 
-            xy = (s[c][0] + 6.5) * (1/13), (s[c][1] + 5) * (1/9)
-            pos_c = [xy[0] - scale_ti/2, xy[1] - scale_ti/2, scale_ti, scale_ti]
-
+            print('pos_scalp: ' + str(pos_scalp))
             pos_head = _transform_rect(pos_scalp, rect_head)
 
-            pos_c = _transform_rect(pos_head, pos_c)
+            print('pos_head: ' + str(pos_head))
+
+            #pos_c = _transform_rect(pos_head, pos_c)
+            print('pos_c: ' + str(pos_c))
 
             _subplot_timeinterval(data, position=pos_c, epoch=-1, highlights=None, legend=False,
                                   channel=np.where(data.axes[1] == c)[0][0], shareaxis=None)
@@ -698,18 +706,16 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
         plt.show()
 
     return ax0, ax1
-    
+
 
 def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
-
     fig = plt.gcf()
     ax = fig.add_axes(position)
     colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
     return ax
-    
-    
-def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
 
+
+def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
     fig = plt.gcf()
     ax = fig.add_axes(position)
     channelpos = [tts.channels[c] for c in channels]
@@ -718,31 +724,31 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
     y = [i[1] for i in points]
     z = v
     xx, yy, zz = interpolate_2d(x, y, z)
-    
+
     #ax.subplot(position)
 
     ax.contourf(xx, yy, zz, levels, zorder=1, cmap=bwr_cmap(), norm=norm)
     ax.contour(xx, yy, zz, levels, zorder=1, colors="k", norm=norm, linewidths=.1)
 
     ax.add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
-    
+
     # add a nose
     ax.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=2)
     ax.plot([0.1, 0], [0.99, 1.1], 'k-', lw=2)
-    
+
     # add ears
     vertsr = [
-        (0.99, 0.13),  # P0
-        (1.10, 0.3),  # P1
-        (1.10, -0.3),  # P2
+        (0.99, 0.13), # P0
+        (1.10, 0.3), # P1
+        (1.10, -0.3), # P2
         (0.99, -0.13)]  # P3
-    
+
     vertsl = [
-        (-0.99, 0.13),  # P0
-        (-1.10, 0.3),  # P1
-        (-1.10, -0.3),  # P2
+        (-0.99, 0.13), # P0
+        (-1.10, 0.3), # P1
+        (-1.10, -0.3), # P2
         (-0.99, -0.13)]  # P3
-    
+
     # in combination with Path this creates a bezier-curve with 2 fix-points and 2 control-points
     codes = [Path.MOVETO,
              Path.CURVE4,
@@ -755,25 +761,25 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
     patchl = patches.PathPatch(pathl, facecolor='none', lw=2)
     ax.add_patch(patchr)
     ax.add_patch(patchl)
-    
+
     # add markers at channels positions
     ax.plot(x, y, 'k+', ms=8, mew=1.2)
-    
+
     # set the axes limits, so the figure is centered on the scalp
     ax.set_ylim([-1.05, 1.15])
     ax.set_xlim([-1.15, 1.15])
-    
+
     # hide the axes
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
-    
+
     if annotate:
         for i in zip(channels, zip(x, y)):
             ax.annotate(" " + i[0], i[1])
 
     return ax
-            
-    
+
+
 # adds a timeinterval subplot to the current figure at the specified position.
 # data: wyrm.types.Data
 # position: position of the subplot
@@ -783,7 +789,6 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
 # channel (optional): used for plotting only one specific channel
 def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None,
                           shareaxis=None):
-
     fig = plt.gcf()
 
     if shareaxis is None:
@@ -798,7 +803,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
     #    plt.subplot(position)
     #else:
     #    plt.subplot(position, sharex=shareaxis, sharey=shareaxis)
-    
+
     # epoch is -1 when there are no epochs
     if epoch == -1:
         if channel is None:
@@ -810,20 +815,20 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
             ax.plot(data.axes[len(data.axes) - 2], data.data[epoch])
         else:
             ax.plot(data.axes[len(data.axes) - 2], data.data[epoch, channel])
-    
+
     # plotting of highlights
     set_highlights(highlights, set_axes=[ax])
 
     # labeling of axes
     set_labels(data.units[0], "$\mu$V", draw=False)
-    
+
     # labeling of channels
     if legend:
         if channel is None:
             ax.legend(data.axes[len(data.axes) - 1])
         else:
             ax.legend([data.axes[len(data.axes) - 1][channel]])
-    
+
     ax.grid(True)
     return ax
 
@@ -839,8 +844,8 @@ def _subplot_r_square(data, position):
 
 
 def _calc_grid(cols, rows, hpad=.05, vpad=.05):
-    w = (1-((cols+1)*hpad))/cols
-    h = (1-((rows+1)*vpad))/rows
+    w = (1 - ((cols + 1) * hpad)) / cols
+    h = (1 - ((rows + 1) * vpad)) / rows
 
     grid = []
     for i in range(cols):
@@ -853,15 +858,15 @@ def _calc_grid(cols, rows, hpad=.05, vpad=.05):
 
 
 def _calc_centered_grid(cols_list, hpad=.05, vpad=.05):
-    h = (1-((len(cols_list)+1)*vpad))/len(cols_list)
-    w = (1-((max(cols_list)+1)*hpad))/max(cols_list)
+    h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
+    w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
     grid = []
     col = 1
     for l in cols_list:
         yi = 1 - ((col * vpad) + (col * h))
         for i in range(l):
             # calculate margin on both sides
-            m = .5 - (((l * w) + ((l-1) * hpad)) / 2)
+            m = .5 - (((l * w) + ((l - 1) * hpad)) / 2)
             xi = m + (i * hpad) + (i * w)
             grid.append([xi, yi, w, h])
         col += 1
@@ -1036,37 +1041,36 @@ def set_highlights(obj_highlight, set_axes=None):
         """
     if set_axes is None:
         set_axes = plt.gcf().axes
-    
+
     def highlight(start, end, axis, color, alpha):
         axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
         # the edges of the box are at the moment white. transparent edges would be better.
-    
+
     # check if obj_highlight is an instance of the Highlight class
     if isinstance(obj_highlight, type(Highlight())):
         for p in set_axes:
             for hl in obj_highlight.spans:
                 highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
-                
-                
+
+
 # Adds labels to the specified axes (default: all axes of current figure)
 # xlabels: String to label the x-axis
 # ylabels: String to label the y-axis
 # axes (optional): List of matplotlib.Axes to apply the labels on
 # draw (optional): boolean to switch immediate drawing  
 def set_labels(xlabel, ylabel, set_axes=None, draw=True):
-    
     if set_axes is None:
         set_axes = plt.gcf().axes
-        
+
     # labeling of axes
     for ax in set_axes:
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel, rotation=0)
-        
+
     if draw:
         plt.draw()
-        
-        
+
+
 class Highlight:
     """Class for highlight objects.
     
@@ -1080,6 +1084,7 @@ class Highlight:
     alpha: float (0..1)
         the alpha value of the highlighted areas
     """
+
     def __init__(self, spans=None, color='#b3b3b3', alpha=0.5):
         if spans is None:
             spans = []
