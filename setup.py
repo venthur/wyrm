@@ -15,7 +15,7 @@ setup(
     author_email='bastian.venthur@tu-berlin.de',
     url='http://venthur.github.io/wyrm/',
     download_url='http://github.com/venthur/wyrm/',
-    license='GPL2',
+    license='MIT',
     platforms='any',
     packages=['wyrm'],
     classifiers=[
