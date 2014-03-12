@@ -182,8 +182,6 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
     ----------
     data : wyrm.types.Data
         data object containing the data to plot
-
-    --- optional parameters ---
     highlights : wyrm.plot.Highlight (default: None)
         Highlight object containing information about areas to be highlighted
     legend : Boolean (default: True)
@@ -255,8 +253,6 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     ----------
     data : wyrm.types.Data
         data object containing the data to plot
-
-    --- optional parameters ---
     highlights : wyrm.plot.Highlight (default: None)
         Highlight object containing information about areas to be highlighted
     legend : Boolean (default: True)
@@ -309,8 +305,6 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     ----------
     data : wyrm.types.Data
         data object containing the data to plot
-    
-    --- optional parameters ---
     highlights : wyrm.plot.Highlight (default: None)
         Highlight object containing information about areas to be highlighted
     legend : Boolean (default: True)
@@ -571,8 +565,6 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
         list containing the values of the channels
     channels : [String]
         list containing the channel names
-    
-    --- optional parameters ---
     levels : int (default: 25)
         The number of automatically created levels in the contour plot
     colormap : matplotlib.colors.colormap (default: a blue-white-red colormap)
@@ -635,12 +627,10 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
                   show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
-    rect_head = [.065, .0227, .8696, .9091]
 
     plt.figure(figsize=[16, 13])
 
     if position is None:
-        #position = [0, 0, 1, 1]
         pos_scalp = rect_scalp
         pos_colorbar = rect_colorbar
     else:
@@ -663,33 +653,33 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
 
     # adding the timeinterval plots
     s = _get_system()
-    channelpos = [tts.channels[c] for c in data.axes[1]]
-    points = [calculate_stereographic_projection(i) for i in channelpos]
-    x = [i[0] for i in points]
-    y = [i[1] for i in points]
 
     for c in channels_ti:
         if c in s:
+
+            # generating the channel position on the scalp
+            channelpos = tts.channels[c]
+            points = calculate_stereographic_projection(channelpos)
+
+            # dirty: these are the x and y limits of the scalp axes
             minx = -1.15
             maxx = 1.15
-            miny = -1.05
+            miny = -1.10
             maxy = 1.15
-            xy = (tts.channels[c][0] + np.abs(minx)) * (1 / (np.abs(minx) + maxx)), \
-                tts.channels[c][1] + (np.abs(miny)) * (1 / (np.abs(miny) + maxy))
-            print('xy: ' + str(xy))
+
+            # transformation of karth. to relative coordinates
+            xy = (points[0] + (np.abs(minx))) * (1 / (np.abs(minx) + maxx)), \
+                 (points[1] + (np.abs(miny))) * (1 / (np.abs(miny) + maxy))
 
             pos_c = [xy[0] - (scale_ti / 2), xy[1] - (scale_ti / 2), scale_ti, scale_ti]
 
-            print('pos_scalp: ' + str(pos_scalp))
-            pos_head = _transform_rect(pos_scalp, rect_head)
-
-            print('pos_head: ' + str(pos_head))
-
-            #pos_c = _transform_rect(pos_head, pos_c)
-            print('pos_c: ' + str(pos_c))
+            # transformation to fit into the scalp part of the plot
+            pos_c = _transform_rect(pos_scalp, pos_c)
 
             _subplot_timeinterval(data, position=pos_c, epoch=-1, highlights=None, legend=False,
                                   channel=np.where(data.axes[1] == c)[0][0], shareaxis=None)
+        else:
+            print('The channel "' + c + '" was not found in the tenten-system.')
 
     if show:
         plt.show()
@@ -738,15 +728,15 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
 
     # add ears
     vertsr = [
-        (0.99, 0.13), # P0
-        (1.10, 0.3), # P1
-        (1.10, -0.3), # P2
+        (0.99, 0.13),  # P0
+        (1.10, 0.3),  # P1
+        (1.10, -0.3),  # P2
         (0.99, -0.13)]  # P3
 
     vertsl = [
-        (-0.99, 0.13), # P0
-        (-1.10, 0.3), # P1
-        (-1.10, -0.3), # P2
+        (-0.99, 0.13),  # P0
+        (-1.10, 0.3),  # P1
+        (-1.10, -0.3),  # P2
         (-0.99, -0.13)]  # P3
 
     # in combination with Path this creates a bezier-curve with 2 fix-points and 2 control-points
