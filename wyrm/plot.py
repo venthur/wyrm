@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 #todo: update all docstrings
-#todo: create scalp&timeinterval plot
 
 """Plotting methods.
 
@@ -181,7 +180,9 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
     Parameters
     ----------
     data : wyrm.types.Data
-        data object containing the data to plot
+        Data object containing the data to plot
+    r_square : [values]
+        List containing r_squared values to be plotted beneath the main plot.
     highlights : wyrm.plot.Highlight (default: None)
         Highlight object containing information about areas to be highlighted
     legend : Boolean (default: True)
@@ -190,12 +191,17 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
         Flag to switch immediate showing of the plot on or off
     save : Boolean (default: False)
         Flag to switch saving the created figure after creation on or off
-    save_name: String (default: 'timeinterval')
+    save_name : String (default: 'timeinterval')
         The title of the saved plot.
-    save_path: String (default: None)
+    save_path : String (default: None)
         The path the plot will be saved to.
-    channel: int
+    save_format : String (default: 'pdf')
+        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
+        raw, rgba, svg, svgz, tif, tiff
+    channel : int
         A number to specify a single channel, which will then be plotted exclusively
+    position : [x, y, width, height] (default: None)
+        A Rectangle that limits the plot to its boundaries.
     """
 
     rect_ti_solo = [.07, .07, .9, .9]
@@ -265,6 +271,9 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
         The title of the saved plot.
     save_path: String (default: None)
         The path the plot will be saved to.
+    save_format : String (default: 'pdf')
+        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
+        raw, rgba, svg, svgz, tif, tiff
     """
     plt.figure()
 
@@ -304,7 +313,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     Parameters
     ----------
     data : wyrm.types.Data
-        data object containing the data to plot
+        Data object containing the data to plot
     highlights : wyrm.plot.Highlight (default: None)
         Highlight object containing information about areas to be highlighted
     legend : Boolean (default: True)
@@ -317,7 +326,10 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         The title of the saved plot.
     save_path: String (default: None)
         The path the plot will be saved to.
-        """
+    save_format : String (default: 'pdf')
+        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
+        raw, rgba, svg, svgz, tif, tiff
+    """
     # this dictionary determines which y-position corresponds with which row in the grid
     ordering = {4.0: 0,
                 3.5: 0,
@@ -341,149 +353,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 -5.0: 16}
 
     # all the channels with their x- and y-position
-    system = {
-        'Fpz': (0.0, 4.0),
-        'Fp1': (-4.0, 3.5),
-        'AFp1': (-1.5, 3.5),
-        'AFp2': (1.5, 3.5),
-        'Fp2': (4.0, 3.5),
-        'AF7': (-4.0, 3.0),
-        'AF5': (-3.0, 3.0),
-        'AF3': (-2.0, 3.0),
-        'AFz': (0.0, 3.0),
-        'AF4': (2.0, 3.0),
-        'AF6': (3.0, 3.0),
-        'AF8': (4.0, 3.0),
-        'FAF5': (-2.5, 2.5),
-        'FAF1': (-0.65, 2.5),
-        'FAF2': (0.65, 2.5),
-        'FAF6': (2.5, 2.5),
-        'F9': (-5.0, 2.0),
-        'F7': (-4.0, 2.0),
-        'F5': (-3.0, 2.0),
-        'F3': (-2.0, 2.0),
-        'F1': (-1.0, 2.0),
-        'Fz': (0.0, 2.0),
-        'F2': (1.0, 2.0),
-        'F4': (2.0, 2.0),
-        'F6': (3.0, 2.0),
-        'F8': (4.0, 2.0),
-        'F10': (5.0, 2.0),
-        'FFC9': (-4.5, 1.5),
-        'FFC7': (-3.5, 1.5),
-        'FFC5': (-2.5, 1.5),
-        'FFC3': (-1.5, 1.5),
-        'FFC1': (-0.5, 1.5),
-        'FFC2': (0.5, 1.5),
-        'FFC4': (1.5, 1.5),
-        'FFC6': (2.5, 1.5),
-        'FFC8': (3.5, 1.5),
-        'FFC10': (4.5, 1.5),
-        'FT9': (-5.0, 1.0),
-        'FT7': (-4.0, 1.0),
-        'FC5': (-3.0, 1.0),
-        'FC3': (-2.0, 1.0),
-        'FC1': (-1.0, 1.0),
-        'FCz': (0.0, 1.0),
-        'FC2': (1.0, 1.0),
-        'FC4': (2.0, 1.0),
-        'FC6': (3.0, 1.0),
-        'FT8': (4.0, 1.0),
-        'FT10': (5.0, 1.0),
-        'CFC9': (-4.5, 0.5),
-        'CFC7': (-3.5, 0.5),
-        'CFC5': (-2.5, 0.5),
-        'CFC3': (-1.5, 0.5),
-        'CFC1': (-0.5, 0.5),
-        'CFC2': (0.5, 0.5),
-        'CFC4': (1.5, 0.5),
-        'CFC6': (2.5, 0.5),
-        'CFC8': (3.5, 0.5),
-        'CFC10': (4.5, 0.5),
-        'T9': (-5.0, 0.0),
-        'T7': (-4.0, 0.0),
-        'C5': (-3.0, 0.0),
-        'C3': (-2.0, 0.0),
-        'C1': (-1.0, 0.0),
-        'Cz': (0.0, 0.0),
-        'C2': (1.0, 0.0),
-        'C4': (2.0, 0.0),
-        'C6': (3.0, 0.0),
-        'T8': (4.0, 0.0),
-        'T10': (5.0, 0.0),
-        'A1': (-5.0, -0.5),
-        'CCP7': (-3.5, -0.5),
-        'CCP5': (-2.5, -0.5),
-        'CCP3': (-1.5, -0.5),
-        'CCP1': (-0.5, -0.5),
-        'CCP2': (0.5, -0.5),
-        'CCP4': (1.5, -0.5),
-        'CCP6': (2.5, -0.5),
-        'CCP8': (3.5, -0.5),
-        'A2': (5.0, -0.5),
-        'TP9': (-5.0, -1.0),
-        'TP7': (-4.0, -1.0),
-        'CP5': (-3.0, -1.0),
-        'CP3': (-2.0, -1.0),
-        'CP1': (-1.0, -1.0),
-        'CPz': (0.0, -1.0),
-        'CP2': (1.0, -1.0),
-        'CP4': (2.0, -1.0),
-        'CP6': (3.0, -1.0),
-        'TP8': (4.0, -1.0),
-        'TP10': (5.0, -1.0),
-        'PCP9': (-4.5, -1.5),
-        'PCP7': (-3.5, -1.5),
-        'PCP5': (-2.5, -1.5),
-        'PCP3': (-1.5, -1.5),
-        'PCP1': (-0.5, -1.5),
-        'PCP2': (0.5, -1.5),
-        'PCP4': (1.5, -1.5),
-        'PCP6': (2.5, -1.5),
-        'PCP8': (3.5, -1.5),
-        'PCP10': (4.5, -1.5),
-        'P9': (-5.0, -2.0),
-        'P7': (-4.0, -2.0),
-        'P5': (-3.0, -2.0),
-        'P3': (-2.0, -2.0),
-        'P1': (-1.0, -2.0),
-        'Pz': (0.0, -2.0),
-        'P2': (1.0, -2.0),
-        'P4': (2.0, -2.0),
-        'P6': (3.0, -2.0),
-        'P8': (4.0, -2.0),
-        'P10': (5.0, -2.0),
-        'PPO7': (-4.5, -2.5),
-        'PPO5': (-3.0, -2.5),
-        'PPO3': (-2.0, -2.5),
-        'PPO1': (-0.65, -2.5),
-        'PPO2': (0.65, -2.5),
-        'PPO4': (2.0, -2.5),
-        'PPO6': (3.0, -2.5),
-        'PPO8': (4.5, -2.5),
-        'PO9': (-5.5, -2.6),
-        'PO7': (-4.0, -3),
-        'PO5': (-3.0, -3),
-        'PO3': (-2.0, -3),
-        'PO1': (-1.0, -3),
-        'POz': (0.0, -3),
-        'PO2': (1.0, -3),
-        'PO4': (2.0, -3),
-        'PO6': (3.0, -3),
-        'PO8': (4.0, -3),
-        'PO10': (5.5, -2.6),
-        'OPO1': (-1.5, -3.5),
-        'OPO2': (1.5, -3.5),
-        'O9': (-6.5, -3.5),
-        'O1': (-4.0, -3.5),
-        'O2': (4.0, -3.5),
-        'O10': (6.5, -3.5),
-        'Oz': (0.0, -4.0),
-        'OI1': (1.5, -4.5),
-        'OI2': (-1.5, -4.5),
-        'I1': (1.0, -5),
-        'Iz': (0.0, -5),
-        'I2': (-1, -5)}
+    system = _get_system()
 
     # create list with 17 empty lists. one for every potential row of channels.
     channel_lists = []
@@ -494,7 +364,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     count = 0
     for c in data.axes[1]:
         if c in tts.channels:
-            # entries in channel_lists: (<channel_name>, <x-position>, <position in Data>
+            # entries in channel_lists: [<channel_name>, <x-position>, <position in Data>]
             channel_lists[ordering[system[c][1]]].append((c, system[c][0], count))
         count += 1
 
@@ -562,17 +432,17 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     Parameters
     ----------
     v : [values]
-        list containing the values of the channels
+        List containing the values of the channels
     channels : [String]
-        list containing the channel names
+        List containing the channel names
     levels : int (default: 25)
         The number of automatically created levels in the contour plot
     colormap : matplotlib.colors.colormap (default: a blue-white-red colormap)
         A colormap to define the color transitions
-    norm : matplotlib.colors.norm (default: values from -10 to 10)
-        A norm to define the min and max values
-    ticks : array([ints])
-        An array with values to define the ticks on the colorbar
+    norm : matplotlib.colors.norm (default: None)
+        A norm to define the min and max values. If 'None', values from -10 to 10 are assumed.
+    ticks : array([ints]) (default: None)
+        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10 are displayed.
     annotate : Boolean (default: True)
         Flag to switch channel annotations on or off
     show : Boolean (default: True)
@@ -583,7 +453,12 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
         The title of the saved plot.
     save_path: String (default: None)
         The path the plot will be saved to.
-        """
+    save_format : String (default: 'pdf')
+        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
+        raw, rgba, svg, svgz, tif, tiff
+    position : [x, y, width, height] (default: None)
+        A Rectangle that limits the plot to its boundaries.
+    """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
 
@@ -623,8 +498,46 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     return ax0, ax1
 
 
+#todo: docstring
 def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True,
                   show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
+    """Plots the values v for channels 'channels' on a scalp as a contour plot. Additionaly plots the channels in
+    channels_ti as a timeinterval on top of the scalp plot.
+
+    Parameters
+    ----------
+    data : wyrm.types.Data
+        Data object containing the data to plot
+    time : int
+        The point in time to create the scalp plot from
+    channels_ti : [String]
+        List containing the channel names for the overlaying timeinterval plots.
+    scale_ti : float
+        The percentage to scale the overlaying timeinterval plots (default: .1)
+    levels : int (default: 25)
+        The number of automatically created levels in the contour plot
+    colormap : matplotlib.colors.colormap (default: a blue-white-red colormap)
+        A colormap to define the color transitions
+    norm : matplotlib.colors.norm (default: None)
+        A norm to define the min and max values. If 'None', values from -10 to 10 are assumed.
+    ticks : array([ints]) (default: None)
+        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10 are displayed.
+    annotate : Boolean (default: True)
+        Flag to switch channel annotations on or off
+    show : Boolean (default: True)
+        Flag to switch immediate showing of the plot on or off
+    save : Boolean (default: False)
+        Flag to switch saving the created figure after creation on or off
+    save_name: String (default: 'timeinterval')
+        The title of the saved plot.
+    save_path: String (default: None)
+        The path the plot will be saved to.
+    save_format : String (default: 'pdf')
+        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
+        raw, rgba, svg, svgz, tif, tiff
+    position : [x, y, width, height] (default: None)
+        A Rectangle that limits the plot to its boundaries.
+    """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
 
