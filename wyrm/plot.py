@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-#todo: update all docstrings
-
 """Plotting methods.
 
 This module contains various plotting methods.
@@ -38,7 +36,8 @@ def plot_channels(dat, chanaxis=-1, otheraxis=-2):
         else:
             a = plt.subplot(10, n_channels / 10 + 1, i + 1, sharex=ax[0], sharey=ax[0])
         ax.append(a)
-        x, y = dat.axes[otheraxis], dat.data.take([i], chanaxis)
+        #x, y = dat.axes[otheraxis], dat.data.take([i], chanaxis)
+        dat.axes[otheraxis], dat.data.take([i], chanaxis)
         a.plot(dat.axes[otheraxis], dat.data.take([i], chanaxis).squeeze())
         a.set_title(chan)
         plt.axvline(x=0)
@@ -498,7 +497,6 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     return ax0, ax1
 
 
-#todo: docstring
 def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True,
                   show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
     """Plots the values v for channels 'channels' on a scalp as a contour plot. Additionaly plots the channels in
