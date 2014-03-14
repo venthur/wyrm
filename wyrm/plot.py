@@ -110,8 +110,6 @@ def interpolate_2d(x, y, z):
     xx = np.linspace(min(x), max(x))
     yy = np.linspace(min(y), max(y))
     xx, yy = np.meshgrid(xx, yy)
-    #f = interpolate.interp2d(x, y, z)
-    #Z = f(X[0, :], Y[:, 0])
     f = interpolate.LinearNDInterpolator(zip(x, y), z)
     zz = f(xx, yy)
     return xx, yy, zz
@@ -374,9 +372,8 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     columns = map(len, channel_lists)
     columns = [value for value in columns if value != 0]
 
-    # add another column on the top right if necessary
-    if columns[0] == max(columns):
-        columns[0] += 1
+    # add another axes to the first row for the scale
+    columns[0] += 1
 
     plt.figure()
     grid = _calc_centered_grid(columns, hpad=.01, vpad=.01)
@@ -384,16 +381,17 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     # axis used for sharing axes between channels
     masterax = None
 
-    #row = 0
+    row = 0
     k = 0
+    scale_ax = 0
     for l in channel_lists:
         if len(l) > 0:
             for i in range(len(l)):
+
                 ax = _subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, legend=legend,
                                            channel=l[i][2], shareaxis=masterax)
                 if masterax is None:
                     masterax = ax
-                k += 1
 
                 # hide the axes
                 plt.gca().get_xaxis().set_visible(False)
@@ -402,11 +400,18 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 # at this moment just to show what's what
                 plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
 
-                # todo: plot the far right upper corner subplot for showing the axis data stuff
-                # if row == 0 and i == len(l)-1:
-                #     plt.subplot(gs[row, columns-1])
+                if row == 0 and i == len(l)-1:
+                    # this is the last axes in the first row
+                    k += 1
+                    scale_ax = k
+                k += 1
 
-                #row += 1
+                # todo: plot the far right upper corner subplot for showing the axis data stuff
+
+        row += 1
+
+    _subplot_colorbar(position=grid[scale_ax])
+    print(scale_ax)
 
     # adjust the spacing
     #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
