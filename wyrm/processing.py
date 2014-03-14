@@ -1189,38 +1189,41 @@ def stft(x, width):
     return fourier
 
 
-def calculate_csp(class1, class2):
+def calculate_csp(epo, classes=None):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
 
-    You should use the columns of the patterns and filters.
+    This method calculates the CSP and the corresponding filters. Use
+    the columns of the patterns and filters.
 
     Examples
     --------
-    Calculate the CSP for two classes::
+    Calculate the CSP for the first two classes::
 
-    >>> w, a, d = calculate_csp(c1, c2)
-
-    Take the first two and the last two columns of the sorted filter::
-
+    >>> w, a, d = calculate_csp(epo)
+    >>> # Take the first two and the last two columns of the sorted
+    >>> # filter
     >>> w = w[:, (0, 1, -2, -1)]
-
-    Apply the new filter to your data d of the form (time, channels)::
-
+    >>> # Apply the new filter to your data d of the form:
+    >>> # (time, channels)
     >>> filtered = np.dot(d, w)
-
-    You'll probably want to get the log-variance along the time axis::
-
+    >>> # You'll probably want to get the log-variance along the time
+    >>> # axis, this should result in four numbers (one for each
+    >>> # channel)
     >>> filtered = np.log(np.var(filtered, 0))
 
-    This should result in four numbers (one for each channel).
+    Select two classes manually::
+
+    >>> w, a, d = calculate_csp(epo, [2, 5])
 
     Parameters
     ----------
-    class1
-        A matrix of the form (trials, time, channels) representing class 1.
-    class2
-        A matrix of the form (trials, time, channels) representing the second
-        class.
+    epo : epoched Data object
+        this method relies on the ``epo`` to have three dimensions in
+        the following order: class, time, channel
+    classes : list of two ints, optional
+        If ``None`` the first two different class indices found in
+        ``epo.axes[0]`` are chosen automatically otherwise the class
+        indices can be manually chosen by setting ``classes``
 
     Returns
     -------
@@ -1232,17 +1235,42 @@ def calculate_csp(class1, class2):
     d : 1d array
         the variances of the components
 
+    Raises
+    ------
+    AssertionError :
+        If:
+          * ``classes`` is not ``None`` and has less than two elements
+          * ``classes`` is not ``None`` and the first two elements are
+            not found in the ``epo``
+          * ``classes`` is ``None`` but there are less than two
+            different classes in the ``epo``
+
 
     References
     ----------
     http://en.wikipedia.org/wiki/Common_spatial_pattern
 
     """
-    n_channels = class1.shape[2]
+    n_channels = epo.data.shape[-1]
+    if classes is None:
+        # automagically find the first two different classidx
+        # we don't use uniq, since it sorts the classidx first
+        # first check if we have a least two diffeent idxs:
+        assert len(np.unique(epo.axes[0])) >= 2
+        cidx1 = epo.axes[0][0]
+        cidx2 = epo.axes[0][epo.axes[0] != cidx1][0]
+    else:
+        assert (len(classes) >= 2 and
+            classes[0] in epo.axes[0] and
+            classes[1] in epo.axes[0])
+        cidx1 = classes[0]
+        cidx2 = classes[1]
+    epoc1 = select_epochs(epo, np.nonzero(epo.axes[0] == cidx1)[0], classaxis=0)
+    epoc2 = select_epochs(epo, np.nonzero(epo.axes[0] == cidx2)[0], classaxis=0)
     # we need a matrix of the form (observations, channels) so we stack trials
     # and time per channel together
-    x1 = class1.reshape(-1, n_channels)
-    x2 = class2.reshape(-1, n_channels)
+    x1 = epoc1.data.reshape(-1, n_channels)
+    x2 = epoc2.data.reshape(-1, n_channels)
     # compute covariance matrices of the two classes
     c1 = np.cov(x1.transpose())
     c2 = np.cov(x2.transpose())
