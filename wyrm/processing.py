@@ -1245,6 +1245,9 @@ def calculate_csp(epo, classes=None):
           * ``classes`` is ``None`` but there are less than two
             different classes in the ``epo``
 
+    See Also
+    --------
+    :func:`calculate_spoc`
 
     References
     ----------
@@ -1286,6 +1289,85 @@ def calculate_csp(epo, classes=None):
     v = v.take(indx, axis=1)
     a = sp.linalg.inv(v).transpose()
     return v, a, d
+
+
+def calculate_spoc(epo):
+    """SPoC short one line descr.
+
+    Long descripotion
+
+
+    Parameters
+    ----------
+    epo : epoched Data oject
+        this method relies on the ``epo`` to have three dimensions in
+        the following order: class, time, channel
+
+    Returns
+    -------
+    v : 2d array
+        what is it?
+    a : 2d array
+        and that?
+    d : 1d array
+        and that?
+
+    Examples
+    --------
+    Calculate the SPoC for two classes::
+
+    >>> w, a, d = spoc(epo)
+
+    Take the first two and the last two columns of the sorted filter::
+
+    >>> w = w[:, (0, 1, -2, -1)]
+
+    Apply the new filter to your data d of the form (time, channels)::
+
+    >>> filtered = np.dot(d, w)
+
+    See Also
+    --------
+    :func:`calculate_csp`
+
+    References
+    ----------
+
+
+
+
+    """
+    z = epo.axes[0][:]
+    # convert into float just in case, because in the BCI case we'll
+    # deal mostly with integers (i.e. the class indices) here
+    z = z.astype(np.float)
+
+    z -= z.mean()
+    z /= z.std()
+
+    ce = np.empty([epo.data.shape[0], epo.data.shape[2], epo.data.shape[2]])
+    for i in range(epo.data.shape[0]):
+        ce[i] = np.cov(epo.data[i].transpose())
+
+    c = ce.mean(axis=0)
+    for i in range(ce.shape[0]):
+        ce[i] = ce[i] * z[i]
+    cz = ce.mean(axis=0)
+
+    # solution of csp objective via generalized eigenvalue problem
+    # in matlab the signature is v, d = eig(a, b)
+    d, v = sp.linalg.eig(cz, c)
+    d = d.real
+    # make sure the eigenvalues and -vectors are correctly sorted
+    indx = np.argsort(d)
+    # reverse
+    indx = indx[::-1]
+    d = d.take(indx)
+    v = v.take(indx, axis=1)
+    a = sp.linalg.inv(v).transpose()
+    return v, a, d
+
+
 
 
 def calculate_classwise_average(dat, classaxis=0):
