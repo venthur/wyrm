@@ -251,8 +251,7 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
 
 def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False,
                               save_name='epoched_timeinterval', save_path=None, save_format='pdf'):
-    """
-    Plots a series of time_intervals with the given epoched data.
+    """Plots a series of time_intervals with the given epoched data.
 
     Parameters
     ----------
@@ -281,7 +280,7 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
         # iterate over epochs
         for i in range(len(data.data)):
             grid = _calc_grid(len(data.data), 1, .04, .04)
-            #pos = int('1' + str(len(data.data)) + str(i+1))
+
             _subplot_timeinterval(data, grid[i], i, highlights=highlights, legend=legend)
     else:
         pos = 111
@@ -681,13 +680,6 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
     return ax
 
 
-# adds a timeinterval subplot to the current figure at the specified position.
-# data: wyrm.types.Data
-# position: position of the subplot
-# epoch: specifies the epoch to plot
-# highlights (optional): a wyrm.plot.Highlight object to create highlights
-# legend (optional): boolean to switch the legend on or off 
-# channel (optional): used for plotting only one specific channel
 def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None,
                           shareaxis=None):
     fig = plt.gcf()
@@ -697,13 +689,6 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
     else:
         ax = axes.Axes(fig, position, sharex=shareaxis, sharey=shareaxis)
         fig.add_axes(ax)
-        # ax.set_aspect('auto', adjustable='box-forced')
-
-    # plotting of the data
-    #if shareaxis is None:
-    #    plt.subplot(position)
-    #else:
-    #    plt.subplot(position, sharex=shareaxis, sharey=shareaxis)
 
     # epoch is -1 when there are no epochs
     if epoch == -1:
@@ -954,12 +939,20 @@ def set_highlights(obj_highlight, set_axes=None):
                 highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
 
 
-# Adds labels to the specified axes (default: all axes of current figure)
-# xlabels: String to label the x-axis
-# ylabels: String to label the y-axis
-# axes (optional): List of matplotlib.Axes to apply the labels on
-# draw (optional): boolean to switch immediate drawing  
 def set_labels(xlabel, ylabel, set_axes=None, draw=True):
+    """Sets the labels of x- and y-axis of specified axes.
+
+    Parameters
+    ----------
+    xlabel : String
+        The String to label the x-axis.
+    ylabel : String
+        The String to label the y-axis.
+    set_axes : [Matplotlib.Axes] (default: None)
+        List of axes to apply the labels to. Per default the labels are applied to all axes of the current figure.
+    draw : Boolean (default: True)
+        A flag to switch if the new labels should be directly drawn to the plot.
+    """
     if set_axes is None:
         set_axes = plt.gcf().axes
 
