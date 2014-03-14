@@ -489,8 +489,8 @@ class BlockBuffer(object):
     def __init__(self, block_length=50):
         """Initialize the Block Buffer.
 
-        Paramters
-        ---------
+        Parameters
+        ----------
         block_length : int, optional
             the desired block length in ms
 
