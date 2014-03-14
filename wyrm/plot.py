@@ -62,8 +62,8 @@ def plot_channels(dat, chanaxis=-1, otheraxis=-2):
 def plot_spatio_temporal_r2_values(dat):
     """Calculate the signed r^2 values and plot them in a heatmap.
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     dat : Data
         epoched data
 

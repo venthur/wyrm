@@ -243,7 +243,7 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
         ``[-200, 100]`` Only negative or positive values are possible
         (i.e. ``[-500, -100]``)
     newsamples : int, optional
-        consider the last `newsamples` samples as new data and only
+        consider the last ``newsamples`` samples as new data and only
         return epochs which are possible with the old **and** the new
         data (i.e. don't include epochs which where possible without the
         new data).
@@ -1110,7 +1110,7 @@ def spectrum(dat, timeaxis=-2):
     Raises
     ------
     AssertionError
-        if the `dat` paramter has no `.fs` attribute
+        if the ``dat`` parameter has no ``.fs`` attribute
 
     See Also
     --------
