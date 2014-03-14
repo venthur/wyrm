@@ -16,6 +16,7 @@ from matplotlib import colors
 from matplotlib import pyplot as plt
 from matplotlib.path import Path
 from matplotlib import patches as patches
+from matplotlib.patches import Rectangle
 
 import tentensystem as tts
 
@@ -405,13 +406,10 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                     k += 1
                     scale_ax = k
                 k += 1
-
-                # todo: plot the far right upper corner subplot for showing the axis data stuff
-
         row += 1
 
-    _subplot_colorbar(position=grid[scale_ax])
-    print(scale_ax)
+    # todo: plot the far right upper corner subplot for showing the axis data stuff
+    _subplot_scale("", "", position=grid[scale_ax])
 
     # adjust the spacing
     #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
@@ -501,6 +499,7 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     return ax0, ax1
 
 
+#todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ax.xaxis.set_tick_params(labelsize=x_labelsize)
 def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True,
                   show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
     """Plots the values v for channels 'channels' on a scalp as a contour plot. Additionaly plots the channels in
@@ -731,6 +730,18 @@ def _subplot_r_square(data, position):
     ax.imshow(data, aspect='auto', interpolation='none')
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
+    return ax
+
+
+def _subplot_scale(xvalue, yvalue, position):
+    fig = plt.gcf()
+    ax = fig.add_axes(position)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    ax.add_patch(Rectangle((1, 1), 3, .1))
+    ax.add_patch(Rectangle((1, 1), .1, 2))
+    ax.set_ylim([0, 4])
+    ax.set_xlim([0, 5])
     return ax
 
 
