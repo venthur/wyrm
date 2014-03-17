@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf8
 
 """Processing toolbox methods.
 
@@ -1245,6 +1246,9 @@ def calculate_csp(epo, classes=None):
           * ``classes`` is ``None`` but there are less than two
             different classes in the ``epo``
 
+    See Also
+    --------
+    :func:`calculate_spoc`
 
     References
     ----------
@@ -1286,6 +1290,137 @@ def calculate_csp(epo, classes=None):
     v = v.take(indx, axis=1)
     a = sp.linalg.inv(v).transpose()
     return v, a, d
+
+
+def calculate_spoc(epo):
+    """Compute source power co-modulation analysis (SPoC)
+
+    Computes spatial filters that optimize the co-modulation (here
+    covariance) between the epoch-wise variance (as a proxy for spectral
+    power) and a given target signal.
+
+    This SPoc function returns a full set of components (i.e. filters
+    and patterns) of which the first component maximizes the
+    co-modulation (i.e. positive covariance) and the last component
+    minimizes it (i.e. maximizes negative covariance).
+
+    .. note:: Since the covariance is optimized, it may be affected by
+        outliers in the data (i.e. trials/epochs with very large
+        variance that is due to artifacts). Please remove be sure to
+        remove these epochs if possible before calling this function!
+
+    Parameters
+    ----------
+    epo : epoched Data oject
+        this method relies on the ``epo`` to have three dimensions in
+        the following order: class, time, channel. The data in epo
+        should be band-pass filtered for the frequency band of interest.
+        The values of the target variable (i.e. ``epo.axes[0]``) must be
+        present in epo.
+
+    Returns
+    -------
+    v : 2d array
+        The spatial filters optimized by the ``SPoC_lambda`` algorithm.
+        Each column in the matrix is a filter.
+    a : 2d array
+        The spatial activation patterns that correspond to the filters
+        in ``v``. Each column is a spatial pattern. when visualizing the
+        SPoC components as scalp maps, plot the spatial patterns and not
+        the filters. See also [2]_.
+    d : 1d array
+        The lambda values that correspond to the filters/patterns in
+        ``v`` and ``a``, sorted from largest (positive covariance) to
+        smallest (negative covariance).
+
+    Examples
+    --------
+
+    Split data in training and test set
+
+    Calculate SPoC::
+
+    >>> w, a, d = calculate_spoc(epo)
+
+    Identify the components with strongest co-modulation by checking the
+    covariance values stored in ``d``. If there is positive covariance
+    with the target variable it will be the first, otherwise the last:
+
+    >>> w = w[:, 0]
+
+    Apply the filter(s) to the test data::
+
+    >>> filtered = np.dot(data, w)
+
+    Notes
+    -----
+
+    SPoC assumes that there is a linear relationship between a measured
+    target signal and the dynamics of the spectral power of an
+    oscillatory source that is hidden in the data. The target signal my
+    be a stimulus property (e.g. intensity, frequency, color, ...), a
+    behavioral measure (e.g. reaction times, ratings, ...) , or any
+    other uni-variate signal of interest. The time-course of spectral
+    power of the oscillatory source signal is approximated by variance
+    across small time segments (epochs). Thus, if the power of a
+    specific frequency band is investigated, the input signals must be
+    band-passed filtered before they are segmented into epochs and given
+    to this function. This method implements ``SPoC_lambda``, presented
+    in [1]_. Thus, source activity is extracted from the input data via
+    spatial filtering. The spatial filters are optimized such that the
+    epoch-wise variance maximally covaries with the given target signal
+    ``z``.
+
+    See Also
+    --------
+    :func:`calculate_csp`
+
+
+    References
+    ----------
+
+    .. [1] S. Dähne, F. C. Meinecke, S. Haufe, J. Höhne, M. Tangermann,
+        K. R. Müller, V. V. Nikulin "SPoC: a novel framework for
+        relating the amplitude of neuronal oscillations to behaviorally
+        relevant parameters", NeuroImage, 86(0):111-122, 2014
+
+    .. [2] S. Haufe, F. Meinecke, K. Görgen, S. Dähne, J. Haynes, B.
+        Blankertz, F. Biessmann, "On the interpretation of weight
+        vectors of linear models in multivariate neuroimaging",
+        NeuroImage, 87:96-110, 2014
+
+    """
+    z = epo.axes[0][:]
+    # convert into float just in case, because in the BCI case we'll
+    # deal mostly with integers (i.e. the class indices) here
+    z = z.astype(np.float)
+
+    z -= z.mean()
+    z /= z.std()
+
+    ce = np.empty([epo.data.shape[0], epo.data.shape[2], epo.data.shape[2]])
+    for i in range(epo.data.shape[0]):
+        ce[i] = np.cov(epo.data[i].transpose())
+
+    c = ce.mean(axis=0)
+    for i in range(ce.shape[0]):
+        ce[i] = ce[i] * z[i]
+    cz = ce.mean(axis=0)
+
+    # solution of csp objective via generalized eigenvalue problem
+    # in matlab the signature is v, d = eig(a, b)
+    d, v = sp.linalg.eig(cz, c)
+    d = d.real
+    # make sure the eigenvalues and -vectors are correctly sorted
+    indx = np.argsort(d)
+    # reverse
+    indx = indx[::-1]
+    d = d.take(indx)
+    v = v.take(indx, axis=1)
+    a = sp.linalg.inv(v).transpose()
+    return v, a, d
+
+
 
 
 def calculate_classwise_average(dat, classaxis=0):
