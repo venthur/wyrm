@@ -15,11 +15,14 @@ wyrm.processing
       calculate_classwise_average
       calculate_csp
       calculate_signed_r_square
+      calculate_spoc
       clear_markers
       correct_for_baseline
       create_feature_vectors
       filtfilt
       jumping_means
+      lda_apply
+      lda_train
       lfilter
       logarithm
       rectify_channels
@@ -42,6 +45,12 @@ wyrm.processing
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      LW
    
    
 

@@ -1,51 +1,54 @@
-wyrm Package
+wyrm package
 ============
 
-:mod:`wyrm` Package
--------------------
+Submodules
+----------
 
-.. automodule:: wyrm.__init__
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`io` Module
-----------------
+wyrm.io module
+--------------
 
 .. automodule:: wyrm.io
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`plot` Module
-------------------
+wyrm.plot module
+----------------
 
 .. automodule:: wyrm.plot
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`processing` Module
-------------------------
+wyrm.processing module
+----------------------
 
 .. automodule:: wyrm.processing
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`tentensystem` Module
---------------------------
+wyrm.tentensystem module
+------------------------
 
 .. automodule:: wyrm.tentensystem
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`types` Module
--------------------
+wyrm.types module
+-----------------
 
 .. automodule:: wyrm.types
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: wyrm
+    :members:
+    :undoc-members:
+    :show-inheritance:

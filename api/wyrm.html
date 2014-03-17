@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>wyrm Package &mdash; Wyrm 0.3.beta documentation</title>
+    <title>wyrm package &mdash; Wyrm 0.5.beta documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.3.beta',
+        VERSION:     '0.5.beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/sidebar.js"></script>
-    <link rel="top" title="Wyrm 0.3.beta documentation" href="../index.html" /> 
+    <link rel="top" title="Wyrm 0.5.beta documentation" href="../index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm 0.3.beta documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wyrm 0.5.beta documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -49,14 +49,12 @@
           <div class="body">
             
   <div class="section" id="wyrm-package">
-<h1>wyrm Package<a class="headerlink" href="#wyrm-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2><tt class="xref py py-mod docutils literal"><span class="pre">wyrm</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-wyrm.__init__"></span><p>This is Wyrm.</p>
-<p>Some words describing the Wyrm package.</p>
+<h1>wyrm package<a class="headerlink" href="#wyrm-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-wyrm.io">
-<span id="io-module"></span><h2><a class="reference external" href="http://docs.python.org/library/io.html#io" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">io</span></tt></a> Module<a class="headerlink" href="#module-wyrm.io" title="Permalink to this headline">¶</a></h2>
+<span id="wyrm-io-module"></span><h2>wyrm.io module<a class="headerlink" href="#module-wyrm.io" title="Permalink to this headline">¶</a></h2>
 <p>Input/Output methods.</p>
 <p>This module provides methods for loading and saving data into various
 formats.</p>
@@ -72,13 +70,13 @@ micro Volt.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>vhdr</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vhdr</strong> : str</p>
 <blockquote>
 <div><p>Path to a VHDR file</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>Continuous Data with the additional attributes <tt class="docutils literal"><span class="pre">.fs</span></tt> for the
 sampling frequency and <tt class="docutils literal"><span class="pre">.marker</span></tt> for a list of markers. Each
@@ -86,7 +84,7 @@ marker is a tuple of <tt class="docutils literal"><span class="pre">(time</span>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>If one of the consistency checks fails</p>
 </div></blockquote>
@@ -106,7 +104,7 @@ marker is a tuple of <tt class="docutils literal"><span class="pre">(time</span>
 
 </div>
 <div class="section" id="module-wyrm.plot">
-<span id="plot-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">plot</span></tt> Module<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h2>
+<span id="wyrm-plot-module"></span><h2>wyrm.plot module<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h2>
 <p>Plotting methods.</p>
 <p>This module contains various plotting methods.</p>
 <dl class="function">
@@ -123,13 +121,13 @@ Project the point <tt class="docutils literal"><span class="pre">p</span> <span 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>p</strong> : [float, float]</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>p</strong> : [float, float]</p>
 <blockquote>
 <div><p>The point to be projected in cartesian coordinates.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>x, y</strong> : float, float</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>x, y</strong> : float, float</p>
 <blockquote class="last">
 <div><p>The projected point on the plane.</p>
 </div></blockquote>
@@ -147,13 +145,13 @@ Project the point <tt class="docutils literal"><span class="pre">p</span> <span 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x, y, z</strong> : equally long lists of floats</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x, y, z</strong> : equally long lists of floats</p>
 <blockquote>
 <div><p>1d arrays defining points like <tt class="docutils literal"><span class="pre">p[x,</span> <span class="pre">y]</span> <span class="pre">=</span> <span class="pre">z</span></tt></p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>X, Y, Z</strong> : 1d array, 1d array, 2d array</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X, Y, Z</strong> : 1d array, 1d array, 2d array</p>
 <blockquote class="last">
 <div><p><tt class="docutils literal"><span class="pre">Z</span></tt> is a 2d array <tt class="docutils literal"><span class="pre">[min(x)..max(x),</span> <span class="pre">[min(y)..max(y)]</span></tt> with
 the interpolated values as values.</p>
@@ -172,7 +170,7 @@ the interpolated values as values.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>dat</strong> : Data</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dat</strong> : Data</td>
 </tr>
 </tbody>
 </table>
@@ -186,8 +184,21 @@ the interpolated values as values.</p>
 
 <dl class="function">
 <dt id="wyrm.plot.plot_spatio_temporal_r2_values">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spatio_temporal_r2_values</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.plot.plot_spatio_temporal_r2_values" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spatio_temporal_r2_values</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_spatio_temporal_r2_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_spatio_temporal_r2_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the signed r^2 values and plot them in a heatmap.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>epoched data</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="wyrm.plot.plot_spectrogram">
@@ -201,7 +212,7 @@ the interpolated values as values.</p>
 
 </div>
 <div class="section" id="module-wyrm.processing">
-<span id="processing-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">processing</span></tt> Module<a class="headerlink" href="#module-wyrm.processing" title="Permalink to this headline">¶</a></h2>
+<span id="wyrm-processing-module"></span><h2>wyrm.processing module<a class="headerlink" href="#module-wyrm.processing" title="Permalink to this headline">¶</a></h2>
 <p>Processing toolbox methods.</p>
 <p>This module contains the processing methods.</p>
 <dl class="function">
@@ -230,7 +241,7 @@ consider using <a class="reference internal" href="#wyrm.processing.append_cnt" 
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
 <p><strong>axis</strong> : int, optional</p>
 <blockquote>
 <div><p>the axis along which to concatenate. The default axis (0) does
@@ -245,13 +256,13 @@ well. Currently the attributes must have the types <tt class="docutils literal">
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with <tt class="docutils literal"><span class="pre">dat2</span></tt> appended</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>if one of the following is true:</dt>
@@ -311,18 +322,18 @@ markers will be treated properly (i.e. by moving the markers of
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
 <p><strong>timeaxis</strong> : int, optional</p>
 <p><strong>extra: list of strings, optional</strong> :</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>the resulting combination of <tt class="docutils literal"><span class="pre">dat</span></tt> and <tt class="docutils literal"><span class="pre">dat2</span></tt></p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>if at least one of the <tt class="docutils literal"><span class="pre">Data</span></tt> parameters has not the <tt class="docutils literal"><span class="pre">.fs</span></tt>
 attribute or if the <tt class="docutils literal"><span class="pre">.fs</span></tt> attributes are not equal.</p>
@@ -360,15 +371,15 @@ attribute or if the <tt class="docutils literal"><span class="pre">.fs</span></t
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat, dat2</strong> : Data</p>
 <p><strong>classaxis</strong> : int, optional</p>
 <p><strong>extra</strong> : list of strings, optional</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
 <blockquote class="last">
 <div><p>if both objects have a <tt class="docutils literal"><span class="pre">class_names</span></tt> attribute, they must be
 equal</p>
@@ -399,7 +410,7 @@ will calculate the average time course for each class and channel.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>an epoched Data object with a <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
 </div></blockquote>
@@ -409,14 +420,14 @@ will calculate the average time course for each class and channel.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> a witht the <tt class="docutils literal"><span class="pre">classaxis</span></tt> dimension reduced to
 the number of different classes.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>if the <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
 </div></blockquote>
@@ -440,25 +451,28 @@ average for each class.</p>
 
 <dl class="function">
 <dt id="wyrm.processing.calculate_csp">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_csp</tt><big>(</big><em>class1</em>, <em>class2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_csp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_csp" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_csp</tt><big>(</big><em>epo</em>, <em>classes=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_csp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_csp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the Common Spatial Pattern (CSP) for two classes.</p>
-<p>You should use the columns of the patterns and filters.</p>
+<p>This method calculates the CSP and the corresponding filters. Use
+the columns of the patterns and filters.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>class1</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>epo</strong> : epoched Data object</p>
 <blockquote>
-<div><p>A matrix of the form (trials, time, channels) representing class 1.</p>
+<div><p>this method relies on the <tt class="docutils literal"><span class="pre">epo</span></tt> to have three dimensions in
+the following order: class, time, channel</p>
 </div></blockquote>
-<p><strong>class2</strong> :</p>
+<p><strong>classes</strong> : list of two ints, optional</p>
 <blockquote>
-<div><p>A matrix of the form (trials, time, channels) representing the second
-class.</p>
+<div><p>If <tt class="docutils literal"><span class="pre">None</span></tt> the first two different class indices found in
+<tt class="docutils literal"><span class="pre">epo.axes[0]</span></tt> are chosen automatically otherwise the class
+indices can be manually chosen by setting <tt class="docutils literal"><span class="pre">classes</span></tt></p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>v</strong> : 2d array</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>v</strong> : 2d array</p>
 <blockquote>
 <div><p>the sorted spacial filters</p>
 </div></blockquote>
@@ -468,33 +482,54 @@ class.</p>
 pattern of the filter in column i of v.</p>
 </div></blockquote>
 <p><strong>d</strong> : 1d array</p>
-<blockquote class="last">
+<blockquote>
 <div><p>the variances of the components</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError :</strong> :</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>If:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">classes</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt> and has less than two elements</li>
+<li><tt class="docutils literal"><span class="pre">classes</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt> and the first two elements are
+not found in the <tt class="docutils literal"><span class="pre">epo</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">classes</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt> but there are less than two
+different classes in the <tt class="docutils literal"><span class="pre">epo</span></tt></li>
+</ul>
+</dd>
+</dl>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.calculate_spoc" title="wyrm.processing.calculate_spoc"><tt class="xref py py-func docutils literal"><span class="pre">calculate_spoc()</span></tt></a></p>
+</div>
 <p class="rubric">References</p>
 <p><a class="reference external" href="http://en.wikipedia.org/wiki/Common_spatial_pattern">http://en.wikipedia.org/wiki/Common_spatial_pattern</a></p>
 <p class="rubric">Examples</p>
-<p>Calculate the CSP for two classes:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_csp</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
+<p>Calculate the CSP for the first two classes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_csp</span><span class="p">(</span><span class="n">epo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Take the first two and the last two columns of the sorted</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Apply the new filter to your data d of the form:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># (time, channels)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># You&#39;ll probably want to get the log-variance along the time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># axis, this should result in four numbers (one for each</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># channel)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Take the first two and the last two columns of the sorted filter:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<p>Select two classes manually:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_csp</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Apply the new filter to your data d of the form (time, channels):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>You&#8217;ll probably want to get the log-variance along the time axis:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>This should result in four numbers (one for each channel).</p>
 </dd></dl>
 
 <dl class="function">
@@ -507,7 +542,7 @@ pattern of the filter in column i of v.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>epoched data</p>
 </div></blockquote>
@@ -517,7 +552,7 @@ pattern of the filter in column i of v.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>signed_r_square</strong> : ndarray</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>signed_r_square</strong> : ndarray</p>
 <blockquote class="last">
 <div><p>the signed r**2 values, signed_r_square has one axis less than
 the <tt class="docutils literal"><span class="pre">dat</span></tt> parameter, the <tt class="docutils literal"><span class="pre">classaxis</span></tt> has been removed</p>
@@ -537,8 +572,119 @@ the <tt class="docutils literal"><span class="pre">dat</span></tt> parameter, th
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.calculate_spoc">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_spoc</tt><big>(</big><em>epo</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_spoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_spoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute source power co-modulation analysis (SPoC)</p>
+<p>Computes spatial filters that optimize the co-modulation (here
+covariance) between the epoch-wise variance (as a proxy for spectral
+power) and a given target signal.</p>
+<p>This SPoc function returns a full set of components (i.e. filters
+and patterns) of which the first component maximizes the
+co-modulation (i.e. positive covariance) and the last component
+minimizes it (i.e. maximizes negative covariance).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since the covariance is optimized, it may be affected by
+outliers in the data (i.e. trials/epochs with very large
+variance that is due to artifacts). Please remove be sure to
+remove these epochs if possible before calling this function!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>epo</strong> : epoched Data oject</p>
+<blockquote>
+<div><p>this method relies on the <tt class="docutils literal"><span class="pre">epo</span></tt> to have three dimensions in
+the following order: class, time, channel. The data in epo
+should be band-pass filtered for the frequency band of interest.
+The values of the target variable (i.e. <tt class="docutils literal"><span class="pre">epo.axes[0]</span></tt>) must be
+present in epo.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>v</strong> : 2d array</p>
+<blockquote>
+<div><p>The spatial filters optimized by the <tt class="docutils literal"><span class="pre">SPoC_lambda</span></tt> algorithm.
+Each column in the matrix is a filter.</p>
+</div></blockquote>
+<p><strong>a</strong> : 2d array</p>
+<blockquote>
+<div><p>The spatial activation patterns that correspond to the filters
+in <tt class="docutils literal"><span class="pre">v</span></tt>. Each column is a spatial pattern. when visualizing the
+SPoC components as scalp maps, plot the spatial patterns and not
+the filters. See also <a class="reference internal" href="#r2" id="id1">[R2]</a>.</p>
+</div></blockquote>
+<p><strong>d</strong> : 1d array</p>
+<blockquote class="last">
+<div><p>The lambda values that correspond to the filters/patterns in
+<tt class="docutils literal"><span class="pre">v</span></tt> and <tt class="docutils literal"><span class="pre">a</span></tt>, sorted from largest (positive covariance) to
+smallest (negative covariance).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.calculate_csp" title="wyrm.processing.calculate_csp"><tt class="xref py py-func docutils literal"><span class="pre">calculate_csp()</span></tt></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>SPoC assumes that there is a linear relationship between a measured
+target signal and the dynamics of the spectral power of an
+oscillatory source that is hidden in the data. The target signal my
+be a stimulus property (e.g. intensity, frequency, color, ...), a
+behavioral measure (e.g. reaction times, ratings, ...) , or any
+other uni-variate signal of interest. The time-course of spectral
+power of the oscillatory source signal is approximated by variance
+across small time segments (epochs). Thus, if the power of a
+specific frequency band is investigated, the input signals must be
+band-passed filtered before they are segmented into epochs and given
+to this function. This method implements <tt class="docutils literal"><span class="pre">SPoC_lambda</span></tt>, presented
+in <a class="reference internal" href="#r1" id="id2">[R1]</a>. Thus, source activity is extracted from the input data via
+spatial filtering. The spatial filters are optimized such that the
+epoch-wise variance maximally covaries with the given target signal
+<tt class="docutils literal"><span class="pre">z</span></tt>.</p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R1]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> S. Dähne, F. C. Meinecke, S. Haufe, J. Höhne, M. Tangermann,
+K. R. Müller, V. V. Nikulin &#8220;SPoC: a novel framework for
+relating the amplitude of neuronal oscillations to behaviorally
+relevant parameters&#8221;, NeuroImage, 86(0):111-122, 2014</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R2]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> S. Haufe, F. Meinecke, K. Görgen, S. Dähne, J. Haynes, B.
+Blankertz, F. Biessmann, &#8220;On the interpretation of weight
+vectors of linear models in multivariate neuroimaging&#8221;,
+NeuroImage, 87:96-110, 2014</td></tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Split data in training and test set</p>
+<p>Calculate SPoC:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_spoc</span><span class="p">(</span><span class="n">epo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Identify the components with strongest co-modulation by checking the
+covariance values stored in <tt class="docutils literal"><span class="pre">d</span></tt>. If there is positive covariance
+with the target variable it will be the first, otherwise the last:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Apply the filter(s) to the test data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.clear_markers">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">clear_markers</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.clear_markers" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">clear_markers</tt><big>(</big><em>dat</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#clear_markers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.clear_markers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove markers that are outside of the <tt class="docutils literal"><span class="pre">dat</span></tt> time interval.</p>
 <p>This method removes the markers that are out of the time interval
 described in the <tt class="docutils literal"><span class="pre">dat</span></tt> object.</p>
@@ -549,17 +695,17 @@ are empty, simply a copy of <tt class="docutils literal"><span class="pre">dat</
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <p><strong>timeaxis</strong> : int, optional</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a copy of the Data object, with the respective markers removed</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>if the given <tt class="docutils literal"><span class="pre">dat</span></tt> has not <tt class="docutils literal"><span class="pre">fs</span></tt> attribute</p>
 </div></blockquote>
@@ -593,7 +739,7 @@ from the channel data within this epoch and channel.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Dat</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Dat</p>
 <p><strong>ival</strong> : array of two floats</p>
 <blockquote>
 <div><p>the start and stop borders in milli seconds. the left border is
@@ -607,13 +753,13 @@ included, the right border is not: <tt class="docutils literal"><span class="pre
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Dat</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Dat</p>
 <blockquote>
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the averages of the intervals subtracted.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>If the left border of <tt class="docutils literal"><span class="pre">ival</span></tt> is outside of
 <tt class="docutils literal"><span class="pre">dat.axes[timeaxis]</span></tt> or if <tt class="docutils literal"><span class="pre">ival[1]</span> <span class="pre">&lt;</span> <span class="pre">ival[0]</span></tt>.</p>
@@ -652,14 +798,14 @@ appropriate class.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <p><strong>classaxis</strong> : int, optional</p>
 <blockquote>
 <div><p>the index of the class axis</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with reshaped to 2 dimensions and with the
 classaxis moved to dimension 0</p>
@@ -680,7 +826,7 @@ classaxis moved to dimension 0</p>
 
 <dl class="function">
 <dt id="wyrm.processing.filtfilt">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">filtfilt</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.filtfilt" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">filtfilt</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#filtfilt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.filtfilt" title="Permalink to this definition">¶</a></dt>
 <dd><p>A forward-backward filter.</p>
 <p>Filter data twice, once forward and once backwards, using the filter
 defined by the filter coefficients.</p>
@@ -690,7 +836,7 @@ defined by the filter coefficients.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>the data to be filtered</p>
 </div></blockquote>
@@ -708,7 +854,7 @@ defined by the filter coefficients.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>the filtered output</p>
 </div></blockquote>
@@ -747,7 +893,7 @@ defined by the filter coefficients.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <p><strong>ivals</strong> : array of [float, float]</p>
 <blockquote>
 <div><p>the intervals for which to calculate the means. Start is
@@ -759,7 +905,7 @@ included end is not (like <tt class="docutils literal"><span class="pre">[start,
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the jumping means along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt>.
 <tt class="docutils literal"><span class="pre">dat.name[timeaxis]</span></tt> and <tt class="docutils literal"><span class="pre">dat.axes[timeaxis]</span></tt> Are modified
@@ -772,8 +918,53 @@ too to reflect the intervals used for the data points.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.lda_apply">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lda_apply</tt><big>(</big><em>clf</em>, <em>x</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lda_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lda_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply LDA</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>clf</strong> : (1d array, float)</p>
+<p class="last"><strong>x :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.lda_train" title="wyrm.processing.lda_train"><tt class="xref py py-obj docutils literal"><span class="pre">lda_train</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.lda_train">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lda_train</tt><big>(</big><em>x</em>, <em>y</em>, <em>shrink=True</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lda_train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lda_train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the LDA</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : 2d array</p>
+<p><strong>y</strong> : 1d array</p>
+<p><strong>shrink</strong> : Boolean, optional</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>w</strong> : 1d array</p>
+<p class="last"><strong>b</strong> : float</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.lda_apply" title="wyrm.processing.lda_apply"><tt class="xref py py-obj docutils literal"><span class="pre">lda_apply</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.lfilter">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lfilter</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>zi=None</em>, <em>timeaxis=-2</em><big>)</big><a class="headerlink" href="#wyrm.processing.lfilter" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lfilter</tt><big>(</big><em>dat</em>, <em>b</em>, <em>a</em>, <em>zi=None</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lfilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lfilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter data using the filter defined by the filter coefficients.</p>
 <p>This method mainly delegates the call to
 <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>.</p>
@@ -781,7 +972,7 @@ too to reflect the intervals used for the data points.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>the data to be filtered</p>
 </div></blockquote>
@@ -804,7 +995,7 @@ or not given, initial rest is assumed.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>the filtered output</p>
 </div></blockquote>
@@ -867,13 +1058,13 @@ or not given, initial rest is assumed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a Data object</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the element wise natural logarithms of
 the values in <tt class="docutils literal"><span class="pre">.data</span></tt></p>
@@ -896,10 +1087,10 @@ the values in <tt class="docutils literal"><span class="pre">.data</span></tt></
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with all values absolute in <tt class="docutils literal"><span class="pre">.data</span></tt></p>
 </div></blockquote>
@@ -927,7 +1118,7 @@ parameters and the <tt class="docutils literal"><span class="pre">invert</span><
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>A copy of the dat with the channels removed.</p>
 </div></blockquote>
@@ -954,7 +1145,7 @@ parameter set to <tt class="docutils literal"><span class="pre">True</span></tt>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>copy of Data object with the classes removed</p>
 </div></blockquote>
@@ -978,7 +1169,7 @@ paramerter set to <tt class="docutils literal"><span class="pre">True</span></tt
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>epoched Data object with the epochs removed</p>
 </div></blockquote>
@@ -1013,7 +1204,7 @@ at the Examples below.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>the data object to be segmented</p>
 </div></blockquote>
@@ -1033,7 +1224,7 @@ included, the endpoint is not (like: <tt class="docutils literal"><span class="p
 </div></blockquote>
 <p><strong>newsamples</strong> : int, optional</p>
 <blockquote>
-<div><p>consider the last <cite>newsamples</cite> samples as new data and only
+<div><p>consider the last <tt class="docutils literal"><span class="pre">newsamples</span></tt> samples as new data and only
 return epochs which are possible with the old <strong>and</strong> the new
 data (i.e. don&#8217;t include epochs which where possible without the
 new data).</p>
@@ -1054,13 +1245,13 @@ of new samples.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a copy of the resulting epoched data.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><ul class="simple">
 <li>if <tt class="docutils literal"><span class="pre">dat</span></tt> has not <tt class="docutils literal"><span class="pre">.fs</span></tt> or <tt class="docutils literal"><span class="pre">.markers</span></tt> attribute or if
@@ -1117,11 +1308,11 @@ has to match the whole channel name string</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <p><strong>regexp_list</strong> : list of regular expressions</p>
 <blockquote>
 <div><p>The regular expressions provided, are used directly by Python&#8217;s
-<a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt></a> module, so all regular expressions which are understood
+<a class="reference external" href="http://docs.python.org/library/re.html#module-re" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt></a> module, so all regular expressions which are understood
 by this module are allowed.</p>
 <p>Internally the <a class="reference external" href="http://docs.python.org/library/re.html#re.match" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">re.match()</span></tt></a> method is used, additionally to
 check for a match (which also matches substrings), it is also
@@ -1138,7 +1329,7 @@ channels, you are removing the channels. (default: False)</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>A copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the channels, matched by the list of
 regular expressions.</p>
@@ -1152,7 +1343,7 @@ regular expressions.</p>
 <dl class="last docutils">
 <dt><a class="reference internal" href="#wyrm.processing.remove_channels" title="wyrm.processing.remove_channels"><tt class="xref py py-obj docutils literal"><span class="pre">remove_channels</span></tt></a></dt>
 <dd>Remove Channels</dd>
-<dt><a class="reference external" href="http://docs.python.org/library/re.html#re" title="(in Python v2.7)"><tt class="xref py py-obj docutils literal"><span class="pre">re</span></tt></a></dt>
+<dt><a class="reference external" href="http://docs.python.org/library/re.html#module-re" title="(in Python v2.7)"><tt class="xref py py-obj docutils literal"><span class="pre">re</span></tt></a></dt>
 <dd>Python&#8217;s Regular Expression module for more information about regular expressions.</dd>
 </dl>
 </div>
@@ -1181,7 +1372,7 @@ array:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>epoched Data object</p>
 </div></blockquote>
@@ -1199,14 +1390,14 @@ array:</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a copy of the epoched data with only the selected classes
 included.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
 </div></blockquote>
@@ -1246,7 +1437,7 @@ included.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>epoched Data object with an <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute</p>
 </div></blockquote>
@@ -1264,13 +1455,13 @@ included.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a copy of the epoched data with only the selected epochs included.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>if <tt class="docutils literal"><span class="pre">dat</span></tt> has no <tt class="docutils literal"><span class="pre">.class_names</span></tt> attribute.</p>
 </div></blockquote>
@@ -1312,7 +1503,7 @@ the returned Data object.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <p><strong>ival</strong> : list of two floats</p>
 <blockquote>
 <div><p>Start and end in milliseconds. Start is included end is excluded
@@ -1324,13 +1515,13 @@ the returned Data object.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the selected time intervals.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><p>if the given interval does not fit into <tt class="docutils literal"><span class="pre">dat.axes[timeaxis]</span></tt>
 or <tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pre">&gt;</span> <span class="pre">ival[1]</span></tt>.</p>
@@ -1352,7 +1543,7 @@ or <tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pr
 
 <dl class="function">
 <dt id="wyrm.processing.spectrogram">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">spectrogram</tt><big>(</big><em>cnt</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.spectrogram" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">spectrogram</tt><big>(</big><em>cnt</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.spectrogram" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the spectrogram of a continuous data object.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
@@ -1372,7 +1563,7 @@ respective frequencies.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>Data object with <cite>.fs</cite> attribute</p>
 </div></blockquote>
@@ -1382,7 +1573,7 @@ respective frequencies.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>Data object with the timeaxis transformed into the frequency
 domain. The values of the spectrum are the amplitudes of the
@@ -1390,9 +1581,9 @@ respective frequencies.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
-<div><p>if the <cite>dat</cite> paramter has no <cite>.fs</cite> attribute</p>
+<div><p>if the <tt class="docutils literal"><span class="pre">dat</span></tt> parameter has no <tt class="docutils literal"><span class="pre">.fs</span></tt> attribute</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1415,7 +1606,7 @@ respective frequencies.</p>
 
 <dl class="function">
 <dt id="wyrm.processing.square">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">square</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.processing.square" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">square</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.square" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the element wise square of <tt class="docutils literal"><span class="pre">dat.data</span></tt>.</p>
 <p>Calling this method is equivalent to calling</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
@@ -1425,13 +1616,13 @@ respective frequencies.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a Data object</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the element wise squares of the values in
 <tt class="docutils literal"><span class="pre">.data</span></tt></p>
@@ -1448,7 +1639,7 @@ respective frequencies.</p>
 
 <dl class="function">
 <dt id="wyrm.processing.stft">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">stft</tt><big>(</big><em>x</em>, <em>width</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#stft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.stft" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">stft</tt><big>(</big><em>x</em>, <em>width</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#stft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.stft" title="Permalink to this definition">¶</a></dt>
 <dd><p>Short time fourier transform of a real sequence.</p>
 <p>This method performs a discrete short time Fourier transform. It
 uses a sliding window to perform discrete Fourier transforms on the
@@ -1460,14 +1651,14 @@ calculating the Fourier transform.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>x</strong> : ndarray</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : ndarray</p>
 <p><strong>width: int</strong> :</p>
 <blockquote>
 <div><p>the width of the sliding window in samples</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>fourier</strong> : 2d complex array</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fourier</strong> : 2d complex array</p>
 <blockquote class="last">
 <div><p>the dimensions are time, frequency; the frequencies are evenly
 binned from 0 to f_nyquist</p>
@@ -1515,7 +1706,7 @@ Examples below).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>Data object with <tt class="docutils literal"><span class="pre">.fs</span></tt> attribute</p>
 </div></blockquote>
@@ -1529,13 +1720,13 @@ Examples below).</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with subsampled frequency</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError</strong> :</p>
 <blockquote class="last">
 <div><ul class="simple">
 <li>if <tt class="docutils literal"><span class="pre">freq</span></tt> is not a whole number divisor of <tt class="docutils literal"><span class="pre">dat.fs</span></tt></li>
@@ -1592,14 +1783,14 @@ appropriate <tt class="docutils literal"><span class="pre">.data</span></tt>, <t
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <p><strong>ax1, ax2</strong> : int</p>
 <blockquote>
 <div><p>the indices of the axes to swap</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>a copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with the appropriate axes swapped.</p>
 </div></blockquote>
@@ -1630,10 +1821,10 @@ appropriate <tt class="docutils literal"><span class="pre">.data</span></tt>, <t
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>copy of <tt class="docutils literal"><span class="pre">dat</span></tt> with with the variance along the <tt class="docutils literal"><span class="pre">timeaxis</span></tt>
 removed and <tt class="docutils literal"><span class="pre">timeaxis</span></tt> removed.</p>
@@ -1654,16 +1845,16 @@ removed and <tt class="docutils literal"><span class="pre">timeaxis</span></tt> 
 
 </div>
 <div class="section" id="module-wyrm.tentensystem">
-<span id="tentensystem-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">tentensystem</span></tt> Module<a class="headerlink" href="#module-wyrm.tentensystem" title="Permalink to this headline">¶</a></h2>
+<span id="wyrm-tentensystem-module"></span><h2>wyrm.tentensystem module<a class="headerlink" href="#module-wyrm.tentensystem" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-wyrm.types">
-<span id="types-module"></span><h2><a class="reference external" href="http://docs.python.org/library/types.html#types" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">types</span></tt></a> Module<a class="headerlink" href="#module-wyrm.types" title="Permalink to this headline">¶</a></h2>
+<span id="wyrm-types-module"></span><h2>wyrm.types module<a class="headerlink" href="#module-wyrm.types" title="Permalink to this headline">¶</a></h2>
 <p>Data type definitions.</p>
 <p>This module provides the basic data types for Wyrm, like the
 <a class="reference internal" href="#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-class docutils literal"><span class="pre">Data</span></tt></a> and <a class="reference internal" href="#wyrm.types.RingBuffer" title="wyrm.types.RingBuffer"><tt class="xref py py-class docutils literal"><span class="pre">RingBuffer</span></tt></a> classes.</p>
 <dl class="class">
 <dt id="wyrm.types.BlockBuffer">
-<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">BlockBuffer</tt><big>(</big><em>block_length=50</em><big>)</big><a class="headerlink" href="#wyrm.types.BlockBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">BlockBuffer</tt><big>(</big><em>block_length=50</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#BlockBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.BlockBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>A buffer that returns data chunks in multiples of a block length.</p>
 <p>This buffer is a first-in-first-out (FIFO) buffer that returns data
@@ -1672,7 +1863,7 @@ in multiples of a desired block length.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>block_legnth</strong> : int, optional</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>block_legnth</strong> : int, optional</p>
 <blockquote class="last">
 <div><p>the desired block length in ms</p>
 </div></blockquote>
@@ -1710,14 +1901,14 @@ in multiples of a desired block length.</p>
 </table>
 <dl class="method">
 <dt id="wyrm.types.BlockBuffer.append">
-<tt class="descname">append</tt><big>(</big><em>dat</em><big>)</big><a class="headerlink" href="#wyrm.types.BlockBuffer.append" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">append</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#BlockBuffer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.BlockBuffer.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append data to the Block Buffer.</p>
 <p>This method accumulates the incoming data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>continuous Data object</p>
 </div></blockquote>
@@ -1729,7 +1920,7 @@ in multiples of a desired block length.</p>
 
 <dl class="method">
 <dt id="wyrm.types.BlockBuffer.get">
-<tt class="descname">get</tt><big>(</big><big>)</big><a class="headerlink" href="#wyrm.types.BlockBuffer.get" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#BlockBuffer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.BlockBuffer.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pop the contents of the Block Buffer.</p>
 <p>The data returned has a length of multiples of <tt class="docutils literal"><span class="pre">block_length</span></tt>.
 If there is a fraction of <tt class="docutils literal"><span class="pre">block_length</span></tt> data more in the
@@ -1739,7 +1930,7 @@ will append new data to it.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>continuous Data object</p>
 </div></blockquote>
@@ -1791,7 +1982,7 @@ attributes. It is mainly used in unittests.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : ndarray</p>
 <p><strong>axes</strong> : nlist of 1darrays</p>
 <p><strong>names</strong> : nlist of strings</p>
 <p class="last"><strong>units</strong> : nlist of strings</p>
@@ -1857,7 +2048,7 @@ resulting object.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict, optional</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict, optional</p>
 <blockquote>
 <div><p>if provided <tt class="docutils literal"><span class="pre">copy</span></tt> will try to overwrite the name, value
 pairs after the shallow- and before the deep copy. If no
@@ -1865,7 +2056,7 @@ pairs after the shallow- and before the deep copy. If no
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>a deep copy of <tt class="docutils literal"><span class="pre">self</span></tt>.</p>
 </div></blockquote>
@@ -1910,7 +2101,7 @@ be a fraction of a millisecond.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>length_ms</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>length_ms</strong> : int</p>
 <blockquote class="last">
 <div><p>the length of the ring buffer in milliseconds</p>
 </div></blockquote>
@@ -1985,13 +2176,13 @@ this attribute directly but via the <a class="reference internal" href="#wyrm.ty
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote>
 <div><p>a continuous data object</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
 <blockquote class="last">
 <div><p>if the [1:]-dimensions (all but the first one) of <tt class="docutils literal"><span class="pre">data</span></tt>
 does not match the ring buffer dimensions</p>
@@ -2011,7 +2202,7 @@ does not match the ring buffer dimensions</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>data</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : Data</p>
 <blockquote class="last">
 <div><p>the full contents of the ring buffer</p>
 </div></blockquote>
@@ -2024,6 +2215,11 @@ does not match the ring buffer dimensions</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-wyrm">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wyrm" title="Permalink to this headline">¶</a></h2>
+<p>This is Wyrm.</p>
+<p>Some words describing the Wyrm package.</p>
+</div>
 </div>
 
 
@@ -2034,15 +2230,16 @@ does not match the ring buffer dimensions</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">wyrm Package</a><ul>
-<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">wyrm</span></tt> Package</a></li>
-<li><a class="reference internal" href="#module-wyrm.io"><tt class="docutils literal"><span class="pre">io</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-wyrm.plot"><tt class="docutils literal"><span class="pre">plot</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-wyrm.processing"><tt class="docutils literal"><span class="pre">processing</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-wyrm.tentensystem"><tt class="docutils literal"><span class="pre">tentensystem</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-wyrm.types"><tt class="docutils literal"><span class="pre">types</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#">wyrm package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-wyrm.io">wyrm.io module</a></li>
+<li><a class="reference internal" href="#module-wyrm.plot">wyrm.plot module</a></li>
+<li><a class="reference internal" href="#module-wyrm.processing">wyrm.processing module</a></li>
+<li><a class="reference internal" href="#module-wyrm.tentensystem">wyrm.tentensystem module</a></li>
+<li><a class="reference internal" href="#module-wyrm.types">wyrm.types module</a><ul>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-wyrm">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -2076,12 +2273,12 @@ does not match the ring buffer dimensions</p>
         <li class="right" >
           <a href="../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wyrm 0.3.beta documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wyrm 0.5.beta documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Bastian Venthur.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

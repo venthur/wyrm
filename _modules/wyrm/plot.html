@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>wyrm.plot &mdash; Wyrm 0.3.beta documentation</title>
+    <title>wyrm.plot &mdash; Wyrm 0.5.beta documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.3.beta',
+        VERSION:     '0.5.beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/sidebar.js"></script>
-    <link rel="top" title="Wyrm 0.3.beta documentation" href="../../index.html" />
+    <link rel="top" title="Wyrm 0.5.beta documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Wyrm 0.3.beta documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Wyrm 0.5.beta documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -63,9 +63,11 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">ticker</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
 
-<span class="kn">import</span> <span class="nn">tentensystem</span> <span class="kn">as</span> <span class="nn">tts</span>
+<span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">tentensystem</span> <span class="k">as</span> <span class="n">tts</span>
+<span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">processing</span> <span class="k">as</span> <span class="n">proc</span>
 
 
 <div class="viewcode-block" id="plot_scalp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_scalp">[docs]</a><span class="k">def</span> <span class="nf">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
@@ -110,6 +112,32 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 </div>
+<div class="viewcode-block" id="plot_spatio_temporal_r2_values"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_spatio_temporal_r2_values">[docs]</a><span class="k">def</span> <span class="nf">plot_spatio_temporal_r2_values</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the signed r^2 values and plot them in a heatmap.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : Data</span>
+<span class="sd">        epoched data</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">calculate_signed_r_square</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+    <span class="nb">max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">r2</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;None&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">max</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="nb">max</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s">&#39;RdBu&#39;</span><span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="c"># TODO: sort front-back, left-right</span>
+    <span class="c"># use the locators to fine-tune the ticks</span>
+    <span class="c">#ax.yaxis.set_major_locator(ticker.MaxNLocator())</span>
+    <span class="c">#ax.xaxis.set_major_locator(ticker.MaxNLocator())</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">IndexFormatter</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">IndexFormatter</span><span class="p">([</span><span class="s">&#39;</span><span class="si">%.1f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">dat</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dat</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+</div>
 <div class="viewcode-block" id="plot_spectrum"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_spectrum">[docs]</a><span class="k">def</span> <span class="nf">plot_spectrum</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">freqs</span><span class="p">):</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>
@@ -118,7 +146,6 @@
 </div>
 <div class="viewcode-block" id="plot_spectrogram"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_spectrogram">[docs]</a><span class="k">def</span> <span class="nf">plot_spectrogram</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="n">freqs</span><span class="p">):</span>
     <span class="n">extent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">),</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">print</span> <span class="n">extent</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
         <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span>
         <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
@@ -217,13 +244,13 @@
         <li class="right" >
           <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Wyrm 0.3.beta documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Wyrm 0.5.beta documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Bastian Venthur.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>
