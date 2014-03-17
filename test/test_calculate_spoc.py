@@ -52,40 +52,39 @@ class TestCalculateSpoc(unittest.TestCase):
         """Test if A_est is elementwise almost equal A."""
         W, A_est, d = calculate_spoc(self.epo)
         # A and A_est can have a different scaling, after normalizing
-        # and correcting for sign, they should be almost equal
-        # normalize (we're only interested in the first and last column)
-        for i in 0, -1:
-            idx = np.argmax(np.abs(A_est[:, i]))
-            A_est[:, i] /= A_est[idx, i]
-            idx = np.argmax(np.abs(self.A[:, i]))
-            self.A[:, i] /= self.A[idx, i]
-        # for i in 0, -1:
-        #   check elementwise if A[:, i] almost A_est[:, i]
+        # and correcting for sign, the first pattern should be almost
+        # equal the source pattern
+        idx = np.argmax(np.abs(A_est[:, 0]))
+        A_est[:, 0] /= A_est[idx, 0]
+        idx = np.argmax(np.abs(self.A[:, 0]))
+        self.A[:, 0] /= self.A[idx, 0]
+        # check elementwise if A[:, 0] almost A_est[:, 0]
         epsilon = 0.01
-        for i in 0, -1:
-            diff = self.A[:, i] - A_est[:, i]
-            diff = np.abs(diff)
-            diff = np.sum(diff) / self.A.shape[0]
-            self.assertTrue(diff < epsilon)
+        diff = self.A[:, 0] - A_est[:, 0]
+        diff = np.abs(diff)
+        diff = np.sum(diff) / self.A.shape[0]
+        self.assertTrue(diff < epsilon)
 
     def test_s(self):
         """Test if s_est is elementwise almost equal s."""
         W, A_est, d = calculate_spoc(self.epo)
         # applying the filter to X gives us s_est which should be almost
         # equal s
-        s_est = np.empty(self.s.shape)
+        s_est = np.empty(self.s.shape[:2])
         for i in range(self.EPOCHS):
-            s_est[i] = np.dot(self.X[i], W[:, [0, -1]])
-        # correct for scaling, and sign
-        self.s = self.s.reshape(-1, self.SOURCES)
-        s_est2 = s_est.reshape(-1, self.SOURCES)
-        epsilon = 0.01
+            s_est[i] = np.dot(self.X[i], W[:, 0])
+        s_true = self.s[..., 0]
+        epsilon = 0.001
 
-        idx = np.argmax(np.abs(s_est2[:, 0]))
-        s_est2[:, 0] /= s_est2[idx, 0]
-        idx = np.argmax(np.abs(self.s[:, 0]))
-        self.s[:, 0] /= self.s[idx, 0]
-        diff = np.sum(np.abs(self.s[:, 0] - s_est2[:, 0])) / self.s.shape[0]
+        # correct for scale
+        s_true /= s_true.std()
+        s_est /= s_est.std()
+
+        # correct for sign
+        s_true = np.abs(s_true)
+        s_est = np.abs(s_est)
+
+        diff = np.sum(s_true - s_est) / (self.s.shape[0] * self.s.shape[1])
         self.assertTrue(diff < epsilon)
 
     #def test_calculate_signed_r_square_swapaxes(self):

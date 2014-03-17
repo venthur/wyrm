@@ -1342,26 +1342,15 @@ def calculate_spoc(epo):
 
     >>> w, a, d = calculate_spoc(epo)
 
-    Identify the components with strongest co-modulation::
-
-    >>> sort abs(d) from largest to smallest and pick the f
-
-    Take the filter that corresponds to the strongest co-modulation
-    (first or last)::
+    Identify the components with strongest co-modulation by checking the
+    covariance values stored in ``d``. If there is positive covariance
+    with the target variable it will be the first, otherwise the last:
 
     >>> w = w[:, 0]
 
     Apply the filter(s) to the test data::
 
     >>> filtered = np.dot(data, w)
-
-    Compute epoch-wise variance
-
-    >>> ???
-
-    Scatter the target variable and the epoch-wise power of the SPoC component
-
-    >>> ???
 
     Notes
     -----
@@ -1381,7 +1370,6 @@ def calculate_spoc(epo):
     spatial filtering. The spatial filters are optimized such that the
     epoch-wise variance maximally covaries with the given target signal
     ``z``.
-
 
     See Also
     --------
