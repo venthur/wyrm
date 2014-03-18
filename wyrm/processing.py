@@ -1123,11 +1123,11 @@ def spectrum(dat, timeaxis=-2):
     # number of samples of our data
     length = dat.data.shape[timeaxis]
     fourier = sp.fftpack.fft(dat.data, axis=timeaxis)
-    fourier = fourier.take(np.arange(length)[1:length/2], axis=timeaxis)
+    fourier = fourier.take(np.arange(length)[1:int(length/2)], axis=timeaxis)
     amps = 2 * fourier / length
     amps = np.abs(amps)
     freqs = sp.fftpack.fftfreq(length, 1/dat.fs)
-    freqs = freqs[1:length/2]
+    freqs = freqs[1:int(length/2)]
     axes = dat.axes[:]
     axes[timeaxis] = freqs
     names = dat.names[:]

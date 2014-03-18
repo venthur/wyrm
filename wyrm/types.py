@@ -388,6 +388,9 @@ class RingBuffer(object):
         if self.data is None:
             self.fs = dat.fs
             self.length = self.length_ms / 1000 * self.fs
+            if not self.length.is_integer():
+                logger.error('Length is not an integer, please check length_ms and fs. Rounding errors will lead to loss of samples.')
+            self.length = int(self.length)
             buffershape = list(data.shape)
             buffershape[0] = self.length
             self.data = np.empty(buffershape)
@@ -534,6 +537,9 @@ class BlockBuffer(object):
         if not self.dat:
             return empty
         samples = self.block_length * self.dat.fs / 1000
+        if not samples.is_integer():
+            logger.error('Samples is not an integer, pleas check your block_length and sampling frequency. Rounding errors will lead to loss of samples.')
+        samples = int(samples)
         if self.dat.data.shape[0] < samples:
             return empty
         if self.dat.data.shape[0] % samples == 0:
