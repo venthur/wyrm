@@ -12,7 +12,6 @@ class TestBlockBuffer(unittest.TestCase):
 
     def setUp(self):
         self.empty_dat = Data(np.array([]), [], [], [])
-        data = np.array([0, 0])
         self.dat_1 = Data(np.array([0, 0])[np.newaxis, :], [np.array([0]), np.array(['ch1', 'ch2'])], ['time', 'channel'], ['ms', '#'])
         self.dat_1.fs = 1000
         self.dat_1.markers = [[0, 'x']]
