@@ -3,7 +3,6 @@ from __future__ import division
 import unittest
 
 import numpy as np
-from scipy.fftpack import rfft, rfftfreq
 from scipy.signal import butter
 
 from wyrm.types import Data
@@ -34,11 +33,10 @@ class TestFiltFilt(unittest.TestCase):
         b, a = butter(4, [6 / fn, 8 / fn], btype='band')
         ans = filtfilt(self.dat, b, a)
         # check if the desired band is not damped
-        dat = spectrum(self.dat)
+        dat = spectrum(ans)
         mask = dat.axes[0] == 7
-        ffreqs = rfftfreq(ans.data.shape[0], 1/ans.fs)
-        # check if the outer freqs are damped close to zero
         self.assertTrue((dat.data[mask] > 6.5).all())
+        # check if the outer freqs are damped close to zero
         mask = (dat.axes[0] <= 6) & (dat.axes[0] > 8)
         self.assertTrue((dat.data[mask] < .5).all())
 
