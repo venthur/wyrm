@@ -4,7 +4,7 @@
 
 if command -v coverage >/dev/null
 then 
-    COVERAGE=ccoverage
+    COVERAGE=coverage
 elif command -v python-coverage >/dev/null
 then
     COVERAGE=python-coverage
