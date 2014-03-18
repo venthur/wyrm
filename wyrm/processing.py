@@ -758,6 +758,7 @@ def clear_markers(dat, timeaxis=-2):
     if not dat:
         # we don't have any data, and thus no time interval, we remove
         # all markers
+        logger.warning('Removing Marker from empty Data, this might be an error.')
         return dat.copy(markers=[])
     assert hasattr(dat, 'fs')
     sample_len = 1000 / dat.fs

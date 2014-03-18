@@ -547,6 +547,7 @@ class BlockBuffer(object):
             self.dat = empty
             return ret
         else:
+            marker_orig = self.dat.markers[:]
             remaining = self.dat.data.shape[0] % samples
             # first part
             dat1 = self.dat.copy()
@@ -561,7 +562,16 @@ class BlockBuffer(object):
             dat2.axes[0] -= t0
             dat2.markers = map(lambda x: [x[0] - t0, x[1]], dat2.markers)
             dat2 = clear_markers(dat2)
-            #
+            # Security check
+            if len(dat1.markers) + len(dat2.markers) != len(marker_orig):
+                logger.error('Lost marker during data split.')
+                logger.error('Original Marker:')
+                logger.error(marker_orig)
+                logger.error('First Part (until %f):' % dat1.axes[0][-1])
+                logger.error(dat1.markers)
+                logger.error('Second Pard (from %f):' % t0)
+                logger.error(dat2.markers)
+                logger.error('Original Range: %f - %f' % (self.dat.axes[0][0], self.dat.axes[0][-1]))
             self.dat = dat2
             return dat1
 
