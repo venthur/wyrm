@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>wyrm.processing &mdash; Wyrm 0.5.beta documentation</title>
+    <title>wyrm.processing &mdash; Wyrm 0.6.beta documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.5.beta',
+        VERSION:     '0.6.beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/sidebar.js"></script>
-    <link rel="top" title="Wyrm 0.5.beta documentation" href="../../index.html" />
+    <link rel="top" title="Wyrm 0.6.beta documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Wyrm 0.5.beta documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Wyrm 0.6.beta documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -811,6 +811,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dat</span><span class="p">:</span>
         <span class="c"># we don&#39;t have any data, and thus no time interval, we remove</span>
         <span class="c"># all markers</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;Removing Marker from empty Data, this might be an error.&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">markers</span><span class="o">=</span><span class="p">[])</span>
     <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;fs&#39;</span><span class="p">)</span>
     <span class="n">sample_len</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
@@ -1176,11 +1177,11 @@
     <span class="c"># number of samples of our data</span>
     <span class="n">length</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span>
     <span class="n">fourier</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
-    <span class="n">fourier</span> <span class="o">=</span> <span class="n">fourier</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">length</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
+    <span class="n">fourier</span> <span class="o">=</span> <span class="n">fourier</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">length</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
     <span class="n">amps</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">fourier</span> <span class="o">/</span> <span class="n">length</span>
     <span class="n">amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">amps</span><span class="p">)</span>
     <span class="n">freqs</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">fftpack</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
-    <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
     <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">freqs</span>
     <span class="n">names</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[:]</span>
@@ -1870,7 +1871,7 @@
         <li class="right" >
           <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Wyrm 0.5.beta documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Wyrm 0.6.beta documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
