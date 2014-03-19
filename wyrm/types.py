@@ -466,7 +466,8 @@ class BlockBuffer(object):
     """A buffer that returns data chunks in multiples of a block length.
 
     This buffer is a first-in-first-out (FIFO) buffer that returns data
-    in multiples of a desired block length.
+    in multiples of a desired block length. The block length is defined
+    in milliseconds.
 
     Parameters
     ----------
