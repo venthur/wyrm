@@ -171,8 +171,7 @@ def wr_cmap():
 
 
 def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=True, save=False,
-                      save_name='timeinterval', save_path=None, save_format='pdf', channel=None,
-                      position=None):
+                      save_name='timeinterval', save_path=None, save_format='pdf', channel=None, position=None):
     """Plots a simple time interval for all channels in the given data object.
 
     Parameters
@@ -207,6 +206,7 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
     rect_r2 = [.07, .07, .9, .05]
 
     if position is None:
+        plt.figure()
         if r_square is None:
             pos_ti = rect_ti_solo
         else:
@@ -395,8 +395,10 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                     masterax = ax
 
                 # hide the axes
-                plt.gca().get_xaxis().set_visible(False)
-                plt.gca().get_yaxis().set_visible(False)
+                #plt.gca().get_xaxis().set_visible(False)
+                #plt.gca().get_yaxis().set_visible(False)
+                #ax.get_xlabel()
+                #plt.tick_params(axis='both', which='both', labelbottom='off')
 
                 # at this moment just to show what's what
                 plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
@@ -409,7 +411,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         row += 1
 
     # todo: plot the far right upper corner subplot for showing the axis data stuff
-    _subplot_scale("", "", position=grid[scale_ax])
+    _subplot_scale('xtest', 'ytest', position=grid[scale_ax])
 
     # adjust the spacing
     #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
@@ -479,7 +481,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
 
-    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
+    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, colormap=colormap, annotate=annotate,
+                         norm=norm)
     ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
 
     if show:
@@ -499,7 +502,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     return ax0, ax1
 
 
-#todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ax.xaxis.set_tick_params(labelsize=x_labelsize)
+# todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ...
+# ax.xaxis.set_tick_params(labelsize=x_labelsize)
 def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True,
                   show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
     """Plots the values v for channels 'channels' on a scalp as a contour plot. Additionaly plots the channels in
@@ -619,7 +623,7 @@ def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
     return ax
 
 
-def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
+def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=True, norm=None):
     fig = plt.gcf()
     ax = fig.add_axes(position)
     channelpos = [tts.channels[c] for c in channels]
@@ -629,9 +633,10 @@ def _subplot_scalp(v, channels, position, levels=25, annotate=True, norm=None):
     z = v
     xx, yy, zz = interpolate_2d(x, y, z)
 
-    #ax.subplot(position)
+    if colormap is None:
+        colormap = bwr_cmap()
 
-    ax.contourf(xx, yy, zz, levels, zorder=1, cmap=bwr_cmap(), norm=norm)
+    ax.contourf(xx, yy, zz, levels, zorder=1, cmap=colormap, norm=norm)
     ax.contour(xx, yy, zz, levels, zorder=1, colors="k", norm=norm, linewidths=.1)
 
     ax.add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
@@ -736,10 +741,15 @@ def _subplot_r_square(data, position):
 def _subplot_scale(xvalue, yvalue, position):
     fig = plt.gcf()
     ax = fig.add_axes(position)
-    ax.get_xaxis().set_visible(False)
-    ax.get_yaxis().set_visible(False)
-    ax.add_patch(Rectangle((1, 1), 3, .1))
+    #ax.get_xaxis().set_visible(False)
+    #ax.get_yaxis().set_visible(False)
+    for item in [fig, ax]:
+        item.patch.set_visible(False)
+    ax.axis('off')
+    ax.add_patch(Rectangle((1, 1), 3, .2))
     ax.add_patch(Rectangle((1, 1), .1, 2))
+    plt.text(1.5, 2, yvalue)
+    plt.text(1.5, .25, xvalue)
     ax.set_ylim([0, 4])
     ax.set_xlim([0, 5])
     return ax
