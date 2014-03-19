@@ -389,19 +389,17 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         if len(l) > 0:
             for i in range(len(l)):
 
-                ax = _subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, legend=legend,
+                ax = _subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, labels=False, legend=legend,
                                            channel=l[i][2], shareaxis=masterax)
                 if masterax is None:
                     masterax = ax
 
-                # hide the axes
-                #plt.gca().get_xaxis().set_visible(False)
-                #plt.gca().get_yaxis().set_visible(False)
-                #ax.get_xlabel()
-                #plt.tick_params(axis='both', which='both', labelbottom='off')
+                # hide the axeslabeling
+                plt.tick_params(axis='both', which='both', labelbottom='off', labeltop='off', labelleft='off',
+                                labelright='off')
 
                 # at this moment just to show what's what
-                plt.gca().annotate(l[i][0], (0.05, 0.80), xycoords='axes fraction')
+                plt.gca().annotate(l[i][0], (0.05, 0.05), xycoords='axes fraction')
 
                 if row == 0 and i == len(l)-1:
                     # this is the last axes in the first row
@@ -410,8 +408,9 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 k += 1
         row += 1
 
-    # todo: plot the far right upper corner subplot for showing the axis data stuff
-    _subplot_scale('xtest', 'ytest', position=grid[scale_ax])
+    # plot the scale axes
+    xtext = data.axes[0][len(data.axes[0])-1]
+    _subplot_scale(str(xtext) + ' ms', "$\mu$V", position=grid[scale_ax])
 
     # adjust the spacing
     #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
@@ -596,6 +595,8 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
 
             _subplot_timeinterval(data, position=pos_c, epoch=-1, highlights=None, legend=False,
                                   channel=np.where(data.axes[1] == c)[0][0], shareaxis=None)
+
+            # strip down the timeinterval plots
         else:
             print('The channel "' + c + '" was not found in the tenten-system.')
 
@@ -689,7 +690,7 @@ def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=Tru
     return ax
 
 
-def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, channel=None,
+def _subplot_timeinterval(data, position, epoch, highlights=None, labels=True, legend=True, channel=None,
                           shareaxis=None):
     fig = plt.gcf()
 
@@ -715,7 +716,8 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, legend=True, c
     set_highlights(highlights, set_axes=[ax])
 
     # labeling of axes
-    set_labels(data.units[0], "$\mu$V", draw=False)
+    if labels:
+        set_labels(data.units[0], "$\mu$V", draw=False)
 
     # labeling of channels
     if legend:
@@ -741,13 +743,11 @@ def _subplot_r_square(data, position):
 def _subplot_scale(xvalue, yvalue, position):
     fig = plt.gcf()
     ax = fig.add_axes(position)
-    #ax.get_xaxis().set_visible(False)
-    #ax.get_yaxis().set_visible(False)
     for item in [fig, ax]:
         item.patch.set_visible(False)
     ax.axis('off')
-    ax.add_patch(Rectangle((1, 1), 3, .2))
-    ax.add_patch(Rectangle((1, 1), .1, 2))
+    ax.add_patch(Rectangle((1, 1), 3, .2, color='black'))
+    ax.add_patch(Rectangle((1, 1), .1, 2, color='black'))
     plt.text(1.5, 2, yvalue)
     plt.text(1.5, .25, xvalue)
     ax.set_ylim([0, 4])
