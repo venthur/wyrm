@@ -396,7 +396,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
 
                 # hide the axeslabeling
                 plt.tick_params(axis='both', which='both', labelbottom='off', labeltop='off', labelleft='off',
-                                labelright='off')
+                                labelright='off', top='off', right='off')
 
                 # at this moment just to show what's what
                 plt.gca().annotate(l[i][0], (0.05, 0.05), xycoords='axes fraction')
