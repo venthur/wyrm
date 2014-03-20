@@ -717,7 +717,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, labels=True, l
 
     # labeling of axes
     if labels:
-        set_labels(data.units[0], "$\mu$V", draw=False)
+        set_labels(data.units[0], "$\mu$V", draw=False, set_axes=[ax])
 
     # labeling of channels
     if legend:

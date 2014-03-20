@@ -113,6 +113,15 @@ def create_tenten_data(channel_count=21, steps=100):
     return dat
 
 
+# todo: create randomized channels for plot_tenten
+def create_tenten_data_rnd(channel_count=20, steps=100):
+    sys = p._get_system()
+    data = []
+    while len(data) < channel_count:
+        c = sys[rnd.randrange(0, 141)][0]
+    pass
+
+
 def compose_package(path, save_format='pdf'):
     #def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval',
     # save_path=None, channel=None):
