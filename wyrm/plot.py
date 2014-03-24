@@ -177,28 +177,28 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
     Parameters
     ----------
     data : wyrm.types.Data
-        Data object containing the data to plot
-    r_square : [values]
-        List containing r_squared values to be plotted beneath the main plot.
-    highlights : wyrm.plot.Highlight (default: None)
-        Highlight object containing information about areas to be highlighted
-    legend : Boolean (default: True)
-        Flag to switch plotting of the legend on or off
-    show : Boolean (default: True)
-        Flag to switch immediate showing of the plot on or off
-    save : Boolean (default: False)
-        Flag to switch saving the created figure after creation on or off
-    save_name : String (default: 'timeinterval')
-        The title of the saved plot.
-    save_path : String (default: None)
-        The path the plot will be saved to.
-    save_format : String (default: 'pdf')
+        Data object containing the data to plot.
+    r_square : [values], optional
+        List containing r_squared values to be plotted beneath the main plot (default: None).
+    highlights : wyrm.plot.Highlight, optional
+        Highlight object containing information about areas to be highlighted (default: None).
+    legend : Boolean, optional
+        Flag to switch plotting of the legend on or off (default: True).
+    show : Boolean, optional
+        Flag to switch immediate showing of the plot on or off (default: True).
+    save : Boolean, optional
+        Flag to switch saving the created figure after creation on or off (default: False).
+    save_name : String, optional
+        The title of the saved plot (default: 'timeinterval').
+    save_path : String, optional
+        The path the plot will be saved to (default: None).
+    save_format : String, optional
         The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff
-    channel : int
-        A number to specify a single channel, which will then be plotted exclusively
-    position : [x, y, width, height] (default: None)
-        A Rectangle that limits the plot to its boundaries.
+        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
+    channel : int, optional
+        A number to specify a single channel, which will then be plotted exclusively (default: None).
+    position : [x, y, width, height], optional
+        A Rectangle that limits the plot to its boundaries (default: None).
     """
 
     rect_ti_solo = [.07, .07, .9, .9]
@@ -255,22 +255,22 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     Parameters
     ----------
     data : wyrm.types.Data
-        data object containing the data to plot
-    highlights : wyrm.plot.Highlight (default: None)
-        Highlight object containing information about areas to be highlighted
-    legend : Boolean (default: True)
-        Flag to switch plotting of the legend on or off
-    show : Boolean (default: True)
-        Flag to switch immediate showing of the plot on or off
-    save : Boolean (default: False)
-        Flag to switch saving the created figure after creation on or off
-    save_name: String (default: 'timeinterval')
-        The title of the saved plot.
-    save_path: String (default: None)
-        The path the plot will be saved to.
-    save_format : String (default: 'pdf')
+        data object containing the data to plot.
+    highlights : wyrm.plot.Highlight, optional
+        Highlight object containing information about areas to be highlighted (default: None).
+    legend : Boolean, optional
+        Flag to switch plotting of the legend on or off (default: True).
+    show : Boolean, optional
+        Flag to switch immediate showing of the plot on or off (default: True).
+    save : Boolean, optional
+        Flag to switch saving the created figure after creation on or off (default: False).
+    save_name: String, optional
+        The title of the saved plot (default: 'timeinterval').
+    save_path: String, optional
+        The path the plot will be saved to (default: None).
+    save_format : String, optional
         The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff
+        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
     """
     plt.figure()
 
@@ -310,22 +310,22 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     Parameters
     ----------
     data : wyrm.types.Data
-        Data object containing the data to plot
-    highlights : wyrm.plot.Highlight (default: None)
-        Highlight object containing information about areas to be highlighted
-    legend : Boolean (default: True)
-        Flag to switch plotting of the legend on or off
-    show : Boolean (default: True)
-        Flag to switch immediate showing of the plot on or off
-    save : Boolean (default: False)
-        Flag to switch saving the created figure after creation on or off
-    save_name: String (default: 'timeinterval')
-        The title of the saved plot.
-    save_path: String (default: None)
-        The path the plot will be saved to.
-    save_format : String (default: 'pdf')
+        Data object containing the data to plot.
+    highlights : wyrm.plot.Highlight, optional
+        Highlight object containing information about areas to be highlighted (default: None).
+    legend : Boolean, optional
+        Flag to switch plotting of the legend on or off (default: True).
+    show : Boolean, optional
+        Flag to switch immediate showing of the plot on or off (default: True).
+    save : Boolean, optional
+        Flag to switch saving the created figure after creation on or off (default: False).
+    save_name: String, optional
+        The title of the saved plot (default: 'timeinterval').
+    save_path: String, optional
+        The path the plot will be saved to (default: None).
+    save_format : String, optional
         The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff
+        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
     """
     # this dictionary determines which y-position corresponds with which row in the grid
     ordering = {4.0: 0,
@@ -434,32 +434,33 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
     Parameters
     ----------
     v : [values]
-        List containing the values of the channels
+        List containing the values of the channels.
     channels : [String]
-        List containing the channel names
-    levels : int (default: 25)
-        The number of automatically created levels in the contour plot
-    colormap : matplotlib.colors.colormap (default: a blue-white-red colormap)
-        A colormap to define the color transitions
-    norm : matplotlib.colors.norm (default: None)
-        A norm to define the min and max values. If 'None', values from -10 to 10 are assumed.
-    ticks : array([ints]) (default: None)
-        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10 are displayed.
-    annotate : Boolean (default: True)
-        Flag to switch channel annotations on or off
-    show : Boolean (default: True)
-        Flag to switch immediate showing of the plot on or off
-    save : Boolean (default: False)
-        Flag to switch saving the created figure after creation on or off
-    save_name: String (default: 'timeinterval')
-        The title of the saved plot.
-    save_path: String (default: None)
-        The path the plot will be saved to.
-    save_format : String (default: 'pdf')
+        List containing the channel names.
+    levels : int, optional
+        The number of automatically created levels in the contour plot (default: 25).
+    colormap : matplotlib.colors.colormap, optional
+        A colormap to define the color transitions (default: a blue-white-red colormap).
+    norm : matplotlib.colors.norm, optional
+        A norm to define the min and max values. (default: 'None', values from -10 to 10 are assumed).
+    ticks : array([ints]), optional
+        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10
+        are displayed (default: None).
+    annotate : Boolean, optional
+        Flag to switch channel annotations on or off (default: True).
+    show : Boolean, optional
+        Flag to switch immediate showing of the plot on or off (default: True).
+    save : Boolean, optional
+        Flag to switch saving the created figure after creation on or off (default: False).
+    save_name: String, optional
+        The title of the saved plot (default: 'timeinterval').
+    save_path: String, optional
+        The path the plot will be saved to (default: None).
+    save_format : String, optional
         The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff
-    position : [x, y, width, height] (default: None)
-        A Rectangle that limits the plot to its boundaries.
+        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
+    position : [x, y, width, height], optional
+        A Rectangle that limits the plot to its boundaries (default: None).
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -511,36 +512,37 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
     Parameters
     ----------
     data : wyrm.types.Data
-        Data object containing the data to plot
+        Data object containing the data to plot.
     time : int
-        The point in time to create the scalp plot from
+        The point in time to create the scalp plot from.
     channels_ti : [String]
         List containing the channel names for the overlaying timeinterval plots.
-    scale_ti : float
-        The percentage to scale the overlaying timeinterval plots (default: .1)
-    levels : int (default: 25)
-        The number of automatically created levels in the contour plot
-    colormap : matplotlib.colors.colormap (default: a blue-white-red colormap)
-        A colormap to define the color transitions
-    norm : matplotlib.colors.norm (default: None)
-        A norm to define the min and max values. If 'None', values from -10 to 10 are assumed.
-    ticks : array([ints]) (default: None)
-        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10 are displayed.
-    annotate : Boolean (default: True)
-        Flag to switch channel annotations on or off
-    show : Boolean (default: True)
-        Flag to switch immediate showing of the plot on or off
-    save : Boolean (default: False)
-        Flag to switch saving the created figure after creation on or off
-    save_name: String (default: 'timeinterval')
-        The title of the saved plot.
-    save_path: String (default: None)
-        The path the plot will be saved to.
-    save_format : String (default: 'pdf')
+    scale_ti : float, optional
+        The percentage to scale the overlaying timeinterval plots (default: 0.1).
+    levels : int, optional
+        The number of automatically created levels in the contour plot (default: 25).
+    colormap : matplotlib.colors.colormap, optional
+        A colormap to define the color transitions (default: a blue-white-red colormap).
+    norm : matplotlib.colors.norm, optional
+        A norm to define the min and max values. If 'None', values from -10 to 10 are assumed (default: None).
+    ticks : array([ints]), optional
+        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10
+        are displayed (default: None).
+    annotate : Boolean, optional
+        Flag to switch channel annotations on or off (default: True).
+    show : Boolean, optional
+        Flag to switch immediate showing of the plot on or off (default: True).
+    save : Boolean, optional
+        Flag to switch saving the created figure after creation on or off (default: False).
+    save_name: String, optional
+        The title of the saved plot (default: 'timeinterval').
+    save_path: String, optional
+        The path the plot will be saved to (default: None).
+    save_format : String, optional
         The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff
-    position : [x, y, width, height] (default: None)
-        A Rectangle that limits the plot to its boundaries.
+        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
+    position : [x, y, width, height], optional
+        A Rectangle that limits the plot to its boundaries (default: None).
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -948,9 +950,9 @@ def set_highlights(obj_highlight, set_axes=None):
     ----------
     obj_highlight : wyrm.plot.Highlight
         a highlight object containing information about the areas to highlight
-    set_axes : [matplotlib.Axes] (default: None)
-        list of axes to highlight, if default, all axes of the current figure will be highlighted.
-        """
+    set_axes : [matplotlib.Axes], optional
+        List of axes to highlight (default: None, all axes of the current figure will be highlighted).
+    """
     if set_axes is None:
         set_axes = plt.gcf().axes
 
@@ -974,10 +976,10 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
         The String to label the x-axis.
     ylabel : String
         The String to label the y-axis.
-    set_axes : [Matplotlib.Axes] (default: None)
-        List of axes to apply the labels to. Per default the labels are applied to all axes of the current figure.
-    draw : Boolean (default: True)
-        A flag to switch if the new labels should be directly drawn to the plot.
+    set_axes : [Matplotlib.Axes], optional
+        List of axes to apply the labels to (default: None, the labels are applied to all axes of the current figure).
+    draw : Boolean, optional
+        A flag to switch if the new labels should be directly drawn to the plot (default: True).
     """
     if set_axes is None:
         set_axes = plt.gcf().axes
@@ -998,11 +1000,11 @@ class Highlight:
     ----------
     spans : [[int,int]...]
         list containing pairs of ints, representing start and end value of highlighted area
-    color : color
-        the color of the highlighted areas
+    color : color, optional
+        the color of the highlighted areas (default: '#b3b3b3').
         (e.g. 'green' or '#b3b3b3')
-    alpha: float (0..1)
-        the alpha value of the highlighted areas
+    alpha: float (0..1), optional
+        the alpha value of the highlighted areas (default: 0.5)
     """
 
     def __init__(self, spans=None, color='#b3b3b3', alpha=0.5):
