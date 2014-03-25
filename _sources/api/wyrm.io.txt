@@ -10,6 +10,7 @@ wyrm.io
    .. autosummary::
    
       load_brain_vision_data
+      load_mushu_data
    
    
 
