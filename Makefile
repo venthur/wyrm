@@ -43,6 +43,10 @@ pypi:
 	python setup.py stdist upload
 
 
+notebook:
+	cd examples; PYTHONPATH=.. ipython notebook
+
+
 clean:
 	rm -rf $(APIDOCDIR)
 	rm -rf $(GH_PAGES)
