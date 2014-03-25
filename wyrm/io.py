@@ -11,6 +11,7 @@ from __future__ import division
 from os import path
 import logging
 import re
+import json
 
 import numpy as np
 
@@ -128,4 +129,56 @@ def load_brain_vision_data(vhdr):
     dat.markers = mrk
     return dat
 
+
+def load_mushu_data(meta):
+    """Load saved EEG data in Mushu's format.
+
+    This method loads saved data in Mushu's format and returns a
+    continuous ``Data`` object.
+
+    Parameters
+    ----------
+    meta : str
+        Path to `.meta` file. A Mushu recording consists of three
+        different files: `.eeg`, `.marker`, and `.meta`.
+
+    Returns
+    -------
+    dat : Data
+        Continuous Data object
+
+    Examples
+    --------
+
+    >>> dat = load_mushu_data('testrecording.meta')
+
+    """
+    # reverse and replace and reverse again to replace only the last
+    # (occurrence of .meta)
+    datafile = meta[::-1].replace('atem.', 'gee.', 1)[::-1]
+    markerfile = meta[::-1].replace('atem.', 'rekram.', 1)[::-1]
+    assert path.exists(meta) and path.exists(datafile) and path.exists(markerfile)
+    # load meta data
+    with open(meta) as fh:
+        metadata = json.load(fh)
+    fs = metadata['Sampling Frequency']
+    channels = np.array(metadata['Channels'])
+    # load eeg data
+    data = np.fromfile(datafile, np.float32)
+    data = data.reshape((-1, len(channels)))
+    # load markers
+    markers = []
+    with open(markerfile) as fh:
+        for line in fh:
+            ts, m = line.split(' ', 1)
+            markers.append([float(ts), str(m).strip()])
+    # construct Data
+    duration = len(data) * 1000 / fs
+    axes = [np.linspace(0, duration, len(data), endpoint=False), channels]
+    names = ['time', 'channels']
+    units = ['ms', '#']
+    dat = Data(data=data, axes=axes, names=names, units=units)
+    dat.fs = fs
+    dat.markers = markers
+    return dat
 
