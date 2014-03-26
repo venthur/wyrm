@@ -205,6 +205,24 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
     Matplotlib.Axes or (Matplotlib.Axes, Matplotlib.Axes)
         The Matplotlib.Axes corresponding to the plotted timeinterval. If r-square values where
         plotted, too, a second Matplotlib.Axes is returned alongside.
+
+    Examples
+    --------
+    Plots all channels contained in data with a legend.
+
+    >>> plot_timeinterval(data)
+
+    Same as above, but without the legend.
+
+    >>> plot_timeinterval(data, legend=False)
+
+    Adds r-square values to the plot.
+
+    >>> plot_timeinterval(data, r_square=[values], legend=False)
+
+    Saves the plot automatically to 'path' as a pdf.
+
+    >>> plot_timeinterval(data, r_square=[values], legend=False, save=True, save_path=path, save_format='pdf')
     """
 
     rect_ti_solo = [.07, .07, .9, .9]
