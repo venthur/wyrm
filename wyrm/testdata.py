@@ -115,11 +115,26 @@ def create_tenten_data(channel_count=21, steps=100):
 
 # todo: create randomized channels for plot_tenten
 def create_tenten_data_rnd(channel_count=20, steps=100):
-    sys = p._get_system()
-    data = []
-    while len(data) < channel_count:
-        c = sys[rnd.randrange(0, 141)][0]
-    pass
+    sys = p._get_system().keys()
+
+    if channel_count > len(sys):
+        channel_count = len(sys)
+
+    channels = []
+    while len(channels) < channel_count:
+        c = sys[rnd.randrange(0, len(sys))]
+        if c not in channels:
+            channels.append(c)
+
+    data = np.zeros([steps, channel_count])
+    for i in range(channel_count):
+        data[:, i] = _create_channel(steps)
+
+    axes = [np.arange(0, steps*10, 10), channels]
+    names = ["time", "channel"]
+    units = ["ms", "channel_stuff"]
+    dat = Data(data, axes, names, units)
+    return dat
 
 
 def compose_package(path, save_format='pdf'):

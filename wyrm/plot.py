@@ -412,6 +412,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     columns = [value for value in columns if value != 0]
 
     # add another axes to the first row for the scale
+    print columns
     columns[0] += 1
 
     plt.figure()
@@ -424,10 +425,10 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     row = 0
     k = 0
     scale_ax = 0
+
     for l in channel_lists:
         if len(l) > 0:
             for i in range(len(l)):
-
                 ax.append(_subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, labels=False,
                                                 legend=legend, channel=l[i][2], shareaxis=masterax))
                 if masterax is None and len(ax) > 0:
@@ -440,12 +441,14 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
                 # at this moment just to show what's what
                 plt.gca().annotate(l[i][0], (0.05, 0.05), xycoords='axes fraction')
 
+                k += 1
+
                 if row == 0 and i == len(l)-1:
                     # this is the last axes in the first row
-                    k += 1
                     scale_ax = k
-                k += 1
-        row += 1
+                    k += 1
+
+            row += 1
 
     # plot the scale axes
     xtext = data.axes[0][len(data.axes[0])-1]
@@ -849,10 +852,8 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
 
     Parameters
     ----------
-    cols : int
-        The number of desired columns.
-    rows : int
-        The number of desired rows.
+    cols_list : [int]
+        List of ints. Every entry represents a row with as many channels as the value.
     hpad : float, optional
         The amount of horizontal padding (default: 0.05).
     vpad : float, optional
@@ -866,15 +867,15 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
     h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
     w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
     grid = []
-    col = 1
+    row = 1
     for l in cols_list:
-        yi = 1 - ((col * vpad) + (col * h))
+        yi = 1 - ((row * vpad) + (row * h))
         for i in range(l):
             # calculate margin on both sides
             m = .5 - (((l * w) + ((l - 1) * hpad)) / 2)
             xi = m + (i * hpad) + (i * w)
             grid.append([xi, yi, w, h])
-        col += 1
+        row += 1
     return grid
 
 
