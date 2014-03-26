@@ -199,6 +199,12 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
         A number to specify a single channel, which will then be plotted exclusively (default: None).
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
+
+    Returns
+    -------
+    Matplotlib.Axes or (Matplotlib.Axes, Matplotlib.Axes)
+        The Matplotlib.Axes corresponding to the plotted timeinterval. If r-square values where
+        plotted, too, a second Matplotlib.Axes is returned alongside.
     """
 
     rect_ti_solo = [.07, .07, .9, .9]
@@ -271,19 +277,25 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     save_format : String, optional
         The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
         raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
+
+    Returns:
+    --------
+    [Matplotlib.Axes]
+        Returns a list of Matplotlib.Axes, one for every epoch.
     """
     plt.figure()
+    ax = []
 
     # check of data is epoched
     if len(data.data.shape) > 2:
         # iterate over epochs
         for i in range(len(data.data)):
-            grid = _calc_grid(len(data.data), 1, .04, .04)
+            grid = calc_grid(len(data.data), 1, .04, .04)
 
-            _subplot_timeinterval(data, grid[i], i, highlights=highlights, legend=legend)
+            ax.append(_subplot_timeinterval(data, grid[i], i, highlights=highlights, legend=legend))
     else:
         pos = 111
-        _subplot_timeinterval(data, pos, -1, highlights=highlights, legend=legend)
+        ax.append(_subplot_timeinterval(data, pos, -1, highlights=highlights, legend=legend))
 
     # add labels
     set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
@@ -301,6 +313,8 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     # showing if specified
     if show:
         plt.show()
+
+    return ax
 
 
 def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save_name='system_plot', save_path=None,
@@ -326,6 +340,12 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     save_format : String, optional
         The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
         raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
+
+    Returns
+    -------
+    [Matplotlib.Axes], Matplotlib.Axes
+        Returns the plotted timeinterval axes as a list of Matplotlib.Axes and the plotted scale as
+        a single Matplotlib.Axes.
     """
     # this dictionary determines which y-position corresponds with which row in the grid
     ordering = {4.0: 0,
@@ -377,10 +397,11 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     columns[0] += 1
 
     plt.figure()
-    grid = _calc_centered_grid(columns, hpad=.01, vpad=.01)
+    grid = calc_centered_grid(columns, hpad=.01, vpad=.01)
 
     # axis used for sharing axes between channels
     masterax = None
+    ax = []
 
     row = 0
     k = 0
@@ -389,10 +410,10 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
         if len(l) > 0:
             for i in range(len(l)):
 
-                ax = _subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, labels=False, legend=legend,
-                                           channel=l[i][2], shareaxis=masterax)
-                if masterax is None:
-                    masterax = ax
+                ax.append(_subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, labels=False,
+                                                legend=legend, channel=l[i][2], shareaxis=masterax))
+                if masterax is None and len(ax) > 0:
+                    masterax = ax[0]
 
                 # hide the axeslabeling
                 plt.tick_params(axis='both', which='both', labelbottom='off', labeltop='off', labelleft='off',
@@ -410,7 +431,7 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
 
     # plot the scale axes
     xtext = data.axes[0][len(data.axes[0])-1]
-    _subplot_scale(str(xtext) + ' ms', "$\mu$V", position=grid[scale_ax])
+    sc = _subplot_scale(str(xtext) + ' ms', "$\mu$V", position=grid[scale_ax])
 
     # adjust the spacing
     #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
@@ -425,6 +446,8 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     # showing if specified
     if show:
         plt.show()
+
+    return ax, sc
 
 
 def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True,
@@ -461,6 +484,11 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
         raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
+
+    Returns
+    -------
+    (Matplotlib.Axes, Matplotlib.Axes)
+        Returns a pair of Matplotlib.Axes. The first contains the plotted scalp, the second the corresponding colorbar.
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -543,6 +571,12 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
         raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
+
+    Returns
+    -------
+    ((Matplotlib.Axes, Matplotlib.Axes), [Matplotlib.Axes])
+        Returns a tuple of first a tuple with the plotted scalp and its colorbar, then a list of all on top
+        plotted timeintervals.
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -573,6 +607,7 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
     # adding the timeinterval plots
     s = _get_system()
 
+    tis = []
     for c in channels_ti:
         if c in s:
 
@@ -595,8 +630,8 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
             # transformation to fit into the scalp part of the plot
             pos_c = _transform_rect(pos_scalp, pos_c)
 
-            _subplot_timeinterval(data, position=pos_c, epoch=-1, highlights=None, legend=False,
-                                  channel=np.where(data.axes[1] == c)[0][0], shareaxis=None)
+            tis.append(_subplot_timeinterval(data, position=pos_c, epoch=-1, highlights=None, legend=False,
+                                             channel=np.where(data.axes[1] == c)[0][0], shareaxis=None))
 
             # strip down the timeinterval plots
         else:
@@ -616,7 +651,7 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
     if show:
         plt.show()
 
-    return ax0, ax1
+    return (ax0, ax1), tis
 
 
 def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
@@ -757,7 +792,26 @@ def _subplot_scale(xvalue, yvalue, position):
     return ax
 
 
-def _calc_grid(cols, rows, hpad=.05, vpad=.05):
+def calc_grid(cols, rows, hpad=.05, vpad=.05):
+    """
+    Calculates a grid of Rectangles and their positions.
+
+    Parameters
+    ----------
+    cols : int
+        The number of desired columns.
+    rows : int
+        The number of desired rows.
+    hpad : float, optional
+        The amount of horizontal padding (default: 0.05).
+    vpad : float, optional
+        The amount of vertical padding (default: 0.05).
+
+    Returns
+    -------
+    [[float, float, float, float]]
+        A list of all rectangle positions in the form of [xi, xy, width, height] sorted from top left to bottom right.
+    """
     w = (1 - ((cols + 1) * hpad)) / cols
     h = (1 - ((rows + 1) * vpad)) / rows
 
@@ -771,7 +825,26 @@ def _calc_grid(cols, rows, hpad=.05, vpad=.05):
     return grid
 
 
-def _calc_centered_grid(cols_list, hpad=.05, vpad=.05):
+def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
+    """
+    Calculates a centered grid of Rectangles and their positions.
+
+    Parameters
+    ----------
+    cols : int
+        The number of desired columns.
+    rows : int
+        The number of desired rows.
+    hpad : float, optional
+        The amount of horizontal padding (default: 0.05).
+    vpad : float, optional
+        The amount of vertical padding (default: 0.05).
+
+    Returns
+    -------
+    [[float, float, float, float]]
+        A list of all rectangle positions in the form of [xi, xy, width, height] sorted from top left to bottom right.
+    """
     h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
     w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
     grid = []
