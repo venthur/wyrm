@@ -40,7 +40,7 @@ ghpages: doc
 
 
 pypi:
-	python setup.py stdist upload
+	python setup.py sdist upload
 
 
 notebook:
