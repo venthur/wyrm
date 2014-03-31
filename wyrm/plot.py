@@ -86,7 +86,8 @@ def calculate_stereographic_projection(p):
 
     """
     # P' = P * (2r / r + z)
-    # changed the values to move the point of projection further below the south pole
+    # changed the values to move the point of projection further below the
+    # south pole
     mu = 1 / (1.3 + p[2])
     x = p[0] * mu
     y = p[1] * mu
@@ -117,7 +118,8 @@ def interpolate_2d(x, y, z):
 
 
 def bwr_cmap():
-    """Create a linear segmented colormap with transitions from blue over white to red.
+    """Create a linear segmented colormap with transitions from blue over white
+    to red.
 
     Returns
     -------
@@ -170,9 +172,10 @@ def wr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
 
-def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=True, save=False,
-                      save_name='timeinterval', save_path=None, save_format='pdf', channel=None, position=None):
-    """Plots a simple time interval for all channels in the given data object.
+def plot_timeinterval(data, r_square=None, highlights=None, legend=True, channel=None, position=None):
+    """Plots a simple time interval.
+
+    <Longer Description>
 
     Parameters
     ----------
@@ -184,17 +187,6 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
         Highlight object containing information about areas to be highlighted (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
-    show : Boolean, optional
-        Flag to switch immediate showing of the plot on or off (default: True).
-    save : Boolean, optional
-        Flag to switch saving the created figure after creation on or off (default: False).
-    save_name : String, optional
-        The title of the saved plot (default: 'timeinterval').
-    save_path : String, optional
-        The path the plot will be saved to (default: None).
-    save_format : String, optional
-        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
     channel : int, optional
         A number to specify a single channel, which will then be plotted exclusively (default: None).
     position : [x, y, width, height], optional
@@ -251,20 +243,8 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
     if r_square is not None:
         ax1 = _subplot_r_square(r_square, position=pos_r2)
         ax0.tick_params(axis='x', direction='in', pad=30 * pos_ti[3])
-        #ax0.xaxis.labelpad = 0
-
-    # saving if specified
-    if save:
-        if save_path is None:
-            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
-        else:
-            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
 
     plt.grid(True)
-
-    # showing if specified
-    if show:
-        plt.show()
 
     if r_square is None:
         return ax0
@@ -272,9 +252,10 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, show=Tr
         return ax0, ax1
 
 
-def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, save=False,
-                              save_name='epoched_timeinterval', save_path=None, save_format='pdf'):
+def plot_epoched_timeinterval(data, highlights=None, legend=True):
     """Plots a series of time_intervals with the given epoched data.
+
+    <Longer Description>
 
     Parameters
     ----------
@@ -284,17 +265,6 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
         Highlight object containing information about areas to be highlighted (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
-    show : Boolean, optional
-        Flag to switch immediate showing of the plot on or off (default: True).
-    save : Boolean, optional
-        Flag to switch saving the created figure after creation on or off (default: False).
-    save_name: String, optional
-        The title of the saved plot (default: 'timeinterval').
-    save_path: String, optional
-        The path the plot will be saved to (default: None).
-    save_format : String, optional
-        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
 
     Returns:
     --------
@@ -321,23 +291,14 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True, show=True, sav
     # adjust the spacing
     plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.1, hspace=0.3, wspace=0.3)
 
-    # saving if specified
-    if save:
-        if save_path is None:
-            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
-        else:
-            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-
-    # showing if specified
-    if show:
-        plt.show()
-
     return ax
 
 
-def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save_name='system_plot', save_path=None,
-                save_format='pdf'):
-    """Plots all recognized channels on a grid system according to their positions on the scalp.
+def plot_tenten(data, highlights=None, legend=False):
+    """Plots channels on a grid system.
+
+    Plots all recognized channels on a grid system according to their positions
+    on the scalp.
 
     Parameters
     ----------
@@ -454,25 +415,11 @@ def plot_tenten(data, highlights=None, legend=False, show=True, save=False, save
     xtext = data.axes[0][len(data.axes[0])-1]
     sc = _subplot_scale(str(xtext) + ' ms', "$\mu$V", position=grid[scale_ax])
 
-    # adjust the spacing
-    #plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.05, hspace=0.1, wspace=0.1)
-
-    # saving if specified
-    if save:
-        if save_path is None:
-            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
-        else:
-            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-
-    # showing if specified
-    if show:
-        plt.show()
-
     return ax, sc
 
 
-def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, annotate=True, show=True,
-               save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
+def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
+               annotate=True, position=None):
     """Plots the values v for channels 'channels' on a scalp as a contour plot.
 
     Parameters
@@ -492,17 +439,6 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
         are displayed (default: None).
     annotate : Boolean, optional
         Flag to switch channel annotations on or off (default: True).
-    show : Boolean, optional
-        Flag to switch immediate showing of the plot on or off (default: True).
-    save : Boolean, optional
-        Flag to switch saving the created figure after creation on or off (default: False).
-    save_name: String, optional
-        The title of the saved plot (default: 'timeinterval').
-    save_path: String, optional
-        The path the plot will be saved to (default: None).
-    save_format : String, optional
-        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
 
@@ -534,27 +470,13 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None, ann
                          norm=norm)
     ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
 
-    if show:
-        plt.show()
-
-    # saving if specified
-    if save:
-        if save_path is None:
-            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
-        else:
-            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-
-    # showing if specified
-    if show:
-        plt.show()
-
     return ax0, ax1
 
 
 # todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ...
 # ax.xaxis.set_tick_params(labelsize=x_labelsize)
-def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None, norm=None, ticks=None, annotate=True,
-                  show=True, save=False, save_name='scalp_plot', save_path=None, save_format='pdf', position=None):
+def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None,
+                  norm=None, ticks=None, annotate=True, position=None):
     """Plots the values v for channels 'channels' on a scalp as a contour plot. Additionaly plots the channels in
     channels_ti as a timeinterval on top of the scalp plot.
 
@@ -579,17 +501,6 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
         are displayed (default: None).
     annotate : Boolean, optional
         Flag to switch channel annotations on or off (default: True).
-    show : Boolean, optional
-        Flag to switch immediate showing of the plot on or off (default: True).
-    save : Boolean, optional
-        Flag to switch saving the created figure after creation on or off (default: False).
-    save_name: String, optional
-        The title of the saved plot (default: 'timeinterval').
-    save_path: String, optional
-        The path the plot will be saved to (default: None).
-    save_format : String, optional
-        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
 
@@ -657,20 +568,6 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
             # strip down the timeinterval plots
         else:
             print('The channel "' + c + '" was not found in the tenten-system.')
-
-    if show:
-        plt.show()
-
-    # saving if specified
-    if save:
-        if save_path is None:
-            plt.savefig(save_name + "." + save_format, bbox_inches='tight')
-        else:
-            plt.savefig(save_path + save_name + "." + save_format, bbox_inches='tight')
-
-    # showing if specified
-    if show:
-        plt.show()
 
     return (ax0, ax1), tis
 
