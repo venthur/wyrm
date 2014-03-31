@@ -668,7 +668,8 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, labels=True, l
             ax.plot(data.axes[len(data.axes) - 2], data.data[epoch, channel])
 
     # plotting of highlights
-    set_highlights(highlights, set_axes=[ax])
+    if highlights is not None:
+        set_highlights(highlights, set_axes=[ax])
 
     # labeling of axes
     if labels:
@@ -932,28 +933,44 @@ def _get_system():
     return system
 
 
-def set_highlights(obj_highlight, set_axes=None):
+def set_highlights(highlights, hcolors=None, set_axes=None):
     """Sets highlights in form of vertical boxes to an axes
 
     Parameters
     ----------
-    obj_highlight : wyrm.plot.Highlight
-        a highlight object containing information about the areas to highlight
+    highlights : [(start, end)]
+        List of tuples containing the start point (included) and end point
+        (excluded) of each area to be highlighted.
+    colors : [colors], optional
+        A list of colors to use for the highlights areas.
     set_axes : [matplotlib.Axes], optional
-        List of axes to highlight (default: None, all axes of the current figure will be highlighted).
+        List of axes to highlights (default: None, all axes of the current
+        figure will be highlighted).
     """
-    if set_axes is None:
-        set_axes = plt.gcf().axes
+    if highlights is not None:
 
-    def highlight(start, end, axis, color, alpha):
-        axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
-        # the edges of the box are at the moment white. transparent edges would be better.
+        if set_axes is None:
+            set_axes = plt.gcf().axes
 
-    # check if obj_highlight is an instance of the Highlight class
-    if isinstance(obj_highlight, type(Highlight())):
+        def highlight(start, end, axis, color, alpha):
+            axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
+            # the edges of the box are at the moment white. transparent edges would
+            # be better.
+
+        if hcolors is None:
+            hcolors = ['b', 'g', 'r', 'c', 'm', 'y']
+
+        # create a colormask containing #spans colors iterating over specified
+        # colors or a standard variety
+        colormask = []
+        for index, span in enumerate(highlights):
+            colormask.append(hcolors[index % len(hcolors)])
+        print colormask
+
+        # check if highlights is an instance of the Highlight class
         for p in set_axes:
-            for hl in obj_highlight.spans:
-                highlight(hl[0], hl[1], p, obj_highlight.color, obj_highlight.alpha)
+            for span in highlights:
+                highlight(span[0], span[1]-1, p, colormask.pop(0), .5)
 
 
 def set_labels(xlabel, ylabel, set_axes=None, draw=True):
@@ -966,9 +983,11 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
     ylabel : String
         The String to label the y-axis.
     set_axes : [Matplotlib.Axes], optional
-        List of axes to apply the labels to (default: None, the labels are applied to all axes of the current figure).
+        List of axes to apply the labels to (default: None, the labels are
+        applied to all axes of the current figure).
     draw : Boolean, optional
-        A flag to switch if the new labels should be directly drawn to the plot (default: True).
+        A flag to switch if the new labels should be directly drawn to the
+        plot (default: True).
     """
     if set_axes is None:
         set_axes = plt.gcf().axes
@@ -980,35 +999,3 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
 
     if draw:
         plt.draw()
-
-
-class Highlight:
-    """Class for highlight objects.
-    
-    Attributes
-    ----------
-    spans : [[int,int]...]
-        list containing pairs of ints, representing start and end value of highlighted area
-    color : color, optional
-        the color of the highlighted areas (default: '#b3b3b3').
-        (e.g. 'green' or '#b3b3b3')
-    alpha: float (0..1), optional
-        the alpha value of the highlighted areas (default: 0.5)
-    """
-
-    def __init__(self, spans=None, color='#b3b3b3', alpha=0.5):
-        if spans is None:
-            spans = []
-        for hl in spans:
-            if len(hl) != 2:
-                print("'spans' has wrong form. Usage: [[start1, end1], ..., [startn, endn]].")
-                self.spans = None
-                break
-        else:
-            self.spans = spans
-        self.color = color
-        self.alpha = alpha
-
-    def tostring(self):
-        s = ['spans: ' + str(self.spans), 'color: ' + str(self.color), 'alpha: ' + str(self.alpha)]
-        print(', '.join(s))
