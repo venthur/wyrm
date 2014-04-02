@@ -19,6 +19,7 @@ from matplotlib import patches as patches
 from matplotlib.patches import Rectangle
 
 import tentensystem as tts
+from types import Data
 
 
 def plot_channels(dat, chanaxis=-1, otheraxis=-2):
@@ -476,7 +477,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
 # todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ...
 # ax.xaxis.set_tick_params(labelsize=x_labelsize)
 # todo: refactor with new input parameters
-def plot_scalp_ti(v, chans, data, interval, scale_ti=.1, levels=25, colormap=None,
+# todo: find better description for 'interval'
+def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=None,
                   norm=None, ticks=None, annotate=True, position=None):
     """Plots a scalp with channels on top
 
@@ -487,12 +489,14 @@ def plot_scalp_ti(v, chans, data, interval, scale_ti=.1, levels=25, colormap=Non
 
     Parameters
     ----------
+    v : [values]
+        List containing the values of the channels.
+    channels : [String]
+        List containing the channel names.
     data : wyrm.types.Data
-        Data object containing the data to plot.
-    time : int
-        The point in time to create the scalp plot from.
-    channels_ti : [String]
         List containing the channel names for the overlaying timeinterval plots.
+    interval : [begin, end)
+        Tuple of ints indicating the interval for the overlaying timeintervals.
     scale_ti : float, optional
         The percentage to scale the overlaying timeinterval plots (default: 0.1).
     levels : int, optional
@@ -527,10 +531,6 @@ def plot_scalp_ti(v, chans, data, interval, scale_ti=.1, levels=25, colormap=Non
         pos_scalp = _transform_rect(position, rect_scalp)
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
-    #index_v = np.where(data.axes[0] == time)
-    #v = data.data[index_v[0][0]]
-    #channels = data.axes[1]
-
     if colormap is None:
         colormap = bwr_cmap()
     if norm is None:
@@ -538,15 +538,27 @@ def plot_scalp_ti(v, chans, data, interval, scale_ti=.1, levels=25, colormap=Non
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
 
-    ax0 = _subplot_scalp(v, chans, position=pos_scalp, levels=levels, annotate=annotate)
+    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
     ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
 
     # adding the timeinterval plots
     s = _get_system()
 
+    cdat = data.copy()
+    if interval is not None:
+        startindex = np.where(cdat.axes[0] == interval[0])[0][0]
+        endindex = np.where(cdat.axes[0] == interval[1])[0][0]
+        cdat.axes[0] = cdat.axes[0][startindex:endindex]
+        cdat.data = cdat.data[startindex:endindex, :]
+        #print cdat.axes[0]
+
     tis = []
-    for c in data.axes[1]:
+    for c in cdat.axes[1]:
         if c in s:
+
+            channelindex = np.where(cdat.axes[1] == c)[0][0]
+#            chandat = Data(data.data[:, channelindex], (data.axes[0][startindex:endindex],data.axes[1][channelindex]),
+#                           data.names, data.units)
 
             # generating the channel position on the scalp
             channelpos = tts.channels[c]
@@ -567,10 +579,9 @@ def plot_scalp_ti(v, chans, data, interval, scale_ti=.1, levels=25, colormap=Non
             # transformation to fit into the scalp part of the plot
             pos_c = _transform_rect(pos_scalp, pos_c)
 
-            tis.append(_subplot_timeinterval(data, position=pos_c, epoch=-1, highlights=None, legend=False,
-                                             channel=np.where(data.axes[1] == c)[0][0], shareaxis=None))
+            tis.append(_subplot_timeinterval(cdat, position=pos_c, epoch=-1, highlights=None, legend=False,
+                                             channel=channelindex, shareaxis=None))
 
-            # strip down the timeinterval plots
         else:
             print('The channel "' + c + '" was not found in the tenten-system.')
 
@@ -734,7 +745,8 @@ def calc_grid(cols, rows, hpad=.05, vpad=.05):
     Returns
     -------
     [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height] sorted from top left to bottom right.
+        A list of all rectangle positions in the form of [xi, xy, width, height]
+        sorted from top left to bottom right.
     """
     w = (1 - ((cols + 1) * hpad)) / cols
     h = (1 - ((rows + 1) * vpad)) / rows
@@ -756,7 +768,8 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
     Parameters
     ----------
     cols_list : [int]
-        List of ints. Every entry represents a row with as many channels as the value.
+        List of ints. Every entry represents a row with as many channels as the
+        value.
     hpad : float, optional
         The amount of horizontal padding (default: 0.05).
     vpad : float, optional
@@ -765,7 +778,8 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
     Returns
     -------
     [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height] sorted from top left to bottom right.
+        A list of all rectangle positions in the form of [xi, xy, width, height]
+        sorted from top left to bottom right.
     """
     h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
     w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
