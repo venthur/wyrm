@@ -173,11 +173,12 @@ def wr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
 
+# todo: longer description
 def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
                       legend=True, channel=None, position=None):
     """Plots a simple time interval.
 
-    <Longer Description>
+    <long description>
 
     Parameters
     ----------
@@ -261,7 +262,7 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
 def plot_epoched_timeinterval(data, highlights=None, hcolors=None, legend=True):
     """Plots a series of time_intervals with the given epoched data.
 
-    <Longer Description>
+    <long description>
 
     Parameters
     ----------
@@ -307,8 +308,13 @@ def plot_epoched_timeinterval(data, highlights=None, hcolors=None, legend=True):
 def plot_tenten(data, highlights=None, hcolors=None, legend=False):
     """Plots channels on a grid system.
 
-    Plots all recognized channels on a grid system according to their positions
-    on the scalp.
+    Iterates over every channel in the data structure. If the channelname
+    matches a channel in the tenten-system it will be plotted in a grid of
+    rectangles. The grid is structured like the tenten-system itself, but in
+    a simplified manner. The rows, in which channels appear, are predetermined,
+    the channels are ordered automatically within their respective row.
+    Areas to highlight can be specified, those areas will be marked with colors
+    in every timeinterval plot.
 
     Parameters
     ----------
@@ -318,15 +324,15 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False):
         List of tuples containing the start point (included) and end point
         (excluded) of each area to be highlighted (default: None).
     hcolors : [colors], optional
-        A list of colors to use for the highlights areas (default: None).
+        A list of colors to use for the highlight areas (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
 
     Returns
     -------
     [Matplotlib.Axes], Matplotlib.Axes
-        Returns the plotted timeinterval axes as a list of Matplotlib.Axes and the plotted scale as
-        a single Matplotlib.Axes.
+        Returns the plotted timeinterval axes as a list of Matplotlib.Axes and
+        the plotted scale as a single Matplotlib.Axes.
     """
     # this dictionary determines which y-position corresponds with which row in the grid
     ordering = {4.0: 0,
@@ -423,6 +429,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
                annotate=True, position=None):
     """Plots the values v for channels 'channels' on a scalp as a contour plot.
 
+    <long description>
+
     Parameters
     ----------
     v : [values]
@@ -476,7 +484,6 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
 
 # todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ...
 # ax.xaxis.set_tick_params(labelsize=x_labelsize)
-# todo: refactor with new input parameters
 # todo: find better description for 'interval'
 def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=None,
                   norm=None, ticks=None, annotate=True, position=None):
@@ -544,21 +551,19 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     # adding the timeinterval plots
     s = _get_system()
 
+    # modification of internally used data if a specific intervals is specified
     cdat = data.copy()
     if interval is not None:
         startindex = np.where(cdat.axes[0] == interval[0])[0][0]
         endindex = np.where(cdat.axes[0] == interval[1])[0][0]
         cdat.axes[0] = cdat.axes[0][startindex:endindex]
         cdat.data = cdat.data[startindex:endindex, :]
-        #print cdat.axes[0]
 
     tis = []
     for c in cdat.axes[1]:
         if c in s:
 
             channelindex = np.where(cdat.axes[1] == c)[0][0]
-#            chandat = Data(data.data[:, channelindex], (data.axes[0][startindex:endindex],data.axes[1][channelindex]),
-#                           data.names, data.units)
 
             # generating the channel position on the scalp
             channelpos = tts.channels[c]
@@ -953,7 +958,9 @@ def _get_system():
 
 
 def set_highlights(highlights, hcolors=None, set_axes=None):
-    """Sets highlights in form of vertical boxes to an axes
+    """Sets highlights in form of vertical boxes to axes.
+
+    <long description>
 
     Parameters
     ----------
@@ -961,10 +968,20 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
         List of tuples containing the start point (included) and end point
         (excluded) of each area to be highlighted.
     hcolors : [colors], optional
-        A list of colors to use for the highlights areas.
+        A list of colors to use for the highlight areas (e.g. 'b', '#eeefff' or
+        [R, G, B] for R, G, B = [0..1].
+        If left as None the colors blue, gree, red, cyan, magenta and yellow are
+        used.
     set_axes : [matplotlib.Axes], optional
         List of axes to highlights (default: None, all axes of the current
         figure will be highlighted).
+
+    Examples:
+    ---------
+    >>> set_highlights([[200, 300], [500, 600]])
+    Would create two highlighted areas in all axes of the currently active
+    figure. The first area from 200ms - 300ms in blue and the second area from
+    500ms - 600ms in green.
     """
     if highlights is not None:
 
@@ -992,7 +1009,9 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
 
 
 def set_labels(xlabel, ylabel, set_axes=None, draw=True):
-    """Sets the labels of x- and y-axis of specified axes.
+    """Sets the labels of x- and y-axis of axes.
+
+    <long description>
 
     Parameters
     ----------
