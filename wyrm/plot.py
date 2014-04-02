@@ -172,7 +172,8 @@ def wr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
 
-def plot_timeinterval(data, r_square=None, highlights=None, legend=True, channel=None, position=None):
+def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
+                      legend=True, channel=None, position=None):
     """Plots a simple time interval.
 
     <Longer Description>
@@ -183,8 +184,11 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, channel
         Data object containing the data to plot.
     r_square : [values], optional
         List containing r_squared values to be plotted beneath the main plot (default: None).
-    highlights : wyrm.plot.Highlight, optional
-        Highlight object containing information about areas to be highlighted (default: None).
+    highlights : [[int, int)]
+        List of tuples containing the start point (included) and end point
+        (excluded) of each area to be highlighted (default: None).
+    hcolors : [colors], optional
+        A list of colors to use for the highlights areas (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
     channel : int, optional
@@ -238,7 +242,7 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, channel
     ax1 = None
     # plotting of the data
     ax0 = _subplot_timeinterval(data, position=pos_ti, epoch=-1, highlights=highlights,
-                                legend=legend, channel=channel)
+                                hcolors=hcolors, legend=legend, channel=channel)
     ax0.xaxis.labelpad = 0
     if r_square is not None:
         ax1 = _subplot_r_square(r_square, position=pos_r2)
@@ -252,7 +256,8 @@ def plot_timeinterval(data, r_square=None, highlights=None, legend=True, channel
         return ax0, ax1
 
 
-def plot_epoched_timeinterval(data, highlights=None, legend=True):
+#todo: refactor plot_timeinterval so that this functionality is built in
+def plot_epoched_timeinterval(data, highlights=None, hcolors=None, legend=True):
     """Plots a series of time_intervals with the given epoched data.
 
     <Longer Description>
@@ -261,8 +266,11 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True):
     ----------
     data : wyrm.types.Data
         data object containing the data to plot.
-    highlights : wyrm.plot.Highlight, optional
-        Highlight object containing information about areas to be highlighted (default: None).
+    highlights : [[int, int)]
+        List of tuples containing the start point (included) and end point
+        (excluded) of each area to be highlighted.
+    hcolors : [colors], optional
+        A list of colors to use for the highlights areas.
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
 
@@ -280,7 +288,8 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True):
         for i in range(len(data.data)):
             grid = calc_grid(len(data.data), 1, .04, .04)
 
-            ax.append(_subplot_timeinterval(data, grid[i], i, highlights=highlights, legend=legend))
+            ax.append(_subplot_timeinterval(data, grid[i], i, highlights=highlights,
+                                            hcolors=hcolors, legend=legend))
     else:
         pos = 111
         ax.append(_subplot_timeinterval(data, pos, -1, highlights=highlights, legend=legend))
@@ -294,7 +303,7 @@ def plot_epoched_timeinterval(data, highlights=None, legend=True):
     return ax
 
 
-def plot_tenten(data, highlights=None, legend=False):
+def plot_tenten(data, highlights=None, hcolors=None, legend=False):
     """Plots channels on a grid system.
 
     Plots all recognized channels on a grid system according to their positions
@@ -304,21 +313,13 @@ def plot_tenten(data, highlights=None, legend=False):
     ----------
     data : wyrm.types.Data
         Data object containing the data to plot.
-    highlights : wyrm.plot.Highlight, optional
-        Highlight object containing information about areas to be highlighted (default: None).
+    highlights : [[int, int)]
+        List of tuples containing the start point (included) and end point
+        (excluded) of each area to be highlighted (default: None).
+    hcolors : [colors], optional
+        A list of colors to use for the highlights areas (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
-    show : Boolean, optional
-        Flag to switch immediate showing of the plot on or off (default: True).
-    save : Boolean, optional
-        Flag to switch saving the created figure after creation on or off (default: False).
-    save_name: String, optional
-        The title of the saved plot (default: 'timeinterval').
-    save_path: String, optional
-        The path the plot will be saved to (default: None).
-    save_format : String, optional
-        The format of the saved plot. Possible formats: eps, jpeg, jpg, pdf, pgf, png, ps,
-        raw, rgba, svg, svgz, tif, tiff (default: 'pdf').
 
     Returns
     -------
@@ -373,7 +374,6 @@ def plot_tenten(data, highlights=None, legend=False):
     columns = [value for value in columns if value != 0]
 
     # add another axes to the first row for the scale
-    print columns
     columns[0] += 1
 
     plt.figure()
@@ -390,7 +390,7 @@ def plot_tenten(data, highlights=None, legend=False):
     for l in channel_lists:
         if len(l) > 0:
             for i in range(len(l)):
-                ax.append(_subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, labels=False,
+                ax.append(_subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, hcolors=hcolors, labels=False,
                                                 legend=legend, channel=l[i][2], shareaxis=masterax))
                 if masterax is None and len(ax) > 0:
                     masterax = ax[0]
@@ -475,10 +475,15 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
 
 # todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ...
 # ax.xaxis.set_tick_params(labelsize=x_labelsize)
-def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None,
+# todo: refactor with new input parameters
+def plot_scalp_ti(v, chans, data, interval, scale_ti=.1, levels=25, colormap=None,
                   norm=None, ticks=None, annotate=True, position=None):
-    """Plots the values v for channels 'channels' on a scalp as a contour plot. Additionaly plots the channels in
-    channels_ti as a timeinterval on top of the scalp plot.
+    """Plots a scalp with channels on top
+
+    Plots the values v for channels 'channels' on a scalp as a contour plot.
+    Additionaly plots the channels in channels_ti as a timeinterval on top of
+    the scalp plot. The individual channels are placed over their position on
+    the scalp.
 
     Parameters
     ----------
@@ -522,9 +527,9 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
         pos_scalp = _transform_rect(position, rect_scalp)
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
-    index_v = np.where(data.axes[0] == time)
-    v = data.data[index_v[0][0]]
-    channels = data.axes[1]
+    #index_v = np.where(data.axes[0] == time)
+    #v = data.data[index_v[0][0]]
+    #channels = data.axes[1]
 
     if colormap is None:
         colormap = bwr_cmap()
@@ -533,14 +538,14 @@ def plot_scalp_ti(data, time, channels_ti, scale_ti=.1, levels=25, colormap=None
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
 
-    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
+    ax0 = _subplot_scalp(v, chans, position=pos_scalp, levels=levels, annotate=annotate)
     ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
 
     # adding the timeinterval plots
     s = _get_system()
 
     tis = []
-    for c in channels_ti:
+    for c in data.axes[1]:
         if c in s:
 
             # generating the channel position on the scalp
@@ -645,8 +650,8 @@ def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=Tru
     return ax
 
 
-def _subplot_timeinterval(data, position, epoch, highlights=None, labels=True, legend=True, channel=None,
-                          shareaxis=None):
+def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
+                          labels=True, legend=True, channel=None, shareaxis=None):
     fig = plt.gcf()
 
     if shareaxis is None:
@@ -669,7 +674,7 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, labels=True, l
 
     # plotting of highlights
     if highlights is not None:
-        set_highlights(highlights, set_axes=[ax])
+        set_highlights(highlights, hcolors=hcolors, set_axes=[ax])
 
     # labeling of axes
     if labels:
@@ -941,7 +946,7 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
     highlights : [(start, end)]
         List of tuples containing the start point (included) and end point
         (excluded) of each area to be highlighted.
-    colors : [colors], optional
+    hcolors : [colors], optional
         A list of colors to use for the highlights areas.
     set_axes : [matplotlib.Axes], optional
         List of axes to highlights (default: None, all axes of the current
@@ -954,8 +959,8 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
 
         def highlight(start, end, axis, color, alpha):
             axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
-            # the edges of the box are at the moment white. transparent edges would
-            # be better.
+            # the edges of the box are at the moment white. transparent edges
+            # would be better.
 
         if hcolors is None:
             hcolors = ['b', 'g', 'r', 'c', 'm', 'y']
@@ -965,7 +970,6 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
         colormask = []
         for index, span in enumerate(highlights):
             colormask.append(hcolors[index % len(hcolors)])
-        print colormask
 
         # check if highlights is an instance of the Highlight class
         for p in set_axes:
