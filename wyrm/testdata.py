@@ -113,7 +113,6 @@ def create_tenten_data(channel_count=21, steps=100):
     return dat
 
 
-# todo: create randomized channels for plot_tenten
 def create_tenten_data_rnd(channel_count=20, steps=100):
     sys = p._get_system().keys()
 
@@ -137,75 +136,8 @@ def create_tenten_data_rnd(channel_count=20, steps=100):
     return dat
 
 
-def compose_package(path, save_format='pdf'):
-    #def plot_timeinterval(data, highlights=None, legend=True, show=True, save=False, save_name='timeinterval',
-    # save_path=None, channel=None):
-    d = create_data_ti()
-    p.plot_timeinterval(d, show=False, save=True, save_name="time interval 01", save_path=path, save_format=save_format)
-    p.plot_timeinterval(d, show=False, save=True, save_name="time interval 02", save_path=path, legend=False,
-                        save_format=save_format)
-    p.plot_timeinterval(d, show=False, save=True, save_name="time interval 03", save_path=path,
-                        highlights=p.Highlight(spans=[[200, 300], [700, 900]]), save_format=save_format)
-    # t = create_data_some()
-    # p.plot_tenten(data=t, show=False, save=True, save_name="tenten 01", save_path=path)
-    # p.plot_tenten(data=t, show=False, save=True, save_name="tenten 02", save_path=path,
-    #               highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
-    # p.plot_tenten(data=create_data_all(), save=True, show=False, save_path=path, save_name="tenten 04")
-    d = create_data_scalp()
-    p.plot_scalp(d[0], d[1], annotate=True, show=False, save=True, save_name="scalp 01", save_path=path,
-                 save_format=save_format)
-    p.plot_scalp(d[0], d[1], annotate=False, show=False, save=True, save_name="scalp 02", save_path=path,
-                 save_format=save_format)
-    # t = create_epoched_data_ti()
-    # p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 01', save_path=path)
-    # p.plot_epoched_timeinterval(t, legend=False, show=False, save=True, save_name='epoched 02', save_path=path)
-    # p.plot_epoched_timeinterval(t, legend=True, show=False, save=True, save_name='epoched 03', save_path=path,
-    #                             highlights=p.Highlight(spans=[[200, 300], [700, 900]]))
-
-
-def ti_variations(path, save_format='jpg'):
-    # legend, r_square, highlights, channel
-    data = create_data_ti()
-    r2 = [None, [8, 3, 5, 7, 4, 3, 4, 5, 6]]
-    high = [None, p.Highlight(spans=[[200, 300], [700, 900]])]
-    legend = [True, False]
-    channel = [None, 0]
-
-    i = 1
-    for a in channel:
-        for b in r2:
-            for c in high:
-                for d in legend:
-                    p.plot_timeinterval(data, legend=d, r_square=b, highlights=c, channel=a, show=False, save=True,
-                                        save_name="time interval " + str(i), save_path=path, save_format=save_format)
-                    fig = p.plt.gcf()
-                    p.plt.close(fig)
-                    i += 1
-
-
-def scalp_variations(path, save_format='jpg'):
-    lvls = [10, 25]
-    anno = [0, 1]
-    cmap = [p.bwr_cmap(), p.wr_cmap()]
-    norm_tick = [(None, None), (p.colors.Normalize(vmin=0, vmax=10, clip=False),
-                                np.linspace(0, 10.0, 3, endpoint=True))]
-    tick = [None, np.linspace(0, 10.0, 3, endpoint=True)]
-
-    data = create_data_scalp()
-    i = 1
-    for a in cmap:
-        for b in lvls:
-            for c in anno:
-                for d in norm_tick:
-                    p.plot_scalp(data[0], data[1], levels=b, colormap=a, norm=d[0], ticks=d[1], annotate=c, show=False,
-                                 save=True, save_name='scalp_plot ' + str(i), save_format=save_format, save_path=path)
-                    fig = p.plt.gcf()
-                    p.plt.close(fig)
-                    i += 1
-
-
 def grid_test(cols=4, rows=3, hpad=.05, vpad=.05):
-    g = p._calc_grid(cols, rows, hpad, vpad)
+    g = p.calc_grid(cols, rows, hpad, vpad)
     p.plt.figure()
     for r in g:
         p._subplot_timeinterval(create_data_ti(), r, -1)
