@@ -18,6 +18,7 @@ from matplotlib.path import Path
 from matplotlib import patches as patches
 from matplotlib.patches import Rectangle
 
+import processing as pro
 import tentensystem as tts
 from types import Data
 
@@ -175,7 +176,7 @@ def wr_cmap():
 
 # todo: longer description
 def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
-                      legend=True, channel=None, position=None):
+                      legend=True, reg_chans=None, position=None):
     """Plots a simple time interval.
 
     Plots all channels of either continuous data or the mean of epoched data
@@ -195,9 +196,9 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
         A list of colors to use for the highlights areas (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
-    channel : int, optional
-        A number to specify a single channel, which will then be plotted
-        exclusively (default: None).
+    reg_chans : [regular expression], optional
+        A list of regular expressions containing channelnames. If channels are
+        matched those are plotted exclusively. (default: None).
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
 
@@ -249,15 +250,18 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
             pos_ti = _transform_rect(position, rect_ti_r2)
             pos_r2 = _transform_rect(position, rect_r2)
 
+    if reg_chans is not None:
+        dcopy = pro.select_channels(dcopy, reg_chans)
+
+    # process epoched data into continuous data using the mean
     if len(data.data.shape) > 2:
-        # there are epochs -> plot the mean
-        dcopy = Data(np.mean(dcopy.data, axis=0), [dcopy.axes[1], dcopy.axes[2]],
-                     [dcopy.names[1], dcopy.names[2]], [dcopy.units[1], dcopy.units[2]])
+        dcopy = Data(np.mean(dcopy.data, axis=0), [dcopy.axes[-2], dcopy.axes[-1]],
+                     [dcopy.names[-2], dcopy.names[-1]], [dcopy.units[-2], dcopy.units[-1]])
 
     ax1 = None
     # plotting of the data
     ax0 = _subplot_timeinterval(dcopy, position=pos_ti, epoch=-1, highlights=highlights,
-                                hcolors=hcolors, legend=legend, channel=channel)
+                                hcolors=hcolors, legend=legend)
     ax0.xaxis.labelpad = 0
     if r_square is not None:
         ax1 = _subplot_r_square(r_square, position=pos_r2)
