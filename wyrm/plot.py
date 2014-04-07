@@ -178,14 +178,16 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
                       legend=True, channel=None, position=None):
     """Plots a simple time interval.
 
-    <long description>
+    Plots all channels of either continuous data or the mean of epoched data
+    into a single timeinterval plot.
 
     Parameters
     ----------
     data : wyrm.types.Data
         Data object containing the data to plot.
     r_square : [values], optional
-        List containing r_squared values to be plotted beneath the main plot (default: None).
+        List containing r_squared values to be plotted beneath the main plot
+        (default: None).
     highlights : [[int, int)]
         List of tuples containing the start point (included) and end point
         (excluded) of each area to be highlighted (default: None).
@@ -194,7 +196,8 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
     channel : int, optional
-        A number to specify a single channel, which will then be plotted exclusively (default: None).
+        A number to specify a single channel, which will then be plotted
+        exclusively (default: None).
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
 
@@ -216,7 +219,15 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
 
     Adds r-square values to the plot.
 
-    >>> plot_timeinterval(data, r_square=[values], legend=False)
+    >>> plot_timeinterval(data, r_square=[values])
+
+    Adds a highlighted area to the plot.
+
+    >>> plot_timeinterval(data, highlights=[[200, 400]])
+
+    To specify the colors of the highlighted areas use 'hcolors'.
+
+    >>> plot_timeinterval(data, highlights=[[200, 400]], hcolors=['red'])
     """
 
     dcopy = data.copy()
