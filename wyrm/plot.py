@@ -201,8 +201,8 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
     Returns
     -------
     Matplotlib.Axes or (Matplotlib.Axes, Matplotlib.Axes)
-        The Matplotlib.Axes corresponding to the plotted timeinterval. If r-square values where
-        plotted, too, a second Matplotlib.Axes is returned alongside.
+        The Matplotlib.Axes corresponding to the plotted timeinterval and, if
+        provided, the Axes corresponding to r_squared values.
 
     Examples
     --------
@@ -217,12 +217,9 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
     Adds r-square values to the plot.
 
     >>> plot_timeinterval(data, r_square=[values], legend=False)
-
-    Saves the plot automatically to 'path' as a pdf.
-
-    >>> plot_timeinterval(data, r_square=[values], legend=False, save=True, save_path=path, save_format='pdf')
     """
 
+    dcopy = data.copy()
     rect_ti_solo = [.07, .07, .9, .9]
     rect_ti_r2 = [.07, .12, .9, .85]
     rect_r2 = [.07, .07, .9, .05]
@@ -241,9 +238,14 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
             pos_ti = _transform_rect(position, rect_ti_r2)
             pos_r2 = _transform_rect(position, rect_r2)
 
+    if len(data.data.shape) > 2:
+        # there are epochs -> plot the mean
+        dcopy = Data(np.mean(dcopy.data, axis=0), [dcopy.axes[1], dcopy.axes[2]],
+                     [dcopy.names[1], dcopy.names[2]], [dcopy.units[1], dcopy.units[2]])
+
     ax1 = None
     # plotting of the data
-    ax0 = _subplot_timeinterval(data, position=pos_ti, epoch=-1, highlights=highlights,
+    ax0 = _subplot_timeinterval(dcopy, position=pos_ti, epoch=-1, highlights=highlights,
                                 hcolors=hcolors, legend=legend, channel=channel)
     ax0.xaxis.labelpad = 0
     if r_square is not None:
@@ -256,53 +258,6 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
         return ax0
     else:
         return ax0, ax1
-
-
-#todo: refactor plot_timeinterval so that this functionality is built in
-def plot_epoched_timeinterval(data, highlights=None, hcolors=None, legend=True):
-    """Plots a series of time_intervals with the given epoched data.
-
-    <long description>
-
-    Parameters
-    ----------
-    data : wyrm.types.Data
-        data object containing the data to plot.
-    highlights : [[int, int)]
-        List of tuples containing the start point (included) and end point
-        (excluded) of each area to be highlighted.
-    hcolors : [colors], optional
-        A list of colors to use for the highlights areas.
-    legend : Boolean, optional
-        Flag to switch plotting of the legend on or off (default: True).
-
-    Returns:
-    --------
-    [Matplotlib.Axes]
-        Returns a list of Matplotlib.Axes, one for every epoch.
-    """
-    plt.figure()
-    ax = []
-
-    # check of data is epoched
-    if len(data.data.shape) > 2:
-        # iterate over epochs
-        for i in range(len(data.data)):
-            grid = calc_grid(len(data.data), 1, .04, .04)
-
-            ax.append(_subplot_timeinterval(data, grid[i], i, highlights=highlights,
-                                            hcolors=hcolors, legend=legend))
-    else:
-        pos = 111
-        ax.append(_subplot_timeinterval(data, pos, -1, highlights=highlights, legend=legend))
-
-    # add labels
-    set_labels(data.units[len(data.axes) - 2], "$\mu$V", draw=False)
-
-    # adjust the spacing
-    plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.1, hspace=0.3, wspace=0.3)
-
-    return ax
 
 
 def plot_tenten(data, highlights=None, hcolors=None, legend=False):
