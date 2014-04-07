@@ -1255,12 +1255,9 @@
 <span class="sd">    Calculate the CSP for the first two classes::</span>
 
 <span class="sd">    &gt;&gt;&gt; w, a, d = calculate_csp(epo)</span>
-<span class="sd">    &gt;&gt;&gt; # Take the first two and the last two columns of the sorted</span>
-<span class="sd">    &gt;&gt;&gt; # filter</span>
-<span class="sd">    &gt;&gt;&gt; w = w[:, (0, 1, -2, -1)]</span>
-<span class="sd">    &gt;&gt;&gt; # Apply the new filter to your data d of the form:</span>
-<span class="sd">    &gt;&gt;&gt; # (time, channels)</span>
-<span class="sd">    &gt;&gt;&gt; filtered = np.dot(d, w)</span>
+<span class="sd">    &gt;&gt;&gt; # Apply the first two and the last two columns of the sorted</span>
+<span class="sd">    &gt;&gt;&gt; # filter to the data</span>
+<span class="sd">    &gt;&gt;&gt; filtered = apply_csp(epo, w, [0, 1, -2, -1])</span>
 <span class="sd">    &gt;&gt;&gt; # You&#39;ll probably want to get the log-variance along the time</span>
 <span class="sd">    &gt;&gt;&gt; # axis, this should result in four numbers (one for each</span>
 <span class="sd">    &gt;&gt;&gt; # channel)</span>
@@ -1302,7 +1299,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`calculate_spoc`</span>
+<span class="sd">    :func:`apply_csp`, :func:`calculate_spoc`</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -1344,6 +1341,50 @@
     <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span>
+
+</div>
+<div class="viewcode-block" id="apply_csp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.apply_csp">[docs]</a><span class="k">def</span> <span class="nf">apply_csp</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Apply the CSP filter.</span>
+
+<span class="sd">    Apply the spacial CSP filter to the epoched data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    epo : epoched ``Data`` object</span>
+<span class="sd">        this method relies on the ``epo`` to have three dimensions in</span>
+<span class="sd">        the following order: class, time, channel</span>
+<span class="sd">    filt : 2d array</span>
+<span class="sd">        the CSP filter (i.e. the ``v`` return value from</span>
+<span class="sd">        :func:`calculate_csp`)</span>
+<span class="sd">    columns : array of ints, optional</span>
+<span class="sd">        the columns of the filter to use. The default is the first and</span>
+<span class="sd">        the last one.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epo : epoched ``Data`` object</span>
+<span class="sd">        The channels from the original have been replaced with the new</span>
+<span class="sd">        virtual CSP channels.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; w, a, d = calculate_csp(epo)</span>
+<span class="sd">    &gt;&gt;&gt; epo = apply_csp(epo, w)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`calculate_csp`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">filt</span><span class="p">[:,</span> <span class="n">columns</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">epo</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epo</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">epo</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s">&#39;csp </span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">epo</span><span class="o">.</span><span class="n">names</span><span class="p">[:]</span>
+    <span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;CSP Channel&#39;</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">epo</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dat</span>
 
 </div>
 <div class="viewcode-block" id="calculate_spoc"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.calculate_spoc">[docs]</a><span class="k">def</span> <span class="nf">calculate_spoc</span><span class="p">(</span><span class="n">epo</span><span class="p">):</span>

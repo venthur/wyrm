@@ -430,6 +430,52 @@ equal</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.apply_csp">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">apply_csp</tt><big>(</big><em>epo, filt, columns=[0, -1]</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#apply_csp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.apply_csp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the CSP filter.</p>
+<p>Apply the spacial CSP filter to the epoched data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>epo</strong> : epoched <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
+<blockquote>
+<div><p>this method relies on the <tt class="docutils literal"><span class="pre">epo</span></tt> to have three dimensions in
+the following order: class, time, channel</p>
+</div></blockquote>
+<p><strong>filt</strong> : 2d array</p>
+<blockquote>
+<div><p>the CSP filter (i.e. the <tt class="docutils literal"><span class="pre">v</span></tt> return value from
+<a class="reference internal" href="#wyrm.processing.calculate_csp" title="wyrm.processing.calculate_csp"><tt class="xref py py-func docutils literal"><span class="pre">calculate_csp()</span></tt></a>)</p>
+</div></blockquote>
+<p><strong>columns</strong> : array of ints, optional</p>
+<blockquote>
+<div><p>the columns of the filter to use. The default is the first and
+the last one.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>epo</strong> : epoched <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
+<blockquote class="last">
+<div><p>The channels from the original have been replaced with the new
+virtual CSP channels.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.calculate_csp" title="wyrm.processing.calculate_csp"><tt class="xref py py-func docutils literal"><span class="pre">calculate_csp()</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_csp</span><span class="p">(</span><span class="n">epo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epo</span> <span class="o">=</span> <span class="n">apply_csp</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.calculate_classwise_average">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_classwise_average</tt><big>(</big><em>dat</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_classwise_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_classwise_average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the classwise average.</p>
@@ -538,19 +584,16 @@ different classes in the <tt class="docutils literal"><span class="pre">epo</spa
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#wyrm.processing.calculate_spoc" title="wyrm.processing.calculate_spoc"><tt class="xref py py-func docutils literal"><span class="pre">calculate_spoc()</span></tt></a></p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.apply_csp" title="wyrm.processing.apply_csp"><tt class="xref py py-func docutils literal"><span class="pre">apply_csp()</span></tt></a>, <a class="reference internal" href="#wyrm.processing.calculate_spoc" title="wyrm.processing.calculate_spoc"><tt class="xref py py-func docutils literal"><span class="pre">calculate_spoc()</span></tt></a></p>
 </div>
 <p class="rubric">References</p>
 <p><a class="reference external" href="http://en.wikipedia.org/wiki/Common_spatial_pattern">http://en.wikipedia.org/wiki/Common_spatial_pattern</a></p>
 <p class="rubric">Examples</p>
 <p>Calculate the CSP for the first two classes:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">calculate_csp</span><span class="p">(</span><span class="n">epo</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># Take the first two and the last two columns of the sorted</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># filter</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># Apply the new filter to your data d of the form:</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># (time, channels)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Apply the first two and the last two columns of the sorted</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># filter to the data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">apply_csp</span><span class="p">(</span><span class="n">epo</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># You&#39;ll probably want to get the log-variance along the time</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># axis, this should result in four numbers (one for each</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># channel)</span>
