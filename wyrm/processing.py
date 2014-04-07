@@ -1202,12 +1202,9 @@ def calculate_csp(epo, classes=None):
     Calculate the CSP for the first two classes::
 
     >>> w, a, d = calculate_csp(epo)
-    >>> # Take the first two and the last two columns of the sorted
-    >>> # filter
-    >>> w = w[:, (0, 1, -2, -1)]
-    >>> # Apply the new filter to your data d of the form:
-    >>> # (time, channels)
-    >>> filtered = np.dot(d, w)
+    >>> # Apply the first two and the last two columns of the sorted
+    >>> # filter to the data
+    >>> filtered = apply_csp(epo, w, [0, 1, -2, -1])
     >>> # You'll probably want to get the log-variance along the time
     >>> # axis, this should result in four numbers (one for each
     >>> # channel)
@@ -1249,7 +1246,7 @@ def calculate_csp(epo, classes=None):
 
     See Also
     --------
-    :func:`calculate_spoc`
+    :func:`apply_csp`, :func:`calculate_spoc`
 
     References
     ----------
@@ -1291,6 +1288,50 @@ def calculate_csp(epo, classes=None):
     v = v.take(indx, axis=1)
     a = sp.linalg.inv(v).transpose()
     return v, a, d
+
+
+def apply_csp(epo, filt, columns=[0, -1]):
+    """Apply the CSP filter.
+
+    Apply the spacial CSP filter to the epoched data.
+
+    Parameters
+    ----------
+    epo : epoched ``Data`` object
+        this method relies on the ``epo`` to have three dimensions in
+        the following order: class, time, channel
+    filt : 2d array
+        the CSP filter (i.e. the ``v`` return value from
+        :func:`calculate_csp`)
+    columns : array of ints, optional
+        the columns of the filter to use. The default is the first and
+        the last one.
+
+    Returns
+    -------
+    epo : epoched ``Data`` object
+        The channels from the original have been replaced with the new
+        virtual CSP channels.
+
+    Examples
+    --------
+
+    >>> w, a, d = calculate_csp(epo)
+    >>> epo = apply_csp(epo, w)
+
+    See Also
+    --------
+    :func:`calculate_csp`
+
+    """
+    f = filt[:, columns]
+    data = np.array([np.dot(epo.data[i], f) for i in range(epo.data.shape[0])])
+    axes = epo.axes[:]
+    axes[-1] = np.array(['csp %i' % i for i in range(data.shape[-1])])
+    names = epo.names[:]
+    names[-1] = 'CSP Channel'
+    dat = epo.copy(data=data, axes=axes, names=names)
+    return dat
 
 
 def calculate_spoc(epo):
