@@ -197,8 +197,8 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
     reg_chans : [regular expression], optional
-        A list of regular expressions containing channelnames. If channels are
-        matched those are plotted exclusively. (default: None).
+        A list of regular expressions. The plot will be limited to those
+        channels matching the regular expressions. (default: None).
     position : [x, y, width, height], optional
         A Rectangle that limits the plot to its boundaries (default: None).
 
@@ -275,7 +275,8 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
         return ax0, ax1
 
 
-def plot_tenten(data, highlights=None, hcolors=None, legend=False):
+def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
+                reg_chans=None):
     """Plots channels on a grid system.
 
     Iterates over every channel in the data structure. If the channelname
@@ -297,13 +298,31 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False):
         A list of colors to use for the highlight areas (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
+    scale : Boolean, optional
+        Flag to switch plotting of a scale in the top right corner of the grid
+        (default: True)
+    reg_chans : [regular expressions]
+        A list of regular expressions. The plot will be limited to those
+        channels matching the regular expressions.
 
     Returns
     -------
     [Matplotlib.Axes], Matplotlib.Axes
         Returns the plotted timeinterval axes as a list of Matplotlib.Axes and
         the plotted scale as a single Matplotlib.Axes.
+
+    Examples
+    --------
+    Plotting of all channels within a Data object
+    >>> plot_tenten(data)
+
+    Plotting of all channels with a highlighted area
+    >>> plot_tenten(data, highlights=[[200, 400]])
+
+    Plotting of all channels beginning with 'A'
+    >>> plot_tenten(data, reg_chans=['A.*'])
     """
+    dcopy = data.copy()
     # this dictionary determines which y-position corresponds with which row in the grid
     ordering = {4.0: 0,
                 3.5: 0,
@@ -334,9 +353,12 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False):
     for i in range(18):
         channel_lists.append([])
 
+    if reg_chans is not None:
+        dcopy = pro.select_channels(dcopy, reg_chans)
+
     # distribute the channels to the lists by their y-position
     count = 0
-    for c in data.axes[1]:
+    for c in dcopy.axes[1]:
         if c in tts.channels:
             # entries in channel_lists: [<channel_name>, <x-position>, <position in Data>]
             channel_lists[ordering[system[c][1]]].append((c, system[c][0], count))
@@ -367,7 +389,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False):
     for l in channel_lists:
         if len(l) > 0:
             for i in range(len(l)):
-                ax.append(_subplot_timeinterval(data, grid[k], epoch=-1, highlights=highlights, hcolors=hcolors, labels=False,
+                ax.append(_subplot_timeinterval(dcopy, grid[k], epoch=-1, highlights=highlights, hcolors=hcolors, labels=False,
                                                 legend=legend, channel=l[i][2], shareaxis=masterax))
                 if masterax is None and len(ax) > 0:
                     masterax = ax[0]
@@ -389,7 +411,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False):
             row += 1
 
     # plot the scale axes
-    xtext = data.axes[0][len(data.axes[0])-1]
+    xtext = dcopy.axes[0][len(dcopy.axes[0])-1]
     sc = _subplot_scale(str(xtext) + ' ms', "$\mu$V", position=grid[scale_ax])
 
     return ax, sc
@@ -408,14 +430,17 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     channels : [String]
         List containing the channel names.
     levels : int, optional
-        The number of automatically created levels in the contour plot (default: 25).
+        The number of automatically created levels in the contour plot
+         (default: 25).
     colormap : matplotlib.colors.colormap, optional
-        A colormap to define the color transitions (default: a blue-white-red colormap).
+        A colormap to define the color transitions (default: a blue-white-red
+         colormap).
     norm : matplotlib.colors.norm, optional
-        A norm to define the min and max values. (default: 'None', values from -10 to 10 are assumed).
+        A norm to define the min and max values
+         (default: 'None', values from -10 to 10 are assumed).
     ticks : array([ints]), optional
-        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10
-        are displayed (default: None).
+        An array with values to define the ticks on the colorbar
+         (default: 'None', 3 ticks at -10, 0 and 10 are displayed).
     annotate : Boolean, optional
         Flag to switch channel annotations on or off (default: True).
     position : [x, y, width, height], optional
@@ -424,7 +449,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     Returns
     -------
     (Matplotlib.Axes, Matplotlib.Axes)
-        Returns a pair of Matplotlib.Axes. The first contains the plotted scalp, the second the corresponding colorbar.
+        Returns a pair of Matplotlib.Axes. The first contains the plotted scalp,
+        the second the corresponding colorbar.
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
