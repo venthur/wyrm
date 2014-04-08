@@ -174,7 +174,91 @@ def wr_cmap():
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
 
 
-# todo: longer description
+def calc_grid(rows, cols, hpad=.05, vpad=.05):
+    """
+    Calculates a grid of Rectangles and their positions.
+
+    Parameters
+    ----------
+    rows : int
+        The number of desired columns.
+    cols : int
+        The number of desired cols.
+    hpad : float, optional
+        The amount of horizontal padding (default: 0.05).
+    vpad : float, optional
+        The amount of vertical padding (default: 0.05).
+
+    Returns
+    -------
+    [[float, float, float, float]]
+        A list of all rectangle positions in the form of [xi, xy, width, height]
+        sorted from top left to bottom right.
+
+    Examples
+    --------
+    Calculates a 4x3 grid
+    >>> calc_grid(4, 3)
+
+    Calculates a 4x3 grid with more padding
+    >>> calc_grid(4, 3, hpad=.1, vpad=.1)
+    """
+    w = (1 - ((cols + 1) * vpad)) / cols
+    h = (1 - ((rows + 1) * hpad)) / rows
+
+    grid = []
+    for i in range(cols):
+        for j in range(rows):
+            xi = ((i % cols + 1) * hpad) + (i % cols * w)
+            yj = 1 - (((j % rows + 1) * vpad) + ((j % rows + 1) * h))
+            grid.append([xi, yj, w, h])
+
+    return grid
+
+
+def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
+    """
+    Calculates a centered grid of Rectangles and their positions.
+
+    Parameters
+    ----------
+    cols_list : [int]
+        List of ints. Every entry represents a row with as many channels as the
+        value.
+    hpad : float, optional
+        The amount of horizontal padding (default: 0.05).
+    vpad : float, optional
+        The amount of vertical padding (default: 0.05).
+
+    Returns
+    -------
+    [[float, float, float, float]]
+        A list of all rectangle positions in the form of [xi, xy, width, height]
+        sorted from top left to bottom right.
+
+    Examples:
+    ---------
+    Calculates a centered grid with 3 rows of 4, 3 and 2 columns
+    >>> calc_centered_grid([4, 3, 2])
+
+    Calculates a centered grid with more padding
+    >>> calc_centered_grid([5, 4], hpad=.1, vpad=.75)
+    """
+    h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
+    w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
+    grid = []
+    row = 1
+    for l in cols_list:
+        yi = 1 - ((row * vpad) + (row * h))
+        for i in range(l):
+            # calculate margin on both sides
+            m = .5 - (((l * w) + ((l - 1) * hpad)) / 2)
+            xi = m + (i * hpad) + (i * w)
+            grid.append([xi, yi, w, h])
+        row += 1
+    return grid
+
+
 def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
                       legend=True, reg_chans=None, position=None):
     """Plots a simple time interval.
@@ -451,6 +535,17 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     (Matplotlib.Axes, Matplotlib.Axes)
         Returns a pair of Matplotlib.Axes. The first contains the plotted scalp,
         the second the corresponding colorbar.
+
+    Examples
+    --------
+    Plots the values v for channels 'channels' on a scalp
+    >>> plot_scalp(v, channels)
+
+    This plot has finer gradients through increasing the levels to 50.
+    >>> plot_scalp(v, channels, levels=50)
+
+    This plot has a white-red colormap and a norm and ticks from 0 to 10
+    >>> plot_scalp(v, channels, colormap=wr_cmap(), norm=matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False), ticks=np.linspace(0.0, 10.0, 3, endpoint=True))
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -499,18 +594,22 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     data : wyrm.types.Data
         List containing the channel names for the overlaying timeinterval plots.
     interval : [begin, end)
-        Tuple of ints indicating the interval for the overlaying timeintervals.
+        Tuple of ints to specify the range of the overlayed timeinterval plots.
     scale_ti : float, optional
-        The percentage to scale the overlaying timeinterval plots (default: 0.1).
+        The percentage to scale the overlaying timeinterval plots
+        (default: 0.1).
     levels : int, optional
-        The number of automatically created levels in the contour plot (default: 25).
+        The number of automatically created levels in the contour plot
+        (default: 25).
     colormap : matplotlib.colors.colormap, optional
-        A colormap to define the color transitions (default: a blue-white-red colormap).
+        A colormap to define the color transitions
+        (default: a blue-white-red colormap).
     norm : matplotlib.colors.norm, optional
-        A norm to define the min and max values. If 'None', values from -10 to 10 are assumed (default: None).
+        A norm to define the min and max values. If 'None', values from
+        -10 to 10 are assumed (default: None).
     ticks : array([ints]), optional
-        An array with values to define the ticks on the colorbar. If 'None' 3 ticks at -10, 0 and 10
-        are displayed (default: None).
+        An array with values to define the ticks on the colorbar
+        (default: None, 3  ticks at -10, 0 and 10 are displayed).
     annotate : Boolean, optional
         Flag to switch channel annotations on or off (default: True).
     position : [x, y, width, height], optional
@@ -519,8 +618,8 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     Returns
     -------
     ((Matplotlib.Axes, Matplotlib.Axes), [Matplotlib.Axes])
-        Returns a tuple of first a tuple with the plotted scalp and its colorbar, then a list of all on top
-        plotted timeintervals.
+        Returns a tuple of first a tuple with the plotted scalp and its
+        colorbar, then a list of all on top plotted timeintervals.
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -726,75 +825,6 @@ def _subplot_scale(xvalue, yvalue, position):
     ax.set_ylim([0, 4])
     ax.set_xlim([0, 5])
     return ax
-
-
-def calc_grid(cols, rows, hpad=.05, vpad=.05):
-    """
-    Calculates a grid of Rectangles and their positions.
-
-    Parameters
-    ----------
-    cols : int
-        The number of desired columns.
-    rows : int
-        The number of desired rows.
-    hpad : float, optional
-        The amount of horizontal padding (default: 0.05).
-    vpad : float, optional
-        The amount of vertical padding (default: 0.05).
-
-    Returns
-    -------
-    [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height]
-        sorted from top left to bottom right.
-    """
-    w = (1 - ((cols + 1) * hpad)) / cols
-    h = (1 - ((rows + 1) * vpad)) / rows
-
-    grid = []
-    for i in range(cols):
-        for j in range(rows):
-            xi = ((i % cols + 1) * hpad) + (i % cols * w)
-            yj = 1 - (((j % rows + 1) * vpad) + ((j % rows + 1) * h))
-            grid.append([xi, yj, w, h])
-
-    return grid
-
-
-def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
-    """
-    Calculates a centered grid of Rectangles and their positions.
-
-    Parameters
-    ----------
-    cols_list : [int]
-        List of ints. Every entry represents a row with as many channels as the
-        value.
-    hpad : float, optional
-        The amount of horizontal padding (default: 0.05).
-    vpad : float, optional
-        The amount of vertical padding (default: 0.05).
-
-    Returns
-    -------
-    [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height]
-        sorted from top left to bottom right.
-    """
-    h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
-    w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
-    grid = []
-    row = 1
-    for l in cols_list:
-        yi = 1 - ((row * vpad) + (row * h))
-        for i in range(l):
-            # calculate margin on both sides
-            m = .5 - (((l * w) + ((l - 1) * hpad)) / 2)
-            xi = m + (i * hpad) + (i * w)
-            grid.append([xi, yi, w, h])
-        row += 1
-    return grid
 
 
 def _transform_rect(rect, template):
