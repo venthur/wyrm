@@ -575,7 +575,6 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
 
 # todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ...
 # ax.xaxis.set_tick_params(labelsize=x_labelsize)
-# todo: find better description for 'interval'
 def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=None,
                   norm=None, ticks=None, annotate=True, position=None):
     """Plots a scalp with channels on top
@@ -592,9 +591,10 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     channels : [String]
         List containing the channel names.
     data : wyrm.types.Data
-        List containing the channel names for the overlaying timeinterval plots.
+        Data object containing the continuous data for the overlaying
+        timeinterval plots.
     interval : [begin, end)
-        Tuple of ints to specify the range of the overlayed timeinterval plots.
+        Tuple of ints to specify the range of the overlaying timeinterval plots.
     scale_ti : float, optional
         The percentage to scale the overlaying timeinterval plots
         (default: 0.1).
@@ -1004,10 +1004,10 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
 
     Examples:
     ---------
-    >>> set_highlights([[200, 300], [500, 600]])
-    Would create two highlighted areas in all axes of the currently active
+    To create two highlighted areas in all axes of the currently active
     figure. The first area from 200ms - 300ms in blue and the second area from
     500ms - 600ms in green.
+    >>> set_highlights([[200, 300], [500, 600]])
     """
     if highlights is not None:
 
@@ -1019,6 +1019,7 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
             # the edges of the box are at the moment white. transparent edges
             # would be better.
 
+        # create a standard variety of colors, if nothing is specified
         if hcolors is None:
             hcolors = ['b', 'g', 'r', 'c', 'm', 'y']
 
@@ -1051,6 +1052,14 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
     draw : Boolean, optional
         A flag to switch if the new labels should be directly drawn to the
         plot (default: True).
+
+    Examples:
+    ---------
+    To set the x- and y-labels of all axes in the current figure
+     >>> set_labels('xtext', 'ytext')
+
+     To set the x- and y-labels of a specific axes in the current figure
+     >>> set_labels('xtext', 'ytext', set_axes=matplotlib.Axes)
     """
     if set_axes is None:
         set_axes = plt.gcf().axes
