@@ -119,59 +119,27 @@ def interpolate_2d(x, y, z):
     return xx, yy, zz
 
 
-def bwr_cmap():
-    """Create a linear segmented colormap with transitions from blue over white
-    to red.
-
-    Returns
-    -------
-    x : colormap
-        The matplotlib colormap.
+def create_colormap(scheme='bwr'):
     """
-    cdict = {'red': [(0.0, 0.0, 0.0),
-                     (0.25, 0.0, 0.0),
-                     (0.5, 1.0, 1.0),
-                     (0.75, 1.0, 1.0),
-                     (1.0, 0.5, 0.5)],
+    Creates a linear segmented colormap.
 
-             'green': [(0.0, 0.0, 0.0),
-                       (0.15, 0.0, 0.0),
-                       (0.25, 1.0, 1.0),
-                       (0.5, 1.0, 1.0),
-                       (0.75, 1.0, 1.0),
-                       (0.85, 0.0, 0.0),
-                       (1.0, 0.0, 0.0)],
+    It can be chosen between two different color schemes:
+     * blue-white-red ('bwr')
+     * white-red ('wr')
 
-             'blue': [(0.0, 0.5, 0.5),
-                      (0.25, 1.0, 1.0),
-                      (0.5, 1.0, 1.0),
-                      (0.75, 0.0, 0.0),
-                      (1.0, 0.0, 0.0)]}
-
-    return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
-
-
-def wr_cmap():
-    """Create a linear segmented colormap with transitions from white to red.
-
-    Returns
-    -------
-    x : colormap
-        The matplotlib colormap.
+     Parameters:
+     -----------
+     scheme : String, optional
+        String to specify the colorscheme of the colorbar. Possible inputs:
+        'bwr', 'wr' (default = 'bwr').
     """
-    cdict = {'red': [(0.0, 1.0, 1.0),
-                     (0.75, 1.0, 1.0),
-                     (1.0, .3, .3)],
+    assert str(scheme).lower() == 'bwr' or str(scheme).lower() == 'wr',\
+        "Wrong input: (0/1) or ('bwr'/'wr')"
 
-             'green': [(0.0, 1.0, 1.0),
-                       (0.75, 0.0, 0.0),
-                       (1.0, 0.0, 0.0)],
-
-             'blue': [(0.0, 1.0, 1.0),
-                      (0.75, 0.0, 0.0),
-                      (1.0, 0.0, 0.0)]}
-
-    return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
+    if str(scheme).lower() == 'bwr':
+        return _bwr_cmap()
+    else:
+        return _wr_cmap()
 
 
 def calc_grid(rows, cols, hpad=.05, vpad=.05):
@@ -509,7 +477,7 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
 
     Parameters
     ----------
-    v : [values]
+    v : [value]
         List containing the values of the channels.
     channels : [String]
         List containing the channel names.
@@ -545,7 +513,10 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     >>> plot_scalp(v, channels, levels=50)
 
     This plot has a white-red colormap and a norm and ticks from 0 to 10
-    >>> plot_scalp(v, channels, colormap=wr_cmap(), norm=matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False), ticks=np.linspace(0.0, 10.0, 3, endpoint=True))
+    >>> cm = create_colormap('wr')
+    >>> n = matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False)
+    >>> t = np.linspace(0.0, 10.0, 3, endpoint=True)
+    >>> plot_scalp(v, channels, colormap=_wr_cmap(), norm=n, ticks=t)
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -560,7 +531,7 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
     if colormap is None:
-        colormap = bwr_cmap()
+        colormap = _bwr_cmap()
     if norm is None:
         norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
@@ -586,7 +557,7 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
 
     Parameters
     ----------
-    v : [values]
+    v : [value]
         List containing the values of the channels.
     channels : [String]
         List containing the channel names.
@@ -634,7 +605,7 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
     if colormap is None:
-        colormap = bwr_cmap()
+        colormap = _bwr_cmap()
     if norm is None:
         norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
@@ -688,7 +659,83 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     return (ax0, ax1), tis
 
 
-def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
+def _bwr_cmap():
+    """Create a linear segmented colormap with transitions from blue over white
+    to red.
+
+    Returns
+    -------
+    x : colormap
+        The matplotlib colormap.
+    """
+    cdict = {'red': [(0.0, 0.0, 0.0),
+                     (0.25, 0.0, 0.0),
+                     (0.5, 1.0, 1.0),
+                     (0.75, 1.0, 1.0),
+                     (1.0, 0.5, 0.5)],
+
+             'green': [(0.0, 0.0, 0.0),
+                       (0.15, 0.0, 0.0),
+                       (0.25, 1.0, 1.0),
+                       (0.5, 1.0, 1.0),
+                       (0.75, 1.0, 1.0),
+                       (0.85, 0.0, 0.0),
+                       (1.0, 0.0, 0.0)],
+
+             'blue': [(0.0, 0.5, 0.5),
+                      (0.25, 1.0, 1.0),
+                      (0.5, 1.0, 1.0),
+                      (0.75, 0.0, 0.0),
+                      (1.0, 0.0, 0.0)]}
+
+    return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
+
+
+def _wr_cmap():
+    """Create a linear segmented colormap with transitions from white to red.
+
+    Returns
+    -------
+    x : colormap
+        The matplotlib colormap.
+    """
+    cdict = {'red': [(0.0, 1.0, 1.0),
+                     (0.75, 1.0, 1.0),
+                     (1.0, .3, .3)],
+
+             'green': [(0.0, 1.0, 1.0),
+                       (0.75, 0.0, 0.0),
+                       (1.0, 0.0, 0.0)],
+
+             'blue': [(0.0, 1.0, 1.0),
+                      (0.75, 0.0, 0.0),
+                      (1.0, 0.0, 0.0)]}
+
+    return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
+
+
+def _subplot_colorbar(position, colormap=_bwr_cmap(), ticks=None, norm=None):
+    """
+    Creates a new axes with a colorbar.
+
+    Creates a matplotlib.axes.Axes within the rectangle specified by 'position'
+    and fills it with a colorbar.
+
+    Parameters:
+    -----------
+    position : Rectangle
+        The rectangle (x, y, width, height) where the axes will be created.
+    colormap : matplotlib.colors.colormap, optional
+        A colormap to define the colorscheme of the colormap.
+    ticks : Array([float])
+        An array with floats to set the number and location of the ticks.
+    norm : matplotlib.colors.Normalize
+        A norm to set the min-/max-value of the colorbar.
+
+    Returns:
+    --------
+    matplotlib.axes.Axes
+    """
     fig = plt.gcf()
     ax = fig.add_axes(position)
     colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
@@ -696,6 +743,37 @@ def _subplot_colorbar(position, colormap=bwr_cmap(), ticks=None, norm=None):
 
 
 def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=True, norm=None):
+    """
+    Creates a new axes with a scalp plot.
+
+    Creates a matplotlib.axes.Axes within the rectangle specified by 'position'
+    and fills it with a contour plot for the channels in 'channels' and the data
+    in 'v'.
+
+    Parameters:
+    -----------
+    v : [value]
+        List containing the values of the channels.
+    channels : [String]
+        List containing the channel names.
+    position : Rectangle
+        The rectangle (x, y, width, height) where the axes will be created.
+    levels : int, optional
+        The number of automatically created levels in the contour plot
+         (default: 25).
+    colormap : matplotlib.colors.colormap, optional
+        A colormap to define the color transitions (default: a blue-white-red
+         colormap).
+    annotate : Boolean, optional
+        Flag to switch channel annotations on or off (default: True).
+    norm : matplotlib.colors.norm, optional
+        A norm to define the min and max values
+         (default: 'None', values from -10 to 10 are assumed).
+
+    Returns:
+    --------
+    matplotlib.axes.Axes
+    """
     fig = plt.gcf()
     ax = fig.add_axes(position)
     channelpos = [tts.channels[c] for c in channels]
@@ -706,7 +784,7 @@ def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=Tru
     xx, yy, zz = interpolate_2d(x, y, z)
 
     if colormap is None:
-        colormap = bwr_cmap()
+        colormap = _bwr_cmap()
 
     ax.contourf(xx, yy, zz, levels, zorder=1, cmap=colormap, norm=norm)
     ax.contour(xx, yy, zz, levels, zorder=1, colors="k", norm=norm, linewidths=.1)
@@ -763,6 +841,40 @@ def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=Tru
 
 def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
                           labels=True, legend=True, channel=None, shareaxis=None):
+    """
+    Creates a new axes with a timeinterval plot.
+
+    Creates a matplotlib.axes.Axes within the rectangle specified by 'position'
+    and fills it with a timeinterval plot defined by the channels and values
+    contained in 'data'.
+
+    Parameters:
+    -----------
+    data : wyrm.types.Data
+        Data object containing the data to plot.
+    position : Rectangle
+        The rectangle (x, y, width, height) where the axes will be created.
+    epoch : int
+        The epoch to be plotted. If there are no epochs this has to be '-1'.
+    highlights : [[int, int)]
+        List of tuples containing the start point (included) and end point
+        (excluded) of each area to be highlighted (default: None).
+    hcolors : [colors], optional
+        A list of colors to use for the highlights areas (default: None).
+    labels : Boolean, optional
+        Flag to switch plotting of the usual labels on or off (default: True)
+    legend : Boolean, optional
+        Flag to switch plotting of the legend on or off (default: True).
+    channel : int, optional
+        This can be used to plot only a single channel. 'channel' has to be the
+        index of the desired channel in data.axes[-1] (default: None)
+    shareaxis : matplotlib.axes.Axes, optional
+        An axes to share x- and y-axis with the new axes (default: None).
+
+    Returns:
+    --------
+    matplotlib.axes.Axes
+    """
     fig = plt.gcf()
 
     if shareaxis is None:
@@ -803,6 +915,20 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
 
 
 def _subplot_r_square(data, position):
+    """
+    Creates a new axes with colored r-sqaure values.
+
+    Parameters:
+    -----------
+    data : [float]
+        A list of floats that will be evenly distributed as colored tiles.
+    position : Rectangle
+        The rectangle (x, y, width, height) where the axes will be created.
+
+    Returns:
+    --------
+    matplotlib.axes.Axes
+    """
     fig = plt.gcf()
     ax = fig.add_axes(position)
     data = np.tile(data, (1, 1))
@@ -813,6 +939,22 @@ def _subplot_r_square(data, position):
 
 
 def _subplot_scale(xvalue, yvalue, position):
+    """
+    Creates a new axes with a simple scale.
+
+    Parameters:
+    -----------
+    xvalue : String
+        The text to be presented beneath the x-axis.
+    yvalue : String
+        The text to be presented next to the y-axis.
+    position : Rectangle
+        The rectangle (x, y, width, height) where the axes will be created.
+
+    Returns:
+    --------
+    matplotlib.axes.Axes
+    """
     fig = plt.gcf()
     ax = fig.add_axes(position)
     for item in [fig, ax]:
@@ -828,7 +970,18 @@ def _subplot_scale(xvalue, yvalue, position):
 
 
 def _transform_rect(rect, template):
-    assert len(rect) == len(template) == 4
+    """
+    Calculates the position of a relative notated rectangle within another
+    rectangle.
+
+    Parameters:
+    -----------
+    rect : Rectangle
+        The container rectangle to contain the other reactangle.
+    template : Rectangle
+        the rectangle to be contained in the other rectangle.
+    """
+    assert len(rect) == len(template) == 4, "Wrong inputs : [x, y, width, height]"
     x = rect[0] + (template[0] * rect[2])
     y = rect[1] + (template[1] * rect[3])
     w = rect[2] * template[2]
@@ -837,6 +990,16 @@ def _transform_rect(rect, template):
 
 
 def _get_system():
+    """
+    Returns a dictionary of all channels.
+
+    The channels are accessable by name and contain their x and y position on
+    the scalp.
+
+    Returns:
+    --------
+    {channel : (xposition, yposition)}
+    """
     system = {
         'Fpz': (0.0, 4.0),
         'Fp1': (-4.0, 3.5),
@@ -998,7 +1161,7 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
         [R, G, B] for R, G, B = [0..1].
         If left as None the colors blue, gree, red, cyan, magenta and yellow are
         used.
-    set_axes : [matplotlib.Axes], optional
+    set_axes : [matplotlib.axes.Axes], optional
         List of axes to highlights (default: None, all axes of the current
         figure will be highlighted).
 
@@ -1046,7 +1209,7 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
         The String to label the x-axis.
     ylabel : String
         The String to label the y-axis.
-    set_axes : [Matplotlib.Axes], optional
+    set_axes : [Matplotlib.axes.Axes], optional
         List of axes to apply the labels to (default: None, the labels are
         applied to all axes of the current figure).
     draw : Boolean, optional
@@ -1059,7 +1222,7 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
      >>> set_labels('xtext', 'ytext')
 
      To set the x- and y-labels of a specific axes in the current figure
-     >>> set_labels('xtext', 'ytext', set_axes=matplotlib.Axes)
+     >>> set_labels('xtext', 'ytext', set_axes=matplotlib.axes.Axes)
     """
     if set_axes is None:
         set_axes = plt.gcf().axes
