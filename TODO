@@ -1,0 +1,29 @@
+Todo
+====
+
+* plot r2 from top to botton left to right
+* firls (least squares filter)? anstatt butterworth
+* remove dead/noisy channels methods
+* Make sphinx document Data.__ne__, __nonzero__, etc.
+
+Done
+====
+
+* LDA + lda shrink
+* check csp for correctness
+* check if all methods deal with emtpy data correctly and use truthy value of
+  data to test if its emtpy
+* append_cnt is really useless, it does not handle marker and axis[timeaxis]
+  correctly
+* fix/deal w/ Ringbuffer w/ subsampled data?
+    - maybe adding a FIFO before the ringbuffer could help, the FIFO could have
+      an append and get method and get return either nothing or data of len >=
+      SIZE
+* Check marker bug for all remaining tb methods
+* How to create empty (no data) Data objects?
+
+
+
+---
+
+# vim: filetype=markdown

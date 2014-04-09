@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf8
 
 """Processing toolbox methods.
 
@@ -243,7 +244,7 @@ def segment_dat(dat, marker_def, ival, newsamples=None, timeaxis=-2):
         ``[-200, 100]`` Only negative or positive values are possible
         (i.e. ``[-500, -100]``)
     newsamples : int, optional
-        consider the last `newsamples` samples as new data and only
+        consider the last ``newsamples`` samples as new data and only
         return epochs which are possible with the old **and** the new
         data (i.e. don't include epochs which where possible without the
         new data).
@@ -757,6 +758,7 @@ def clear_markers(dat, timeaxis=-2):
     if not dat:
         # we don't have any data, and thus no time interval, we remove
         # all markers
+        logger.warning('Removing Marker from empty Data, this might be an error.')
         return dat.copy(markers=[])
     assert hasattr(dat, 'fs')
     sample_len = 1000 / dat.fs
@@ -1110,7 +1112,7 @@ def spectrum(dat, timeaxis=-2):
     Raises
     ------
     AssertionError
-        if the `dat` paramter has no `.fs` attribute
+        if the ``dat`` parameter has no ``.fs`` attribute
 
     See Also
     --------
@@ -1122,11 +1124,11 @@ def spectrum(dat, timeaxis=-2):
     # number of samples of our data
     length = dat.data.shape[timeaxis]
     fourier = sp.fftpack.fft(dat.data, axis=timeaxis)
-    fourier = fourier.take(np.arange(length)[1:length/2], axis=timeaxis)
+    fourier = fourier.take(np.arange(length)[1:int(length/2)], axis=timeaxis)
     amps = 2 * fourier / length
     amps = np.abs(amps)
     freqs = sp.fftpack.fftfreq(length, 1/dat.fs)
-    freqs = freqs[1:length/2]
+    freqs = freqs[1:int(length/2)]
     axes = dat.axes[:]
     axes[timeaxis] = freqs
     names = dat.names[:]
@@ -1189,38 +1191,38 @@ def stft(x, width):
     return fourier
 
 
-def calculate_csp(class1, class2):
+def calculate_csp(epo, classes=None):
     """Calculate the Common Spatial Pattern (CSP) for two classes.
 
-    You should use the columns of the patterns and filters.
+    This method calculates the CSP and the corresponding filters. Use
+    the columns of the patterns and filters.
 
     Examples
     --------
-    Calculate the CSP for two classes::
+    Calculate the CSP for the first two classes::
 
-    >>> w, a, d = calculate_csp(c1, c2)
-
-    Take the first two and the last two columns of the sorted filter::
-
-    >>> w = w[:, (0, 1, -2, -1)]
-
-    Apply the new filter to your data d of the form (time, channels)::
-
-    >>> filtered = np.dot(d, w)
-
-    You'll probably want to get the log-variance along the time axis::
-
+    >>> w, a, d = calculate_csp(epo)
+    >>> # Apply the first two and the last two columns of the sorted
+    >>> # filter to the data
+    >>> filtered = apply_csp(epo, w, [0, 1, -2, -1])
+    >>> # You'll probably want to get the log-variance along the time
+    >>> # axis, this should result in four numbers (one for each
+    >>> # channel)
     >>> filtered = np.log(np.var(filtered, 0))
 
-    This should result in four numbers (one for each channel).
+    Select two classes manually::
+
+    >>> w, a, d = calculate_csp(epo, [2, 5])
 
     Parameters
     ----------
-    class1
-        A matrix of the form (trials, time, channels) representing class 1.
-    class2
-        A matrix of the form (trials, time, channels) representing the second
-        class.
+    epo : epoched Data object
+        this method relies on the ``epo`` to have three dimensions in
+        the following order: class, time, channel
+    classes : list of two ints, optional
+        If ``None`` the first two different class indices found in
+        ``epo.axes[0]`` are chosen automatically otherwise the class
+        indices can be manually chosen by setting ``classes``
 
     Returns
     -------
@@ -1232,17 +1234,45 @@ def calculate_csp(class1, class2):
     d : 1d array
         the variances of the components
 
+    Raises
+    ------
+    AssertionError :
+        If:
+          * ``classes`` is not ``None`` and has less than two elements
+          * ``classes`` is not ``None`` and the first two elements are
+            not found in the ``epo``
+          * ``classes`` is ``None`` but there are less than two
+            different classes in the ``epo``
+
+    See Also
+    --------
+    :func:`apply_csp`, :func:`calculate_spoc`
 
     References
     ----------
     http://en.wikipedia.org/wiki/Common_spatial_pattern
 
     """
-    n_channels = class1.shape[2]
+    n_channels = epo.data.shape[-1]
+    if classes is None:
+        # automagically find the first two different classidx
+        # we don't use uniq, since it sorts the classidx first
+        # first check if we have a least two diffeent idxs:
+        assert len(np.unique(epo.axes[0])) >= 2
+        cidx1 = epo.axes[0][0]
+        cidx2 = epo.axes[0][epo.axes[0] != cidx1][0]
+    else:
+        assert (len(classes) >= 2 and
+            classes[0] in epo.axes[0] and
+            classes[1] in epo.axes[0])
+        cidx1 = classes[0]
+        cidx2 = classes[1]
+    epoc1 = select_epochs(epo, np.nonzero(epo.axes[0] == cidx1)[0], classaxis=0)
+    epoc2 = select_epochs(epo, np.nonzero(epo.axes[0] == cidx2)[0], classaxis=0)
     # we need a matrix of the form (observations, channels) so we stack trials
     # and time per channel together
-    x1 = class1.reshape(-1, n_channels)
-    x2 = class2.reshape(-1, n_channels)
+    x1 = epoc1.data.reshape(-1, n_channels)
+    x2 = epoc2.data.reshape(-1, n_channels)
     # compute covariance matrices of the two classes
     c1 = np.cov(x1.transpose())
     c2 = np.cov(x2.transpose())
@@ -1258,6 +1288,181 @@ def calculate_csp(class1, class2):
     v = v.take(indx, axis=1)
     a = sp.linalg.inv(v).transpose()
     return v, a, d
+
+
+def apply_csp(epo, filt, columns=[0, -1]):
+    """Apply the CSP filter.
+
+    Apply the spacial CSP filter to the epoched data.
+
+    Parameters
+    ----------
+    epo : epoched ``Data`` object
+        this method relies on the ``epo`` to have three dimensions in
+        the following order: class, time, channel
+    filt : 2d array
+        the CSP filter (i.e. the ``v`` return value from
+        :func:`calculate_csp`)
+    columns : array of ints, optional
+        the columns of the filter to use. The default is the first and
+        the last one.
+
+    Returns
+    -------
+    epo : epoched ``Data`` object
+        The channels from the original have been replaced with the new
+        virtual CSP channels.
+
+    Examples
+    --------
+
+    >>> w, a, d = calculate_csp(epo)
+    >>> epo = apply_csp(epo, w)
+
+    See Also
+    --------
+    :func:`calculate_csp`
+
+    """
+    f = filt[:, columns]
+    data = np.array([np.dot(epo.data[i], f) for i in range(epo.data.shape[0])])
+    axes = epo.axes[:]
+    axes[-1] = np.array(['csp %i' % i for i in range(data.shape[-1])])
+    names = epo.names[:]
+    names[-1] = 'CSP Channel'
+    dat = epo.copy(data=data, axes=axes, names=names)
+    return dat
+
+
+def calculate_spoc(epo):
+    """Compute source power co-modulation analysis (SPoC)
+
+    Computes spatial filters that optimize the co-modulation (here
+    covariance) between the epoch-wise variance (as a proxy for spectral
+    power) and a given target signal.
+
+    This SPoc function returns a full set of components (i.e. filters
+    and patterns) of which the first component maximizes the
+    co-modulation (i.e. positive covariance) and the last component
+    minimizes it (i.e. maximizes negative covariance).
+
+    .. note:: Since the covariance is optimized, it may be affected by
+        outliers in the data (i.e. trials/epochs with very large
+        variance that is due to artifacts). Please remove be sure to
+        remove these epochs if possible before calling this function!
+
+    Parameters
+    ----------
+    epo : epoched Data oject
+        this method relies on the ``epo`` to have three dimensions in
+        the following order: class, time, channel. The data in epo
+        should be band-pass filtered for the frequency band of interest.
+        The values of the target variable (i.e. ``epo.axes[0]``) must be
+        present in epo.
+
+    Returns
+    -------
+    v : 2d array
+        The spatial filters optimized by the ``SPoC_lambda`` algorithm.
+        Each column in the matrix is a filter.
+    a : 2d array
+        The spatial activation patterns that correspond to the filters
+        in ``v``. Each column is a spatial pattern. when visualizing the
+        SPoC components as scalp maps, plot the spatial patterns and not
+        the filters. See also [2]_.
+    d : 1d array
+        The lambda values that correspond to the filters/patterns in
+        ``v`` and ``a``, sorted from largest (positive covariance) to
+        smallest (negative covariance).
+
+    Examples
+    --------
+
+    Split data in training and test set
+
+    Calculate SPoC::
+
+    >>> w, a, d = calculate_spoc(epo)
+
+    Identify the components with strongest co-modulation by checking the
+    covariance values stored in ``d``. If there is positive covariance
+    with the target variable it will be the first, otherwise the last:
+
+    >>> w = w[:, 0]
+
+    Apply the filter(s) to the test data::
+
+    >>> filtered = np.dot(data, w)
+
+    Notes
+    -----
+
+    SPoC assumes that there is a linear relationship between a measured
+    target signal and the dynamics of the spectral power of an
+    oscillatory source that is hidden in the data. The target signal my
+    be a stimulus property (e.g. intensity, frequency, color, ...), a
+    behavioral measure (e.g. reaction times, ratings, ...) , or any
+    other uni-variate signal of interest. The time-course of spectral
+    power of the oscillatory source signal is approximated by variance
+    across small time segments (epochs). Thus, if the power of a
+    specific frequency band is investigated, the input signals must be
+    band-passed filtered before they are segmented into epochs and given
+    to this function. This method implements ``SPoC_lambda``, presented
+    in [1]_. Thus, source activity is extracted from the input data via
+    spatial filtering. The spatial filters are optimized such that the
+    epoch-wise variance maximally covaries with the given target signal
+    ``z``.
+
+    See Also
+    --------
+    :func:`calculate_csp`
+
+
+    References
+    ----------
+
+    .. [1] S. Dähne, F. C. Meinecke, S. Haufe, J. Höhne, M. Tangermann,
+        K. R. Müller, V. V. Nikulin "SPoC: a novel framework for
+        relating the amplitude of neuronal oscillations to behaviorally
+        relevant parameters", NeuroImage, 86(0):111-122, 2014
+
+    .. [2] S. Haufe, F. Meinecke, K. Görgen, S. Dähne, J. Haynes, B.
+        Blankertz, F. Biessmann, "On the interpretation of weight
+        vectors of linear models in multivariate neuroimaging",
+        NeuroImage, 87:96-110, 2014
+
+    """
+    z = epo.axes[0][:]
+    # convert into float just in case, because in the BCI case we'll
+    # deal mostly with integers (i.e. the class indices) here
+    z = z.astype(np.float)
+
+    z -= z.mean()
+    z /= z.std()
+
+    ce = np.empty([epo.data.shape[0], epo.data.shape[2], epo.data.shape[2]])
+    for i in range(epo.data.shape[0]):
+        ce[i] = np.cov(epo.data[i].transpose())
+
+    c = ce.mean(axis=0)
+    for i in range(ce.shape[0]):
+        ce[i] = ce[i] * z[i]
+    cz = ce.mean(axis=0)
+
+    # solution of csp objective via generalized eigenvalue problem
+    # in matlab the signature is v, d = eig(a, b)
+    d, v = sp.linalg.eig(cz, c)
+    d = d.real
+    # make sure the eigenvalues and -vectors are correctly sorted
+    indx = np.argsort(d)
+    # reverse
+    indx = indx[::-1]
+    d = d.take(indx)
+    v = v.take(indx, axis=1)
+    a = sp.linalg.inv(v).transpose()
+    return v, a, d
+
+
 
 
 def calculate_classwise_average(dat, classaxis=0):

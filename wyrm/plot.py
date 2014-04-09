@@ -47,6 +47,32 @@ def plot_channels(dat, chanaxis=-1, otheraxis=-2):
         plt.axhline(y=0)
 
 
+def plot_spatio_temporal_r2_values(dat):
+    """Calculate the signed r^2 values and plot them in a heatmap.
+
+    Parameters
+    ----------
+    dat : Data
+        epoched data
+
+    """
+    r2 = proc.calculate_signed_r_square(dat)
+    max = np.max(np.abs(r2))
+    plt.imshow(r2.T, aspect='auto', interpolation='None', vmin=-max, vmax=max, cmap='RdBu')
+    ax = plt.gca()
+    # TODO: sort front-back, left-right
+    # use the locators to fine-tune the ticks
+    #ax.yaxis.set_major_locator(ticker.MaxNLocator())
+    #ax.xaxis.set_major_locator(ticker.MaxNLocator())
+    ax.yaxis.set_major_formatter(ticker.IndexFormatter(dat.axes[-1]))
+    ax.xaxis.set_major_formatter(ticker.IndexFormatter(['%.1f' % i for i in dat.axes[-2]]))
+    plt.xlabel('%s [%s]' % (dat.names[-2], dat.units[-2]))
+    plt.ylabel('%s [%s]' % (dat.names[-1], dat.units[-1]))
+    plt.tight_layout(True)
+    plt.colorbar()
+    plt.grid(True)
+
+
 def plot_spectrum(spectrum, freqs):
     plt.plot(freqs, spectrum, '.')
     plt.xlabel('Frequency [Hz]')

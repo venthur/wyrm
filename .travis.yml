@@ -25,5 +25,5 @@ matrix:
         - python: 3.3
         - python: pypy
 
-script: ./testall.sh
+script: make test
 

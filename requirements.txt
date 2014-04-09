@@ -5,3 +5,4 @@ scikit-learn
 pyflakes
 coverage
 numpydoc
+nose
