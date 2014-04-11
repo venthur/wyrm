@@ -126,7 +126,7 @@ def calculate_stereographic_projection(p):
 
     """
     # P' = P * (2r / r + z)
-    mu = 1 / (1 + p[2])
+    mu = 1 / (1.3 + p[2])
     x = p[0] * mu
     y = p[1] * mu
     return x, y
