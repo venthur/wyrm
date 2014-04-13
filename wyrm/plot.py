@@ -22,6 +22,8 @@ import processing as pro
 import tentensystem as tts
 from types import Data
 
+# ############# OLD FUNCTIONS ############################################
+
 
 def plot_channels(dat, chanaxis=-1, otheraxis=-2):
     """Plot all channels for a continuous.
@@ -144,113 +146,7 @@ def interpolate_2d(x, y, z):
     zz = f(xx, yy)
     return xx, yy, zz
 
-
-def create_colormap(scheme='bwr'):
-    """
-    Creates a linear segmented colormap.
-
-    It can be chosen between two different color schemes:
-     * blue-white-red ('bwr')
-     * white-red ('wr')
-
-     Parameters:
-     -----------
-     scheme : String, optional
-        String to specify the colorscheme of the colorbar. Possible inputs:
-        'bwr', 'wr' (default = 'bwr').
-    """
-    assert str(scheme).lower() == 'bwr' or str(scheme).lower() == 'wr',\
-        "Wrong input: (0/1) or ('bwr'/'wr')"
-
-    if str(scheme).lower() == 'bwr':
-        return _bwr_cmap()
-    else:
-        return _wr_cmap()
-
-
-def calc_grid(rows, cols, hpad=.05, vpad=.05):
-    """
-    Calculates a grid of Rectangles and their positions.
-
-    Parameters
-    ----------
-    rows : int
-        The number of desired columns.
-    cols : int
-        The number of desired cols.
-    hpad : float, optional
-        The amount of horizontal padding (default: 0.05).
-    vpad : float, optional
-        The amount of vertical padding (default: 0.05).
-
-    Returns
-    -------
-    [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height]
-        sorted from top left to bottom right.
-
-    Examples
-    --------
-    Calculates a 4x3 grid
-    >>> calc_grid(4, 3)
-
-    Calculates a 4x3 grid with more padding
-    >>> calc_grid(4, 3, hpad=.1, vpad=.1)
-    """
-    w = (1 - ((cols + 1) * vpad)) / cols
-    h = (1 - ((rows + 1) * hpad)) / rows
-
-    grid = []
-    for i in range(cols):
-        for j in range(rows):
-            xi = ((i % cols + 1) * hpad) + (i % cols * w)
-            yj = 1 - (((j % rows + 1) * vpad) + ((j % rows + 1) * h))
-            grid.append([xi, yj, w, h])
-
-    return grid
-
-
-def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
-    """
-    Calculates a centered grid of Rectangles and their positions.
-
-    Parameters
-    ----------
-    cols_list : [int]
-        List of ints. Every entry represents a row with as many channels as the
-        value.
-    hpad : float, optional
-        The amount of horizontal padding (default: 0.05).
-    vpad : float, optional
-        The amount of vertical padding (default: 0.05).
-
-    Returns
-    -------
-    [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height]
-        sorted from top left to bottom right.
-
-    Examples:
-    ---------
-    Calculates a centered grid with 3 rows of 4, 3 and 2 columns
-    >>> calc_centered_grid([4, 3, 2])
-
-    Calculates a centered grid with more padding
-    >>> calc_centered_grid([5, 4], hpad=.1, vpad=.75)
-    """
-    h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
-    w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
-    grid = []
-    row = 1
-    for l in cols_list:
-        yi = 1 - ((row * vpad) + (row * h))
-        for i in range(l):
-            # calculate margin on both sides
-            m = .5 - (((l * w) + ((l - 1) * hpad)) / 2)
-            xi = m + (i * hpad) + (i * w)
-            grid.append([xi, yi, w, h])
-        row += 1
-    return grid
+# ############# COMPOSITE PLOTS ##########################################
 
 
 def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
@@ -497,9 +393,12 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
 
 def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
                annotate=True, position=None):
-    """Plots the values v for channels 'channels' on a scalp as a contour plot.
+    """Plots the values 'v' for channels 'channels' on a scalp.
 
-    <long description>
+    Calculates the interpolation of the values v for the corresponding
+    channels 'channels' and plots it as a contour plot on a scalp.
+    The degree of gradients as well as the the appearance of the color
+    bar can be adjusted.
 
     Parameters
     ----------
@@ -570,8 +469,6 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     return ax0, ax1
 
 
-# todo: scale the labelsize (ax.get_xticklabels()[0].get_size(), x_labelsize *= rect[2]**0.5, ...
-# ax.xaxis.set_tick_params(labelsize=x_labelsize)
 def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=None,
                   norm=None, ticks=None, annotate=True, position=None):
     """Plots a scalp with channels on top
@@ -684,6 +581,202 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
 
     return (ax0, ax1), tis
 
+# ############# TOOLS ####################################################
+
+
+def create_colormap(scheme='bwr'):
+    """
+    Creates a linear segmented colormap.
+
+    It can be chosen between two different color schemes:
+     * blue-white-red ('bwr')
+     * white-red ('wr')
+
+     Parameters:
+     -----------
+     scheme : String, optional
+        String to specify the colorscheme of the colorbar. Possible inputs:
+        'bwr', 'wr' (default = 'bwr').
+    """
+    assert str(scheme).lower() == 'bwr' or str(scheme).lower() == 'wr', \
+        "Wrong input: (0/1) or ('bwr'/'wr')"
+
+    if str(scheme).lower() == 'bwr':
+        return _bwr_cmap()
+    else:
+        return _wr_cmap()
+
+
+def set_highlights(highlights, hcolors=None, set_axes=None):
+    """Sets highlights in form of vertical boxes to axes.
+
+    Parameters
+    ----------
+    highlights : [(start, end)]
+        List of tuples containing the start point (included) and end point
+        (excluded) of each area to be highlighted.
+    hcolors : [colors], optional
+        A list of colors to use for the highlight areas (e.g. 'b', '#eeefff' or
+        [R, G, B] for R, G, B = [0..1].
+        If left as None the colors blue, gree, red, cyan, magenta and yellow are
+        used.
+    set_axes : [matplotlib.axes.Axes], optional
+        List of axes to highlights (default: None, all axes of the current
+        figure will be highlighted).
+
+    Examples:
+    ---------
+    To create two highlighted areas in all axes of the currently active
+    figure. The first area from 200ms - 300ms in blue and the second area from
+    500ms - 600ms in green.
+    >>> set_highlights([[200, 300], [500, 600]])
+    """
+    if highlights is not None:
+
+        if set_axes is None:
+            set_axes = plt.gcf().axes
+
+        def highlight(start, end, axis, color, alpha):
+            axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
+            # the edges of the box are at the moment white. transparent edges
+            # would be better.
+
+        # create a standard variety of colors, if nothing is specified
+        if hcolors is None:
+            hcolors = ['b', 'g', 'r', 'c', 'm', 'y']
+
+        # create a colormask containing #spans colors iterating over specified
+        # colors or a standard variety
+        colormask = []
+        for index, span in enumerate(highlights):
+            colormask.append(hcolors[index % len(hcolors)])
+
+        # check if highlights is an instance of the Highlight class
+        for p in set_axes:
+            for span in highlights:
+                highlight(span[0], span[1]-1, p, colormask.pop(0), .5)
+
+
+def set_labels(xlabel, ylabel, set_axes=None, draw=True):
+    """Sets the labels of x- and y-axis of axes.
+
+    Parameters
+    ----------
+    xlabel : String
+        The String to label the x-axis.
+    ylabel : String
+        The String to label the y-axis.
+    set_axes : [Matplotlib.axes.Axes], optional
+        List of axes to apply the labels to (default: None, the labels are
+        applied to all axes of the current figure).
+    draw : Boolean, optional
+        A flag to switch if the new labels should be directly drawn to the
+        plot (default: True).
+
+    Examples:
+    ---------
+    To set the x- and y-labels of all axes in the current figure
+     >>> set_labels('xtext', 'ytext')
+
+     To set the x- and y-labels of a specific axes in the current figure
+     >>> set_labels('xtext', 'ytext', set_axes=matplotlib.axes.Axes)
+    """
+    if set_axes is None:
+        set_axes = plt.gcf().axes
+
+    # labeling of axes
+    for ax in set_axes:
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel, rotation=0)
+
+    if draw:
+        plt.draw()
+
+
+def calc_grid(rows, cols, hpad=.05, vpad=.05):
+    """
+    Calculates a grid of Rectangles and their positions.
+
+    Parameters
+    ----------
+    rows : int
+        The number of desired columns.
+    cols : int
+        The number of desired cols.
+    hpad : float, optional
+        The amount of horizontal padding (default: 0.05).
+    vpad : float, optional
+        The amount of vertical padding (default: 0.05).
+
+    Returns
+    -------
+    [[float, float, float, float]]
+        A list of all rectangle positions in the form of [xi, xy, width, height]
+        sorted from top left to bottom right.
+
+    Examples
+    --------
+    Calculates a 4x3 grid
+    >>> calc_grid(4, 3)
+
+    Calculates a 4x3 grid with more padding
+    >>> calc_grid(4, 3, hpad=.1, vpad=.1)
+    """
+    w = (1 - ((cols + 1) * vpad)) / cols
+    h = (1 - ((rows + 1) * hpad)) / rows
+
+    grid = []
+    for i in range(cols):
+        for j in range(rows):
+            xi = ((i % cols + 1) * hpad) + (i % cols * w)
+            yj = 1 - (((j % rows + 1) * vpad) + ((j % rows + 1) * h))
+            grid.append([xi, yj, w, h])
+
+    return grid
+
+
+def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
+    """
+    Calculates a centered grid of Rectangles and their positions.
+
+    Parameters
+    ----------
+    cols_list : [int]
+        List of ints. Every entry represents a row with as many channels as the
+        value.
+    hpad : float, optional
+        The amount of horizontal padding (default: 0.05).
+    vpad : float, optional
+        The amount of vertical padding (default: 0.05).
+
+    Returns
+    -------
+    [[float, float, float, float]]
+        A list of all rectangle positions in the form of [xi, xy, width, height]
+        sorted from top left to bottom right.
+
+    Examples:
+    ---------
+    Calculates a centered grid with 3 rows of 4, 3 and 2 columns
+    >>> calc_centered_grid([4, 3, 2])
+
+    Calculates a centered grid with more padding
+    >>> calc_centered_grid([5, 4], hpad=.1, vpad=.75)
+    """
+    h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
+    w = (1 - ((max(cols_list) + 1) * hpad)) / max(cols_list)
+    grid = []
+    row = 1
+    for l in cols_list:
+        yi = 1 - ((row * vpad) + (row * h))
+        for i in range(l):
+            # calculate margin on both sides
+            m = .5 - (((l * w) + ((l - 1) * hpad)) / 2)
+            xi = m + (i * hpad) + (i * w)
+            grid.append([xi, yi, w, h])
+        row += 1
+    return grid
+
 
 def _bwr_cmap():
     """Create a linear segmented colormap with transitions from blue over white
@@ -738,6 +831,8 @@ def _wr_cmap():
                       (1.0, 0.0, 0.0)]}
 
     return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
+
+# ############# PRIMITIVE PLOTS ##########################################
 
 
 def _subplot_colorbar(position, colormap=_bwr_cmap(), ticks=None, norm=None):
@@ -994,6 +1089,8 @@ def _subplot_scale(xvalue, yvalue, position):
     ax.set_xlim([0, 5])
     return ax
 
+# ############# HELPER FUNCTIONS #########################################
+
 
 def _transform_rect(rect, template):
     """
@@ -1170,93 +1267,3 @@ def _get_system():
         'Iz': (0.0, -5),
         'I2': (-1, -5)}
     return system
-
-
-def set_highlights(highlights, hcolors=None, set_axes=None):
-    """Sets highlights in form of vertical boxes to axes.
-
-    <long description>
-
-    Parameters
-    ----------
-    highlights : [(start, end)]
-        List of tuples containing the start point (included) and end point
-        (excluded) of each area to be highlighted.
-    hcolors : [colors], optional
-        A list of colors to use for the highlight areas (e.g. 'b', '#eeefff' or
-        [R, G, B] for R, G, B = [0..1].
-        If left as None the colors blue, gree, red, cyan, magenta and yellow are
-        used.
-    set_axes : [matplotlib.axes.Axes], optional
-        List of axes to highlights (default: None, all axes of the current
-        figure will be highlighted).
-
-    Examples:
-    ---------
-    To create two highlighted areas in all axes of the currently active
-    figure. The first area from 200ms - 300ms in blue and the second area from
-    500ms - 600ms in green.
-    >>> set_highlights([[200, 300], [500, 600]])
-    """
-    if highlights is not None:
-
-        if set_axes is None:
-            set_axes = plt.gcf().axes
-
-        def highlight(start, end, axis, color, alpha):
-            axis.axvspan(start, end, edgecolor='w', facecolor=color, alpha=alpha)
-            # the edges of the box are at the moment white. transparent edges
-            # would be better.
-
-        # create a standard variety of colors, if nothing is specified
-        if hcolors is None:
-            hcolors = ['b', 'g', 'r', 'c', 'm', 'y']
-
-        # create a colormask containing #spans colors iterating over specified
-        # colors or a standard variety
-        colormask = []
-        for index, span in enumerate(highlights):
-            colormask.append(hcolors[index % len(hcolors)])
-
-        # check if highlights is an instance of the Highlight class
-        for p in set_axes:
-            for span in highlights:
-                highlight(span[0], span[1]-1, p, colormask.pop(0), .5)
-
-
-def set_labels(xlabel, ylabel, set_axes=None, draw=True):
-    """Sets the labels of x- and y-axis of axes.
-
-    <long description>
-
-    Parameters
-    ----------
-    xlabel : String
-        The String to label the x-axis.
-    ylabel : String
-        The String to label the y-axis.
-    set_axes : [Matplotlib.axes.Axes], optional
-        List of axes to apply the labels to (default: None, the labels are
-        applied to all axes of the current figure).
-    draw : Boolean, optional
-        A flag to switch if the new labels should be directly drawn to the
-        plot (default: True).
-
-    Examples:
-    ---------
-    To set the x- and y-labels of all axes in the current figure
-     >>> set_labels('xtext', 'ytext')
-
-     To set the x- and y-labels of a specific axes in the current figure
-     >>> set_labels('xtext', 'ytext', set_axes=matplotlib.axes.Axes)
-    """
-    if set_axes is None:
-        set_axes = plt.gcf().axes
-
-    # labeling of axes
-    for ax in set_axes:
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel, rotation=0)
-
-    if draw:
-        plt.draw()
