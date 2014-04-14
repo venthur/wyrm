@@ -1,6 +1,1 @@
 *.pyc
-*.*~
-build/*
-.idea/*
-wyrm.iml
-doc/build/*
