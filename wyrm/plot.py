@@ -23,9 +23,9 @@ from matplotlib.path import Path
 from matplotlib import patches as patches
 from matplotlib.patches import Rectangle
 
-import processing as pro
-import tentensystem as tts
-from types import Data
+from wyrm import processing as proc
+from wyrm import tentensystem as tts
+from wyrm.types import Data
 
 # ############# OLD FUNCTIONS ############################################
 
@@ -63,7 +63,7 @@ def plot_spatio_temporal_r2_values(dat):
         epoched data
 
     """
-    r2 = pro.calculate_signed_r_square(dat)
+    r2 = proc.calculate_signed_r_square(dat)
     max = np.max(np.abs(r2))
     plt.imshow(r2.T, aspect='auto', interpolation='None', vmin=-max, vmax=max, cmap='RdBu')
     ax = plt.gca()
@@ -230,7 +230,7 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
             pos_r2 = _transform_rect(position, rect_r2)
 
     if reg_chans is not None:
-        dcopy = pro.select_channels(dcopy, reg_chans)
+        dcopy = proc.select_channels(dcopy, reg_chans)
 
     # process epoched data into continuous data using the mean
     if len(data.data.shape) > 2:
@@ -333,7 +333,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
         channel_lists.append([])
 
     if reg_chans is not None:
-        dcopy = pro.select_channels(dcopy, reg_chans)
+        dcopy = proc.select_channels(dcopy, reg_chans)
 
     # distribute the channels to the lists by their y-position
     count = 0
