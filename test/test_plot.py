@@ -37,7 +37,6 @@ class TestPlot(unittest.TestCase):
 
     def test_plot_channels(self):
         plot.plot_channels(self.cnt)
-        plt.suptitle('plot_channels')
 
     def test_plot_spatio_temporal_r2_values(self):
         plot.plot_spatio_temporal_r2_values(self.cnt)
@@ -47,6 +46,20 @@ class TestPlot(unittest.TestCase):
 
     def test_plot_spectrogram(self):
         plot.plot_spectrogram(np.random.random((10, 100)), np.arange(100))
+
+    def test_interpolate2d(self):
+        """Make sure the interpolation does not lead to interpolated
+        values bigger than the maximum provided by the points.
+
+        This particularly happens when doing interpolation with splines.
+
+        """
+        x = [1, 2, 1, 2, 3]
+        y = [1, 1, 2, 2, 3]
+        z = [10, 10, 10, 10, 2]
+        _, _, Z = plot.interpolate_2d(x, y, z)
+        self.assertAlmostEqual(np.nanmax(Z), 10.)
+
 
 ###############################################################################
 
@@ -60,13 +73,11 @@ class TestPlot(unittest.TestCase):
     def test_plot_tenten(self):
         plot.plot_tenten(self.cnt)
 
-
     def test_plot_scalp(self):
         plot.plot_scalp(self.cnt.data[0, :], self.cnt.axes[-1])
 
     def test_plot_scalp_ti(self):
         plot.plot_scalp_ti(self.cnt.data[0, :], self.cnt.axes[-1], self.cnt, [100, 700])
-
 
 
 if __name__ == '__main__':
