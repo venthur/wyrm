@@ -19,6 +19,7 @@ from matplotlib import axes
 from matplotlib import colorbar
 from matplotlib import colors
 from matplotlib import pyplot as plt
+from matplotlib import ticker
 from matplotlib.path import Path
 from matplotlib import patches as patches
 from matplotlib.patches import Rectangle
