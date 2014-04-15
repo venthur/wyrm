@@ -23,6 +23,15 @@ class TestPlot(unittest.TestCase):
         data = np.array([y]*len(channels)).T
         axes = [x, channels.keys()]
         cls.cnt = Data(data=data, axes=axes, names=['time', 'channel'], units=['ms', '#'])
+        cls.cnt.fs = 1000
+
+        classes = [0, 1] * 5
+        data = np.array([data]*10)
+        data[::2] *= 0.5
+        axes = [classes, x, channels.keys()]
+        cls.epo = Data(data=data, axes=axes, names=['class', 'time', 'channel'], units=['#', 'ms', '#'])
+        cls.epo.fs = 1000
+        cls.epo.class_names = ['class 1', 'class 2']
 
     def setUp(self):
         plt.figure(figsize=(16, 9))
@@ -39,7 +48,7 @@ class TestPlot(unittest.TestCase):
         plot.plot_channels(self.cnt)
 
     def test_plot_spatio_temporal_r2_values(self):
-        plot.plot_spatio_temporal_r2_values(self.cnt)
+        plot.plot_spatio_temporal_r2_values(self.epo)
 
     def test_plot_spectrum(self):
         plot.plot_spectrum(np.random.random(100), np.arange(100))
