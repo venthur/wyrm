@@ -63,7 +63,7 @@ def plot_spatio_temporal_r2_values(dat):
         epoched data
 
     """
-    r2 = proc.calculate_signed_r_square(dat)
+    r2 = pro.calculate_signed_r_square(dat)
     max = np.max(np.abs(r2))
     plt.imshow(r2.T, aspect='auto', interpolation='None', vmin=-max, vmax=max, cmap='RdBu')
     ax = plt.gca()

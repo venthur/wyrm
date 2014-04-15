@@ -51,6 +51,10 @@ class TestPlot(unittest.TestCase):
 ###############################################################################
 
     def test_plot_timeinterval(self):
+        _, ax = plt.subplots(2, 1)
+        plt.sca(ax[0])
+        plot.plot_timeinterval(self.cnt, np.random.random(1000), [[200, 300], [500, 700]])
+        plt.sca(ax[1])
         plot.plot_timeinterval(self.cnt)
 
     def test_plot_tenten(self):
