@@ -8,6 +8,17 @@ the most basic and offer simple, single-plot representations. The
 Composites are composed of several primitives and offer more complex
 representations.
 
+.. warning::
+
+    This module needs heavy reworking! We have yet to find a consistent
+    way to handle primitive and composite plots, deal with the fact that
+    some plots just manipulate axes, while others operate on figures and
+    have to decide on which layer of matplotlib we want to deal with
+    (i.e. pyplot, artist or even pylab).
+
+    The API of this module will change and you should not rely on any
+    method here.
+
 """
 
 from __future__ import division
