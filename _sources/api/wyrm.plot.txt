@@ -9,17 +9,33 @@ wyrm.plot
 
    .. autosummary::
    
+      calc_centered_grid
+      calc_grid
       calculate_stereographic_projection
+      create_colormap
       interpolate_2d
       plot_channels
       plot_scalp
+      plot_scalp_ti
       plot_spatio_temporal_r2_values
       plot_spectrogram
       plot_spectrum
+      plot_tenten
+      plot_timeinterval
+      set_highlights
+      set_labels
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Data
+      Path
+      Rectangle
    
    
 

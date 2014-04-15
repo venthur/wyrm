@@ -55,40 +55,46 @@
 
 <span class="sd">&quot;&quot;&quot;Plotting methods.</span>
 
-<span class="sd">This module contains various plotting methods.</span>
+<span class="sd">This module contains various plotting methods. There are two types of</span>
+<span class="sd">plotting methods: the Primitives and the Composites. The Primitives are</span>
+<span class="sd">the most basic and offer simple, single-plot representations. The</span>
+<span class="sd">Composites are composed of several primitives and offer more complex</span>
+<span class="sd">representations.</span>
+
+<span class="sd">.. warning::</span>
+
+<span class="sd">    This module needs heavy reworking! We have yet to find a consistent</span>
+<span class="sd">    way to handle primitive and composite plots, deal with the fact that</span>
+<span class="sd">    some plots just manipulate axes, while others operate on figures and</span>
+<span class="sd">    have to decide on which layer of matplotlib we want to deal with</span>
+<span class="sd">    (i.e. pyplot, artist or even pylab).</span>
+
+<span class="sd">    The API of this module will change and you should not rely on any</span>
+<span class="sd">    method here.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">ticker</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
 
-<span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">tentensystem</span> <span class="k">as</span> <span class="n">tts</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">axes</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colorbar</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">ticker</span>
+<span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">patches</span> <span class="k">as</span> <span class="n">patches</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+
 <span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">processing</span> <span class="k">as</span> <span class="n">proc</span>
+<span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">tentensystem</span> <span class="k">as</span> <span class="n">tts</span>
+<span class="kn">from</span> <span class="nn">wyrm.types</span> <span class="kn">import</span> <span class="n">Data</span>
+
+<span class="c"># ############# OLD FUNCTIONS ############################################</span>
 
 
-<div class="viewcode-block" id="plot_scalp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_scalp">[docs]</a><span class="k">def</span> <span class="nf">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Plot the values v for channel ``channel`` on a scalp.&quot;&quot;&quot;</span>
-
-    <span class="n">channelpos</span> <span class="o">=</span> <span class="p">[</span><span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channel</span><span class="p">]</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">calculate_stereographic_projection</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">channelpos</span><span class="p">]</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">v</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-    <span class="c">#plt.clabel(im)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;bo&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)):</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-</div>
 <div class="viewcode-block" id="plot_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_channels">[docs]</a><span class="k">def</span> <span class="nf">plot_channels</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">chanaxis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">otheraxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plot all channels for a continuous.</span>
 
@@ -105,7 +111,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_channels</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span>  <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">otheraxis</span><span class="p">],</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">([</span><span class="n">i</span><span class="p">],</span> <span class="n">chanaxis</span><span class="p">)</span>
+        <span class="c">#x, y = dat.axes[otheraxis], dat.data.take([i], chanaxis)</span>
+        <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">otheraxis</span><span class="p">],</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">([</span><span class="n">i</span><span class="p">],</span> <span class="n">chanaxis</span><span class="p">)</span>
         <span class="n">a</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">otheraxis</span><span class="p">],</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">([</span><span class="n">i</span><span class="p">],</span> <span class="n">chanaxis</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
         <span class="n">a</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -147,10 +154,10 @@
 <div class="viewcode-block" id="plot_spectrogram"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_spectrogram">[docs]</a><span class="k">def</span> <span class="nf">plot_spectrogram</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="n">freqs</span><span class="p">):</span>
     <span class="n">extent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">),</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
-        <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span>
-        <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
-        <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
-        <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
+               <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span>
+               <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span>
+               <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+               <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time&#39;</span><span class="p">)</span>
@@ -179,7 +186,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># P&#39; = P * (2r / r + z)</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="c"># changed the values to move the point of projection further below the</span>
+    <span class="c"># south pole</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.3</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">mu</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">mu</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
@@ -200,14 +209,1134 @@
 <span class="sd">        the interpolated values as values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
-    <span class="c">#f = interpolate.interp2d(x, y, z)</span>
-    <span class="c">#Z = f(X[0, :], Y[:, 0])</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">LinearNDInterpolator</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span>
-    <span class="n">Z</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span></div>
+    <span class="n">zz</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span>
+
+<span class="c"># ############# COMPOSITE PLOTS ##########################################</span>
+
+</div>
+<div class="viewcode-block" id="plot_timeinterval"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_timeinterval">[docs]</a><span class="k">def</span> <span class="nf">plot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">r_square</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                      <span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reg_chans</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plots a simple time interval.</span>
+
+<span class="sd">    Plots all channels of either continuous data or the mean of epoched data</span>
+<span class="sd">    into a single timeinterval plot.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : wyrm.types.Data</span>
+<span class="sd">        Data object containing the data to plot.</span>
+<span class="sd">    r_square : [values], optional</span>
+<span class="sd">        List containing r_squared values to be plotted beneath the main plot</span>
+<span class="sd">        (default: None).</span>
+<span class="sd">    highlights : [[int, int)]</span>
+<span class="sd">        List of tuples containing the start point (included) and end point</span>
+<span class="sd">        (excluded) of each area to be highlighted (default: None).</span>
+<span class="sd">    hcolors : [colors], optional</span>
+<span class="sd">        A list of colors to use for the highlights areas (default: None).</span>
+<span class="sd">    legend : Boolean, optional</span>
+<span class="sd">        Flag to switch plotting of the legend on or off (default: True).</span>
+<span class="sd">    reg_chans : [regular expression], optional</span>
+<span class="sd">        A list of regular expressions. The plot will be limited to those</span>
+<span class="sd">        channels matching the regular expressions. (default: None).</span>
+<span class="sd">    position : [x, y, width, height], optional</span>
+<span class="sd">        A Rectangle that limits the plot to its boundaries (default: None).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Matplotlib.Axes or (Matplotlib.Axes, Matplotlib.Axes)</span>
+<span class="sd">        The Matplotlib.Axes corresponding to the plotted timeinterval and, if</span>
+<span class="sd">        provided, the Axes corresponding to r_squared values.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plots all channels contained in data with a legend.</span>
+
+<span class="sd">    &gt;&gt;&gt; plot_timeinterval(data)</span>
+
+<span class="sd">    Same as above, but without the legend.</span>
+
+<span class="sd">    &gt;&gt;&gt; plot_timeinterval(data, legend=False)</span>
+
+<span class="sd">    Adds r-square values to the plot.</span>
+
+<span class="sd">    &gt;&gt;&gt; plot_timeinterval(data, r_square=[values])</span>
+
+<span class="sd">    Adds a highlighted area to the plot.</span>
+
+<span class="sd">    &gt;&gt;&gt; plot_timeinterval(data, highlights=[[200, 400]])</span>
+
+<span class="sd">    To specify the colors of the highlighted areas use &#39;hcolors&#39;.</span>
+
+<span class="sd">    &gt;&gt;&gt; plot_timeinterval(data, highlights=[[200, 400]], hcolors=[&#39;red&#39;])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dcopy</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">rect_ti_solo</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mo">07</span><span class="p">,</span> <span class="o">.</span><span class="mo">07</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
+    <span class="n">rect_ti_r2</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mo">07</span><span class="p">,</span> <span class="o">.</span><span class="mi">12</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mi">85</span><span class="p">]</span>
+    <span class="n">rect_r2</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mo">07</span><span class="p">,</span> <span class="o">.</span><span class="mo">07</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">r_square</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">pos_ti</span> <span class="o">=</span> <span class="n">rect_ti_solo</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos_ti</span> <span class="o">=</span> <span class="n">rect_ti_r2</span>
+            <span class="n">pos_r2</span> <span class="o">=</span> <span class="n">rect_r2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">r_square</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">pos_ti</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_ti_solo</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos_ti</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_ti_r2</span><span class="p">)</span>
+            <span class="n">pos_r2</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_r2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">reg_chans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">dcopy</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">select_channels</span><span class="p">(</span><span class="n">dcopy</span><span class="p">,</span> <span class="n">reg_chans</span><span class="p">)</span>
+
+    <span class="c"># process epoched data into continuous data using the mean</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">dcopy</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dcopy</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="p">[</span><span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+                     <span class="p">[</span><span class="n">dcopy</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">dcopy</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">ax1</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c"># plotting of the data</span>
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">_subplot_timeinterval</span><span class="p">(</span><span class="n">dcopy</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_ti</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="n">highlights</span><span class="p">,</span>
+                                <span class="n">hcolors</span><span class="o">=</span><span class="n">hcolors</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">labelpad</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">r_square</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax1</span> <span class="o">=</span> <span class="n">_subplot_r_square</span><span class="p">(</span><span class="n">r_square</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_r2</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">pos_ti</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r_square</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ax0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span>
+
+</div>
+<div class="viewcode-block" id="plot_tenten"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_tenten">[docs]</a><span class="k">def</span> <span class="nf">plot_tenten</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                <span class="n">reg_chans</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plots channels on a grid system.</span>
+
+<span class="sd">    Iterates over every channel in the data structure. If the channelname</span>
+<span class="sd">    matches a channel in the tenten-system it will be plotted in a grid of</span>
+<span class="sd">    rectangles. The grid is structured like the tenten-system itself, but in</span>
+<span class="sd">    a simplified manner. The rows, in which channels appear, are predetermined,</span>
+<span class="sd">    the channels are ordered automatically within their respective row.</span>
+<span class="sd">    Areas to highlight can be specified, those areas will be marked with colors</span>
+<span class="sd">    in every timeinterval plot.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : wyrm.types.Data</span>
+<span class="sd">        Data object containing the data to plot.</span>
+<span class="sd">    highlights : [[int, int)]</span>
+<span class="sd">        List of tuples containing the start point (included) and end point</span>
+<span class="sd">        (excluded) of each area to be highlighted (default: None).</span>
+<span class="sd">    hcolors : [colors], optional</span>
+<span class="sd">        A list of colors to use for the highlight areas (default: None).</span>
+<span class="sd">    legend : Boolean, optional</span>
+<span class="sd">        Flag to switch plotting of the legend on or off (default: True).</span>
+<span class="sd">    scale : Boolean, optional</span>
+<span class="sd">        Flag to switch plotting of a scale in the top right corner of the grid</span>
+<span class="sd">        (default: True)</span>
+<span class="sd">    reg_chans : [regular expressions]</span>
+<span class="sd">        A list of regular expressions. The plot will be limited to those</span>
+<span class="sd">        channels matching the regular expressions.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    [Matplotlib.Axes], Matplotlib.Axes</span>
+<span class="sd">        Returns the plotted timeinterval axes as a list of Matplotlib.Axes and</span>
+<span class="sd">        the plotted scale as a single Matplotlib.Axes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plotting of all channels within a Data object</span>
+<span class="sd">    &gt;&gt;&gt; plot_tenten(data)</span>
+
+<span class="sd">    Plotting of all channels with a highlighted area</span>
+<span class="sd">    &gt;&gt;&gt; plot_tenten(data, highlights=[[200, 400]])</span>
+
+<span class="sd">    Plotting of all channels beginning with &#39;A&#39;</span>
+<span class="sd">    &gt;&gt;&gt; plot_tenten(data, reg_chans=[&#39;A.*&#39;])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dcopy</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c"># this dictionary determines which y-position corresponds with which row in the grid</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">{</span><span class="mf">4.0</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="mf">3.5</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="mf">3.0</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="mf">2.5</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="mf">2.0</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="mf">1.5</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                <span class="mf">1.0</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="mf">0.5</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="mf">0.0</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.5</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">1.5</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">2.0</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">2.5</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">2.6</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">3.0</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">3.5</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">4.0</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">4.5</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">5.0</span><span class="p">:</span> <span class="mi">16</span><span class="p">}</span>
+
+    <span class="c"># all the channels with their x- and y-position</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="n">_get_system</span><span class="p">()</span>
+
+    <span class="c"># create list with 17 empty lists. one for every potential row of channels.</span>
+    <span class="n">channel_lists</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">18</span><span class="p">):</span>
+        <span class="n">channel_lists</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+
+    <span class="k">if</span> <span class="n">reg_chans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">dcopy</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">select_channels</span><span class="p">(</span><span class="n">dcopy</span><span class="p">,</span> <span class="n">reg_chans</span><span class="p">)</span>
+
+    <span class="c"># distribute the channels to the lists by their y-position</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+            <span class="c"># entries in channel_lists: [&lt;channel_name&gt;, &lt;x-position&gt;, &lt;position in Data&gt;]</span>
+            <span class="n">channel_lists</span><span class="p">[</span><span class="n">ordering</span><span class="p">[</span><span class="n">system</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">1</span><span class="p">]]]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">count</span><span class="p">))</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c"># sort the lists of channels by their x-position</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">channel_lists</span><span class="p">:</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c_list</span><span class="p">:</span> <span class="n">c_list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c"># calculate the needed dimensions of the grid</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">channel_lists</span><span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">columns</span> <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="c"># add another axes to the first row for the scale</span>
+    <span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">calc_centered_grid</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mo">01</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mo">01</span><span class="p">)</span>
+
+    <span class="c"># axis used for sharing axes between channels</span>
+    <span class="n">masterax</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">scale_ax</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">channel_lists</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)):</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_subplot_timeinterval</span><span class="p">(</span><span class="n">dcopy</span><span class="p">,</span> <span class="n">grid</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="n">highlights</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="n">hcolors</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                                <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">shareaxis</span><span class="o">=</span><span class="n">masterax</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">masterax</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">masterax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c"># hide the axeslabeling</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="n">labeltop</span><span class="o">=</span><span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="s">&#39;off&#39;</span><span class="p">,</span>
+                                <span class="n">labelright</span><span class="o">=</span><span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="s">&#39;off&#39;</span><span class="p">)</span>
+
+                <span class="c"># at this moment just to show what&#39;s what</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">&#39;axes fraction&#39;</span><span class="p">)</span>
+
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="c"># this is the last axes in the first row</span>
+                    <span class="n">scale_ax</span> <span class="o">=</span> <span class="n">k</span>
+                    <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c"># plot the scale axes</span>
+    <span class="n">xtext</span> <span class="o">=</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">_subplot_scale</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xtext</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; ms&#39;</span><span class="p">,</span> <span class="s">&quot;$\mu$V&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">scale_ax</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">sc</span>
+
+</div>
+<div class="viewcode-block" id="plot_scalp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_scalp">[docs]</a><span class="k">def</span> <span class="nf">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">annotate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plots the values &#39;v&#39; for channels &#39;channels&#39; on a scalp.</span>
+
+<span class="sd">    Calculates the interpolation of the values v for the corresponding</span>
+<span class="sd">    channels &#39;channels&#39; and plots it as a contour plot on a scalp.</span>
+<span class="sd">    The degree of gradients as well as the the appearance of the color</span>
+<span class="sd">    bar can be adjusted.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v : [value]</span>
+<span class="sd">        List containing the values of the channels.</span>
+<span class="sd">    channels : [String]</span>
+<span class="sd">        List containing the channel names.</span>
+<span class="sd">    levels : int, optional</span>
+<span class="sd">        The number of automatically created levels in the contour plot</span>
+<span class="sd">         (default: 25).</span>
+<span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
+<span class="sd">        A colormap to define the color transitions (default: a blue-white-red</span>
+<span class="sd">         colormap).</span>
+<span class="sd">    norm : matplotlib.colors.norm, optional</span>
+<span class="sd">        A norm to define the min and max values</span>
+<span class="sd">         (default: &#39;None&#39;, values from -10 to 10 are assumed).</span>
+<span class="sd">    ticks : array([ints]), optional</span>
+<span class="sd">        An array with values to define the ticks on the colorbar</span>
+<span class="sd">         (default: &#39;None&#39;, 3 ticks at -10, 0 and 10 are displayed).</span>
+<span class="sd">    annotate : Boolean, optional</span>
+<span class="sd">        Flag to switch channel annotations on or off (default: True).</span>
+<span class="sd">    position : [x, y, width, height], optional</span>
+<span class="sd">        A Rectangle that limits the plot to its boundaries (default: None).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (Matplotlib.Axes, Matplotlib.Axes)</span>
+<span class="sd">        Returns a pair of Matplotlib.Axes. The first contains the plotted scalp,</span>
+<span class="sd">        the second the corresponding colorbar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plots the values v for channels &#39;channels&#39; on a scalp</span>
+<span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels)</span>
+
+<span class="sd">    This plot has finer gradients through increasing the levels to 50.</span>
+<span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels, levels=50)</span>
+
+<span class="sd">    This plot has a white-red colormap and a norm and ticks from 0 to 10</span>
+<span class="sd">    &gt;&gt;&gt; cm = create_colormap(&#39;wr&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; n = matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False)</span>
+<span class="sd">    &gt;&gt;&gt; t = np.linspace(0.0, 10.0, 3, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels, colormap=_wr_cmap(), norm=n, ticks=t)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rect_scalp</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
+    <span class="n">rect_colorbar</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">pos_scalp</span> <span class="o">=</span> <span class="n">rect_scalp</span>
+        <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">rect_colorbar</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pos_scalp</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_scalp</span><span class="p">)</span>
+        <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_colorbar</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_scalp</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">,</span>
+                         <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">pos_colorbar</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span>
+
+</div>
+<div class="viewcode-block" id="plot_scalp_ti"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_scalp_ti">[docs]</a><span class="k">def</span> <span class="nf">plot_scalp_ti</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">scale_ti</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                  <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plots a scalp with channels on top</span>
+
+<span class="sd">    Plots the values v for channels &#39;channels&#39; on a scalp as a contour plot.</span>
+<span class="sd">    Additionaly plots the channels in channels_ti as a timeinterval on top of</span>
+<span class="sd">    the scalp plot. The individual channels are placed over their position on</span>
+<span class="sd">    the scalp.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v : [value]</span>
+<span class="sd">        List containing the values of the channels.</span>
+<span class="sd">    channels : [String]</span>
+<span class="sd">        List containing the channel names.</span>
+<span class="sd">    data : wyrm.types.Data</span>
+<span class="sd">        Data object containing the continuous data for the overlaying</span>
+<span class="sd">        timeinterval plots.</span>
+<span class="sd">    interval : [begin, end)</span>
+<span class="sd">        Tuple of ints to specify the range of the overlaying timeinterval plots.</span>
+<span class="sd">    scale_ti : float, optional</span>
+<span class="sd">        The percentage to scale the overlaying timeinterval plots</span>
+<span class="sd">        (default: 0.1).</span>
+<span class="sd">    levels : int, optional</span>
+<span class="sd">        The number of automatically created levels in the contour plot</span>
+<span class="sd">        (default: 25).</span>
+<span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
+<span class="sd">        A colormap to define the color transitions</span>
+<span class="sd">        (default: a blue-white-red colormap).</span>
+<span class="sd">    norm : matplotlib.colors.norm, optional</span>
+<span class="sd">        A norm to define the min and max values. If &#39;None&#39;, values from</span>
+<span class="sd">        -10 to 10 are assumed (default: None).</span>
+<span class="sd">    ticks : array([ints]), optional</span>
+<span class="sd">        An array with values to define the ticks on the colorbar</span>
+<span class="sd">        (default: None, 3  ticks at -10, 0 and 10 are displayed).</span>
+<span class="sd">    annotate : Boolean, optional</span>
+<span class="sd">        Flag to switch channel annotations on or off (default: True).</span>
+<span class="sd">    position : [x, y, width, height], optional</span>
+<span class="sd">        A Rectangle that limits the plot to its boundaries (default: None).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ((Matplotlib.Axes, Matplotlib.Axes), [Matplotlib.Axes])</span>
+<span class="sd">        Returns a tuple of first a tuple with the plotted scalp and its</span>
+<span class="sd">        colorbar, then a list of all on top plotted timeintervals.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rect_scalp</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
+    <span class="n">rect_colorbar</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">13</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">pos_scalp</span> <span class="o">=</span> <span class="n">rect_scalp</span>
+        <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">rect_colorbar</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pos_scalp</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_scalp</span><span class="p">)</span>
+        <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_colorbar</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_scalp</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">pos_colorbar</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+
+    <span class="c"># adding the timeinterval plots</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">_get_system</span><span class="p">()</span>
+
+    <span class="c"># modification of internally used data if a specific intervals is specified</span>
+    <span class="n">cdat</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">startindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">endindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">startindex</span><span class="p">:</span><span class="n">endindex</span><span class="p">]</span>
+        <span class="n">cdat</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">cdat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">startindex</span><span class="p">:</span><span class="n">endindex</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="n">tis</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+
+            <span class="n">channelindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c"># generating the channel position on the scalp</span>
+            <span class="n">channelpos</span> <span class="o">=</span> <span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">calculate_stereographic_projection</span><span class="p">(</span><span class="n">channelpos</span><span class="p">)</span>
+
+            <span class="c"># dirty: these are the x and y limits of the scalp axes</span>
+            <span class="n">minx</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.15</span>
+            <span class="n">maxx</span> <span class="o">=</span> <span class="mf">1.15</span>
+            <span class="n">miny</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.10</span>
+            <span class="n">maxy</span> <span class="o">=</span> <span class="mf">1.15</span>
+
+            <span class="c"># transformation of karth. to relative coordinates</span>
+            <span class="n">xy</span> <span class="o">=</span> <span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">minx</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">minx</span><span class="p">)</span> <span class="o">+</span> <span class="n">maxx</span><span class="p">)),</span> \
+                 <span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">miny</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">miny</span><span class="p">)</span> <span class="o">+</span> <span class="n">maxy</span><span class="p">))</span>
+
+            <span class="n">pos_c</span> <span class="o">=</span> <span class="p">[</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">scale_ti</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">scale_ti</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">scale_ti</span><span class="p">,</span> <span class="n">scale_ti</span><span class="p">]</span>
+
+            <span class="c"># transformation to fit into the scalp part of the plot</span>
+            <span class="n">pos_c</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">pos_scalp</span><span class="p">,</span> <span class="n">pos_c</span><span class="p">)</span>
+
+            <span class="n">tis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_subplot_timeinterval</span><span class="p">(</span><span class="n">cdat</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_c</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                             <span class="n">channel</span><span class="o">=</span><span class="n">channelindex</span><span class="p">,</span> <span class="n">shareaxis</span><span class="o">=</span><span class="bp">None</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;The channel &quot;&#39;</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="s">&#39;&quot; was not found in the tenten-system.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span><span class="p">),</span> <span class="n">tis</span>
+
+<span class="c"># ############# TOOLS ####################################################</span>
+
+</div>
+<div class="viewcode-block" id="create_colormap"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.create_colormap">[docs]</a><span class="k">def</span> <span class="nf">create_colormap</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="s">&#39;bwr&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a linear segmented colormap.</span>
+
+<span class="sd">    It can be chosen between two different color schemes:</span>
+<span class="sd">     * blue-white-red (&#39;bwr&#39;)</span>
+<span class="sd">     * white-red (&#39;wr&#39;)</span>
+
+<span class="sd">     Parameters:</span>
+<span class="sd">     -----------</span>
+<span class="sd">     scheme : String, optional</span>
+<span class="sd">        String to specify the colorscheme of the colorbar. Possible inputs:</span>
+<span class="sd">        &#39;bwr&#39;, &#39;wr&#39; (default = &#39;bwr&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;bwr&#39;</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;wr&#39;</span><span class="p">,</span> \
+        <span class="s">&quot;Wrong input: (0/1) or (&#39;bwr&#39;/&#39;wr&#39;)&quot;</span>
+
+    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;bwr&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_wr_cmap</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="set_highlights"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.set_highlights">[docs]</a><span class="k">def</span> <span class="nf">set_highlights</span><span class="p">(</span><span class="n">highlights</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets highlights in form of vertical boxes to axes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    highlights : [(start, end)]</span>
+<span class="sd">        List of tuples containing the start point (included) and end point</span>
+<span class="sd">        (excluded) of each area to be highlighted.</span>
+<span class="sd">    hcolors : [colors], optional</span>
+<span class="sd">        A list of colors to use for the highlight areas (e.g. &#39;b&#39;, &#39;#eeefff&#39; or</span>
+<span class="sd">        [R, G, B] for R, G, B = [0..1].</span>
+<span class="sd">        If left as None the colors blue, gree, red, cyan, magenta and yellow are</span>
+<span class="sd">        used.</span>
+<span class="sd">    set_axes : [matplotlib.axes.Axes], optional</span>
+<span class="sd">        List of axes to highlights (default: None, all axes of the current</span>
+<span class="sd">        figure will be highlighted).</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    To create two highlighted areas in all axes of the currently active</span>
+<span class="sd">    figure. The first area from 200ms - 300ms in blue and the second area from</span>
+<span class="sd">    500ms - 600ms in green.</span>
+<span class="sd">    &gt;&gt;&gt; set_highlights([[200, 300], [500, 600]])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">highlights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">set_axes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">set_axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">axes</span>
+
+        <span class="k">def</span> <span class="nf">highlight</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+            <span class="c"># the edges of the box are at the moment white. transparent edges</span>
+            <span class="c"># would be better.</span>
+
+        <span class="c"># create a standard variety of colors, if nothing is specified</span>
+        <span class="k">if</span> <span class="n">hcolors</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">hcolors</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;g&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">]</span>
+
+        <span class="c"># create a colormask containing #spans colors iterating over specified</span>
+        <span class="c"># colors or a standard variety</span>
+        <span class="n">colormask</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">span</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">highlights</span><span class="p">):</span>
+            <span class="n">colormask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hcolors</span><span class="p">[</span><span class="n">index</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">hcolors</span><span class="p">)])</span>
+
+        <span class="c"># check if highlights is an instance of the Highlight class</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">set_axes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">span</span> <span class="ow">in</span> <span class="n">highlights</span><span class="p">:</span>
+                <span class="n">highlight</span><span class="p">(</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">colormask</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="set_labels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.set_labels">[docs]</a><span class="k">def</span> <span class="nf">set_labels</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">draw</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the labels of x- and y-axis of axes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xlabel : String</span>
+<span class="sd">        The String to label the x-axis.</span>
+<span class="sd">    ylabel : String</span>
+<span class="sd">        The String to label the y-axis.</span>
+<span class="sd">    set_axes : [Matplotlib.axes.Axes], optional</span>
+<span class="sd">        List of axes to apply the labels to (default: None, the labels are</span>
+<span class="sd">        applied to all axes of the current figure).</span>
+<span class="sd">    draw : Boolean, optional</span>
+<span class="sd">        A flag to switch if the new labels should be directly drawn to the</span>
+<span class="sd">        plot (default: True).</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    To set the x- and y-labels of all axes in the current figure</span>
+<span class="sd">     &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;)</span>
+
+<span class="sd">     To set the x- and y-labels of a specific axes in the current figure</span>
+<span class="sd">     &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;, set_axes=matplotlib.axes.Axes)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">set_axes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">set_axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">axes</span>
+
+    <span class="c"># labeling of axes</span>
+    <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">set_axes</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">draw</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="calc_grid"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calc_grid">[docs]</a><span class="k">def</span> <span class="nf">calc_grid</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a grid of Rectangles and their positions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rows : int</span>
+<span class="sd">        The number of desired columns.</span>
+<span class="sd">    cols : int</span>
+<span class="sd">        The number of desired cols.</span>
+<span class="sd">    hpad : float, optional</span>
+<span class="sd">        The amount of horizontal padding (default: 0.05).</span>
+<span class="sd">    vpad : float, optional</span>
+<span class="sd">        The amount of vertical padding (default: 0.05).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    [[float, float, float, float]]</span>
+<span class="sd">        A list of all rectangle positions in the form of [xi, xy, width, height]</span>
+<span class="sd">        sorted from top left to bottom right.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculates a 4x3 grid</span>
+<span class="sd">    &gt;&gt;&gt; calc_grid(4, 3)</span>
+
+<span class="sd">    Calculates a 4x3 grid with more padding</span>
+<span class="sd">    &gt;&gt;&gt; calc_grid(4, 3, hpad=.1, vpad=.1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">cols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">))</span> <span class="o">/</span> <span class="n">cols</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hpad</span><span class="p">))</span> <span class="o">/</span> <span class="n">rows</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="p">((</span><span class="n">i</span> <span class="o">%</span> <span class="n">cols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hpad</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="n">cols</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span>
+            <span class="n">yj</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(((</span><span class="n">j</span> <span class="o">%</span> <span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">j</span> <span class="o">%</span> <span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="p">))</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xi</span><span class="p">,</span> <span class="n">yj</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">grid</span>
+
+</div>
+<div class="viewcode-block" id="calc_centered_grid"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calc_centered_grid">[docs]</a><span class="k">def</span> <span class="nf">calc_centered_grid</span><span class="p">(</span><span class="n">cols_list</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a centered grid of Rectangles and their positions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cols_list : [int]</span>
+<span class="sd">        List of ints. Every entry represents a row with as many channels as the</span>
+<span class="sd">        value.</span>
+<span class="sd">    hpad : float, optional</span>
+<span class="sd">        The amount of horizontal padding (default: 0.05).</span>
+<span class="sd">    vpad : float, optional</span>
+<span class="sd">        The amount of vertical padding (default: 0.05).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    [[float, float, float, float]]</span>
+<span class="sd">        A list of all rectangle positions in the form of [xi, xy, width, height]</span>
+<span class="sd">        sorted from top left to bottom right.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    Calculates a centered grid with 3 rows of 4, 3 and 2 columns</span>
+<span class="sd">    &gt;&gt;&gt; calc_centered_grid([4, 3, 2])</span>
+
+<span class="sd">    Calculates a centered grid with more padding</span>
+<span class="sd">    &gt;&gt;&gt; calc_centered_grid([5, 4], hpad=.1, vpad=.75)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">cols_list</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols_list</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">cols_list</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hpad</span><span class="p">))</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">cols_list</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">cols_list</span><span class="p">:</span>
+        <span class="n">yi</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">row</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span> <span class="o">*</span> <span class="n">h</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+            <span class="c"># calculate margin on both sides</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span> <span class="o">-</span> <span class="p">(((</span><span class="n">l</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hpad</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">hpad</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
+        <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">grid</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_bwr_cmap</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from blue over white</span>
+<span class="sd">    to red.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x : colormap</span>
+<span class="sd">        The matplotlib colormap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;red&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)],</span>
+
+             <span class="s">&#39;green&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
+
+             <span class="s">&#39;blue&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+                      <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                      <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                      <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                      <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)]}</span>
+
+    <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s">&#39;bwr_colormap&#39;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_wr_cmap</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from white to red.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x : colormap</span>
+<span class="sd">        The matplotlib colormap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;red&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">)],</span>
+
+             <span class="s">&#39;green&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
+
+             <span class="s">&#39;blue&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                      <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                      <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)]}</span>
+
+    <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s">&#39;bwr_colormap&#39;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+
+<span class="c"># ############# PRIMITIVE PLOTS ##########################################</span>
+
+
+<span class="k">def</span> <span class="nf">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">_bwr_cmap</span><span class="p">(),</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new axes with a colorbar.</span>
+
+<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by &#39;position&#39;</span>
+<span class="sd">    and fills it with a colorbar.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    position : Rectangle</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+<span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
+<span class="sd">        A colormap to define the colorscheme of the colormap.</span>
+<span class="sd">    ticks : Array([float])</span>
+<span class="sd">        An array with floats to set the number and location of the ticks.</span>
+<span class="sd">    norm : matplotlib.colors.Normalize</span>
+<span class="sd">        A norm to set the min-/max-value of the colorbar.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    matplotlib.axes.Axes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+    <span class="n">colorbar</span><span class="o">.</span><span class="n">ColorbarBase</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+
+<span class="k">def</span> <span class="nf">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new axes with a scalp plot.</span>
+
+<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by &#39;position&#39;</span>
+<span class="sd">    and fills it with a contour plot for the channels in &#39;channels&#39; and the data</span>
+<span class="sd">    in &#39;v&#39;.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    v : [value]</span>
+<span class="sd">        List containing the values of the channels.</span>
+<span class="sd">    channels : [String]</span>
+<span class="sd">        List containing the channel names.</span>
+<span class="sd">    position : Rectangle</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+<span class="sd">    levels : int, optional</span>
+<span class="sd">        The number of automatically created levels in the contour plot</span>
+<span class="sd">         (default: 25).</span>
+<span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
+<span class="sd">        A colormap to define the color transitions (default: a blue-white-red</span>
+<span class="sd">         colormap).</span>
+<span class="sd">    annotate : Boolean, optional</span>
+<span class="sd">        Flag to switch channel annotations on or off (default: True).</span>
+<span class="sd">    norm : matplotlib.colors.norm, optional</span>
+<span class="sd">        A norm to define the min and max values</span>
+<span class="sd">         (default: &#39;None&#39;, values from -10 to 10 are assumed).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    matplotlib.axes.Axes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+    <span class="n">channelpos</span> <span class="o">=</span> <span class="p">[</span><span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">calculate_stereographic_projection</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">channelpos</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span> <span class="o">=</span> <span class="n">interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+
+    <span class="c"># add a nose</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c"># add ears</span>
+    <span class="n">vertsr</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">),</span>  <span class="c"># P0</span>
+        <span class="p">(</span><span class="mf">1.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P1</span>
+        <span class="p">(</span><span class="mf">1.10</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P2</span>
+        <span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.13</span><span class="p">)]</span>  <span class="c"># P3</span>
+
+    <span class="n">vertsl</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="o">-</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">),</span>  <span class="c"># P0</span>
+        <span class="p">(</span><span class="o">-</span><span class="mf">1.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P1</span>
+        <span class="p">(</span><span class="o">-</span><span class="mf">1.10</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P2</span>
+        <span class="p">(</span><span class="o">-</span><span class="mf">0.99</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.13</span><span class="p">)]</span>  <span class="c"># P3</span>
+
+    <span class="c"># in combination with Path this creates a bezier-curve with 2 fix-points and 2 control-points</span>
+    <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">,</span>
+             <span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">,</span>
+             <span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">,</span>
+             <span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">]</span>
+
+    <span class="n">pathr</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">vertsr</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
+    <span class="n">pathl</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">vertsl</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
+    <span class="n">patchr</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">PathPatch</span><span class="p">(</span><span class="n">pathr</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">patchl</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">PathPatch</span><span class="p">(</span><span class="n">pathl</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patchr</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patchl</span><span class="p">)</span>
+
+    <span class="c"># add markers at channels positions</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;k+&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mew</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+
+    <span class="c"># set the axes limits, so the figure is centered on the scalp</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">1.15</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">])</span>
+
+    <span class="c"># hide the axes</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">annotate</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">ax</span>
+
+
+<span class="k">def</span> <span class="nf">_subplot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                          <span class="n">labels</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shareaxis</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new axes with a timeinterval plot.</span>
+
+<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by &#39;position&#39;</span>
+<span class="sd">    and fills it with a timeinterval plot defined by the channels and values</span>
+<span class="sd">    contained in &#39;data&#39;.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    data : wyrm.types.Data</span>
+<span class="sd">        Data object containing the data to plot.</span>
+<span class="sd">    position : Rectangle</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+<span class="sd">    epoch : int</span>
+<span class="sd">        The epoch to be plotted. If there are no epochs this has to be &#39;-1&#39;.</span>
+<span class="sd">    highlights : [[int, int)]</span>
+<span class="sd">        List of tuples containing the start point (included) and end point</span>
+<span class="sd">        (excluded) of each area to be highlighted (default: None).</span>
+<span class="sd">    hcolors : [colors], optional</span>
+<span class="sd">        A list of colors to use for the highlights areas (default: None).</span>
+<span class="sd">    labels : Boolean, optional</span>
+<span class="sd">        Flag to switch plotting of the usual labels on or off (default: True)</span>
+<span class="sd">    legend : Boolean, optional</span>
+<span class="sd">        Flag to switch plotting of the legend on or off (default: True).</span>
+<span class="sd">    channel : int, optional</span>
+<span class="sd">        This can be used to plot only a single channel. &#39;channel&#39; has to be the</span>
+<span class="sd">        index of the desired channel in data.axes[-1] (default: None)</span>
+<span class="sd">    shareaxis : matplotlib.axes.Axes, optional</span>
+<span class="sd">        An axes to share x- and y-axis with the new axes (default: None).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    matplotlib.axes.Axes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">shareaxis</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">shareaxis</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">shareaxis</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+    <span class="c"># epoch is -1 when there are no epochs</span>
+    <span class="k">if</span> <span class="n">epoch</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">epoch</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">epoch</span><span class="p">,</span> <span class="n">channel</span><span class="p">])</span>
+
+    <span class="c"># plotting of highlights</span>
+    <span class="k">if</span> <span class="n">highlights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">set_highlights</span><span class="p">(</span><span class="n">highlights</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="n">hcolors</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="p">[</span><span class="n">ax</span><span class="p">])</span>
+
+    <span class="c"># labeling of axes</span>
+    <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="n">set_labels</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;$\mu$V&quot;</span><span class="p">,</span> <span class="n">draw</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="p">[</span><span class="n">ax</span><span class="p">])</span>
+
+    <span class="c"># labeling of channels</span>
+    <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">channel</span><span class="p">]])</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+
+<span class="k">def</span> <span class="nf">_subplot_r_square</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new axes with colored r-sqaure values.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    data : [float]</span>
+<span class="sd">        A list of floats that will be evenly distributed as colored tiles.</span>
+<span class="sd">    position : Rectangle</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    matplotlib.axes.Axes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+
+<span class="k">def</span> <span class="nf">_subplot_scale</span><span class="p">(</span><span class="n">xvalue</span><span class="p">,</span> <span class="n">yvalue</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a new axes with a simple scale.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    xvalue : String</span>
+<span class="sd">        The text to be presented beneath the x-axis.</span>
+<span class="sd">    yvalue : String</span>
+<span class="sd">        The text to be presented next to the y-axis.</span>
+<span class="sd">    position : Rectangle</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    matplotlib.axes.Axes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">]:</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">yvalue</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">.</span><span class="mi">25</span><span class="p">,</span> <span class="n">xvalue</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="c"># ############# HELPER FUNCTIONS #########################################</span>
+
+
+<span class="k">def</span> <span class="nf">_transform_rect</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the position of a relative notated rectangle within another</span>
+<span class="sd">    rectangle.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    rect : Rectangle</span>
+<span class="sd">        The container rectangle to contain the other reactangle.</span>
+<span class="sd">    template : Rectangle</span>
+<span class="sd">        the rectangle to be contained in the other rectangle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;Wrong inputs : [x, y, width, height]&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">rect</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rect</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">rect</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">rect</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">rect</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">template</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">rect</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">template</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_system</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dictionary of all channels.</span>
+
+<span class="sd">    The channels are accessable by name and contain their x and y position on</span>
+<span class="sd">    the scalp.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    {channel : (xposition, yposition)}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;Fpz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span>
+        <span class="s">&#39;Fp1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;AFp1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;AFp2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;Fp2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;AF7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="s">&#39;AF5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="s">&#39;AF3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="s">&#39;AFz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="s">&#39;AF4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="s">&#39;AF6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="s">&#39;AF8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+        <span class="s">&#39;FAF5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;FAF1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;FAF2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;FAF6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;F9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;Fz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;F10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;FFC9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FFC10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;FT9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FT7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FC5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FC3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FC1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FCz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FC2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FC4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FC6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FT8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;FT10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CFC9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CFC10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;T9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;T7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;C5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;C3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;C1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;Cz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;C2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;C4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;C6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;T8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;T10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="s">&#39;A1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;CCP8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;A2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="s">&#39;TP9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;TP7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CP5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CP3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CP1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CPz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CP2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CP4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;CP6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;TP8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;TP10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="s">&#39;PCP9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;PCP10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="s">&#39;P9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;Pz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;P10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
+        <span class="s">&#39;PPO7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PPO5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PPO3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PPO1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PPO2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PPO4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PPO6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PPO8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
+        <span class="s">&#39;PO9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">),</span>
+        <span class="s">&#39;PO7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;POz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s">&#39;PO10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">),</span>
+        <span class="s">&#39;OPO1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;OPO2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;O9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;O1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;O2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;O10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
+        <span class="s">&#39;Oz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.0</span><span class="p">),</span>
+        <span class="s">&#39;OI1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">),</span>
+        <span class="s">&#39;OI2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">),</span>
+        <span class="s">&#39;I1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">),</span>
+        <span class="s">&#39;Iz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">),</span>
+        <span class="s">&#39;I2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">system</span>
 </pre></div>
 
           </div>

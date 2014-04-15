@@ -137,7 +137,97 @@ different files: <cite>.eeg</cite>, <cite>.marker</cite>, and <cite>.meta</cite>
 <div class="section" id="module-wyrm.plot">
 <span id="wyrm-plot-module"></span><h2>wyrm.plot module<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h2>
 <p>Plotting methods.</p>
-<p>This module contains various plotting methods.</p>
+<p>This module contains various plotting methods. There are two types of
+plotting methods: the Primitives and the Composites. The Primitives are
+the most basic and offer simple, single-plot representations. The
+Composites are composed of several primitives and offer more complex
+representations.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>This module needs heavy reworking! We have yet to find a consistent
+way to handle primitive and composite plots, deal with the fact that
+some plots just manipulate axes, while others operate on figures and
+have to decide on which layer of matplotlib we want to deal with
+(i.e. pyplot, artist or even pylab).</p>
+<p class="last">The API of this module will change and you should not rely on any
+method here.</p>
+</div>
+<dl class="function">
+<dt id="wyrm.plot.calc_centered_grid">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">calc_centered_grid</tt><big>(</big><em>cols_list</em>, <em>hpad=0.05</em>, <em>vpad=0.05</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#calc_centered_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.calc_centered_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates a centered grid of Rectangles and their positions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cols_list</strong> : [int]</p>
+<blockquote>
+<div><p>List of ints. Every entry represents a row with as many channels as the
+value.</p>
+</div></blockquote>
+<p><strong>hpad</strong> : float, optional</p>
+<blockquote>
+<div><p>The amount of horizontal padding (default: 0.05).</p>
+</div></blockquote>
+<p><strong>vpad</strong> : float, optional</p>
+<blockquote>
+<div><p>The amount of vertical padding (default: 0.05).</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>[[float, float, float, float]]</strong> :</p>
+<blockquote class="last">
+<div><p>A list of all rectangle positions in the form of [xi, xy, width, height]
+sorted from top left to bottom right.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.calc_grid">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">calc_grid</tt><big>(</big><em>rows</em>, <em>cols</em>, <em>hpad=0.05</em>, <em>vpad=0.05</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#calc_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.calc_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates a grid of Rectangles and their positions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>rows</strong> : int</p>
+<blockquote>
+<div><p>The number of desired columns.</p>
+</div></blockquote>
+<p><strong>cols</strong> : int</p>
+<blockquote>
+<div><p>The number of desired cols.</p>
+</div></blockquote>
+<p><strong>hpad</strong> : float, optional</p>
+<blockquote>
+<div><p>The amount of horizontal padding (default: 0.05).</p>
+</div></blockquote>
+<p><strong>vpad</strong> : float, optional</p>
+<blockquote>
+<div><p>The amount of vertical padding (default: 0.05).</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>[[float, float, float, float]]</strong> :</p>
+<blockquote class="last">
+<div><p>A list of all rectangle positions in the form of [xi, xy, width, height]
+sorted from top left to bottom right.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Calculates a 4x3 grid
+&gt;&gt;&gt; calc_grid(4, 3)</p>
+<p>Calculates a 4x3 grid with more padding
+&gt;&gt;&gt; calc_grid(4, 3, hpad=.1, vpad=.1)</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="wyrm.plot.calculate_stereographic_projection">
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">calculate_stereographic_projection</tt><big>(</big><em>p</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#calculate_stereographic_projection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.calculate_stereographic_projection" title="Permalink to this definition">¶</a></dt>
@@ -166,6 +256,20 @@ Project the point <tt class="docutils literal"><span class="pre">p</span> <span 
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.create_colormap">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">create_colormap</tt><big>(</big><em>scheme='bwr'</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#create_colormap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.create_colormap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a linear segmented colormap.</p>
+<dl class="docutils">
+<dt>It can be chosen between two different color schemes:</dt>
+<dd><ul class="first last simple">
+<li>blue-white-red (&#8216;bwr&#8217;)</li>
+<li>white-red (&#8216;wr&#8217;)</li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -209,8 +313,160 @@ the interpolated values as values.</p>
 
 <dl class="function">
 <dt id="wyrm.plot.plot_scalp">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channel</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the values v for channel <tt class="docutils literal"><span class="pre">channel</span></tt> on a scalp.</p>
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channels</em>, <em>levels=25</em>, <em>colormap=None</em>, <em>norm=None</em>, <em>ticks=None</em>, <em>annotate=True</em>, <em>position=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the values &#8216;v&#8217; for channels &#8216;channels&#8217; on a scalp.</p>
+<p>Calculates the interpolation of the values v for the corresponding
+channels &#8216;channels&#8217; and plots it as a contour plot on a scalp.
+The degree of gradients as well as the the appearance of the color
+bar can be adjusted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>v</strong> : [value]</p>
+<blockquote>
+<div><p>List containing the values of the channels.</p>
+</div></blockquote>
+<p><strong>channels</strong> : [String]</p>
+<blockquote>
+<div><p>List containing the channel names.</p>
+</div></blockquote>
+<p><strong>levels</strong> : int, optional</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>The number of automatically created levels in the contour plot</dt>
+<dd><p class="first last">(default: 25).</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>colormap</strong> : matplotlib.colors.colormap, optional</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>A colormap to define the color transitions (default: a blue-white-red</dt>
+<dd><p class="first last">colormap).</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>norm</strong> : matplotlib.colors.norm, optional</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>A norm to define the min and max values</dt>
+<dd><p class="first last">(default: &#8216;None&#8217;, values from -10 to 10 are assumed).</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>ticks</strong> : array([ints]), optional</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>An array with values to define the ticks on the colorbar</dt>
+<dd><p class="first last">(default: &#8216;None&#8217;, 3 ticks at -10, 0 and 10 are displayed).</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>annotate</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>Flag to switch channel annotations on or off (default: True).</p>
+</div></blockquote>
+<p><strong>position</strong> : [x, y, width, height], optional</p>
+<blockquote>
+<div><p>A Rectangle that limits the plot to its boundaries (default: None).</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>(Matplotlib.Axes, Matplotlib.Axes)</strong> :</p>
+<blockquote class="last">
+<div><p>Returns a pair of Matplotlib.Axes. The first contains the plotted scalp,
+the second the corresponding colorbar.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Plots the values v for channels &#8216;channels&#8217; on a scalp
+&gt;&gt;&gt; plot_scalp(v, channels)</p>
+<p>This plot has finer gradients through increasing the levels to 50.
+&gt;&gt;&gt; plot_scalp(v, channels, levels=50)</p>
+<p>This plot has a white-red colormap and a norm and ticks from 0 to 10
+&gt;&gt;&gt; cm = create_colormap(&#8216;wr&#8217;)
+&gt;&gt;&gt; n = matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False)
+&gt;&gt;&gt; t = np.linspace(0.0, 10.0, 3, endpoint=True)
+&gt;&gt;&gt; plot_scalp(v, channels, colormap=_wr_cmap(), norm=n, ticks=t)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.plot_scalp_ti">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp_ti</tt><big>(</big><em>v</em>, <em>channels</em>, <em>data</em>, <em>interval</em>, <em>scale_ti=0.1</em>, <em>levels=25</em>, <em>colormap=None</em>, <em>norm=None</em>, <em>ticks=None</em>, <em>annotate=True</em>, <em>position=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp_ti"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp_ti" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a scalp with channels on top</p>
+<p>Plots the values v for channels &#8216;channels&#8217; on a scalp as a contour plot.
+Additionaly plots the channels in channels_ti as a timeinterval on top of
+the scalp plot. The individual channels are placed over their position on
+the scalp.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>v</strong> : [value]</p>
+<blockquote>
+<div><p>List containing the values of the channels.</p>
+</div></blockquote>
+<p><strong>channels</strong> : [String]</p>
+<blockquote>
+<div><p>List containing the channel names.</p>
+</div></blockquote>
+<p><strong>data</strong> : wyrm.types.Data</p>
+<blockquote>
+<div><p>Data object containing the continuous data for the overlaying
+timeinterval plots.</p>
+</div></blockquote>
+<p><strong>interval</strong> : [begin, end)</p>
+<blockquote>
+<div><p>Tuple of ints to specify the range of the overlaying timeinterval plots.</p>
+</div></blockquote>
+<p><strong>scale_ti</strong> : float, optional</p>
+<blockquote>
+<div><p>The percentage to scale the overlaying timeinterval plots
+(default: 0.1).</p>
+</div></blockquote>
+<p><strong>levels</strong> : int, optional</p>
+<blockquote>
+<div><p>The number of automatically created levels in the contour plot
+(default: 25).</p>
+</div></blockquote>
+<p><strong>colormap</strong> : matplotlib.colors.colormap, optional</p>
+<blockquote>
+<div><p>A colormap to define the color transitions
+(default: a blue-white-red colormap).</p>
+</div></blockquote>
+<p><strong>norm</strong> : matplotlib.colors.norm, optional</p>
+<blockquote>
+<div><p>A norm to define the min and max values. If &#8216;None&#8217;, values from
+-10 to 10 are assumed (default: None).</p>
+</div></blockquote>
+<p><strong>ticks</strong> : array([ints]), optional</p>
+<blockquote>
+<div><p>An array with values to define the ticks on the colorbar
+(default: None, 3  ticks at -10, 0 and 10 are displayed).</p>
+</div></blockquote>
+<p><strong>annotate</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>Flag to switch channel annotations on or off (default: True).</p>
+</div></blockquote>
+<p><strong>position</strong> : [x, y, width, height], optional</p>
+<blockquote>
+<div><p>A Rectangle that limits the plot to its boundaries (default: None).</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>((Matplotlib.Axes, Matplotlib.Axes), [Matplotlib.Axes])</strong> :</p>
+<blockquote class="last">
+<div><p>Returns a tuple of first a tuple with the plotted scalp and its
+colorbar, then a list of all on top plotted timeintervals.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -240,6 +496,206 @@ the interpolated values as values.</p>
 <dt id="wyrm.plot.plot_spectrum">
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spectrum</tt><big>(</big><em>spectrum</em>, <em>freqs</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.plot_tenten">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_tenten</tt><big>(</big><em>data</em>, <em>highlights=None</em>, <em>hcolors=None</em>, <em>legend=False</em>, <em>scale=True</em>, <em>reg_chans=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_tenten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_tenten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots channels on a grid system.</p>
+<p>Iterates over every channel in the data structure. If the channelname
+matches a channel in the tenten-system it will be plotted in a grid of
+rectangles. The grid is structured like the tenten-system itself, but in
+a simplified manner. The rows, in which channels appear, are predetermined,
+the channels are ordered automatically within their respective row.
+Areas to highlight can be specified, those areas will be marked with colors
+in every timeinterval plot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : wyrm.types.Data</p>
+<blockquote>
+<div><p>Data object containing the data to plot.</p>
+</div></blockquote>
+<p><strong>highlights</strong> : [[int, int)]</p>
+<blockquote>
+<div><p>List of tuples containing the start point (included) and end point
+(excluded) of each area to be highlighted (default: None).</p>
+</div></blockquote>
+<p><strong>hcolors</strong> : [colors], optional</p>
+<blockquote>
+<div><p>A list of colors to use for the highlight areas (default: None).</p>
+</div></blockquote>
+<p><strong>legend</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>Flag to switch plotting of the legend on or off (default: True).</p>
+</div></blockquote>
+<p><strong>scale</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>Flag to switch plotting of a scale in the top right corner of the grid
+(default: True)</p>
+</div></blockquote>
+<p><strong>reg_chans</strong> : [regular expressions]</p>
+<blockquote>
+<div><p>A list of regular expressions. The plot will be limited to those
+channels matching the regular expressions.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>[Matplotlib.Axes], Matplotlib.Axes</strong> :</p>
+<blockquote class="last">
+<div><p>Returns the plotted timeinterval axes as a list of Matplotlib.Axes and
+the plotted scale as a single Matplotlib.Axes.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Plotting of all channels within a Data object
+&gt;&gt;&gt; plot_tenten(data)</p>
+<p>Plotting of all channels with a highlighted area
+&gt;&gt;&gt; plot_tenten(data, highlights=[[200, 400]])</p>
+<p>Plotting of all channels beginning with &#8216;A&#8217;
+&gt;&gt;&gt; plot_tenten(data, reg_chans=[&#8216;A.*&#8217;])</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.plot_timeinterval">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_timeinterval</tt><big>(</big><em>data</em>, <em>r_square=None</em>, <em>highlights=None</em>, <em>hcolors=None</em>, <em>legend=True</em>, <em>reg_chans=None</em>, <em>position=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_timeinterval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_timeinterval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a simple time interval.</p>
+<p>Plots all channels of either continuous data or the mean of epoched data
+into a single timeinterval plot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : wyrm.types.Data</p>
+<blockquote>
+<div><p>Data object containing the data to plot.</p>
+</div></blockquote>
+<p><strong>r_square</strong> : [values], optional</p>
+<blockquote>
+<div><p>List containing r_squared values to be plotted beneath the main plot
+(default: None).</p>
+</div></blockquote>
+<p><strong>highlights</strong> : [[int, int)]</p>
+<blockquote>
+<div><p>List of tuples containing the start point (included) and end point
+(excluded) of each area to be highlighted (default: None).</p>
+</div></blockquote>
+<p><strong>hcolors</strong> : [colors], optional</p>
+<blockquote>
+<div><p>A list of colors to use for the highlights areas (default: None).</p>
+</div></blockquote>
+<p><strong>legend</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>Flag to switch plotting of the legend on or off (default: True).</p>
+</div></blockquote>
+<p><strong>reg_chans</strong> : [regular expression], optional</p>
+<blockquote>
+<div><p>A list of regular expressions. The plot will be limited to those
+channels matching the regular expressions. (default: None).</p>
+</div></blockquote>
+<p><strong>position</strong> : [x, y, width, height], optional</p>
+<blockquote>
+<div><p>A Rectangle that limits the plot to its boundaries (default: None).</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Matplotlib.Axes or (Matplotlib.Axes, Matplotlib.Axes)</strong> :</p>
+<blockquote class="last">
+<div><p>The Matplotlib.Axes corresponding to the plotted timeinterval and, if
+provided, the Axes corresponding to r_squared values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Plots all channels contained in data with a legend.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">plot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Same as above, but without the legend.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">plot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Adds r-square values to the plot.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">plot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">r_square</span><span class="o">=</span><span class="p">[</span><span class="n">values</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Adds a highlighted area to the plot.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">plot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="p">[[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>To specify the colors of the highlighted areas use &#8216;hcolors&#8217;.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">plot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="p">[[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">]],</span> <span class="n">hcolors</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;red&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.set_highlights">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">set_highlights</tt><big>(</big><em>highlights</em>, <em>hcolors=None</em>, <em>set_axes=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#set_highlights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.set_highlights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets highlights in form of vertical boxes to axes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>highlights</strong> : [(start, end)]</p>
+<blockquote>
+<div><p>List of tuples containing the start point (included) and end point
+(excluded) of each area to be highlighted.</p>
+</div></blockquote>
+<p><strong>hcolors</strong> : [colors], optional</p>
+<blockquote>
+<div><p>A list of colors to use for the highlight areas (e.g. &#8216;b&#8217;, &#8216;#eeefff&#8217; or
+[R, G, B] for R, G, B = [0..1].
+If left as None the colors blue, gree, red, cyan, magenta and yellow are
+used.</p>
+</div></blockquote>
+<p><strong>set_axes</strong> : [matplotlib.axes.Axes], optional</p>
+<blockquote class="last">
+<div><p>List of axes to highlights (default: None, all axes of the current
+figure will be highlighted).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.set_labels">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">set_labels</tt><big>(</big><em>xlabel</em>, <em>ylabel</em>, <em>set_axes=None</em>, <em>draw=True</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#set_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.set_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the labels of x- and y-axis of axes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>xlabel</strong> : String</p>
+<blockquote>
+<div><p>The String to label the x-axis.</p>
+</div></blockquote>
+<p><strong>ylabel</strong> : String</p>
+<blockquote>
+<div><p>The String to label the y-axis.</p>
+</div></blockquote>
+<p><strong>set_axes</strong> : [Matplotlib.axes.Axes], optional</p>
+<blockquote>
+<div><p>List of axes to apply the labels to (default: None, the labels are
+applied to all axes of the current figure).</p>
+</div></blockquote>
+<p><strong>draw</strong> : Boolean, optional</p>
+<blockquote class="last">
+<div><p>A flag to switch if the new labels should be directly drawn to the
+plot (default: True).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-wyrm.processing">

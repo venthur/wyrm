@@ -59,7 +59,21 @@
   <div class="section" id="module-wyrm.plot">
 <span id="wyrm-plot"></span><h1>wyrm.plot<a class="headerlink" href="#module-wyrm.plot" title="Permalink to this headline">¶</a></h1>
 <p>Plotting methods.</p>
-<p>This module contains various plotting methods.</p>
+<p>This module contains various plotting methods. There are two types of
+plotting methods: the Primitives and the Composites. The Primitives are
+the most basic and offer simple, single-plot representations. The
+Composites are composed of several primitives and offer more complex
+representations.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>This module needs heavy reworking! We have yet to find a consistent
+way to handle primitive and composite plots, deal with the fact that
+some plots just manipulate axes, while others operate on figures and
+have to decide on which layer of matplotlib we want to deal with
+(i.e. pyplot, artist or even pylab).</p>
+<p class="last">The API of this module will change and you should not rely on any
+method here.</p>
+</div>
 <p class="rubric">Functions</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -67,17 +81,29 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.calc_centered_grid" title="wyrm.plot.calc_centered_grid"><tt class="xref py py-obj docutils literal"><span class="pre">calc_centered_grid</span></tt></a>(cols_list[,&nbsp;hpad,&nbsp;vpad])</td>
+<td>Calculates a centered grid of Rectangles and their positions.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.calc_grid" title="wyrm.plot.calc_grid"><tt class="xref py py-obj docutils literal"><span class="pre">calc_grid</span></tt></a>(rows,&nbsp;cols[,&nbsp;hpad,&nbsp;vpad])</td>
+<td>Calculates a grid of Rectangles and their positions.</td>
+</tr>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.calculate_stereographic_projection" title="wyrm.plot.calculate_stereographic_projection"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_stereographic_projection</span></tt></a>(p)</td>
 <td>Calculate the stereographic projection.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.interpolate_2d" title="wyrm.plot.interpolate_2d"><tt class="xref py py-obj docutils literal"><span class="pre">interpolate_2d</span></tt></a>(x,&nbsp;y,&nbsp;z)</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.create_colormap" title="wyrm.plot.create_colormap"><tt class="xref py py-obj docutils literal"><span class="pre">create_colormap</span></tt></a>([scheme])</td>
+<td>Creates a linear segmented colormap.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.interpolate_2d" title="wyrm.plot.interpolate_2d"><tt class="xref py py-obj docutils literal"><span class="pre">interpolate_2d</span></tt></a>(x,&nbsp;y,&nbsp;z)</td>
 <td>Interpolate missing points on a plane.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_channels" title="wyrm.plot.plot_channels"><tt class="xref py py-obj docutils literal"><span class="pre">plot_channels</span></tt></a>(dat[,&nbsp;chanaxis,&nbsp;otheraxis])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_channels" title="wyrm.plot.plot_channels"><tt class="xref py py-obj docutils literal"><span class="pre">plot_channels</span></tt></a>(dat[,&nbsp;chanaxis,&nbsp;otheraxis])</td>
 <td>Plot all channels for a continuous.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_scalp" title="wyrm.plot.plot_scalp"><tt class="xref py py-obj docutils literal"><span class="pre">plot_scalp</span></tt></a>(v,&nbsp;channel)</td>
-<td>Plot the values v for channel <tt class="docutils literal"><span class="pre">channel</span></tt> on a scalp.</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_scalp" title="wyrm.plot.plot_scalp"><tt class="xref py py-obj docutils literal"><span class="pre">plot_scalp</span></tt></a>(v,&nbsp;channels[,&nbsp;levels,&nbsp;colormap,&nbsp;...])</td>
+<td>Plots the values &#8216;v&#8217; for channels &#8216;channels&#8217; on a scalp.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_scalp_ti" title="wyrm.plot.plot_scalp_ti"><tt class="xref py py-obj docutils literal"><span class="pre">plot_scalp_ti</span></tt></a>(v,&nbsp;channels,&nbsp;data,&nbsp;interval[,&nbsp;...])</td>
+<td>Plots a scalp with channels on top</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_spatio_temporal_r2_values" title="wyrm.plot.plot_spatio_temporal_r2_values"><tt class="xref py py-obj docutils literal"><span class="pre">plot_spatio_temporal_r2_values</span></tt></a>(dat)</td>
 <td>Calculate the signed r^2 values and plot them in a heatmap.</td>
@@ -87,6 +113,36 @@
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_spectrum" title="wyrm.plot.plot_spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">plot_spectrum</span></tt></a>(spectrum,&nbsp;freqs)</td>
 <td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_tenten" title="wyrm.plot.plot_tenten"><tt class="xref py py-obj docutils literal"><span class="pre">plot_tenten</span></tt></a>(data[,&nbsp;highlights,&nbsp;hcolors,&nbsp;...])</td>
+<td>Plots channels on a grid system.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_timeinterval" title="wyrm.plot.plot_timeinterval"><tt class="xref py py-obj docutils literal"><span class="pre">plot_timeinterval</span></tt></a>(data[,&nbsp;r_square,&nbsp;...])</td>
+<td>Plots a simple time interval.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.set_highlights" title="wyrm.plot.set_highlights"><tt class="xref py py-obj docutils literal"><span class="pre">set_highlights</span></tt></a>(highlights[,&nbsp;hcolors,&nbsp;set_axes])</td>
+<td>Sets highlights in form of vertical boxes to axes.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.set_labels" title="wyrm.plot.set_labels"><tt class="xref py py-obj docutils literal"><span class="pre">set_labels</span></tt></a>(xlabel,&nbsp;ylabel[,&nbsp;set_axes,&nbsp;draw])</td>
+<td>Sets the labels of x- and y-axis of axes.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">Data</span></tt>(data,&nbsp;axes,&nbsp;names,&nbsp;units)</td>
+<td>Generic, self-describing data container.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">Path</span></tt>(vertices[,&nbsp;codes,&nbsp;...])</td>
+<td><tt class="xref py py-class docutils literal"><span class="pre">Path</span></tt> represents a series of possibly disconnected,</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">Rectangle</span></tt>(xy,&nbsp;width,&nbsp;height[,&nbsp;angle])</td>
+<td>Draw a rectangle with lower left at <em>xy</em> = (<em>x</em>, <em>y</em>) with specified <em>width</em> and <em>height</em>.</td>
 </tr>
 </tbody>
 </table>
