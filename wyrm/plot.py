@@ -28,6 +28,7 @@ import math
 
 import numpy as np
 from scipy import interpolate
+import matplotlib as mpl
 from matplotlib import axes
 from matplotlib import colorbar
 from matplotlib import colors
@@ -604,7 +605,7 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
     if colormap is None:
-        colormap = _bwr_cmap()
+        colormap = 'RdBu'#_bwr_cmap()
     if norm is None:
         norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
@@ -678,7 +679,7 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
     if colormap is None:
-        colormap = _bwr_cmap()
+        colormap = 'RdBu' #_bwr_cmap()
     if norm is None:
         norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
@@ -1242,6 +1243,26 @@ def _subplot_scale(xvalue, yvalue, position):
     ax.set_xlim([0, 5])
     return ax
 
+
+def _transform_rect(rect, template):
+    """Calculates the position of a relative notated rectangle within
+    another rectangle.
+
+    Parameters
+    ----------
+    rect : Rectangle
+        The container rectangle to contain the other reactangle.
+    template : Rectangle
+        the rectangle to be contained in the other rectangle.
+    """
+    assert len(rect) == len(template) == 4, "Wrong inputs : [x, y, width, height]"
+    x = rect[0] + (template[0] * rect[2])
+    y = rect[1] + (template[1] * rect[3])
+    w = rect[2] * template[2]
+    h = rect[3] * template[3]
+    return [x, y, w, h]
+
+
 ###############################################################################
 # Utility Functions
 ###############################################################################
@@ -1306,23 +1327,79 @@ def get_channelpos(channame):
     return None
 
 
+def beautify():
+    """Set reasonable defaults matplotlib.
 
-def _transform_rect(rect, template):
-    """Calculates the position of a relative notated rectangle within
-    another rectangle.
+    This method replaces matplotlib's default rgb/cmyk colors with the
+    colarized colors. It also does:
 
-    Parameters
-    ----------
-    rect : Rectangle
-        The container rectangle to contain the other reactangle.
-    template : Rectangle
-        the rectangle to be contained in the other rectangle.
+    * re-orders the default color cycle
+    * sets the default linewidth
+    * replaces the defaault 'RdBu' cmap
+    * sets the default cmap to 'RdBu'
+
+    Examples
+    --------
+
+    You can safely call ``beautify`` right after you've imported the
+    ``plot`` module.
+
+    >>> from wyrm import plot
+    >>> plot.beautify()
+
     """
-    assert len(rect) == len(template) == 4, "Wrong inputs : [x, y, width, height]"
-    x = rect[0] + (template[0] * rect[2])
-    y = rect[1] + (template[1] * rect[3])
-    w = rect[2] * template[2]
-    h = rect[3] * template[3]
-    return [x, y, w, h]
+    def to_mpl_format(r, g, b):
+        """Convert 0..255 t0 0..1."""
+        return r / 256, g / 256, b / 256
 
+    # The solarized color palette
+    base03  = to_mpl_format(  0,  43,  54)
+    base02  = to_mpl_format(  7,  54,  66)
+    base01  = to_mpl_format( 88, 110, 117)
+    base00  = to_mpl_format(101, 123, 131)
+    base0   = to_mpl_format(131, 148, 150)
+    base1   = to_mpl_format(147, 161, 161)
+    base2   = to_mpl_format(238, 232, 213)
+    base3   = to_mpl_format(253, 246, 227)
+    yellow  = to_mpl_format(181, 137,   0)
+    orange  = to_mpl_format(203,  75,  22)
+    red     = to_mpl_format(220,  50,  47)
+    magenta = to_mpl_format(211,  54, 130)
+    violet  = to_mpl_format(108, 113, 196)
+    blue    = to_mpl_format( 38, 139, 210)
+    cyan    = to_mpl_format( 42, 161, 152)
+    green   = to_mpl_format(133, 153,   0)
+
+    white   = base3
+    black   = base03
+
+    # Tverwrite the default color values with our new ones. Those
+    # single-letter colors are used all over the place in matplotlib, so
+    # this setting has a huge effect.
+    mpl.colors.ColorConverter.colors = {
+        'b': blue,
+        'c': cyan,
+        'g': green,
+        'k': black,
+        'm': magenta,
+        'r': red,
+        'w': white,
+        'y': yellow
+    }
+
+    # Redefine the existing 'RdBu' (Red-Blue) colormap, with our new
+    # colors for red and blue
+    cdict = {
+        'red'  :  ((0., blue[0], blue[0]), (0.5, white[0], white[0]), (1., magenta[0], magenta[0])),
+        'green':  ((0., blue[1], blue[1]), (0.5, white[1], white[1]), (1., magenta[1], magenta[1])),
+        'blue' :  ((0., blue[2], blue[2]), (0.5, white[2], white[2]), (1., magenta[2], magenta[2]))
+    }
+    mpl.cm.register_cmap('RdBu', data=cdict)
+
+    # Reorder the default color cycle
+    mpl.rcParams['axes.color_cycle'] = ['b', 'm', 'g', 'r', 'c', 'y', 'k']
+    # Set linewidth in plots to 2
+    mpl.rcParams['lines.linewidth'] = 2
+    # Set default cmap
+    mpl.rcParams['image.cmap'] = 'RdBu'
 

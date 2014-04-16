@@ -32,6 +32,8 @@ class TestPlot(unittest.TestCase):
         cls.epo.fs = 1000
         cls.epo.class_names = ['class 1', 'class 2']
 
+        plot.beautify()
+
     def setUp(self):
         plt.figure(figsize=(16, 9))
 
