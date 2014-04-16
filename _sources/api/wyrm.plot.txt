@@ -9,10 +9,11 @@ wyrm.plot
 
    .. autosummary::
    
+      beautify
       calc_centered_grid
       calc_grid
-      calculate_stereographic_projection
       create_colormap
+      get_channelpos
       interpolate_2d
       plot_channels
       plot_scalp

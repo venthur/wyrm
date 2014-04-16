@@ -28,14 +28,6 @@ wyrm.processing module
     :undoc-members:
     :show-inheritance:
 
-wyrm.tentensystem module
-------------------------
-
-.. automodule:: wyrm.tentensystem
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 wyrm.types module
 -----------------
 

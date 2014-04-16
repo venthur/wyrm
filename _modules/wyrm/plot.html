@@ -74,11 +74,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
-
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="kn">as</span> <span class="nn">mpl</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">axes</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colorbar</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span>
@@ -89,8 +92,157 @@
 <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
 
 <span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">processing</span> <span class="k">as</span> <span class="n">proc</span>
-<span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">tentensystem</span> <span class="k">as</span> <span class="n">tts</span>
 <span class="kn">from</span> <span class="nn">wyrm.types</span> <span class="kn">import</span> <span class="n">Data</span>
+
+
+<span class="c"># the angles here are given in (90 / 4)th degrees - so multiply it with</span>
+<span class="c"># (90 / 4) to get the actual angles</span>
+<span class="n">CHANNEL_10_20</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s">&#39;Fpz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Fp1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AFp1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AFp2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Fp2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AFz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Fz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FCz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Cz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;A1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;A2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CPz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Pz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;POz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OPO1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OPO2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Oz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OI1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OI2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;I1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Iz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;I2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">))</span>
+<span class="p">)</span>
+
+
 
 <span class="c"># ############# OLD FUNCTIONS ############################################</span>
 
@@ -163,37 +315,6 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time&#39;</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="calculate_stereographic_projection"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calculate_stereographic_projection">[docs]</a><span class="k">def</span> <span class="nf">calculate_stereographic_projection</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Calculate the stereographic projection.</span>
-
-<span class="sd">    Given a unit sphere with radius ``r = 1`` and center at the origin.</span>
-<span class="sd">    Project the point ``p = (x, y, z)`` from the sphere&#39;s South pole (0,</span>
-<span class="sd">    0, -1) on a plane on the sphere&#39;s North pole (0, 0, 1).</span>
-
-<span class="sd">    The formula is:</span>
-
-<span class="sd">        P&#39; = P * (2r / (r + z))</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    p : [float, float]</span>
-<span class="sd">        The point to be projected in cartesian coordinates.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    x, y : float, float</span>
-<span class="sd">        The projected point on the plane.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># P&#39; = P * (2r / r + z)</span>
-    <span class="c"># changed the values to move the point of projection further below the</span>
-    <span class="c"># south pole</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.3</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">mu</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">mu</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-
-</div>
 <div class="viewcode-block" id="interpolate_2d"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.interpolate_2d">[docs]</a><span class="k">def</span> <span class="nf">interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Interpolate missing points on a plane.</span>
 
@@ -223,34 +344,36 @@
                       <span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reg_chans</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots a simple time interval.</span>
 
-<span class="sd">    Plots all channels of either continuous data or the mean of epoched data</span>
-<span class="sd">    into a single timeinterval plot.</span>
+<span class="sd">    Plots all channels of either continuous data or the mean of epoched</span>
+<span class="sd">    data into a single timeinterval plot.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    data : wyrm.types.Data</span>
 <span class="sd">        Data object containing the data to plot.</span>
 <span class="sd">    r_square : [values], optional</span>
-<span class="sd">        List containing r_squared values to be plotted beneath the main plot</span>
-<span class="sd">        (default: None).</span>
+<span class="sd">        List containing r_squared values to be plotted beneath the main</span>
+<span class="sd">        plot (default: None).</span>
 <span class="sd">    highlights : [[int, int)]</span>
-<span class="sd">        List of tuples containing the start point (included) and end point</span>
-<span class="sd">        (excluded) of each area to be highlighted (default: None).</span>
+<span class="sd">        List of tuples containing the start point (included) and end</span>
+<span class="sd">        point (excluded) of each area to be highlighted (default: None).</span>
 <span class="sd">    hcolors : [colors], optional</span>
-<span class="sd">        A list of colors to use for the highlights areas (default: None).</span>
+<span class="sd">        A list of colors to use for the highlights areas (default:</span>
+<span class="sd">        None).</span>
 <span class="sd">    legend : Boolean, optional</span>
 <span class="sd">        Flag to switch plotting of the legend on or off (default: True).</span>
 <span class="sd">    reg_chans : [regular expression], optional</span>
 <span class="sd">        A list of regular expressions. The plot will be limited to those</span>
 <span class="sd">        channels matching the regular expressions. (default: None).</span>
 <span class="sd">    position : [x, y, width, height], optional</span>
-<span class="sd">        A Rectangle that limits the plot to its boundaries (default: None).</span>
+<span class="sd">        A Rectangle that limits the plot to its boundaries (default:</span>
+<span class="sd">        None).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    Matplotlib.Axes or (Matplotlib.Axes, Matplotlib.Axes)</span>
-<span class="sd">        The Matplotlib.Axes corresponding to the plotted timeinterval and, if</span>
-<span class="sd">        provided, the Axes corresponding to r_squared values.</span>
+<span class="sd">        The Matplotlib.Axes corresponding to the plotted timeinterval</span>
+<span class="sd">        and, if provided, the Axes corresponding to r_squared values.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -323,28 +446,29 @@
                 <span class="n">reg_chans</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots channels on a grid system.</span>
 
-<span class="sd">    Iterates over every channel in the data structure. If the channelname</span>
-<span class="sd">    matches a channel in the tenten-system it will be plotted in a grid of</span>
-<span class="sd">    rectangles. The grid is structured like the tenten-system itself, but in</span>
-<span class="sd">    a simplified manner. The rows, in which channels appear, are predetermined,</span>
-<span class="sd">    the channels are ordered automatically within their respective row.</span>
-<span class="sd">    Areas to highlight can be specified, those areas will be marked with colors</span>
-<span class="sd">    in every timeinterval plot.</span>
+<span class="sd">    Iterates over every channel in the data structure. If the</span>
+<span class="sd">    channelname matches a channel in the tenten-system it will be</span>
+<span class="sd">    plotted in a grid of rectangles. The grid is structured like the</span>
+<span class="sd">    tenten-system itself, but in a simplified manner. The rows, in which</span>
+<span class="sd">    channels appear, are predetermined, the channels are ordered</span>
+<span class="sd">    automatically within their respective row. Areas to highlight can be</span>
+<span class="sd">    specified, those areas will be marked with colors in every</span>
+<span class="sd">    timeinterval plot.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    data : wyrm.types.Data</span>
 <span class="sd">        Data object containing the data to plot.</span>
 <span class="sd">    highlights : [[int, int)]</span>
-<span class="sd">        List of tuples containing the start point (included) and end point</span>
-<span class="sd">        (excluded) of each area to be highlighted (default: None).</span>
+<span class="sd">        List of tuples containing the start point (included) and end</span>
+<span class="sd">        point (excluded) of each area to be highlighted (default: None).</span>
 <span class="sd">    hcolors : [colors], optional</span>
 <span class="sd">        A list of colors to use for the highlight areas (default: None).</span>
 <span class="sd">    legend : Boolean, optional</span>
 <span class="sd">        Flag to switch plotting of the legend on or off (default: True).</span>
 <span class="sd">    scale : Boolean, optional</span>
-<span class="sd">        Flag to switch plotting of a scale in the top right corner of the grid</span>
-<span class="sd">        (default: True)</span>
+<span class="sd">        Flag to switch plotting of a scale in the top right corner of</span>
+<span class="sd">        the grid (default: True)</span>
 <span class="sd">    reg_chans : [regular expressions]</span>
 <span class="sd">        A list of regular expressions. The plot will be limited to those</span>
 <span class="sd">        channels matching the regular expressions.</span>
@@ -352,18 +476,22 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    [Matplotlib.Axes], Matplotlib.Axes</span>
-<span class="sd">        Returns the plotted timeinterval axes as a list of Matplotlib.Axes and</span>
-<span class="sd">        the plotted scale as a single Matplotlib.Axes.</span>
+<span class="sd">        Returns the plotted timeinterval axes as a list of</span>
+<span class="sd">        Matplotlib.Axes and the plotted scale as a single</span>
+<span class="sd">        Matplotlib.Axes.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Plotting of all channels within a Data object</span>
+
 <span class="sd">    &gt;&gt;&gt; plot_tenten(data)</span>
 
 <span class="sd">    Plotting of all channels with a highlighted area</span>
+
 <span class="sd">    &gt;&gt;&gt; plot_tenten(data, highlights=[[200, 400]])</span>
 
 <span class="sd">    Plotting of all channels beginning with &#39;A&#39;</span>
+
 <span class="sd">    &gt;&gt;&gt; plot_tenten(data, reg_chans=[&#39;A.*&#39;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dcopy</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -390,7 +518,7 @@
                 <span class="o">-</span><span class="mf">5.0</span><span class="p">:</span> <span class="mi">16</span><span class="p">}</span>
 
     <span class="c"># all the channels with their x- and y-position</span>
-    <span class="n">system</span> <span class="o">=</span> <span class="n">_get_system</span><span class="p">()</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">CHANNEL_10_20</span><span class="p">)</span>
 
     <span class="c"># create list with 17 empty lists. one for every potential row of channels.</span>
     <span class="n">channel_lists</span> <span class="o">=</span> <span class="p">[]</span>
@@ -403,7 +531,7 @@
     <span class="c"># distribute the channels to the lists by their y-position</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">system</span><span class="p">:</span>
             <span class="c"># entries in channel_lists: [&lt;channel_name&gt;, &lt;x-position&gt;, &lt;position in Data&gt;]</span>
             <span class="n">channel_lists</span><span class="p">[</span><span class="n">ordering</span><span class="p">[</span><span class="n">system</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">1</span><span class="p">]]]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">count</span><span class="p">))</span>
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -466,9 +594,9 @@
     <span class="sd">&quot;&quot;&quot;Plots the values &#39;v&#39; for channels &#39;channels&#39; on a scalp.</span>
 
 <span class="sd">    Calculates the interpolation of the values v for the corresponding</span>
-<span class="sd">    channels &#39;channels&#39; and plots it as a contour plot on a scalp.</span>
-<span class="sd">    The degree of gradients as well as the the appearance of the color</span>
-<span class="sd">    bar can be adjusted.</span>
+<span class="sd">    channels &#39;channels&#39; and plots it as a contour plot on a scalp. The</span>
+<span class="sd">    degree of gradients as well as the the appearance of the color bar</span>
+<span class="sd">    can be adjusted.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -478,36 +606,40 @@
 <span class="sd">        List containing the channel names.</span>
 <span class="sd">    levels : int, optional</span>
 <span class="sd">        The number of automatically created levels in the contour plot</span>
-<span class="sd">         (default: 25).</span>
+<span class="sd">        (default: 25).</span>
 <span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
-<span class="sd">        A colormap to define the color transitions (default: a blue-white-red</span>
-<span class="sd">         colormap).</span>
+<span class="sd">        A colormap to define the color transitions (default: a</span>
+<span class="sd">        blue-white-red colormap).</span>
 <span class="sd">    norm : matplotlib.colors.norm, optional</span>
-<span class="sd">        A norm to define the min and max values</span>
-<span class="sd">         (default: &#39;None&#39;, values from -10 to 10 are assumed).</span>
+<span class="sd">        A norm to define the min and max values (default: &#39;None&#39;, values</span>
+<span class="sd">        from -10 to 10 are assumed).</span>
 <span class="sd">    ticks : array([ints]), optional</span>
 <span class="sd">        An array with values to define the ticks on the colorbar</span>
-<span class="sd">         (default: &#39;None&#39;, 3 ticks at -10, 0 and 10 are displayed).</span>
+<span class="sd">        (default: &#39;None&#39;, 3 ticks at -10, 0 and 10 are displayed).</span>
 <span class="sd">    annotate : Boolean, optional</span>
 <span class="sd">        Flag to switch channel annotations on or off (default: True).</span>
 <span class="sd">    position : [x, y, width, height], optional</span>
-<span class="sd">        A Rectangle that limits the plot to its boundaries (default: None).</span>
+<span class="sd">        A Rectangle that limits the plot to its boundaries (default:</span>
+<span class="sd">        None).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    (Matplotlib.Axes, Matplotlib.Axes)</span>
-<span class="sd">        Returns a pair of Matplotlib.Axes. The first contains the plotted scalp,</span>
-<span class="sd">        the second the corresponding colorbar.</span>
+<span class="sd">        Returns a pair of Matplotlib.Axes. The first contains the</span>
+<span class="sd">        plotted scalp, the second the corresponding colorbar.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Plots the values v for channels &#39;channels&#39; on a scalp</span>
+
 <span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels)</span>
 
 <span class="sd">    This plot has finer gradients through increasing the levels to 50.</span>
+
 <span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels, levels=50)</span>
 
 <span class="sd">    This plot has a white-red colormap and a norm and ticks from 0 to 10</span>
+
 <span class="sd">    &gt;&gt;&gt; cm = create_colormap(&#39;wr&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; n = matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False)</span>
 <span class="sd">    &gt;&gt;&gt; t = np.linspace(0.0, 10.0, 3, endpoint=True)</span>
@@ -526,7 +658,7 @@
         <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_colorbar</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">colormap</span> <span class="o">=</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="s">&#39;RdBu&#39;</span><span class="c">#_bwr_cmap()</span>
     <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -543,10 +675,10 @@
                   <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots a scalp with channels on top</span>
 
-<span class="sd">    Plots the values v for channels &#39;channels&#39; on a scalp as a contour plot.</span>
-<span class="sd">    Additionaly plots the channels in channels_ti as a timeinterval on top of</span>
-<span class="sd">    the scalp plot. The individual channels are placed over their position on</span>
-<span class="sd">    the scalp.</span>
+<span class="sd">    Plots the values v for channels &#39;channels&#39; on a scalp as a contour</span>
+<span class="sd">    plot. Additionaly plots the channels in channels_ti as a</span>
+<span class="sd">    timeinterval on top of the scalp plot. The individual channels are</span>
+<span class="sd">    placed over their position on the scalp.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -558,7 +690,8 @@
 <span class="sd">        Data object containing the continuous data for the overlaying</span>
 <span class="sd">        timeinterval plots.</span>
 <span class="sd">    interval : [begin, end)</span>
-<span class="sd">        Tuple of ints to specify the range of the overlaying timeinterval plots.</span>
+<span class="sd">        Tuple of ints to specify the range of the overlaying</span>
+<span class="sd">        timeinterval plots.</span>
 <span class="sd">    scale_ti : float, optional</span>
 <span class="sd">        The percentage to scale the overlaying timeinterval plots</span>
 <span class="sd">        (default: 0.1).</span>
@@ -566,8 +699,8 @@
 <span class="sd">        The number of automatically created levels in the contour plot</span>
 <span class="sd">        (default: 25).</span>
 <span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
-<span class="sd">        A colormap to define the color transitions</span>
-<span class="sd">        (default: a blue-white-red colormap).</span>
+<span class="sd">        A colormap to define the color transitions (default: a</span>
+<span class="sd">        blue-white-red colormap).</span>
 <span class="sd">    norm : matplotlib.colors.norm, optional</span>
 <span class="sd">        A norm to define the min and max values. If &#39;None&#39;, values from</span>
 <span class="sd">        -10 to 10 are assumed (default: None).</span>
@@ -577,7 +710,8 @@
 <span class="sd">    annotate : Boolean, optional</span>
 <span class="sd">        Flag to switch channel annotations on or off (default: True).</span>
 <span class="sd">    position : [x, y, width, height], optional</span>
-<span class="sd">        A Rectangle that limits the plot to its boundaries (default: None).</span>
+<span class="sd">        A Rectangle that limits the plot to its boundaries (default:</span>
+<span class="sd">        None).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -598,7 +732,7 @@
         <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_colorbar</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">colormap</span> <span class="o">=</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="s">&#39;RdBu&#39;</span> <span class="c">#_bwr_cmap()</span>
     <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -606,9 +740,6 @@
 
     <span class="n">ax0</span> <span class="o">=</span> <span class="n">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_scalp</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span>
     <span class="n">ax1</span> <span class="o">=</span> <span class="n">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">pos_colorbar</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
-
-    <span class="c"># adding the timeinterval plots</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">_get_system</span><span class="p">()</span>
 
     <span class="c"># modification of internally used data if a specific intervals is specified</span>
     <span class="n">cdat</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -620,13 +751,9 @@
 
     <span class="n">tis</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
-
+        <span class="n">points</span> <span class="o">=</span> <span class="n">get_channelpos</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">channelindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cdat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-            <span class="c"># generating the channel position on the scalp</span>
-            <span class="n">channelpos</span> <span class="o">=</span> <span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="n">calculate_stereographic_projection</span><span class="p">(</span><span class="n">channelpos</span><span class="p">)</span>
 
             <span class="c"># dirty: these are the x and y limits of the scalp axes</span>
             <span class="n">minx</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.15</span>
@@ -655,18 +782,17 @@
 
 </div>
 <div class="viewcode-block" id="create_colormap"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.create_colormap">[docs]</a><span class="k">def</span> <span class="nf">create_colormap</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="s">&#39;bwr&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a linear segmented colormap.</span>
+    <span class="sd">&quot;&quot;&quot;Creates a linear segmented colormap.</span>
 
 <span class="sd">    It can be chosen between two different color schemes:</span>
-<span class="sd">     * blue-white-red (&#39;bwr&#39;)</span>
-<span class="sd">     * white-red (&#39;wr&#39;)</span>
+<span class="sd">        * blue-white-red (&#39;bwr&#39;)</span>
+<span class="sd">        * white-red (&#39;wr&#39;)</span>
 
-<span class="sd">     Parameters:</span>
-<span class="sd">     -----------</span>
-<span class="sd">     scheme : String, optional</span>
-<span class="sd">        String to specify the colorscheme of the colorbar. Possible inputs:</span>
-<span class="sd">        &#39;bwr&#39;, &#39;wr&#39; (default = &#39;bwr&#39;).</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scheme : String, optional</span>
+<span class="sd">        String to specify the colorscheme of the colorbar. Possible</span>
+<span class="sd">        inputs: &#39;bwr&#39;, &#39;wr&#39; (default = &#39;bwr&#39;).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;bwr&#39;</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;wr&#39;</span><span class="p">,</span> \
         <span class="s">&quot;Wrong input: (0/1) or (&#39;bwr&#39;/&#39;wr&#39;)&quot;</span>
@@ -683,22 +809,22 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    highlights : [(start, end)]</span>
-<span class="sd">        List of tuples containing the start point (included) and end point</span>
-<span class="sd">        (excluded) of each area to be highlighted.</span>
+<span class="sd">        List of tuples containing the start point (included) and end</span>
+<span class="sd">        point (excluded) of each area to be highlighted.</span>
 <span class="sd">    hcolors : [colors], optional</span>
-<span class="sd">        A list of colors to use for the highlight areas (e.g. &#39;b&#39;, &#39;#eeefff&#39; or</span>
-<span class="sd">        [R, G, B] for R, G, B = [0..1].</span>
-<span class="sd">        If left as None the colors blue, gree, red, cyan, magenta and yellow are</span>
-<span class="sd">        used.</span>
+<span class="sd">        A list of colors to use for the highlight areas (e.g. &#39;b&#39;,</span>
+<span class="sd">        &#39;#eeefff&#39; or [R, G, B] for R, G, B = [0..1]. If left as None the</span>
+<span class="sd">        colors blue, gree, red, cyan, magenta and yellow are used.</span>
 <span class="sd">    set_axes : [matplotlib.axes.Axes], optional</span>
-<span class="sd">        List of axes to highlights (default: None, all axes of the current</span>
-<span class="sd">        figure will be highlighted).</span>
+<span class="sd">        List of axes to highlights (default: None, all axes of the</span>
+<span class="sd">        current figure will be highlighted).</span>
 
-<span class="sd">    Examples:</span>
+<span class="sd">    Examples</span>
 <span class="sd">    ---------</span>
 <span class="sd">    To create two highlighted areas in all axes of the currently active</span>
-<span class="sd">    figure. The first area from 200ms - 300ms in blue and the second area from</span>
-<span class="sd">    500ms - 600ms in green.</span>
+<span class="sd">    figure. The first area from 200ms - 300ms in blue and the second</span>
+<span class="sd">    area from 500ms - 600ms in green.</span>
+
 <span class="sd">    &gt;&gt;&gt; set_highlights([[200, 300], [500, 600]])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">highlights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -737,19 +863,21 @@
 <span class="sd">    ylabel : String</span>
 <span class="sd">        The String to label the y-axis.</span>
 <span class="sd">    set_axes : [Matplotlib.axes.Axes], optional</span>
-<span class="sd">        List of axes to apply the labels to (default: None, the labels are</span>
-<span class="sd">        applied to all axes of the current figure).</span>
+<span class="sd">        List of axes to apply the labels to (default: None, the labels</span>
+<span class="sd">        are applied to all axes of the current figure).</span>
 <span class="sd">    draw : Boolean, optional</span>
-<span class="sd">        A flag to switch if the new labels should be directly drawn to the</span>
-<span class="sd">        plot (default: True).</span>
+<span class="sd">        A flag to switch if the new labels should be directly drawn to</span>
+<span class="sd">        the plot (default: True).</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    To set the x- and y-labels of all axes in the current figure</span>
-<span class="sd">     &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;)</span>
 
-<span class="sd">     To set the x- and y-labels of a specific axes in the current figure</span>
-<span class="sd">     &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;, set_axes=matplotlib.axes.Axes)</span>
+<span class="sd">    &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;)</span>
+
+<span class="sd">    To set the x- and y-labels of a specific axes in the current figure</span>
+
+<span class="sd">    &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;, set_axes=matplotlib.axes.Axes)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">set_axes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">set_axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">axes</span>
@@ -764,8 +892,7 @@
 
 </div>
 <div class="viewcode-block" id="calc_grid"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calc_grid">[docs]</a><span class="k">def</span> <span class="nf">calc_grid</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates a grid of Rectangles and their positions.</span>
+    <span class="sd">&quot;&quot;&quot; Calculates a grid of Rectangles and their positions.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -781,15 +908,17 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    [[float, float, float, float]]</span>
-<span class="sd">        A list of all rectangle positions in the form of [xi, xy, width, height]</span>
-<span class="sd">        sorted from top left to bottom right.</span>
+<span class="sd">        A list of all rectangle positions in the form of [xi, xy, width,</span>
+<span class="sd">        height] sorted from top left to bottom right.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Calculates a 4x3 grid</span>
+
 <span class="sd">    &gt;&gt;&gt; calc_grid(4, 3)</span>
 
 <span class="sd">    Calculates a 4x3 grid with more padding</span>
+
 <span class="sd">    &gt;&gt;&gt; calc_grid(4, 3, hpad=.1, vpad=.1)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">cols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">))</span> <span class="o">/</span> <span class="n">cols</span>
@@ -806,14 +935,13 @@
 
 </div>
 <div class="viewcode-block" id="calc_centered_grid"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calc_centered_grid">[docs]</a><span class="k">def</span> <span class="nf">calc_centered_grid</span><span class="p">(</span><span class="n">cols_list</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates a centered grid of Rectangles and their positions.</span>
+    <span class="sd">&quot;&quot;&quot;Calculates a centered grid of Rectangles and their positions.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    cols_list : [int]</span>
-<span class="sd">        List of ints. Every entry represents a row with as many channels as the</span>
-<span class="sd">        value.</span>
+<span class="sd">        List of ints. Every entry represents a row with as many channels</span>
+<span class="sd">        as the value.</span>
 <span class="sd">    hpad : float, optional</span>
 <span class="sd">        The amount of horizontal padding (default: 0.05).</span>
 <span class="sd">    vpad : float, optional</span>
@@ -822,15 +950,17 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    [[float, float, float, float]]</span>
-<span class="sd">        A list of all rectangle positions in the form of [xi, xy, width, height]</span>
-<span class="sd">        sorted from top left to bottom right.</span>
+<span class="sd">        A list of all rectangle positions in the form of [xi, xy, width,</span>
+<span class="sd">        height] sorted from top left to bottom right.</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    Calculates a centered grid with 3 rows of 4, 3 and 2 columns</span>
+
 <span class="sd">    &gt;&gt;&gt; calc_centered_grid([4, 3, 2])</span>
 
 <span class="sd">    Calculates a centered grid with more padding</span>
+
 <span class="sd">    &gt;&gt;&gt; calc_centered_grid([5, 4], hpad=.1, vpad=.75)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">cols_list</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols_list</span><span class="p">)</span>
@@ -849,8 +979,8 @@
 
 </div>
 <span class="k">def</span> <span class="nf">_bwr_cmap</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from blue over white</span>
-<span class="sd">    to red.</span>
+    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from blue</span>
+<span class="sd">    over white to red.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -881,7 +1011,8 @@
 
 
 <span class="k">def</span> <span class="nf">_wr_cmap</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from white to red.</span>
+    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from white to</span>
+<span class="sd">    red.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -906,25 +1037,26 @@
 
 
 <span class="k">def</span> <span class="nf">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">_bwr_cmap</span><span class="p">(),</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a new axes with a colorbar.</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new axes with a colorbar.</span>
 
-<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by &#39;position&#39;</span>
-<span class="sd">    and fills it with a colorbar.</span>
+<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by</span>
+<span class="sd">    &#39;position&#39; and fills it with a colorbar.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    position : Rectangle</span>
-<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be</span>
+<span class="sd">        created.</span>
 <span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
 <span class="sd">        A colormap to define the colorscheme of the colormap.</span>
 <span class="sd">    ticks : Array([float])</span>
-<span class="sd">        An array with floats to set the number and location of the ticks.</span>
+<span class="sd">        An array with floats to set the number and location of the</span>
+<span class="sd">        ticks.</span>
 <span class="sd">    norm : matplotlib.colors.Normalize</span>
 <span class="sd">        A norm to set the min-/max-value of the colorbar.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    --------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    matplotlib.axes.Axes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
@@ -934,41 +1066,41 @@
 
 
 <span class="k">def</span> <span class="nf">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a new axes with a scalp plot.</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new axes with a scalp plot.</span>
 
-<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by &#39;position&#39;</span>
-<span class="sd">    and fills it with a contour plot for the channels in &#39;channels&#39; and the data</span>
-<span class="sd">    in &#39;v&#39;.</span>
+<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by</span>
+<span class="sd">    &#39;position&#39; and fills it with a contour plot for the channels in</span>
+<span class="sd">    &#39;channels&#39; and the data in &#39;v&#39;.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    v : [value]</span>
 <span class="sd">        List containing the values of the channels.</span>
 <span class="sd">    channels : [String]</span>
 <span class="sd">        List containing the channel names.</span>
 <span class="sd">    position : Rectangle</span>
-<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be</span>
+<span class="sd">        created.</span>
 <span class="sd">    levels : int, optional</span>
 <span class="sd">        The number of automatically created levels in the contour plot</span>
-<span class="sd">         (default: 25).</span>
+<span class="sd">        (default: 25).</span>
 <span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
-<span class="sd">        A colormap to define the color transitions (default: a blue-white-red</span>
-<span class="sd">         colormap).</span>
+<span class="sd">        A colormap to define the color transitions (default: a</span>
+<span class="sd">        blue-white-red colormap).</span>
 <span class="sd">    annotate : Boolean, optional</span>
 <span class="sd">        Flag to switch channel annotations on or off (default: True).</span>
 <span class="sd">    norm : matplotlib.colors.norm, optional</span>
-<span class="sd">        A norm to define the min and max values</span>
-<span class="sd">         (default: &#39;None&#39;, values from -10 to 10 are assumed).</span>
+<span class="sd">        A norm to define the min and max values (default: &#39;None&#39;, values</span>
+<span class="sd">        from -10 to 10 are assumed).</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    --------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    matplotlib.axes.Axes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-    <span class="n">channelpos</span> <span class="o">=</span> <span class="p">[</span><span class="n">tts</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">calculate_stereographic_projection</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">channelpos</span><span class="p">]</span>
+    <span class="c"># what if we have an unknown channel?</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_channelpos</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
     <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
     <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">v</span>
@@ -1032,38 +1164,43 @@
 
 <span class="k">def</span> <span class="nf">_subplot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                           <span class="n">labels</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shareaxis</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a new axes with a timeinterval plot.</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new axes with a timeinterval plot.</span>
 
-<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by &#39;position&#39;</span>
-<span class="sd">    and fills it with a timeinterval plot defined by the channels and values</span>
-<span class="sd">    contained in &#39;data&#39;.</span>
+<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by</span>
+<span class="sd">    &#39;position&#39; and fills it with a timeinterval plot defined by the</span>
+<span class="sd">    channels and values contained in &#39;data&#39;.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    data : wyrm.types.Data</span>
 <span class="sd">        Data object containing the data to plot.</span>
 <span class="sd">    position : Rectangle</span>
-<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be</span>
+<span class="sd">        created.</span>
 <span class="sd">    epoch : int</span>
-<span class="sd">        The epoch to be plotted. If there are no epochs this has to be &#39;-1&#39;.</span>
+<span class="sd">        The epoch to be plotted. If there are no epochs this has to be</span>
+<span class="sd">        &#39;-1&#39;.</span>
 <span class="sd">    highlights : [[int, int)]</span>
-<span class="sd">        List of tuples containing the start point (included) and end point</span>
-<span class="sd">        (excluded) of each area to be highlighted (default: None).</span>
+<span class="sd">        List of tuples containing the start point (included) and end</span>
+<span class="sd">        point (excluded) of each area to be highlighted (default: None).</span>
 <span class="sd">    hcolors : [colors], optional</span>
-<span class="sd">        A list of colors to use for the highlights areas (default: None).</span>
+<span class="sd">        A list of colors to use for the highlights areas (default:</span>
+<span class="sd">        None).</span>
 <span class="sd">    labels : Boolean, optional</span>
-<span class="sd">        Flag to switch plotting of the usual labels on or off (default: True)</span>
+<span class="sd">        Flag to switch plotting of the usual labels on or off (default:</span>
+<span class="sd">        True)</span>
 <span class="sd">    legend : Boolean, optional</span>
 <span class="sd">        Flag to switch plotting of the legend on or off (default: True).</span>
 <span class="sd">    channel : int, optional</span>
-<span class="sd">        This can be used to plot only a single channel. &#39;channel&#39; has to be the</span>
-<span class="sd">        index of the desired channel in data.axes[-1] (default: None)</span>
+<span class="sd">        This can be used to plot only a single channel. &#39;channel&#39; has to</span>
+<span class="sd">        be the index of the desired channel in data.axes[-1] (default:</span>
+<span class="sd">        None)</span>
 <span class="sd">    shareaxis : matplotlib.axes.Axes, optional</span>
-<span class="sd">        An axes to share x- and y-axis with the new axes (default: None).</span>
+<span class="sd">        An axes to share x- and y-axis with the new axes (default:</span>
+<span class="sd">        None).</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    --------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    matplotlib.axes.Axes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
@@ -1106,18 +1243,19 @@
 
 
 <span class="k">def</span> <span class="nf">_subplot_r_square</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a new axes with colored r-sqaure values.</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new axes with colored r-sqaure values.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    data : [float]</span>
-<span class="sd">        A list of floats that will be evenly distributed as colored tiles.</span>
+<span class="sd">        A list of floats that will be evenly distributed as colored</span>
+<span class="sd">        tiles.</span>
 <span class="sd">    position : Rectangle</span>
-<span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
+<span class="sd">        The rectangle (x, y, width, height) where the axes will be</span>
+<span class="sd">        created.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    --------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    matplotlib.axes.Axes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
@@ -1130,11 +1268,10 @@
 
 
 <span class="k">def</span> <span class="nf">_subplot_scale</span><span class="p">(</span><span class="n">xvalue</span><span class="p">,</span> <span class="n">yvalue</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a new axes with a simple scale.</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new axes with a simple scale.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    xvalue : String</span>
 <span class="sd">        The text to be presented beneath the x-axis.</span>
 <span class="sd">    yvalue : String</span>
@@ -1142,8 +1279,8 @@
 <span class="sd">    position : Rectangle</span>
 <span class="sd">        The rectangle (x, y, width, height) where the axes will be created.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    --------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    matplotlib.axes.Axes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
@@ -1159,16 +1296,13 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">ax</span>
 
-<span class="c"># ############# HELPER FUNCTIONS #########################################</span>
-
 
 <span class="k">def</span> <span class="nf">_transform_rect</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the position of a relative notated rectangle within another</span>
-<span class="sd">    rectangle.</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the position of a relative notated rectangle within</span>
+<span class="sd">    another rectangle.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    rect : Rectangle</span>
 <span class="sd">        The container rectangle to contain the other reactangle.</span>
 <span class="sd">    template : Rectangle</span>
@@ -1182,162 +1316,146 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_get_system</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a dictionary of all channels.</span>
+<span class="c">###############################################################################</span>
+<span class="c"># Utility Functions</span>
+<span class="c">###############################################################################</span>
 
-<span class="sd">    The channels are accessable by name and contain their x and y position on</span>
-<span class="sd">    the scalp.</span>
+<div class="viewcode-block" id="get_channelpos"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.get_channelpos">[docs]</a><span class="k">def</span> <span class="nf">get_channelpos</span><span class="p">(</span><span class="n">channame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the x/y position of a channel.</span>
 
-<span class="sd">    Returns:</span>
+<span class="sd">    This method calculates the stereographic projection of a channel</span>
+<span class="sd">    from ``CHANNEL_10_20``, suitable for a scalp plot.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    channame : str</span>
+<span class="sd">        Name of the channel, the search is case insensitive.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x, y : float or None</span>
+<span class="sd">        The projected point on the plane if the point is known,</span>
+<span class="sd">        otherwise ``None``</span>
+
+<span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    {channel : (xposition, yposition)}</span>
+
+<span class="sd">    &gt;&gt;&gt; plot.get_channelpos(&#39;C2&#39;)</span>
+<span class="sd">    (0.1720792096741632, 0.0)</span>
+<span class="sd">    &gt;&gt;&gt; # the channels are case insensitive</span>
+<span class="sd">    &gt;&gt;&gt; plot.get_channelpos(&#39;c2&#39;)</span>
+<span class="sd">    (0.1720792096741632, 0.0)</span>
+<span class="sd">    &gt;&gt;&gt; # lookup for an invalid channel</span>
+<span class="sd">    &gt;&gt;&gt; plot.get_channelpos(&#39;foo&#39;)</span>
+<span class="sd">    None</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">system</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s">&#39;Fpz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span>
-        <span class="s">&#39;Fp1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;AFp1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;AFp2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;Fp2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;AF7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
-        <span class="s">&#39;AF5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
-        <span class="s">&#39;AF3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
-        <span class="s">&#39;AFz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
-        <span class="s">&#39;AF4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
-        <span class="s">&#39;AF6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
-        <span class="s">&#39;AF8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
-        <span class="s">&#39;FAF5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;FAF1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;FAF2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;FAF6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;F9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;Fz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;F10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;FFC9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FFC10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;FT9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FT7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FC5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FC3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FC1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FCz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FC2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FC4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FC6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FT8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;FT10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CFC9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CFC10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;T9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;T7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;C5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;C3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;C1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;Cz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;C2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;C4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;C6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;T8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;T10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="s">&#39;A1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;CCP8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;A2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="s">&#39;TP9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;TP7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CP5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CP3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CP1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CPz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CP2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CP4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;CP6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;TP8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;TP10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span>
-        <span class="s">&#39;PCP9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;PCP10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span>
-        <span class="s">&#39;P9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;Pz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;P10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span>
-        <span class="s">&#39;PPO7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PPO5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PPO3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PPO1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PPO2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PPO4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PPO6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PPO8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">),</span>
-        <span class="s">&#39;PO9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">),</span>
-        <span class="s">&#39;PO7&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO5&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO3&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;POz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO4&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO6&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO8&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-        <span class="s">&#39;PO10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">),</span>
-        <span class="s">&#39;OPO1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;OPO2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;O9&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;O1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;O2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;O10&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span>
-        <span class="s">&#39;Oz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.0</span><span class="p">),</span>
-        <span class="s">&#39;OI1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">),</span>
-        <span class="s">&#39;OI2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">),</span>
-        <span class="s">&#39;I1&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">),</span>
-        <span class="s">&#39;Iz&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">),</span>
-        <span class="s">&#39;I2&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">)}</span>
-    <span class="k">return</span> <span class="n">system</span>
-</pre></div>
+    <span class="n">channame</span> <span class="o">=</span> <span class="n">channame</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">CHANNEL_10_20</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">channame</span><span class="p">:</span>
+            <span class="c"># convert the 90/4th angular position into x, y, z</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ea</span><span class="p">,</span> <span class="n">eb</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">90</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">90</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">ea</span> <span class="o">=</span> <span class="n">ea</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+            <span class="n">eb</span> <span class="o">=</span> <span class="n">eb</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ea</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">eb</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">eb</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ea</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">eb</span><span class="p">)</span>
+            <span class="c"># Calculate the stereographic projection.</span>
+            <span class="c"># Given a unit sphere with radius ``r = 1`` and center at</span>
+            <span class="c"># the origin. Project the point ``p = (x, y, z)`` from the</span>
+            <span class="c"># sphere&#39;s South pole (0, 0, -1) on a plane on the sphere&#39;s</span>
+            <span class="c"># North pole (0, 0, 1).</span>
+            <span class="c">#</span>
+            <span class="c"># The formula is:</span>
+            <span class="c">#</span>
+            <span class="c"># P&#39; = P * (2r / (r + z))</span>
+            <span class="c">#</span>
+            <span class="c"># We changed the values to move the point of projection</span>
+            <span class="c"># further below the south pole</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.3</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">*=</span> <span class="n">mu</span>
+            <span class="n">y</span> <span class="o">*=</span> <span class="n">mu</span>
+            <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="beautify"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.beautify">[docs]</a><span class="k">def</span> <span class="nf">beautify</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Set reasonable defaults matplotlib.</span>
+
+<span class="sd">    This method replaces matplotlib&#39;s default rgb/cmyk colors with the</span>
+<span class="sd">    colarized colors. It also does:</span>
+
+<span class="sd">    * re-orders the default color cycle</span>
+<span class="sd">    * sets the default linewidth</span>
+<span class="sd">    * replaces the defaault &#39;RdBu&#39; cmap</span>
+<span class="sd">    * sets the default cmap to &#39;RdBu&#39;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    You can safely call ``beautify`` right after you&#39;ve imported the</span>
+<span class="sd">    ``plot`` module.</span>
+
+<span class="sd">    &gt;&gt;&gt; from wyrm import plot</span>
+<span class="sd">    &gt;&gt;&gt; plot.beautify()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">to_mpl_format</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert 0..255 t0 0..1.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">r</span> <span class="o">/</span> <span class="mi">256</span><span class="p">,</span> <span class="n">g</span> <span class="o">/</span> <span class="mi">256</span><span class="p">,</span> <span class="n">b</span> <span class="o">/</span> <span class="mi">256</span>
+
+    <span class="c"># The solarized color palette</span>
+    <span class="n">base03</span>  <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">43</span><span class="p">,</span>  <span class="mi">54</span><span class="p">)</span>
+    <span class="n">base02</span>  <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">54</span><span class="p">,</span>  <span class="mi">66</span><span class="p">)</span>
+    <span class="n">base01</span>  <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">117</span><span class="p">)</span>
+    <span class="n">base00</span>  <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="mi">131</span><span class="p">)</span>
+    <span class="n">base0</span>   <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">131</span><span class="p">,</span> <span class="mi">148</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+    <span class="n">base1</span>   <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">147</span><span class="p">,</span> <span class="mi">161</span><span class="p">,</span> <span class="mi">161</span><span class="p">)</span>
+    <span class="n">base2</span>   <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">238</span><span class="p">,</span> <span class="mi">232</span><span class="p">,</span> <span class="mi">213</span><span class="p">)</span>
+    <span class="n">base3</span>   <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">253</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span> <span class="mi">227</span><span class="p">)</span>
+    <span class="n">yellow</span>  <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">181</span><span class="p">,</span> <span class="mi">137</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)</span>
+    <span class="n">orange</span>  <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">203</span><span class="p">,</span>  <span class="mi">75</span><span class="p">,</span>  <span class="mi">22</span><span class="p">)</span>
+    <span class="n">red</span>     <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">220</span><span class="p">,</span>  <span class="mi">50</span><span class="p">,</span>  <span class="mi">47</span><span class="p">)</span>
+    <span class="n">magenta</span> <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">211</span><span class="p">,</span>  <span class="mi">54</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
+    <span class="n">violet</span>  <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">108</span><span class="p">,</span> <span class="mi">113</span><span class="p">,</span> <span class="mi">196</span><span class="p">)</span>
+    <span class="n">blue</span>    <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">139</span><span class="p">,</span> <span class="mi">210</span><span class="p">)</span>
+    <span class="n">cyan</span>    <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">161</span><span class="p">,</span> <span class="mi">152</span><span class="p">)</span>
+    <span class="n">green</span>   <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">133</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">white</span>   <span class="o">=</span> <span class="n">base3</span>
+    <span class="n">black</span>   <span class="o">=</span> <span class="n">base03</span>
+
+    <span class="c"># Tverwrite the default color values with our new ones. Those</span>
+    <span class="c"># single-letter colors are used all over the place in matplotlib, so</span>
+    <span class="c"># this setting has a huge effect.</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">ColorConverter</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;b&#39;</span><span class="p">:</span> <span class="n">blue</span><span class="p">,</span>
+        <span class="s">&#39;c&#39;</span><span class="p">:</span> <span class="n">cyan</span><span class="p">,</span>
+        <span class="s">&#39;g&#39;</span><span class="p">:</span> <span class="n">green</span><span class="p">,</span>
+        <span class="s">&#39;k&#39;</span><span class="p">:</span> <span class="n">black</span><span class="p">,</span>
+        <span class="s">&#39;m&#39;</span><span class="p">:</span> <span class="n">magenta</span><span class="p">,</span>
+        <span class="s">&#39;r&#39;</span><span class="p">:</span> <span class="n">red</span><span class="p">,</span>
+        <span class="s">&#39;w&#39;</span><span class="p">:</span> <span class="n">white</span><span class="p">,</span>
+        <span class="s">&#39;y&#39;</span><span class="p">:</span> <span class="n">yellow</span>
+    <span class="p">}</span>
+
+    <span class="c"># Redefine the existing &#39;RdBu&#39; (Red-Blue) colormap, with our new</span>
+    <span class="c"># colors for red and blue</span>
+    <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;red&#39;</span>  <span class="p">:</span>  <span class="p">((</span><span class="mf">0.</span><span class="p">,</span> <span class="n">blue</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">blue</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">white</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">white</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">magenta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">magenta</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+        <span class="s">&#39;green&#39;</span><span class="p">:</span>  <span class="p">((</span><span class="mf">0.</span><span class="p">,</span> <span class="n">blue</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">blue</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">white</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">white</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">magenta</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">magenta</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span>
+        <span class="s">&#39;blue&#39;</span> <span class="p">:</span>  <span class="p">((</span><span class="mf">0.</span><span class="p">,</span> <span class="n">blue</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">blue</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">white</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">white</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">magenta</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">magenta</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="p">}</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">register_cmap</span><span class="p">(</span><span class="s">&#39;RdBu&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">cdict</span><span class="p">)</span>
+
+    <span class="c"># Reorder the default color cycle</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s">&#39;axes.color_cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="s">&#39;g&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">]</span>
+    <span class="c"># Set linewidth in plots to 2</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s">&#39;lines.linewidth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="c"># Set default cmap</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s">&#39;image.cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;RdBu&#39;</span>
+</pre></div></div>
 
           </div>
         </div>
