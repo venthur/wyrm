@@ -21,13 +21,13 @@ representations.
 
 """
 
+
 from __future__ import division
 
 import math
 
 import numpy as np
 from scipy import interpolate
-
 from matplotlib import axes
 from matplotlib import colorbar
 from matplotlib import colors
@@ -39,6 +39,7 @@ from matplotlib.patches import Rectangle
 
 from wyrm import processing as proc
 from wyrm.types import Data
+
 
 # the angles here are given in (90 / 4)th degrees - so multiply it with
 # (90 / 4) to get the actual angles
