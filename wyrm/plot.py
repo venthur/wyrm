@@ -170,34 +170,36 @@ def plot_timeinterval(data, r_square=None, highlights=None, hcolors=None,
                       legend=True, reg_chans=None, position=None):
     """Plots a simple time interval.
 
-    Plots all channels of either continuous data or the mean of epoched data
-    into a single timeinterval plot.
+    Plots all channels of either continuous data or the mean of epoched
+    data into a single timeinterval plot.
 
     Parameters
     ----------
     data : wyrm.types.Data
         Data object containing the data to plot.
     r_square : [values], optional
-        List containing r_squared values to be plotted beneath the main plot
-        (default: None).
+        List containing r_squared values to be plotted beneath the main
+        plot (default: None).
     highlights : [[int, int)]
-        List of tuples containing the start point (included) and end point
-        (excluded) of each area to be highlighted (default: None).
+        List of tuples containing the start point (included) and end
+        point (excluded) of each area to be highlighted (default: None).
     hcolors : [colors], optional
-        A list of colors to use for the highlights areas (default: None).
+        A list of colors to use for the highlights areas (default:
+        None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
     reg_chans : [regular expression], optional
         A list of regular expressions. The plot will be limited to those
         channels matching the regular expressions. (default: None).
     position : [x, y, width, height], optional
-        A Rectangle that limits the plot to its boundaries (default: None).
+        A Rectangle that limits the plot to its boundaries (default:
+        None).
 
     Returns
     -------
     Matplotlib.Axes or (Matplotlib.Axes, Matplotlib.Axes)
-        The Matplotlib.Axes corresponding to the plotted timeinterval and, if
-        provided, the Axes corresponding to r_squared values.
+        The Matplotlib.Axes corresponding to the plotted timeinterval
+        and, if provided, the Axes corresponding to r_squared values.
 
     Examples
     --------
@@ -270,28 +272,29 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
                 reg_chans=None):
     """Plots channels on a grid system.
 
-    Iterates over every channel in the data structure. If the channelname
-    matches a channel in the tenten-system it will be plotted in a grid of
-    rectangles. The grid is structured like the tenten-system itself, but in
-    a simplified manner. The rows, in which channels appear, are predetermined,
-    the channels are ordered automatically within their respective row.
-    Areas to highlight can be specified, those areas will be marked with colors
-    in every timeinterval plot.
+    Iterates over every channel in the data structure. If the
+    channelname matches a channel in the tenten-system it will be
+    plotted in a grid of rectangles. The grid is structured like the
+    tenten-system itself, but in a simplified manner. The rows, in which
+    channels appear, are predetermined, the channels are ordered
+    automatically within their respective row. Areas to highlight can be
+    specified, those areas will be marked with colors in every
+    timeinterval plot.
 
     Parameters
     ----------
     data : wyrm.types.Data
         Data object containing the data to plot.
     highlights : [[int, int)]
-        List of tuples containing the start point (included) and end point
-        (excluded) of each area to be highlighted (default: None).
+        List of tuples containing the start point (included) and end
+        point (excluded) of each area to be highlighted (default: None).
     hcolors : [colors], optional
         A list of colors to use for the highlight areas (default: None).
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
     scale : Boolean, optional
-        Flag to switch plotting of a scale in the top right corner of the grid
-        (default: True)
+        Flag to switch plotting of a scale in the top right corner of
+        the grid (default: True)
     reg_chans : [regular expressions]
         A list of regular expressions. The plot will be limited to those
         channels matching the regular expressions.
@@ -299,18 +302,22 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
     Returns
     -------
     [Matplotlib.Axes], Matplotlib.Axes
-        Returns the plotted timeinterval axes as a list of Matplotlib.Axes and
-        the plotted scale as a single Matplotlib.Axes.
+        Returns the plotted timeinterval axes as a list of
+        Matplotlib.Axes and the plotted scale as a single
+        Matplotlib.Axes.
 
     Examples
     --------
     Plotting of all channels within a Data object
+
     >>> plot_tenten(data)
 
     Plotting of all channels with a highlighted area
+
     >>> plot_tenten(data, highlights=[[200, 400]])
 
     Plotting of all channels beginning with 'A'
+
     >>> plot_tenten(data, reg_chans=['A.*'])
     """
     dcopy = data.copy()
@@ -413,9 +420,9 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     """Plots the values 'v' for channels 'channels' on a scalp.
 
     Calculates the interpolation of the values v for the corresponding
-    channels 'channels' and plots it as a contour plot on a scalp.
-    The degree of gradients as well as the the appearance of the color
-    bar can be adjusted.
+    channels 'channels' and plots it as a contour plot on a scalp. The
+    degree of gradients as well as the the appearance of the color bar
+    can be adjusted.
 
     Parameters
     ----------
@@ -425,36 +432,40 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
         List containing the channel names.
     levels : int, optional
         The number of automatically created levels in the contour plot
-         (default: 25).
+        (default: 25).
     colormap : matplotlib.colors.colormap, optional
-        A colormap to define the color transitions (default: a blue-white-red
-         colormap).
+        A colormap to define the color transitions (default: a
+        blue-white-red colormap).
     norm : matplotlib.colors.norm, optional
-        A norm to define the min and max values
-         (default: 'None', values from -10 to 10 are assumed).
+        A norm to define the min and max values (default: 'None', values
+        from -10 to 10 are assumed).
     ticks : array([ints]), optional
         An array with values to define the ticks on the colorbar
-         (default: 'None', 3 ticks at -10, 0 and 10 are displayed).
+        (default: 'None', 3 ticks at -10, 0 and 10 are displayed).
     annotate : Boolean, optional
         Flag to switch channel annotations on or off (default: True).
     position : [x, y, width, height], optional
-        A Rectangle that limits the plot to its boundaries (default: None).
+        A Rectangle that limits the plot to its boundaries (default:
+        None).
 
     Returns
     -------
     (Matplotlib.Axes, Matplotlib.Axes)
-        Returns a pair of Matplotlib.Axes. The first contains the plotted scalp,
-        the second the corresponding colorbar.
+        Returns a pair of Matplotlib.Axes. The first contains the
+        plotted scalp, the second the corresponding colorbar.
 
     Examples
     --------
     Plots the values v for channels 'channels' on a scalp
+
     >>> plot_scalp(v, channels)
 
     This plot has finer gradients through increasing the levels to 50.
+
     >>> plot_scalp(v, channels, levels=50)
 
     This plot has a white-red colormap and a norm and ticks from 0 to 10
+
     >>> cm = create_colormap('wr')
     >>> n = matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False)
     >>> t = np.linspace(0.0, 10.0, 3, endpoint=True)
@@ -490,10 +501,10 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
                   norm=None, ticks=None, annotate=True, position=None):
     """Plots a scalp with channels on top
 
-    Plots the values v for channels 'channels' on a scalp as a contour plot.
-    Additionaly plots the channels in channels_ti as a timeinterval on top of
-    the scalp plot. The individual channels are placed over their position on
-    the scalp.
+    Plots the values v for channels 'channels' on a scalp as a contour
+    plot. Additionaly plots the channels in channels_ti as a
+    timeinterval on top of the scalp plot. The individual channels are
+    placed over their position on the scalp.
 
     Parameters
     ----------
@@ -505,7 +516,8 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
         Data object containing the continuous data for the overlaying
         timeinterval plots.
     interval : [begin, end)
-        Tuple of ints to specify the range of the overlaying timeinterval plots.
+        Tuple of ints to specify the range of the overlaying
+        timeinterval plots.
     scale_ti : float, optional
         The percentage to scale the overlaying timeinterval plots
         (default: 0.1).
@@ -513,8 +525,8 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
         The number of automatically created levels in the contour plot
         (default: 25).
     colormap : matplotlib.colors.colormap, optional
-        A colormap to define the color transitions
-        (default: a blue-white-red colormap).
+        A colormap to define the color transitions (default: a
+        blue-white-red colormap).
     norm : matplotlib.colors.norm, optional
         A norm to define the min and max values. If 'None', values from
         -10 to 10 are assumed (default: None).
@@ -524,7 +536,8 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     annotate : Boolean, optional
         Flag to switch channel annotations on or off (default: True).
     position : [x, y, width, height], optional
-        A Rectangle that limits the plot to its boundaries (default: None).
+        A Rectangle that limits the plot to its boundaries (default:
+        None).
 
     Returns
     -------
@@ -602,18 +615,17 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
 
 
 def create_colormap(scheme='bwr'):
-    """
-    Creates a linear segmented colormap.
+    """Creates a linear segmented colormap.
 
     It can be chosen between two different color schemes:
-     * blue-white-red ('bwr')
-     * white-red ('wr')
+        * blue-white-red ('bwr')
+        * white-red ('wr')
 
-     Parameters:
-     -----------
-     scheme : String, optional
-        String to specify the colorscheme of the colorbar. Possible inputs:
-        'bwr', 'wr' (default = 'bwr').
+    Parameters
+    ----------
+    scheme : String, optional
+        String to specify the colorscheme of the colorbar. Possible
+        inputs: 'bwr', 'wr' (default = 'bwr').
     """
     assert str(scheme).lower() == 'bwr' or str(scheme).lower() == 'wr', \
         "Wrong input: (0/1) or ('bwr'/'wr')"
@@ -630,22 +642,22 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
     Parameters
     ----------
     highlights : [(start, end)]
-        List of tuples containing the start point (included) and end point
-        (excluded) of each area to be highlighted.
+        List of tuples containing the start point (included) and end
+        point (excluded) of each area to be highlighted.
     hcolors : [colors], optional
-        A list of colors to use for the highlight areas (e.g. 'b', '#eeefff' or
-        [R, G, B] for R, G, B = [0..1].
-        If left as None the colors blue, gree, red, cyan, magenta and yellow are
-        used.
+        A list of colors to use for the highlight areas (e.g. 'b',
+        '#eeefff' or [R, G, B] for R, G, B = [0..1]. If left as None the
+        colors blue, gree, red, cyan, magenta and yellow are used.
     set_axes : [matplotlib.axes.Axes], optional
-        List of axes to highlights (default: None, all axes of the current
-        figure will be highlighted).
+        List of axes to highlights (default: None, all axes of the
+        current figure will be highlighted).
 
-    Examples:
+    Examples
     ---------
     To create two highlighted areas in all axes of the currently active
-    figure. The first area from 200ms - 300ms in blue and the second area from
-    500ms - 600ms in green.
+    figure. The first area from 200ms - 300ms in blue and the second
+    area from 500ms - 600ms in green.
+
     >>> set_highlights([[200, 300], [500, 600]])
     """
     if highlights is not None:
@@ -684,19 +696,21 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
     ylabel : String
         The String to label the y-axis.
     set_axes : [Matplotlib.axes.Axes], optional
-        List of axes to apply the labels to (default: None, the labels are
-        applied to all axes of the current figure).
+        List of axes to apply the labels to (default: None, the labels
+        are applied to all axes of the current figure).
     draw : Boolean, optional
-        A flag to switch if the new labels should be directly drawn to the
-        plot (default: True).
+        A flag to switch if the new labels should be directly drawn to
+        the plot (default: True).
 
-    Examples:
-    ---------
+    Examples
+    --------
     To set the x- and y-labels of all axes in the current figure
-     >>> set_labels('xtext', 'ytext')
 
-     To set the x- and y-labels of a specific axes in the current figure
-     >>> set_labels('xtext', 'ytext', set_axes=matplotlib.axes.Axes)
+    >>> set_labels('xtext', 'ytext')
+
+    To set the x- and y-labels of a specific axes in the current figure
+
+    >>> set_labels('xtext', 'ytext', set_axes=matplotlib.axes.Axes)
     """
     if set_axes is None:
         set_axes = plt.gcf().axes
@@ -711,8 +725,7 @@ def set_labels(xlabel, ylabel, set_axes=None, draw=True):
 
 
 def calc_grid(rows, cols, hpad=.05, vpad=.05):
-    """
-    Calculates a grid of Rectangles and their positions.
+    """ Calculates a grid of Rectangles and their positions.
 
     Parameters
     ----------
@@ -728,15 +741,17 @@ def calc_grid(rows, cols, hpad=.05, vpad=.05):
     Returns
     -------
     [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height]
-        sorted from top left to bottom right.
+        A list of all rectangle positions in the form of [xi, xy, width,
+        height] sorted from top left to bottom right.
 
     Examples
     --------
     Calculates a 4x3 grid
+
     >>> calc_grid(4, 3)
 
     Calculates a 4x3 grid with more padding
+
     >>> calc_grid(4, 3, hpad=.1, vpad=.1)
     """
     w = (1 - ((cols + 1) * vpad)) / cols
@@ -753,14 +768,13 @@ def calc_grid(rows, cols, hpad=.05, vpad=.05):
 
 
 def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
-    """
-    Calculates a centered grid of Rectangles and their positions.
+    """Calculates a centered grid of Rectangles and their positions.
 
     Parameters
     ----------
     cols_list : [int]
-        List of ints. Every entry represents a row with as many channels as the
-        value.
+        List of ints. Every entry represents a row with as many channels
+        as the value.
     hpad : float, optional
         The amount of horizontal padding (default: 0.05).
     vpad : float, optional
@@ -769,15 +783,17 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
     Returns
     -------
     [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width, height]
-        sorted from top left to bottom right.
+        A list of all rectangle positions in the form of [xi, xy, width,
+        height] sorted from top left to bottom right.
 
-    Examples:
-    ---------
+    Examples
+    --------
     Calculates a centered grid with 3 rows of 4, 3 and 2 columns
+
     >>> calc_centered_grid([4, 3, 2])
 
     Calculates a centered grid with more padding
+
     >>> calc_centered_grid([5, 4], hpad=.1, vpad=.75)
     """
     h = (1 - ((len(cols_list) + 1) * vpad)) / len(cols_list)
@@ -796,8 +812,8 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
 
 
 def _bwr_cmap():
-    """Create a linear segmented colormap with transitions from blue over white
-    to red.
+    """Create a linear segmented colormap with transitions from blue
+    over white to red.
 
     Returns
     -------
@@ -828,7 +844,8 @@ def _bwr_cmap():
 
 
 def _wr_cmap():
-    """Create a linear segmented colormap with transitions from white to red.
+    """Create a linear segmented colormap with transitions from white to
+    red.
 
     Returns
     -------
@@ -853,25 +870,26 @@ def _wr_cmap():
 
 
 def _subplot_colorbar(position, colormap=_bwr_cmap(), ticks=None, norm=None):
-    """
-    Creates a new axes with a colorbar.
+    """Creates a new axes with a colorbar.
 
-    Creates a matplotlib.axes.Axes within the rectangle specified by 'position'
-    and fills it with a colorbar.
+    Creates a matplotlib.axes.Axes within the rectangle specified by
+    'position' and fills it with a colorbar.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     position : Rectangle
-        The rectangle (x, y, width, height) where the axes will be created.
+        The rectangle (x, y, width, height) where the axes will be
+        created.
     colormap : matplotlib.colors.colormap, optional
         A colormap to define the colorscheme of the colormap.
     ticks : Array([float])
-        An array with floats to set the number and location of the ticks.
+        An array with floats to set the number and location of the
+        ticks.
     norm : matplotlib.colors.Normalize
         A norm to set the min-/max-value of the colorbar.
 
-    Returns:
-    --------
+    Returns
+    -------
     matplotlib.axes.Axes
     """
     fig = plt.gcf()
@@ -881,35 +899,35 @@ def _subplot_colorbar(position, colormap=_bwr_cmap(), ticks=None, norm=None):
 
 
 def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=True, norm=None):
-    """
-    Creates a new axes with a scalp plot.
+    """Creates a new axes with a scalp plot.
 
-    Creates a matplotlib.axes.Axes within the rectangle specified by 'position'
-    and fills it with a contour plot for the channels in 'channels' and the data
-    in 'v'.
+    Creates a matplotlib.axes.Axes within the rectangle specified by
+    'position' and fills it with a contour plot for the channels in
+    'channels' and the data in 'v'.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     v : [value]
         List containing the values of the channels.
     channels : [String]
         List containing the channel names.
     position : Rectangle
-        The rectangle (x, y, width, height) where the axes will be created.
+        The rectangle (x, y, width, height) where the axes will be
+        created.
     levels : int, optional
         The number of automatically created levels in the contour plot
-         (default: 25).
+        (default: 25).
     colormap : matplotlib.colors.colormap, optional
-        A colormap to define the color transitions (default: a blue-white-red
-         colormap).
+        A colormap to define the color transitions (default: a
+        blue-white-red colormap).
     annotate : Boolean, optional
         Flag to switch channel annotations on or off (default: True).
     norm : matplotlib.colors.norm, optional
-        A norm to define the min and max values
-         (default: 'None', values from -10 to 10 are assumed).
+        A norm to define the min and max values (default: 'None', values
+        from -10 to 10 are assumed).
 
-    Returns:
-    --------
+    Returns
+    -------
     matplotlib.axes.Axes
     """
     fig = plt.gcf()
@@ -979,38 +997,43 @@ def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=Tru
 
 def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
                           labels=True, legend=True, channel=None, shareaxis=None):
-    """
-    Creates a new axes with a timeinterval plot.
+    """Creates a new axes with a timeinterval plot.
 
-    Creates a matplotlib.axes.Axes within the rectangle specified by 'position'
-    and fills it with a timeinterval plot defined by the channels and values
-    contained in 'data'.
+    Creates a matplotlib.axes.Axes within the rectangle specified by
+    'position' and fills it with a timeinterval plot defined by the
+    channels and values contained in 'data'.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     data : wyrm.types.Data
         Data object containing the data to plot.
     position : Rectangle
-        The rectangle (x, y, width, height) where the axes will be created.
+        The rectangle (x, y, width, height) where the axes will be
+        created.
     epoch : int
-        The epoch to be plotted. If there are no epochs this has to be '-1'.
+        The epoch to be plotted. If there are no epochs this has to be
+        '-1'.
     highlights : [[int, int)]
-        List of tuples containing the start point (included) and end point
-        (excluded) of each area to be highlighted (default: None).
+        List of tuples containing the start point (included) and end
+        point (excluded) of each area to be highlighted (default: None).
     hcolors : [colors], optional
-        A list of colors to use for the highlights areas (default: None).
+        A list of colors to use for the highlights areas (default:
+        None).
     labels : Boolean, optional
-        Flag to switch plotting of the usual labels on or off (default: True)
+        Flag to switch plotting of the usual labels on or off (default:
+        True)
     legend : Boolean, optional
         Flag to switch plotting of the legend on or off (default: True).
     channel : int, optional
-        This can be used to plot only a single channel. 'channel' has to be the
-        index of the desired channel in data.axes[-1] (default: None)
+        This can be used to plot only a single channel. 'channel' has to
+        be the index of the desired channel in data.axes[-1] (default:
+        None)
     shareaxis : matplotlib.axes.Axes, optional
-        An axes to share x- and y-axis with the new axes (default: None).
+        An axes to share x- and y-axis with the new axes (default:
+        None).
 
-    Returns:
-    --------
+    Returns
+    -------
     matplotlib.axes.Axes
     """
     fig = plt.gcf()
@@ -1053,18 +1076,19 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
 
 
 def _subplot_r_square(data, position):
-    """
-    Creates a new axes with colored r-sqaure values.
+    """Creates a new axes with colored r-sqaure values.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     data : [float]
-        A list of floats that will be evenly distributed as colored tiles.
+        A list of floats that will be evenly distributed as colored
+        tiles.
     position : Rectangle
-        The rectangle (x, y, width, height) where the axes will be created.
+        The rectangle (x, y, width, height) where the axes will be
+        created.
 
-    Returns:
-    --------
+    Returns
+    -------
     matplotlib.axes.Axes
     """
     fig = plt.gcf()
@@ -1077,11 +1101,10 @@ def _subplot_r_square(data, position):
 
 
 def _subplot_scale(xvalue, yvalue, position):
-    """
-    Creates a new axes with a simple scale.
+    """Creates a new axes with a simple scale.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     xvalue : String
         The text to be presented beneath the x-axis.
     yvalue : String
@@ -1089,8 +1112,8 @@ def _subplot_scale(xvalue, yvalue, position):
     position : Rectangle
         The rectangle (x, y, width, height) where the axes will be created.
 
-    Returns:
-    --------
+    Returns
+    -------
     matplotlib.axes.Axes
     """
     fig = plt.gcf()
@@ -1110,12 +1133,11 @@ def _subplot_scale(xvalue, yvalue, position):
 
 
 def _transform_rect(rect, template):
-    """
-    Calculates the position of a relative notated rectangle within another
-    rectangle.
+    """Calculates the position of a relative notated rectangle within
+    another rectangle.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rect : Rectangle
         The container rectangle to contain the other reactangle.
     template : Rectangle
@@ -1130,14 +1152,13 @@ def _transform_rect(rect, template):
 
 
 def _get_system():
-    """
-    Returns a dictionary of all channels.
+    """Returns a dictionary of all channels.
 
-    The channels are accessable by name and contain their x and y position on
-    the scalp.
+    The channels are accessable by name and contain their x and y
+    position on the scalp.
 
-    Returns:
-    --------
+    Returns
+    -------
     {channel : (xposition, yposition)}
     """
     system = {
