@@ -23,6 +23,8 @@ representations.
 
 from __future__ import division
 
+import math
+
 import numpy as np
 from scipy import interpolate
 
@@ -36,8 +38,156 @@ from matplotlib import patches as patches
 from matplotlib.patches import Rectangle
 
 from wyrm import processing as proc
-from wyrm import tentensystem as tts
 from wyrm.types import Data
+
+# the angles here are given in (90 / 4)th degrees - so multiply it with
+# (90 / 4) to get the actual angles
+CHANNEL_10_20 = (
+    ('Fpz', (0.0, 4.0)),
+    ('Fp1', (-4.0, 3.5)),
+    ('AFp1', (-1.5, 3.5)),
+    ('AFp2', (1.5, 3.5)),
+    ('Fp2', (4.0, 3.5)),
+    ('AF7', (-4.0, 3.0)),
+    ('AF5', (-3.0, 3.0)),
+    ('AF3', (-2.0, 3.0)),
+    ('AFz', (0.0, 3.0)),
+    ('AF4', (2.0, 3.0)),
+    ('AF6', (3.0, 3.0)),
+    ('AF8', (4.0, 3.0)),
+    ('FAF5', (-2.5, 2.5)),
+    ('FAF1', (-0.65, 2.5)),
+    ('FAF2', (0.65, 2.5)),
+    ('FAF6', (2.5, 2.5)),
+    ('F9', (-5.0, 2.0)),
+    ('F7', (-4.0, 2.0)),
+    ('F5', (-3.0, 2.0)),
+    ('F3', (-2.0, 2.0)),
+    ('F1', (-1.0, 2.0)),
+    ('Fz', (0.0, 2.0)),
+    ('F2', (1.0, 2.0)),
+    ('F4', (2.0, 2.0)),
+    ('F6', (3.0, 2.0)),
+    ('F8', (4.0, 2.0)),
+    ('F10', (5.0, 2.0)),
+    ('FFC9', (-4.5, 1.5)),
+    ('FFC7', (-3.5, 1.5)),
+    ('FFC5', (-2.5, 1.5)),
+    ('FFC3', (-1.5, 1.5)),
+    ('FFC1', (-0.5, 1.5)),
+    ('FFC2', (0.5, 1.5)),
+    ('FFC4', (1.5, 1.5)),
+    ('FFC6', (2.5, 1.5)),
+    ('FFC8', (3.5, 1.5)),
+    ('FFC10', (4.5, 1.5)),
+    ('FT9', (-5.0, 1.0)),
+    ('FT7', (-4.0, 1.0)),
+    ('FC5', (-3.0, 1.0)),
+    ('FC3', (-2.0, 1.0)),
+    ('FC1', (-1.0, 1.0)),
+    ('FCz', (0.0, 1.0)),
+    ('FC2', (1.0, 1.0)),
+    ('FC4', (2.0, 1.0)),
+    ('FC6', (3.0, 1.0)),
+    ('FT8', (4.0, 1.0)),
+    ('FT10', (5.0, 1.0)),
+    ('CFC9', (-4.5, 0.5)),
+    ('CFC7', (-3.5, 0.5)),
+    ('CFC5', (-2.5, 0.5)),
+    ('CFC3', (-1.5, 0.5)),
+    ('CFC1', (-0.5, 0.5)),
+    ('CFC2', (0.5, 0.5)),
+    ('CFC4', (1.5, 0.5)),
+    ('CFC6', (2.5, 0.5)),
+    ('CFC8', (3.5, 0.5)),
+    ('CFC10', (4.5, 0.5)),
+    ('T9', (-5.0, 0.0)),
+    ('T7', (-4.0, 0.0)),
+    ('C5', (-3.0, 0.0)),
+    ('C3', (-2.0, 0.0)),
+    ('C1', (-1.0, 0.0)),
+    ('Cz', (0.0, 0.0)),
+    ('C2', (1.0, 0.0)),
+    ('C4', (2.0, 0.0)),
+    ('C6', (3.0, 0.0)),
+    ('T8', (4.0, 0.0)),
+    ('T10', (5.0, 0.0)),
+    ('A1', (-5.0, -0.5)),
+    ('CCP7', (-3.5, -0.5)),
+    ('CCP5', (-2.5, -0.5)),
+    ('CCP3', (-1.5, -0.5)),
+    ('CCP1', (-0.5, -0.5)),
+    ('CCP2', (0.5, -0.5)),
+    ('CCP4', (1.5, -0.5)),
+    ('CCP6', (2.5, -0.5)),
+    ('CCP8', (3.5, -0.5)),
+    ('A2', (5.0, -0.5)),
+    ('TP9', (-5.0, -1.0)),
+    ('TP7', (-4.0, -1.0)),
+    ('CP5', (-3.0, -1.0)),
+    ('CP3', (-2.0, -1.0)),
+    ('CP1', (-1.0, -1.0)),
+    ('CPz', (0.0, -1.0)),
+    ('CP2', (1.0, -1.0)),
+    ('CP4', (2.0, -1.0)),
+    ('CP6', (3.0, -1.0)),
+    ('TP8', (4.0, -1.0)),
+    ('TP10', (5.0, -1.0)),
+    ('PCP9', (-4.5, -1.5)),
+    ('PCP7', (-3.5, -1.5)),
+    ('PCP5', (-2.5, -1.5)),
+    ('PCP3', (-1.5, -1.5)),
+    ('PCP1', (-0.5, -1.5)),
+    ('PCP2', (0.5, -1.5)),
+    ('PCP4', (1.5, -1.5)),
+    ('PCP6', (2.5, -1.5)),
+    ('PCP8', (3.5, -1.5)),
+    ('PCP10', (4.5, -1.5)),
+    ('P9', (-5.0, -2.0)),
+    ('P7', (-4.0, -2.0)),
+    ('P5', (-3.0, -2.0)),
+    ('P3', (-2.0, -2.0)),
+    ('P1', (-1.0, -2.0)),
+    ('Pz', (0.0, -2.0)),
+    ('P2', (1.0, -2.0)),
+    ('P4', (2.0, -2.0)),
+    ('P6', (3.0, -2.0)),
+    ('P8', (4.0, -2.0)),
+    ('P10', (5.0, -2.0)),
+    ('PPO7', (-4.5, -2.5)),
+    ('PPO5', (-3.0, -2.5)),
+    ('PPO3', (-2.0, -2.5)),
+    ('PPO1', (-0.65, -2.5)),
+    ('PPO2', (0.65, -2.5)),
+    ('PPO4', (2.0, -2.5)),
+    ('PPO6', (3.0, -2.5)),
+    ('PPO8', (4.5, -2.5)),
+    ('PO9', (-5.5, -2.6)),
+    ('PO7', (-4.0, -3)),
+    ('PO5', (-3.0, -3)),
+    ('PO3', (-2.0, -3)),
+    ('PO1', (-1.0, -3)),
+    ('POz', (0.0, -3)),
+    ('PO2', (1.0, -3)),
+    ('PO4', (2.0, -3)),
+    ('PO6', (3.0, -3)),
+    ('PO8', (4.0, -3)),
+    ('PO10', (5.5, -2.6)),
+    ('OPO1', (-1.5, -3.5)),
+    ('OPO2', (1.5, -3.5)),
+    ('O9', (-6.5, -3.5)),
+    ('O1', (-4.0, -3.5)),
+    ('O2', (4.0, -3.5)),
+    ('O10', (6.5, -3.5)),
+    ('Oz', (0.0, -4.0)),
+    ('OI1', (1.5, -4.5)),
+    ('OI2', (-1.5, -4.5)),
+    ('I1', (1.0, -5)),
+    ('Iz', (0.0, -5)),
+    ('I2', (-1, -5))
+)
+
+
 
 # ############# OLD FUNCTIONS ############################################
 
@@ -108,37 +258,6 @@ def plot_spectrogram(spectrogram, freqs):
     plt.colorbar()
     plt.ylabel('Frequency [Hz]')
     plt.xlabel('Time')
-
-
-def calculate_stereographic_projection(p):
-    """Calculate the stereographic projection.
-
-    Given a unit sphere with radius ``r = 1`` and center at the origin.
-    Project the point ``p = (x, y, z)`` from the sphere's South pole (0,
-    0, -1) on a plane on the sphere's North pole (0, 0, 1).
-
-    The formula is:
-
-        P' = P * (2r / (r + z))
-
-    Parameters
-    ----------
-    p : [float, float]
-        The point to be projected in cartesian coordinates.
-
-    Returns
-    -------
-    x, y : float, float
-        The projected point on the plane.
-
-    """
-    # P' = P * (2r / r + z)
-    # changed the values to move the point of projection further below the
-    # south pole
-    mu = 1 / (1.3 + p[2])
-    x = p[0] * mu
-    y = p[1] * mu
-    return x, y
 
 
 def interpolate_2d(x, y, z):
@@ -344,7 +463,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
                 -5.0: 16}
 
     # all the channels with their x- and y-position
-    system = _get_system()
+    system = dict(CHANNEL_10_20)
 
     # create list with 17 empty lists. one for every potential row of channels.
     channel_lists = []
@@ -357,7 +476,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
     # distribute the channels to the lists by their y-position
     count = 0
     for c in dcopy.axes[1]:
-        if c in tts.channels:
+        if c in system:
             # entries in channel_lists: [<channel_name>, <x-position>, <position in Data>]
             channel_lists[ordering[system[c][1]]].append((c, system[c][0], count))
         count += 1
@@ -567,9 +686,6 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
     ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
 
-    # adding the timeinterval plots
-    s = _get_system()
-
     # modification of internally used data if a specific intervals is specified
     cdat = data.copy()
     if interval is not None:
@@ -580,13 +696,9 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
 
     tis = []
     for c in cdat.axes[1]:
-        if c in s:
-
+        points = get_channelpos(c)
+        if points is not None:
             channelindex = np.where(cdat.axes[1] == c)[0][0]
-
-            # generating the channel position on the scalp
-            channelpos = tts.channels[c]
-            points = calculate_stereographic_projection(channelpos)
 
             # dirty: these are the x and y limits of the scalp axes
             minx = -1.15
@@ -932,8 +1044,8 @@ def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=Tru
     """
     fig = plt.gcf()
     ax = fig.add_axes(position)
-    channelpos = [tts.channels[c] for c in channels]
-    points = [calculate_stereographic_projection(i) for i in channelpos]
+    # what if we have an unknown channel?
+    points = [get_channelpos(c) for c in channels]
     x = [i[0] for i in points]
     y = [i[1] for i in points]
     z = v
@@ -1129,7 +1241,69 @@ def _subplot_scale(xvalue, yvalue, position):
     ax.set_xlim([0, 5])
     return ax
 
-# ############# HELPER FUNCTIONS #########################################
+###############################################################################
+# Utility Functions
+###############################################################################
+
+def get_channelpos(channame):
+    """Return the x/y position of a channel.
+
+    This method calculates the stereographic projection of a channel
+    from ``CHANNEL_10_20``, suitable for a scalp plot.
+
+    Parameters
+    ----------
+    channame : str
+        Name of the channel, the search is case insensitive.
+
+    Returns
+    -------
+    x, y : float or None
+        The projected point on the plane if the point is known,
+        otherwise ``None``
+
+    Examples
+    --------
+
+    >>> plot.get_channelpos('C2')
+    (0.1720792096741632, 0.0)
+    >>> # the channels are case insensitive
+    >>> plot.get_channelpos('c2')
+    (0.1720792096741632, 0.0)
+    >>> # lookup for an invalid channel
+    >>> plot.get_channelpos('foo')
+    None
+
+    """
+    channame = channame.lower()
+    for i in CHANNEL_10_20:
+        if i[0].lower() == channame:
+            # convert the 90/4th angular position into x, y, z
+            p = i[1]
+            ea, eb = p[0] * (90 / 4), p[1] * (90 / 4)
+            ea = ea * math.pi / 180
+            eb = eb * math.pi / 180
+            x = math.sin(ea) * math.cos(eb)
+            y = math.sin(eb)
+            z = math.cos(ea) * math.cos(eb)
+            # Calculate the stereographic projection.
+            # Given a unit sphere with radius ``r = 1`` and center at
+            # the origin. Project the point ``p = (x, y, z)`` from the
+            # sphere's South pole (0, 0, -1) on a plane on the sphere's
+            # North pole (0, 0, 1).
+            #
+            # The formula is:
+            #
+            # P' = P * (2r / (r + z))
+            #
+            # We changed the values to move the point of projection
+            # further below the south pole
+            mu = 1 / (1.3 + z)
+            x *= mu
+            y *= mu
+            return x, y
+    return None
+
 
 
 def _transform_rect(rect, template):
@@ -1151,157 +1325,3 @@ def _transform_rect(rect, template):
     return [x, y, w, h]
 
 
-def _get_system():
-    """Returns a dictionary of all channels.
-
-    The channels are accessable by name and contain their x and y
-    position on the scalp.
-
-    Returns
-    -------
-    {channel : (xposition, yposition)}
-    """
-    system = {
-        'Fpz': (0.0, 4.0),
-        'Fp1': (-4.0, 3.5),
-        'AFp1': (-1.5, 3.5),
-        'AFp2': (1.5, 3.5),
-        'Fp2': (4.0, 3.5),
-        'AF7': (-4.0, 3.0),
-        'AF5': (-3.0, 3.0),
-        'AF3': (-2.0, 3.0),
-        'AFz': (0.0, 3.0),
-        'AF4': (2.0, 3.0),
-        'AF6': (3.0, 3.0),
-        'AF8': (4.0, 3.0),
-        'FAF5': (-2.5, 2.5),
-        'FAF1': (-0.65, 2.5),
-        'FAF2': (0.65, 2.5),
-        'FAF6': (2.5, 2.5),
-        'F9': (-5.0, 2.0),
-        'F7': (-4.0, 2.0),
-        'F5': (-3.0, 2.0),
-        'F3': (-2.0, 2.0),
-        'F1': (-1.0, 2.0),
-        'Fz': (0.0, 2.0),
-        'F2': (1.0, 2.0),
-        'F4': (2.0, 2.0),
-        'F6': (3.0, 2.0),
-        'F8': (4.0, 2.0),
-        'F10': (5.0, 2.0),
-        'FFC9': (-4.5, 1.5),
-        'FFC7': (-3.5, 1.5),
-        'FFC5': (-2.5, 1.5),
-        'FFC3': (-1.5, 1.5),
-        'FFC1': (-0.5, 1.5),
-        'FFC2': (0.5, 1.5),
-        'FFC4': (1.5, 1.5),
-        'FFC6': (2.5, 1.5),
-        'FFC8': (3.5, 1.5),
-        'FFC10': (4.5, 1.5),
-        'FT9': (-5.0, 1.0),
-        'FT7': (-4.0, 1.0),
-        'FC5': (-3.0, 1.0),
-        'FC3': (-2.0, 1.0),
-        'FC1': (-1.0, 1.0),
-        'FCz': (0.0, 1.0),
-        'FC2': (1.0, 1.0),
-        'FC4': (2.0, 1.0),
-        'FC6': (3.0, 1.0),
-        'FT8': (4.0, 1.0),
-        'FT10': (5.0, 1.0),
-        'CFC9': (-4.5, 0.5),
-        'CFC7': (-3.5, 0.5),
-        'CFC5': (-2.5, 0.5),
-        'CFC3': (-1.5, 0.5),
-        'CFC1': (-0.5, 0.5),
-        'CFC2': (0.5, 0.5),
-        'CFC4': (1.5, 0.5),
-        'CFC6': (2.5, 0.5),
-        'CFC8': (3.5, 0.5),
-        'CFC10': (4.5, 0.5),
-        'T9': (-5.0, 0.0),
-        'T7': (-4.0, 0.0),
-        'C5': (-3.0, 0.0),
-        'C3': (-2.0, 0.0),
-        'C1': (-1.0, 0.0),
-        'Cz': (0.0, 0.0),
-        'C2': (1.0, 0.0),
-        'C4': (2.0, 0.0),
-        'C6': (3.0, 0.0),
-        'T8': (4.0, 0.0),
-        'T10': (5.0, 0.0),
-        'A1': (-5.0, -0.5),
-        'CCP7': (-3.5, -0.5),
-        'CCP5': (-2.5, -0.5),
-        'CCP3': (-1.5, -0.5),
-        'CCP1': (-0.5, -0.5),
-        'CCP2': (0.5, -0.5),
-        'CCP4': (1.5, -0.5),
-        'CCP6': (2.5, -0.5),
-        'CCP8': (3.5, -0.5),
-        'A2': (5.0, -0.5),
-        'TP9': (-5.0, -1.0),
-        'TP7': (-4.0, -1.0),
-        'CP5': (-3.0, -1.0),
-        'CP3': (-2.0, -1.0),
-        'CP1': (-1.0, -1.0),
-        'CPz': (0.0, -1.0),
-        'CP2': (1.0, -1.0),
-        'CP4': (2.0, -1.0),
-        'CP6': (3.0, -1.0),
-        'TP8': (4.0, -1.0),
-        'TP10': (5.0, -1.0),
-        'PCP9': (-4.5, -1.5),
-        'PCP7': (-3.5, -1.5),
-        'PCP5': (-2.5, -1.5),
-        'PCP3': (-1.5, -1.5),
-        'PCP1': (-0.5, -1.5),
-        'PCP2': (0.5, -1.5),
-        'PCP4': (1.5, -1.5),
-        'PCP6': (2.5, -1.5),
-        'PCP8': (3.5, -1.5),
-        'PCP10': (4.5, -1.5),
-        'P9': (-5.0, -2.0),
-        'P7': (-4.0, -2.0),
-        'P5': (-3.0, -2.0),
-        'P3': (-2.0, -2.0),
-        'P1': (-1.0, -2.0),
-        'Pz': (0.0, -2.0),
-        'P2': (1.0, -2.0),
-        'P4': (2.0, -2.0),
-        'P6': (3.0, -2.0),
-        'P8': (4.0, -2.0),
-        'P10': (5.0, -2.0),
-        'PPO7': (-4.5, -2.5),
-        'PPO5': (-3.0, -2.5),
-        'PPO3': (-2.0, -2.5),
-        'PPO1': (-0.65, -2.5),
-        'PPO2': (0.65, -2.5),
-        'PPO4': (2.0, -2.5),
-        'PPO6': (3.0, -2.5),
-        'PPO8': (4.5, -2.5),
-        'PO9': (-5.5, -2.6),
-        'PO7': (-4.0, -3),
-        'PO5': (-3.0, -3),
-        'PO3': (-2.0, -3),
-        'PO1': (-1.0, -3),
-        'POz': (0.0, -3),
-        'PO2': (1.0, -3),
-        'PO4': (2.0, -3),
-        'PO6': (3.0, -3),
-        'PO8': (4.0, -3),
-        'PO10': (5.5, -2.6),
-        'OPO1': (-1.5, -3.5),
-        'OPO2': (1.5, -3.5),
-        'O9': (-6.5, -3.5),
-        'O1': (-4.0, -3.5),
-        'O2': (4.0, -3.5),
-        'O10': (6.5, -3.5),
-        'Oz': (0.0, -4.0),
-        'OI1': (1.5, -4.5),
-        'OI2': (-1.5, -4.5),
-        'I1': (1.0, -5),
-        'Iz': (0.0, -5),
-        'I2': (-1, -5)}
-    return system

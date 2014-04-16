@@ -10,7 +10,6 @@ from matplotlib import pyplot as plt
 
 
 from wyrm.types import Data
-from wyrm.tentensystem import channels
 from wyrm import plot
 
 
@@ -20,15 +19,15 @@ class TestPlot(unittest.TestCase):
     def setUpClass(cls):
         x = np.linspace(0, 1000, 1000, endpoint=False)
         y = 5 * np.sin(2 * np.pi * x) + np.random.normal(0, 1, 1000)
-        data = np.array([y]*len(channels)).T
-        axes = [x, channels.keys()]
+        data = np.array([y]*len(plot.CHANNEL_10_20)).T
+        axes = [x, [i[0] for i in plot.CHANNEL_10_20]]
         cls.cnt = Data(data=data, axes=axes, names=['time', 'channel'], units=['ms', '#'])
         cls.cnt.fs = 1000
 
         classes = [0, 1] * 5
         data = np.array([data]*10)
         data[::2] *= 0.5
-        axes = [classes, x, channels.keys()]
+        axes = [classes, x, [i[0] for i in plot.CHANNEL_10_20]]
         cls.epo = Data(data=data, axes=axes, names=['class', 'time', 'channel'], units=['#', 'ms', '#'])
         cls.epo.fs = 1000
         cls.epo.class_names = ['class 1', 'class 2']
