@@ -585,12 +585,11 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
 
     >>> plot_scalp(v, channels, levels=50)
 
-    This plot has a white-red colormap and a norm and ticks from 0 to 10
+    This plot has a norm and ticks from 0 to 10
 
-    >>> cm = create_colormap('wr')
     >>> n = matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False)
     >>> t = np.linspace(0.0, 10.0, 3, endpoint=True)
-    >>> plot_scalp(v, channels, colormap=_wr_cmap(), norm=n, ticks=t)
+    >>> plot_scalp(v, channels, norm=n, ticks=t)
     """
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
@@ -605,7 +604,7 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
     if colormap is None:
-        colormap = 'RdBu'#_bwr_cmap()
+        colormap = 'RdBu'
     if norm is None:
         norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
@@ -679,7 +678,7 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
     if colormap is None:
-        colormap = 'RdBu' #_bwr_cmap()
+        colormap = 'RdBu'
     if norm is None:
         norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
@@ -726,28 +725,6 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     return (ax0, ax1), tis
 
 # ############# TOOLS ####################################################
-
-
-def create_colormap(scheme='bwr'):
-    """Creates a linear segmented colormap.
-
-    It can be chosen between two different color schemes:
-        * blue-white-red ('bwr')
-        * white-red ('wr')
-
-    Parameters
-    ----------
-    scheme : String, optional
-        String to specify the colorscheme of the colorbar. Possible
-        inputs: 'bwr', 'wr' (default = 'bwr').
-    """
-    assert str(scheme).lower() == 'bwr' or str(scheme).lower() == 'wr', \
-        "Wrong input: (0/1) or ('bwr'/'wr')"
-
-    if str(scheme).lower() == 'bwr':
-        return _bwr_cmap()
-    else:
-        return _wr_cmap()
 
 
 def set_highlights(highlights, hcolors=None, set_axes=None):
@@ -924,66 +901,10 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
         row += 1
     return grid
 
-
-def _bwr_cmap():
-    """Create a linear segmented colormap with transitions from blue
-    over white to red.
-
-    Returns
-    -------
-    x : colormap
-        The matplotlib colormap.
-    """
-    cdict = {'red': [(0.0, 0.0, 0.0),
-                     (0.25, 0.0, 0.0),
-                     (0.5, 1.0, 1.0),
-                     (0.75, 1.0, 1.0),
-                     (1.0, 0.5, 0.5)],
-
-             'green': [(0.0, 0.0, 0.0),
-                       (0.15, 0.0, 0.0),
-                       (0.25, 1.0, 1.0),
-                       (0.5, 1.0, 1.0),
-                       (0.75, 1.0, 1.0),
-                       (0.85, 0.0, 0.0),
-                       (1.0, 0.0, 0.0)],
-
-             'blue': [(0.0, 0.5, 0.5),
-                      (0.25, 1.0, 1.0),
-                      (0.5, 1.0, 1.0),
-                      (0.75, 0.0, 0.0),
-                      (1.0, 0.0, 0.0)]}
-
-    return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
-
-
-def _wr_cmap():
-    """Create a linear segmented colormap with transitions from white to
-    red.
-
-    Returns
-    -------
-    x : colormap
-        The matplotlib colormap.
-    """
-    cdict = {'red': [(0.0, 1.0, 1.0),
-                     (0.75, 1.0, 1.0),
-                     (1.0, .3, .3)],
-
-             'green': [(0.0, 1.0, 1.0),
-                       (0.75, 0.0, 0.0),
-                       (1.0, 0.0, 0.0)],
-
-             'blue': [(0.0, 1.0, 1.0),
-                      (0.75, 0.0, 0.0),
-                      (1.0, 0.0, 0.0)]}
-
-    return colors.LinearSegmentedColormap('bwr_colormap', cdict, 256)
-
 # ############# PRIMITIVE PLOTS ##########################################
 
 
-def _subplot_colorbar(position, colormap=_bwr_cmap(), ticks=None, norm=None):
+def _subplot_colorbar(position, colormap='RdBu', ticks=None, norm=None):
     """Creates a new axes with a colorbar.
 
     Creates a matplotlib.axes.Axes within the rectangle specified by
@@ -1054,7 +975,7 @@ def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=Tru
     xx, yy, zz = interpolate_2d(x, y, z)
 
     if colormap is None:
-        colormap = _bwr_cmap()
+        colormap = 'RdBu'
 
     ax.contourf(xx, yy, zz, levels, zorder=1, cmap=colormap, norm=norm)
     ax.contour(xx, yy, zz, levels, zorder=1, colors="k", norm=norm, linewidths=.1)
