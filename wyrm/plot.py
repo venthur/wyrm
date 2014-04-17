@@ -777,44 +777,6 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
                 highlight(span[0], span[1]-1, p, colormask.pop(0), .5)
 
 
-def set_labels(xlabel, ylabel, set_axes=None, draw=True):
-    """Sets the labels of x- and y-axis of axes.
-
-    Parameters
-    ----------
-    xlabel : String
-        The String to label the x-axis.
-    ylabel : String
-        The String to label the y-axis.
-    set_axes : [Matplotlib.axes.Axes], optional
-        List of axes to apply the labels to (default: None, the labels
-        are applied to all axes of the current figure).
-    draw : Boolean, optional
-        A flag to switch if the new labels should be directly drawn to
-        the plot (default: True).
-
-    Examples
-    --------
-    To set the x- and y-labels of all axes in the current figure
-
-    >>> set_labels('xtext', 'ytext')
-
-    To set the x- and y-labels of a specific axes in the current figure
-
-    >>> set_labels('xtext', 'ytext', set_axes=matplotlib.axes.Axes)
-    """
-    if set_axes is None:
-        set_axes = plt.gcf().axes
-
-    # labeling of axes
-    for ax in set_axes:
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel, rotation=0)
-
-    if draw:
-        plt.draw()
-
-
 def calc_grid(rows, cols, hpad=.05, vpad=.05):
     """ Calculates a grid of Rectangles and their positions.
 
@@ -1097,7 +1059,8 @@ def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
 
     # labeling of axes
     if labels:
-        set_labels(data.units[0], "$\mu$V", draw=False, set_axes=[ax])
+        ax.set_xlabel(data.units[0])
+        ax.set_ylabel("$\mu$V")
 
     # labeling of channels
     if legend:
