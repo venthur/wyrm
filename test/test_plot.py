@@ -51,9 +51,6 @@ class TestPlot(unittest.TestCase):
     def test_plot_spatio_temporal_r2_values(self):
         plot.plot_spatio_temporal_r2_values(self.epo)
 
-    def test_plot_spectrum(self):
-        plot.plot_spectrum(np.random.random(100), np.arange(100))
-
     def test_plot_spectrogram(self):
         plot.plot_spectrogram(np.random.random((10, 100)), np.arange(100))
 

@@ -244,12 +244,6 @@ def plot_spatio_temporal_r2_values(dat):
     plt.grid(True)
 
 
-def plot_spectrum(spectrum, freqs):
-    plt.plot(freqs, spectrum, '.')
-    plt.xlabel('Frequency [Hz]')
-    plt.ylabel('[dl]')
-
-
 def plot_spectrogram(spectrogram, freqs):
     extent = 0, len(spectrogram), freqs[0], freqs[-1]
     plt.imshow(spectrogram.transpose(),
