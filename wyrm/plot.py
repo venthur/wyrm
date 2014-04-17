@@ -777,49 +777,6 @@ def set_highlights(highlights, hcolors=None, set_axes=None):
                 highlight(span[0], span[1]-1, p, colormask.pop(0), .5)
 
 
-def calc_grid(rows, cols, hpad=.05, vpad=.05):
-    """ Calculates a grid of Rectangles and their positions.
-
-    Parameters
-    ----------
-    rows : int
-        The number of desired columns.
-    cols : int
-        The number of desired cols.
-    hpad : float, optional
-        The amount of horizontal padding (default: 0.05).
-    vpad : float, optional
-        The amount of vertical padding (default: 0.05).
-
-    Returns
-    -------
-    [[float, float, float, float]]
-        A list of all rectangle positions in the form of [xi, xy, width,
-        height] sorted from top left to bottom right.
-
-    Examples
-    --------
-    Calculates a 4x3 grid
-
-    >>> calc_grid(4, 3)
-
-    Calculates a 4x3 grid with more padding
-
-    >>> calc_grid(4, 3, hpad=.1, vpad=.1)
-    """
-    w = (1 - ((cols + 1) * vpad)) / cols
-    h = (1 - ((rows + 1) * hpad)) / rows
-
-    grid = []
-    for i in range(cols):
-        for j in range(rows):
-            xi = ((i % cols + 1) * hpad) + (i % cols * w)
-            yj = 1 - (((j % rows + 1) * vpad) + ((j % rows + 1) * h))
-            grid.append([xi, yj, w, h])
-
-    return grid
-
-
 def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
     """Calculates a centered grid of Rectangles and their positions.
 
