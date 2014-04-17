@@ -530,7 +530,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
     return ax, sc
 
 
-def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
+def plot_scalp(v, channels, levels=25, norm=None, ticks=None,
                annotate=True, position=None):
     """Plots the values 'v' for channels 'channels' on a scalp.
 
@@ -588,7 +588,7 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
 
-    plt.figure(figsize=[8, 6.5])
+    fig = plt.gcf()
 
     if position is None:
         pos_scalp = rect_scalp
@@ -597,16 +597,16 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
         pos_scalp = _transform_rect(position, rect_scalp)
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
-    if colormap is None:
-        colormap = 'RdBu'
+    vmax = np.abs(v).max()
+    vmin = -vmax
     if norm is None:
-        norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
+        norm = colors.Normalize(vmin, vmax, clip=False)
     if ticks is None:
-        ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
+        ticks = np.linspace(vmin, vmax, 3)
 
-    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, colormap=colormap, annotate=annotate,
-                         norm=norm)
-    ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
+    a = fig.add_axes(pos_scalp)
+    ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=vmin, vmax=vmax)
+    ax1 = _subplot_colorbar(position=pos_colorbar, ticks=ticks, norm=norm)
 
     return ax0, ax1
 
@@ -662,7 +662,7 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     rect_scalp = [.05, .05, .8, .9]
     rect_colorbar = [.9, .05, .05, .9]
 
-    plt.figure(figsize=[16, 13])
+    fig = plt.gcf()
 
     if position is None:
         pos_scalp = rect_scalp
@@ -678,7 +678,8 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
 
-    ax0 = _subplot_scalp(v, channels, position=pos_scalp, levels=levels, annotate=annotate)
+    a = fig.add_axes(pos_scalp)
+    ax0 = ax_scalp(v, channels, ax=a, annotate=annotate)
     ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
 
     # modification of internally used data if a specific intervals is specified
@@ -846,102 +847,6 @@ def _subplot_colorbar(position, colormap='RdBu', ticks=None, norm=None):
     return ax
 
 
-def _subplot_scalp(v, channels, position, levels=25, colormap=None, annotate=True, norm=None):
-    """Creates a new axes with a scalp plot.
-
-    Creates a matplotlib.axes.Axes within the rectangle specified by
-    'position' and fills it with a contour plot for the channels in
-    'channels' and the data in 'v'.
-
-    Parameters
-    ----------
-    v : [value]
-        List containing the values of the channels.
-    channels : [String]
-        List containing the channel names.
-    position : Rectangle
-        The rectangle (x, y, width, height) where the axes will be
-        created.
-    levels : int, optional
-        The number of automatically created levels in the contour plot
-        (default: 25).
-    colormap : matplotlib.colors.colormap, optional
-        A colormap to define the color transitions (default: a
-        blue-white-red colormap).
-    annotate : Boolean, optional
-        Flag to switch channel annotations on or off (default: True).
-    norm : matplotlib.colors.norm, optional
-        A norm to define the min and max values (default: 'None', values
-        from -10 to 10 are assumed).
-
-    Returns
-    -------
-    matplotlib.axes.Axes
-    """
-    fig = plt.gcf()
-    ax = fig.add_axes(position)
-    # what if we have an unknown channel?
-    points = [get_channelpos(c) for c in channels]
-    x = [i[0] for i in points]
-    y = [i[1] for i in points]
-    z = v
-    xx, yy, zz = interpolate_2d(x, y, z)
-
-    if colormap is None:
-        colormap = 'RdBu'
-
-    ax.contourf(xx, yy, zz, levels, zorder=1, cmap=colormap, norm=norm)
-    ax.contour(xx, yy, zz, levels, zorder=1, colors="k", norm=norm, linewidths=.1)
-
-    ax.add_artist(plt.Circle((0, 0), radius=1, linewidth=3, fill=False))
-
-    # add a nose
-    ax.plot([-0.1, 0], [0.99, 1.1], 'k-', lw=2)
-    ax.plot([0.1, 0], [0.99, 1.1], 'k-', lw=2)
-
-    # add ears
-    vertsr = [
-        (0.99, 0.13),  # P0
-        (1.10, 0.3),  # P1
-        (1.10, -0.3),  # P2
-        (0.99, -0.13)]  # P3
-
-    vertsl = [
-        (-0.99, 0.13),  # P0
-        (-1.10, 0.3),  # P1
-        (-1.10, -0.3),  # P2
-        (-0.99, -0.13)]  # P3
-
-    # in combination with Path this creates a bezier-curve with 2 fix-points and 2 control-points
-    codes = [Path.MOVETO,
-             Path.CURVE4,
-             Path.CURVE4,
-             Path.CURVE4]
-
-    pathr = Path(vertsr, codes)
-    pathl = Path(vertsl, codes)
-    patchr = patches.PathPatch(pathr, facecolor='none', lw=2)
-    patchl = patches.PathPatch(pathl, facecolor='none', lw=2)
-    ax.add_patch(patchr)
-    ax.add_patch(patchl)
-
-    # add markers at channels positions
-    ax.plot(x, y, 'k+', ms=8, mew=1.2)
-
-    # set the axes limits, so the figure is centered on the scalp
-    ax.set_ylim([-1.05, 1.15])
-    ax.set_xlim([-1.15, 1.15])
-
-    # hide the axes
-    ax.get_xaxis().set_visible(False)
-    ax.get_yaxis().set_visible(False)
-
-    if annotate:
-        for i in zip(channels, zip(x, y)):
-            ax.annotate(" " + i[0], i[1])
-
-    return ax
-
 
 def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
                           labels=True, legend=True, channel=None, shareaxis=None):
@@ -1096,6 +1001,76 @@ def _transform_rect(rect, template):
     w = rect[2] * template[2]
     h = rect[3] * template[3]
     return [x, y, w, h]
+
+###############################################################################
+# Primitives
+###############################################################################
+
+def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
+    """Draw a scalp plot.
+
+    Draws a scalp plot on an existing axes. The method takes an array of
+    values and an array of the corresponding channel names. It matches
+    the channel names with an internal list of known channels and their
+    positions to project them correctly on the scalp.
+
+    .. warning:: The behaviour for unkown channels is undefined.
+
+    Parameters
+    ----------
+    v : 1d-array of floats
+        The values for the channels
+    channels : 1d array of strings
+        The corresponding channel names for the values in ``v``
+    ax : Axes, optional
+        The axes to draw the scalp plot on. If not provided, the
+        currently activated axes (i.e. ``gca()``) will be taken
+    annotate : Boolean, optional
+        Draw the channel names next to the channel markers.
+    vmin, vmax : float, optional
+        The display limits for the values in ``v``. If the data in ``v``
+        contains values between -3..3 and ``vmin`` and ``vmax`` are set
+        to -1 and 1, all values smaller than -1 and bigger than 1 will
+        appear the same as -1 and 1. If not set, the maximum absolute
+        value in ``v`` is taken to calculate both values.
+
+    Returns
+    -------
+    ax : Axes
+        the axes on which the plot was drawn
+    """
+    if ax is None:
+        ax = plt.gca()
+    # what if we have an unknown channel?
+    points = [get_channelpos(c) for c in channels]
+    # calculate the interpolation
+    x = [i[0] for i in points]
+    y = [i[1] for i in points]
+    z = v
+    xx, yy, zz = interpolate_2d(x, y, z)
+    # draw the contour map
+    ax.contourf(xx, yy, zz, 200, vmin=vmin, vmax=vmax)
+    ax.contour(xx, yy, zz, 20, colors="k", vmin=vmin, vmax=vmax, linewidths=.1)
+    # paint the head
+    ax.add_artist(plt.Circle((0, 0), 1, linestyle='solid', linewidth=2, fill=False))
+    # add a nose
+    ax.plot([-0.1, 0, 0.1], [1, 1.1, 1], 'k-')
+    # add markers at channels positions
+    ax.plot(x, y, 'k+')
+    # set the axes limits, so the figure is centered on the scalp
+    ax.set_ylim([-1.05, 1.15])
+    ax.set_xlim([-1.15, 1.15])
+    # hide the frame and axes
+    # hiding the axes might be too much, as this will also hide the x/y
+    # labels :/
+    ax.set_frame_on(False)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    # draw the channel names
+    if annotate:
+        for i in zip(channels, zip(x, y)):
+            ax.annotate(" " + i[0], i[1])
+    return ax
 
 
 ###############################################################################
