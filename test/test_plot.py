@@ -18,8 +18,9 @@ class TestPlot(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         x = np.linspace(0, 1000, 1000, endpoint=False)
-        y = 5 * np.sin(2 * np.pi * x) + np.random.normal(0, 1, 1000)
-        data = np.array([y]*len(plot.CHANNEL_10_20)).T
+        y = 5 * np.sin(2 * np.pi * x)
+        data = np.tile(y[:, None], (1, len(plot.CHANNEL_10_20)))
+        data += np.random.normal(size=data.shape)
         axes = [x, [i[0] for i in plot.CHANNEL_10_20]]
         cls.cnt = Data(data=data, axes=axes, names=['time', 'channel'], units=['ms', '#'])
         cls.cnt.fs = 1000
