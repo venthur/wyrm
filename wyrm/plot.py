@@ -271,8 +271,8 @@ def interpolate_2d(x, y, z):
         the interpolated values as values.
 
     """
-    xx = np.linspace(min(x), max(x))
-    yy = np.linspace(min(y), max(y))
+    xx = np.linspace(min(x), max(x), 500)
+    yy = np.linspace(min(y), max(y), 500)
     xx, yy = np.meshgrid(xx, yy)
     f = interpolate.LinearNDInterpolator(zip(x, y), z)
     zz = f(xx, yy)
