@@ -22,25 +22,35 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
 
-def lda_train(x, y, shrink=True):
-    """Train the LDA
+def lda_train(fv, shrink=True):
+    """Train the LDA classifier.
 
     Parameters
     ----------
-    x : 2d array
-    y : 1d array
+    fv : ``Data`` object
+        the feature vector must have 2 dimensional data, the first
+        dimension being the class axis.
     shrink : Boolean, optional
+        use shrinkage
 
     Returns
     -------
     w : 1d array
     b : float
 
+    Examples
+    --------
+
+    >>> clf = lda_train(fv_train)
+    >>> out = lda_apply(fv_test, clf)
+
     See Also
     --------
     lda_apply
 
     """
+    x = fv.data
+    y = fv.axes[0]
     assert len(np.unique(y)) == 2
     mu1 = np.mean(x[y == 0], axis=0)
     mu2 = np.mean(x[y == 1], axis=0)
@@ -60,22 +70,35 @@ def lda_train(x, y, shrink=True):
     return w, b
 
 
-def lda_apply(clf, x):
-    """Apply LDA
+def lda_apply(fv, clf):
+    """Apply feature vector to LDA classifier.
 
     Parameters
     ----------
+    fv : ``Data`` object
+        the feature vector must have a 2 dimensional data, the first
+        dimension being the class axis.
     clf : (1d array, float)
-    x :
 
     Returns
     -------
+
+    out : 1d array
+        The projection of the data on the hyperplane.
+
+    Examples
+    --------
+
+    >>> clf = lda_train(fv_train)
+    >>> out = lda_apply(fv_test, clf)
+
 
     See Also
     --------
     lda_train
 
     """
+    x = fv.data
     w, b = clf
     return np.dot(x, w) + b
 
@@ -1461,8 +1484,6 @@ def calculate_spoc(epo):
     v = v.take(indx, axis=1)
     a = sp.linalg.inv(v).transpose()
     return v, a, d
-
-
 
 
 def calculate_classwise_average(dat, classaxis=0):
