@@ -8,6 +8,9 @@ the most basic and offer simple, single-plot representations. The
 Composites are composed of several primitives and offer more complex
 representations.
 
+The primitive plots are those whose name begin with ``ax_``, (e.g.
+``ax_scalp``).
+
 .. warning::
 
     This module needs heavy reworking! We have yet to find a consistent
