@@ -30,12 +30,10 @@ import numpy as np
 from scipy import interpolate
 import matplotlib as mpl
 from matplotlib import axes
-from matplotlib import colorbar
-from matplotlib import colors
+from matplotlib.colorbar import ColorbarBase
+from matplotlib.colors import Normalize
 from matplotlib import pyplot as plt
 from matplotlib import ticker
-from matplotlib.path import Path
-from matplotlib import patches as patches
 from matplotlib.patches import Rectangle
 
 from wyrm import processing as proc
@@ -600,13 +598,14 @@ def plot_scalp(v, channels, levels=25, norm=None, ticks=None,
     vmax = np.abs(v).max()
     vmin = -vmax
     if norm is None:
-        norm = colors.Normalize(vmin, vmax, clip=False)
+        norm = Normalize(vmin, vmax, clip=False)
     if ticks is None:
         ticks = np.linspace(vmin, vmax, 3)
 
     a = fig.add_axes(pos_scalp)
     ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=vmin, vmax=vmax)
-    ax1 = _subplot_colorbar(position=pos_colorbar, ticks=ticks, norm=norm)
+    a = fig.add_axes(pos_colorbar)
+    ax1 = ax_colorbar(vmin, vmax, ax=a, ticks=ticks)
 
     return ax0, ax1
 
@@ -673,14 +672,13 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
 
     if colormap is None:
         colormap = 'RdBu'
-    if norm is None:
-        norm = colors.Normalize(vmin=-10, vmax=10, clip=False)
     if ticks is None:
         ticks = np.linspace(-10.0, 10.0, 3, endpoint=True)
 
     a = fig.add_axes(pos_scalp)
     ax0 = ax_scalp(v, channels, ax=a, annotate=annotate)
-    ax1 = _subplot_colorbar(position=pos_colorbar, colormap=colormap, ticks=ticks, norm=norm)
+    a = fig.add_axes(pos_colorbar)
+    ax1 = ax_colorbar(-10, 10, ax=a, ticks=ticks)
 
     # modification of internally used data if a specific intervals is specified
     cdat = data.copy()
@@ -816,37 +814,6 @@ def calc_centered_grid(cols_list, hpad=.05, vpad=.05):
     return grid
 
 # ############# PRIMITIVE PLOTS ##########################################
-
-
-def _subplot_colorbar(position, colormap='RdBu', ticks=None, norm=None):
-    """Creates a new axes with a colorbar.
-
-    Creates a matplotlib.axes.Axes within the rectangle specified by
-    'position' and fills it with a colorbar.
-
-    Parameters
-    ----------
-    position : Rectangle
-        The rectangle (x, y, width, height) where the axes will be
-        created.
-    colormap : matplotlib.colors.colormap, optional
-        A colormap to define the colorscheme of the colormap.
-    ticks : Array([float])
-        An array with floats to set the number and location of the
-        ticks.
-    norm : matplotlib.colors.Normalize
-        A norm to set the min-/max-value of the colorbar.
-
-    Returns
-    -------
-    matplotlib.axes.Axes
-    """
-    fig = plt.gcf()
-    ax = fig.add_axes(position)
-    colorbar.ColorbarBase(ax, cmap=colormap, orientation='vertical', ticks=ticks, norm=norm)
-    return ax
-
-
 
 def _subplot_timeinterval(data, position, epoch, highlights=None, hcolors=None,
                           labels=True, legend=True, channel=None, shareaxis=None):
@@ -1049,8 +1016,8 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     z = v
     xx, yy, zz = interpolate_2d(x, y, z)
     # draw the contour map
-    ax.contourf(xx, yy, zz, 200, vmin=vmin, vmax=vmax)
-    ax.contour(xx, yy, zz, 20, colors="k", vmin=vmin, vmax=vmax, linewidths=.1)
+    ctr = ax.contourf(xx, yy, zz, 20, vmin=vmin, vmax=vmax)
+    ax.contour(xx, yy, zz, 5, colors="k", vmin=vmin, vmax=vmax, linewidths=.1)
     # paint the head
     ax.add_artist(plt.Circle((0, 0), 1, linestyle='solid', linewidth=2, fill=False))
     # add a nose
@@ -1070,8 +1037,14 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     if annotate:
         for i in zip(channels, zip(x, y)):
             ax.annotate(" " + i[0], i[1])
+    ax.set_aspect(1)
+    plt.sci(ctr)
     return ax
 
+def ax_colorbar(vmin, vmax, ax=None, label=None, ticks=None):
+    if ax is None:
+        ax = plt.gca()
+    ColorbarBase(ax, norm=Normalize(vmin, vmax), label=label, ticks=ticks)
 
 ###############################################################################
 # Utility Functions
