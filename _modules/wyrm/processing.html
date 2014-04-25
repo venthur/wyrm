@@ -75,25 +75,35 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="lda_train"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.lda_train">[docs]</a><span class="k">def</span> <span class="nf">lda_train</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Train the LDA</span>
+<div class="viewcode-block" id="lda_train"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.lda_train">[docs]</a><span class="k">def</span> <span class="nf">lda_train</span><span class="p">(</span><span class="n">fv</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Train the LDA classifier.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x : 2d array</span>
-<span class="sd">    y : 1d array</span>
+<span class="sd">    fv : ``Data`` object</span>
+<span class="sd">        the feature vector must have 2 dimensional data, the first</span>
+<span class="sd">        dimension being the class axis.</span>
 <span class="sd">    shrink : Boolean, optional</span>
+<span class="sd">        use shrinkage</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    w : 1d array</span>
 <span class="sd">    b : float</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; clf = lda_train(fv_train)</span>
+<span class="sd">    &gt;&gt;&gt; out = lda_apply(fv_test, clf)</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    lda_apply</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">fv</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">fv</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span>
     <span class="n">mu1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">mu2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -113,22 +123,35 @@
     <span class="k">return</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span>
 
 </div>
-<div class="viewcode-block" id="lda_apply"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.lda_apply">[docs]</a><span class="k">def</span> <span class="nf">lda_apply</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Apply LDA</span>
+<div class="viewcode-block" id="lda_apply"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.lda_apply">[docs]</a><span class="k">def</span> <span class="nf">lda_apply</span><span class="p">(</span><span class="n">fv</span><span class="p">,</span> <span class="n">clf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply feature vector to LDA classifier.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    fv : ``Data`` object</span>
+<span class="sd">        the feature vector must have a 2 dimensional data, the first</span>
+<span class="sd">        dimension being the class axis.</span>
 <span class="sd">    clf : (1d array, float)</span>
-<span class="sd">    x :</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+
+<span class="sd">    out : 1d array</span>
+<span class="sd">        The projection of the data on the hyperplane.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; clf = lda_train(fv_train)</span>
+<span class="sd">    &gt;&gt;&gt; out = lda_apply(fv_test, clf)</span>
+
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    lda_train</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">fv</span><span class="o">.</span><span class="n">data</span>
     <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">clf</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
 
@@ -1514,8 +1537,6 @@
     <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">d</span>
-
-
 
 </div>
 <div class="viewcode-block" id="calculate_classwise_average"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.calculate_classwise_average">[docs]</a><span class="k">def</span> <span class="nf">calculate_classwise_average</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">classaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>

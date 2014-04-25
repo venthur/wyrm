@@ -142,6 +142,8 @@ plotting methods: the Primitives and the Composites. The Primitives are
 the most basic and offer simple, single-plot representations. The
 Composites are composed of several primitives and offer more complex
 representations.</p>
+<p>The primitive plots are those whose name begin with <tt class="docutils literal"><span class="pre">ax_</span></tt>, (e.g.
+<tt class="docutils literal"><span class="pre">ax_scalp</span></tt>).</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>This module needs heavy reworking! We have yet to find a consistent
@@ -152,6 +154,110 @@ have to decide on which layer of matplotlib we want to deal with
 <p class="last">The API of this module will change and you should not rely on any
 method here.</p>
 </div>
+<dl class="function">
+<dt id="wyrm.plot.ax_colorbar">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">ax_colorbar</tt><big>(</big><em>vmin</em>, <em>vmax</em>, <em>ax=None</em>, <em>label=None</em>, <em>ticks=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#ax_colorbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.ax_colorbar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a color bar</p>
+<p>Draws a color bar on an existing axes. The range of the colors is
+defined by <tt class="docutils literal"><span class="pre">vmin</span></tt> and <tt class="docutils literal"><span class="pre">vmax</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Unlike the colorbar method from matplotlib, this method does not
+automatically create a new axis for the colorbar. It will paint
+in the currently active axis instead, overwriting any existing
+plots in that axis. Make sure to create a new axis for the
+colorbar.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vmin, vmax</strong> : float</p>
+<blockquote>
+<div><p>The minimum and maximum values for the colorbar.</p>
+</div></blockquote>
+<p><strong>ax</strong> : Axes, optional</p>
+<blockquote>
+<div><p>The axes to draw the scalp plot on. If not provided, the
+currently activated axes (i.e. <tt class="docutils literal"><span class="pre">gca()</span></tt>) will be taken</p>
+</div></blockquote>
+<p><strong>label</strong> : string, optional</p>
+<blockquote>
+<div><p>The label for the colorbar</p>
+</div></blockquote>
+<p><strong>ticks</strong> : list, optional</p>
+<blockquote>
+<div><p>The tick positions</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ax</strong> : Axes</p>
+<blockquote class="last">
+<div><p>the axes on which the plot was drawn</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.plot.ax_scalp">
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">ax_scalp</tt><big>(</big><em>v</em>, <em>channels</em>, <em>ax=None</em>, <em>annotate=False</em>, <em>vmin=None</em>, <em>vmax=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#ax_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.ax_scalp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a scalp plot.</p>
+<p>Draws a scalp plot on an existing axes. The method takes an array of
+values and an array of the corresponding channel names. It matches
+the channel names with an internal list of known channels and their
+positions to project them correctly on the scalp.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The behaviour for unkown channels is undefined.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>v</strong> : 1d-array of floats</p>
+<blockquote>
+<div><p>The values for the channels</p>
+</div></blockquote>
+<p><strong>channels</strong> : 1d array of strings</p>
+<blockquote>
+<div><p>The corresponding channel names for the values in <tt class="docutils literal"><span class="pre">v</span></tt></p>
+</div></blockquote>
+<p><strong>ax</strong> : Axes, optional</p>
+<blockquote>
+<div><p>The axes to draw the scalp plot on. If not provided, the
+currently activated axes (i.e. <tt class="docutils literal"><span class="pre">gca()</span></tt>) will be taken</p>
+</div></blockquote>
+<p><strong>annotate</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>Draw the channel names next to the channel markers.</p>
+</div></blockquote>
+<p><strong>vmin, vmax</strong> : float, optional</p>
+<blockquote>
+<div><p>The display limits for the values in <tt class="docutils literal"><span class="pre">v</span></tt>. If the data in <tt class="docutils literal"><span class="pre">v</span></tt>
+contains values between -3..3 and <tt class="docutils literal"><span class="pre">vmin</span></tt> and <tt class="docutils literal"><span class="pre">vmax</span></tt> are set
+to -1 and 1, all values smaller than -1 and bigger than 1 will
+appear the same as -1 and 1. If not set, the maximum absolute
+value in <tt class="docutils literal"><span class="pre">v</span></tt> is taken to calculate both values.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ax</strong> : Axes</p>
+<blockquote class="last">
+<div><p>the axes on which the plot was drawn</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.plot.ax_colorbar" title="wyrm.plot.ax_colorbar"><tt class="xref py py-obj docutils literal"><span class="pre">ax_colorbar</span></tt></a></p>
+</div>
+</dd></dl>
+
 <dl class="function">
 <dt id="wyrm.plot.beautify">
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">beautify</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#beautify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.beautify" title="Permalink to this definition">¶</a></dt>
@@ -214,79 +320,6 @@ height] sorted from top left to bottom right.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_centered_grid</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">hpad</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mi">75</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="function">
-<dt id="wyrm.plot.calc_grid">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">calc_grid</tt><big>(</big><em>rows</em>, <em>cols</em>, <em>hpad=0.05</em>, <em>vpad=0.05</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#calc_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.calc_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates a grid of Rectangles and their positions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>rows</strong> : int</p>
-<blockquote>
-<div><p>The number of desired columns.</p>
-</div></blockquote>
-<p><strong>cols</strong> : int</p>
-<blockquote>
-<div><p>The number of desired cols.</p>
-</div></blockquote>
-<p><strong>hpad</strong> : float, optional</p>
-<blockquote>
-<div><p>The amount of horizontal padding (default: 0.05).</p>
-</div></blockquote>
-<p><strong>vpad</strong> : float, optional</p>
-<blockquote>
-<div><p>The amount of vertical padding (default: 0.05).</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>[[float, float, float, float]]</strong> :</p>
-<blockquote class="last">
-<div><p>A list of all rectangle positions in the form of [xi, xy, width,
-height] sorted from top left to bottom right.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>Calculates a 4x3 grid</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_grid</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Calculates a 4x3 grid with more padding</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_grid</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="wyrm.plot.create_colormap">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">create_colormap</tt><big>(</big><em>scheme='bwr'</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#create_colormap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.create_colormap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a linear segmented colormap.</p>
-<dl class="docutils">
-<dt>It can be chosen between two different color schemes:</dt>
-<dd><ul class="first last simple">
-<li>blue-white-red (&#8216;bwr&#8217;)</li>
-<li>white-red (&#8216;wr&#8217;)</li>
-</ul>
-</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>scheme</strong> : String, optional</p>
-<blockquote class="last">
-<div><p>String to specify the colorscheme of the colorbar. Possible
-inputs: &#8216;bwr&#8217;, &#8216;wr&#8217; (default = &#8216;bwr&#8217;).</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="function">
@@ -368,7 +401,7 @@ the interpolated values as values.</p>
 
 <dl class="function">
 <dt id="wyrm.plot.plot_scalp">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channels</em>, <em>levels=25</em>, <em>colormap=None</em>, <em>norm=None</em>, <em>ticks=None</em>, <em>annotate=True</em>, <em>position=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_scalp</tt><big>(</big><em>v</em>, <em>channels</em>, <em>levels=25</em>, <em>norm=None</em>, <em>ticks=None</em>, <em>annotate=True</em>, <em>position=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_scalp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_scalp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the values &#8216;v&#8217; for channels &#8216;channels&#8217; on a scalp.</p>
 <p>Calculates the interpolation of the values v for the corresponding
 channels &#8216;channels&#8217; and plots it as a contour plot on a scalp. The
@@ -435,11 +468,10 @@ plotted scalp, the second the corresponding colorbar.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This plot has a white-red colormap and a norm and ticks from 0 to 10</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cm</span> <span class="o">=</span> <span class="n">create_colormap</span><span class="p">(</span><span class="s">&#39;wr&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<p>This plot has a norm and ticks from 0 to 10</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">_wr_cmap</span><span class="p">(),</span> <span class="n">norm</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -542,11 +574,6 @@ colorbar, then a list of all on top plotted timeintervals.</p>
 <dl class="function">
 <dt id="wyrm.plot.plot_spectrogram">
 <tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spectrogram</tt><big>(</big><em>spectrogram</em>, <em>freqs</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_spectrogram" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wyrm.plot.plot_spectrum">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">plot_spectrum</tt><big>(</big><em>spectrum</em>, <em>freqs</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#plot_spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.plot_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -729,47 +756,6 @@ current figure will be highlighted).</p>
 figure. The first area from 200ms - 300ms in blue and the second
 area from 500ms - 600ms in green.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">set_highlights</span><span class="p">([[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span> <span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">600</span><span class="p">]])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="wyrm.plot.set_labels">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">set_labels</tt><big>(</big><em>xlabel</em>, <em>ylabel</em>, <em>set_axes=None</em>, <em>draw=True</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#set_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.set_labels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the labels of x- and y-axis of axes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>xlabel</strong> : String</p>
-<blockquote>
-<div><p>The String to label the x-axis.</p>
-</div></blockquote>
-<p><strong>ylabel</strong> : String</p>
-<blockquote>
-<div><p>The String to label the y-axis.</p>
-</div></blockquote>
-<p><strong>set_axes</strong> : [Matplotlib.axes.Axes], optional</p>
-<blockquote>
-<div><p>List of axes to apply the labels to (default: None, the labels
-are applied to all axes of the current figure).</p>
-</div></blockquote>
-<p><strong>draw</strong> : Boolean, optional</p>
-<blockquote class="last">
-<div><p>A flag to switch if the new labels should be directly drawn to
-the plot (default: True).</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>To set the x- and y-labels of all axes in the current figure</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">set_labels</span><span class="p">(</span><span class="s">&#39;xtext&#39;</span><span class="p">,</span> <span class="s">&#39;ytext&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>To set the x- and y-labels of a specific axes in the current figure</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">set_labels</span><span class="p">(</span><span class="s">&#39;xtext&#39;</span><span class="p">,</span> <span class="s">&#39;ytext&#39;</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1526,14 +1512,24 @@ too to reflect the intervals used for the data points.</p>
 
 <dl class="function">
 <dt id="wyrm.processing.lda_apply">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lda_apply</tt><big>(</big><em>clf</em>, <em>x</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lda_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lda_apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply LDA</p>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lda_apply</tt><big>(</big><em>fv</em>, <em>clf</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lda_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lda_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply feature vector to LDA classifier.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>clf</strong> : (1d array, float)</p>
-<p class="last"><strong>x :</strong> :</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fv</strong> : <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
+<blockquote>
+<div><p>the feature vector must have a 2 dimensional data, the first
+dimension being the class axis.</p>
+</div></blockquote>
+<p><strong>clf</strong> : (1d array, float)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : 1d array</p>
+<blockquote class="last">
+<div><p>The projection of the data on the hyperplane.</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -1542,19 +1538,30 @@ too to reflect the intervals used for the data points.</p>
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="#wyrm.processing.lda_train" title="wyrm.processing.lda_train"><tt class="xref py py-obj docutils literal"><span class="pre">lda_train</span></tt></a></p>
 </div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">clf</span> <span class="o">=</span> <span class="n">lda_train</span><span class="p">(</span><span class="n">fv_train</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">lda_apply</span><span class="p">(</span><span class="n">fv_test</span><span class="p">,</span> <span class="n">clf</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="wyrm.processing.lda_train">
-<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lda_train</tt><big>(</big><em>x</em>, <em>y</em>, <em>shrink=True</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lda_train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lda_train" title="Permalink to this definition">¶</a></dt>
-<dd><p>Train the LDA</p>
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lda_train</tt><big>(</big><em>fv</em>, <em>shrink=True</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lda_train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lda_train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the LDA classifier.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : 2d array</p>
-<p><strong>y</strong> : 1d array</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fv</strong> : <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
+<blockquote>
+<div><p>the feature vector must have 2 dimensional data, the first
+dimension being the class axis.</p>
+</div></blockquote>
 <p><strong>shrink</strong> : Boolean, optional</p>
+<blockquote>
+<div><p>use shrinkage</p>
+</div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>w</strong> : 1d array</p>
@@ -1566,6 +1573,11 @@ too to reflect the intervals used for the data points.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="#wyrm.processing.lda_apply" title="wyrm.processing.lda_apply"><tt class="xref py py-obj docutils literal"><span class="pre">lda_apply</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">clf</span> <span class="o">=</span> <span class="n">lda_train</span><span class="p">(</span><span class="n">fv_train</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">lda_apply</span><span class="p">(</span><span class="n">fv_test</span><span class="p">,</span> <span class="n">clf</span><span class="p">)</span>
+</pre></div>
 </div>
 </dd></dl>
 

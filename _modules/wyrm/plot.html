@@ -61,6 +61,9 @@
 <span class="sd">Composites are composed of several primitives and offer more complex</span>
 <span class="sd">representations.</span>
 
+<span class="sd">The primitive plots are those whose name begin with ``ax_``, (e.g.</span>
+<span class="sd">``ax_scalp``).</span>
+
 <span class="sd">.. warning::</span>
 
 <span class="sd">    This module needs heavy reworking! We have yet to find a consistent</span>
@@ -83,12 +86,10 @@
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="kn">as</span> <span class="nn">mpl</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">axes</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colorbar</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colorbar</span> <span class="kn">import</span> <span class="n">ColorbarBase</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">Normalize</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">ticker</span>
-<span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">patches</span> <span class="k">as</span> <span class="n">patches</span>
 <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
 
 <span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">processing</span> <span class="k">as</span> <span class="n">proc</span>
@@ -297,12 +298,6 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="plot_spectrum"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_spectrum">[docs]</a><span class="k">def</span> <span class="nf">plot_spectrum</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">freqs</span><span class="p">):</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;[dl]&#39;</span><span class="p">)</span>
-
-</div>
 <div class="viewcode-block" id="plot_spectrogram"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_spectrogram">[docs]</a><span class="k">def</span> <span class="nf">plot_spectrogram</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="n">freqs</span><span class="p">):</span>
     <span class="n">extent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">),</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
@@ -330,8 +325,8 @@
 <span class="sd">        the interpolated values as values.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">500</span><span class="p">)</span>
     <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">LinearNDInterpolator</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span>
     <span class="n">zz</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
@@ -589,7 +584,7 @@
     <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">sc</span>
 
 </div>
-<div class="viewcode-block" id="plot_scalp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_scalp">[docs]</a><span class="k">def</span> <span class="nf">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_scalp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.plot_scalp">[docs]</a><span class="k">def</span> <span class="nf">plot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                <span class="n">annotate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots the values &#39;v&#39; for channels &#39;channels&#39; on a scalp.</span>
 
@@ -638,17 +633,16 @@
 
 <span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels, levels=50)</span>
 
-<span class="sd">    This plot has a white-red colormap and a norm and ticks from 0 to 10</span>
+<span class="sd">    This plot has a norm and ticks from 0 to 10</span>
 
-<span class="sd">    &gt;&gt;&gt; cm = create_colormap(&#39;wr&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; n = matplotlib.colors.Normalize(vmin=0, vmax=10, clip=False)</span>
 <span class="sd">    &gt;&gt;&gt; t = np.linspace(0.0, 10.0, 3, endpoint=True)</span>
-<span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels, colormap=_wr_cmap(), norm=n, ticks=t)</span>
+<span class="sd">    &gt;&gt;&gt; plot_scalp(v, channels, norm=n, ticks=t)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rect_scalp</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
     <span class="n">rect_colorbar</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">])</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">pos_scalp</span> <span class="o">=</span> <span class="n">rect_scalp</span>
@@ -657,16 +651,17 @@
         <span class="n">pos_scalp</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_scalp</span><span class="p">)</span>
         <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_colorbar</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">colormap</span> <span class="o">=</span> <span class="s">&#39;RdBu&#39;</span><span class="c">#_bwr_cmap()</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">vmax</span>
     <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-    <span class="n">ax0</span> <span class="o">=</span> <span class="n">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_scalp</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">,</span>
-                         <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
-    <span class="n">ax1</span> <span class="o">=</span> <span class="n">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">pos_colorbar</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_scalp</span><span class="p">)</span>
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">ax_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_colorbar</span><span class="p">)</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">ax_colorbar</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span>
 
@@ -722,7 +717,7 @@
     <span class="n">rect_scalp</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
     <span class="n">rect_colorbar</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">13</span><span class="p">])</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">pos_scalp</span> <span class="o">=</span> <span class="n">rect_scalp</span>
@@ -732,14 +727,14 @@
         <span class="n">pos_colorbar</span> <span class="o">=</span> <span class="n">_transform_rect</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rect_colorbar</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">colormap</span> <span class="o">=</span> <span class="s">&#39;RdBu&#39;</span> <span class="c">#_bwr_cmap()</span>
-    <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mi">10</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="s">&#39;RdBu&#39;</span>
     <span class="k">if</span> <span class="n">ticks</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-    <span class="n">ax0</span> <span class="o">=</span> <span class="n">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="n">pos_scalp</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span>
-    <span class="n">ax1</span> <span class="o">=</span> <span class="n">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">pos_colorbar</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_scalp</span><span class="p">)</span>
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">ax_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">pos_colorbar</span><span class="p">)</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">ax_colorbar</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">)</span>
 
     <span class="c"># modification of internally used data if a specific intervals is specified</span>
     <span class="n">cdat</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -779,28 +774,6 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span><span class="p">),</span> <span class="n">tis</span>
 
 <span class="c"># ############# TOOLS ####################################################</span>
-
-</div>
-<div class="viewcode-block" id="create_colormap"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.create_colormap">[docs]</a><span class="k">def</span> <span class="nf">create_colormap</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="s">&#39;bwr&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a linear segmented colormap.</span>
-
-<span class="sd">    It can be chosen between two different color schemes:</span>
-<span class="sd">        * blue-white-red (&#39;bwr&#39;)</span>
-<span class="sd">        * white-red (&#39;wr&#39;)</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    scheme : String, optional</span>
-<span class="sd">        String to specify the colorscheme of the colorbar. Possible</span>
-<span class="sd">        inputs: &#39;bwr&#39;, &#39;wr&#39; (default = &#39;bwr&#39;).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;bwr&#39;</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;wr&#39;</span><span class="p">,</span> \
-        <span class="s">&quot;Wrong input: (0/1) or (&#39;bwr&#39;/&#39;wr&#39;)&quot;</span>
-
-    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheme</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;bwr&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_wr_cmap</span><span class="p">()</span>
 
 </div>
 <div class="viewcode-block" id="set_highlights"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.set_highlights">[docs]</a><span class="k">def</span> <span class="nf">set_highlights</span><span class="p">(</span><span class="n">highlights</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -853,87 +826,6 @@
                 <span class="n">highlight</span><span class="p">(</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">colormask</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">.</span><span class="mi">5</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="set_labels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.set_labels">[docs]</a><span class="k">def</span> <span class="nf">set_labels</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">draw</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Sets the labels of x- and y-axis of axes.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    xlabel : String</span>
-<span class="sd">        The String to label the x-axis.</span>
-<span class="sd">    ylabel : String</span>
-<span class="sd">        The String to label the y-axis.</span>
-<span class="sd">    set_axes : [Matplotlib.axes.Axes], optional</span>
-<span class="sd">        List of axes to apply the labels to (default: None, the labels</span>
-<span class="sd">        are applied to all axes of the current figure).</span>
-<span class="sd">    draw : Boolean, optional</span>
-<span class="sd">        A flag to switch if the new labels should be directly drawn to</span>
-<span class="sd">        the plot (default: True).</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    To set the x- and y-labels of all axes in the current figure</span>
-
-<span class="sd">    &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;)</span>
-
-<span class="sd">    To set the x- and y-labels of a specific axes in the current figure</span>
-
-<span class="sd">    &gt;&gt;&gt; set_labels(&#39;xtext&#39;, &#39;ytext&#39;, set_axes=matplotlib.axes.Axes)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">set_axes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">set_axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">axes</span>
-
-    <span class="c"># labeling of axes</span>
-    <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">set_axes</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">draw</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-
-</div>
-<div class="viewcode-block" id="calc_grid"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calc_grid">[docs]</a><span class="k">def</span> <span class="nf">calc_grid</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Calculates a grid of Rectangles and their positions.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    rows : int</span>
-<span class="sd">        The number of desired columns.</span>
-<span class="sd">    cols : int</span>
-<span class="sd">        The number of desired cols.</span>
-<span class="sd">    hpad : float, optional</span>
-<span class="sd">        The amount of horizontal padding (default: 0.05).</span>
-<span class="sd">    vpad : float, optional</span>
-<span class="sd">        The amount of vertical padding (default: 0.05).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    [[float, float, float, float]]</span>
-<span class="sd">        A list of all rectangle positions in the form of [xi, xy, width,</span>
-<span class="sd">        height] sorted from top left to bottom right.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    Calculates a 4x3 grid</span>
-
-<span class="sd">    &gt;&gt;&gt; calc_grid(4, 3)</span>
-
-<span class="sd">    Calculates a 4x3 grid with more padding</span>
-
-<span class="sd">    &gt;&gt;&gt; calc_grid(4, 3, hpad=.1, vpad=.1)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">cols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">))</span> <span class="o">/</span> <span class="n">cols</span>
-    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hpad</span><span class="p">))</span> <span class="o">/</span> <span class="n">rows</span>
-
-    <span class="n">grid</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
-            <span class="n">xi</span> <span class="o">=</span> <span class="p">((</span><span class="n">i</span> <span class="o">%</span> <span class="n">cols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hpad</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="n">cols</span> <span class="o">*</span> <span class="n">w</span><span class="p">)</span>
-            <span class="n">yj</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(((</span><span class="n">j</span> <span class="o">%</span> <span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">vpad</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">j</span> <span class="o">%</span> <span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="p">))</span>
-            <span class="n">grid</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xi</span><span class="p">,</span> <span class="n">yj</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">grid</span>
-
-</div>
 <div class="viewcode-block" id="calc_centered_grid"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.calc_centered_grid">[docs]</a><span class="k">def</span> <span class="nf">calc_centered_grid</span><span class="p">(</span><span class="n">cols_list</span><span class="p">,</span> <span class="n">hpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">,</span> <span class="n">vpad</span><span class="o">=.</span><span class="mo">05</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates a centered grid of Rectangles and their positions.</span>
 
@@ -977,191 +869,8 @@
         <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">grid</span>
 
-</div>
-<span class="k">def</span> <span class="nf">_bwr_cmap</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from blue</span>
-<span class="sd">    over white to red.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    x : colormap</span>
-<span class="sd">        The matplotlib colormap.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;red&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)],</span>
-
-             <span class="s">&#39;green&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
-
-             <span class="s">&#39;blue&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-                      <span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                      <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                      <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                      <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)]}</span>
-
-    <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s">&#39;bwr_colormap&#39;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_wr_cmap</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Create a linear segmented colormap with transitions from white to</span>
-<span class="sd">    red.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    x : colormap</span>
-<span class="sd">        The matplotlib colormap.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;red&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">)],</span>
-
-             <span class="s">&#39;green&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                       <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
-
-             <span class="s">&#39;blue&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-                      <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-                      <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)]}</span>
-
-    <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s">&#39;bwr_colormap&#39;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
-
 <span class="c"># ############# PRIMITIVE PLOTS ##########################################</span>
-
-
-<span class="k">def</span> <span class="nf">_subplot_colorbar</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="n">_bwr_cmap</span><span class="p">(),</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new axes with a colorbar.</span>
-
-<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by</span>
-<span class="sd">    &#39;position&#39; and fills it with a colorbar.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    position : Rectangle</span>
-<span class="sd">        The rectangle (x, y, width, height) where the axes will be</span>
-<span class="sd">        created.</span>
-<span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
-<span class="sd">        A colormap to define the colorscheme of the colormap.</span>
-<span class="sd">    ticks : Array([float])</span>
-<span class="sd">        An array with floats to set the number and location of the</span>
-<span class="sd">        ticks.</span>
-<span class="sd">    norm : matplotlib.colors.Normalize</span>
-<span class="sd">        A norm to set the min-/max-value of the colorbar.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    matplotlib.axes.Axes</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-    <span class="n">colorbar</span><span class="o">.</span><span class="n">ColorbarBase</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ax</span>
-
-
-<span class="k">def</span> <span class="nf">_subplot_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a new axes with a scalp plot.</span>
-
-<span class="sd">    Creates a matplotlib.axes.Axes within the rectangle specified by</span>
-<span class="sd">    &#39;position&#39; and fills it with a contour plot for the channels in</span>
-<span class="sd">    &#39;channels&#39; and the data in &#39;v&#39;.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    v : [value]</span>
-<span class="sd">        List containing the values of the channels.</span>
-<span class="sd">    channels : [String]</span>
-<span class="sd">        List containing the channel names.</span>
-<span class="sd">    position : Rectangle</span>
-<span class="sd">        The rectangle (x, y, width, height) where the axes will be</span>
-<span class="sd">        created.</span>
-<span class="sd">    levels : int, optional</span>
-<span class="sd">        The number of automatically created levels in the contour plot</span>
-<span class="sd">        (default: 25).</span>
-<span class="sd">    colormap : matplotlib.colors.colormap, optional</span>
-<span class="sd">        A colormap to define the color transitions (default: a</span>
-<span class="sd">        blue-white-red colormap).</span>
-<span class="sd">    annotate : Boolean, optional</span>
-<span class="sd">        Flag to switch channel annotations on or off (default: True).</span>
-<span class="sd">    norm : matplotlib.colors.norm, optional</span>
-<span class="sd">        A norm to define the min and max values (default: &#39;None&#39;, values</span>
-<span class="sd">        from -10 to 10 are assumed).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    matplotlib.axes.Axes</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-    <span class="c"># what if we have an unknown channel?</span>
-    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_channelpos</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">v</span>
-    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span> <span class="o">=</span> <span class="n">interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">colormap</span> <span class="o">=</span> <span class="n">_bwr_cmap</span><span class="p">()</span>
-
-    <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
-
-    <span class="c"># add a nose</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-    <span class="c"># add ears</span>
-    <span class="n">vertsr</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">),</span>  <span class="c"># P0</span>
-        <span class="p">(</span><span class="mf">1.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P1</span>
-        <span class="p">(</span><span class="mf">1.10</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P2</span>
-        <span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.13</span><span class="p">)]</span>  <span class="c"># P3</span>
-
-    <span class="n">vertsl</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">),</span>  <span class="c"># P0</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">1.10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P1</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">1.10</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span>  <span class="c"># P2</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">0.99</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.13</span><span class="p">)]</span>  <span class="c"># P3</span>
-
-    <span class="c"># in combination with Path this creates a bezier-curve with 2 fix-points and 2 control-points</span>
-    <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">,</span>
-             <span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">,</span>
-             <span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">,</span>
-             <span class="n">Path</span><span class="o">.</span><span class="n">CURVE4</span><span class="p">]</span>
-
-    <span class="n">pathr</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">vertsr</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
-    <span class="n">pathl</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">vertsl</span><span class="p">,</span> <span class="n">codes</span><span class="p">)</span>
-    <span class="n">patchr</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">PathPatch</span><span class="p">(</span><span class="n">pathr</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">patchl</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">PathPatch</span><span class="p">(</span><span class="n">pathl</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patchr</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patchl</span><span class="p">)</span>
-
-    <span class="c"># add markers at channels positions</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;k+&#39;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mew</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
-
-    <span class="c"># set the axes limits, so the figure is centered on the scalp</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">])</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">1.15</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">])</span>
-
-    <span class="c"># hide the axes</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">annotate</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)):</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">ax</span>
-
-
+</div>
 <span class="k">def</span> <span class="nf">_subplot_timeinterval</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hcolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                           <span class="n">labels</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shareaxis</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates a new axes with a timeinterval plot.</span>
@@ -1229,7 +938,8 @@
 
     <span class="c"># labeling of axes</span>
     <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
-        <span class="n">set_labels</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;$\mu$V&quot;</span><span class="p">,</span> <span class="n">draw</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">set_axes</span><span class="o">=</span><span class="p">[</span><span class="n">ax</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&quot;$\mu$V&quot;</span><span class="p">)</span>
 
     <span class="c"># labeling of channels</span>
     <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
@@ -1315,11 +1025,122 @@
     <span class="n">h</span> <span class="o">=</span> <span class="n">rect</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">template</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">]</span>
 
+<span class="c">###############################################################################</span>
+<span class="c"># Primitives</span>
+<span class="c">###############################################################################</span>
+
+<div class="viewcode-block" id="ax_scalp"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.ax_scalp">[docs]</a><span class="k">def</span> <span class="nf">ax_scalp</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw a scalp plot.</span>
+
+<span class="sd">    Draws a scalp plot on an existing axes. The method takes an array of</span>
+<span class="sd">    values and an array of the corresponding channel names. It matches</span>
+<span class="sd">    the channel names with an internal list of known channels and their</span>
+<span class="sd">    positions to project them correctly on the scalp.</span>
+
+<span class="sd">    .. warning:: The behaviour for unkown channels is undefined.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v : 1d-array of floats</span>
+<span class="sd">        The values for the channels</span>
+<span class="sd">    channels : 1d array of strings</span>
+<span class="sd">        The corresponding channel names for the values in ``v``</span>
+<span class="sd">    ax : Axes, optional</span>
+<span class="sd">        The axes to draw the scalp plot on. If not provided, the</span>
+<span class="sd">        currently activated axes (i.e. ``gca()``) will be taken</span>
+<span class="sd">    annotate : Boolean, optional</span>
+<span class="sd">        Draw the channel names next to the channel markers.</span>
+<span class="sd">    vmin, vmax : float, optional</span>
+<span class="sd">        The display limits for the values in ``v``. If the data in ``v``</span>
+<span class="sd">        contains values between -3..3 and ``vmin`` and ``vmax`` are set</span>
+<span class="sd">        to -1 and 1, all values smaller than -1 and bigger than 1 will</span>
+<span class="sd">        appear the same as -1 and 1. If not set, the maximum absolute</span>
+<span class="sd">        value in ``v`` is taken to calculate both values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : Axes</span>
+<span class="sd">        the axes on which the plot was drawn</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ax_colorbar</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="c"># what if we have an unknown channel?</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_channelpos</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">]</span>
+    <span class="c"># calculate the interpolation</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span> <span class="o">=</span> <span class="n">interpolate_2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="c"># draw the contour map</span>
+    <span class="n">ctr</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c"># paint the head</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s">&#39;solid&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+    <span class="c"># add a nose</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">)</span>
+    <span class="c"># add markers at channels positions</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;k+&#39;</span><span class="p">)</span>
+    <span class="c"># set the axes limits, so the figure is centered on the scalp</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">1.15</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">])</span>
+    <span class="c"># hide the frame and axes</span>
+    <span class="c"># hiding the axes might be too much, as this will also hide the x/y</span>
+    <span class="c"># labels :/</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_frame_on</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="c"># draw the channel names</span>
+    <span class="k">if</span> <span class="n">annotate</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">sci</span><span class="p">(</span><span class="n">ctr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+</div>
+<div class="viewcode-block" id="ax_colorbar"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.ax_colorbar">[docs]</a><span class="k">def</span> <span class="nf">ax_colorbar</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw a color bar</span>
+
+<span class="sd">    Draws a color bar on an existing axes. The range of the colors is</span>
+<span class="sd">    defined by ``vmin`` and ``vmax``.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Unlike the colorbar method from matplotlib, this method does not</span>
+<span class="sd">        automatically create a new axis for the colorbar. It will paint</span>
+<span class="sd">        in the currently active axis instead, overwriting any existing</span>
+<span class="sd">        plots in that axis. Make sure to create a new axis for the</span>
+<span class="sd">        colorbar.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vmin, vmax : float</span>
+<span class="sd">        The minimum and maximum values for the colorbar.</span>
+<span class="sd">    ax : Axes, optional</span>
+<span class="sd">        The axes to draw the scalp plot on. If not provided, the</span>
+<span class="sd">        currently activated axes (i.e. ``gca()``) will be taken</span>
+<span class="sd">    label : string, optional</span>
+<span class="sd">        The label for the colorbar</span>
+<span class="sd">    ticks : list, optional</span>
+<span class="sd">        The tick positions</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : Axes</span>
+<span class="sd">        the axes on which the plot was drawn</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ColorbarBase</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">)</span>
 
 <span class="c">###############################################################################</span>
 <span class="c"># Utility Functions</span>
 <span class="c">###############################################################################</span>
-
+</div>
 <div class="viewcode-block" id="get_channelpos"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.plot.get_channelpos">[docs]</a><span class="k">def</span> <span class="nf">get_channelpos</span><span class="p">(</span><span class="n">channame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the x/y position of a channel.</span>
 
@@ -1423,7 +1244,7 @@
     <span class="n">cyan</span>    <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">161</span><span class="p">,</span> <span class="mi">152</span><span class="p">)</span>
     <span class="n">green</span>   <span class="o">=</span> <span class="n">to_mpl_format</span><span class="p">(</span><span class="mi">133</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)</span>
 
-    <span class="n">white</span>   <span class="o">=</span> <span class="n">base3</span>
+    <span class="n">white</span>   <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="c">#base3</span>
     <span class="n">black</span>   <span class="o">=</span> <span class="n">base03</span>
 
     <span class="c"># Tverwrite the default color values with our new ones. Those</span>

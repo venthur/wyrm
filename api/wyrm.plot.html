@@ -64,6 +64,8 @@ plotting methods: the Primitives and the Composites. The Primitives are
 the most basic and offer simple, single-plot representations. The
 Composites are composed of several primitives and offer more complex
 representations.</p>
+<p>The primitive plots are those whose name begin with <tt class="docutils literal"><span class="pre">ax_</span></tt>, (e.g.
+<tt class="docutils literal"><span class="pre">ax_scalp</span></tt>).</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>This module needs heavy reworking! We have yet to find a consistent
@@ -81,17 +83,17 @@ method here.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.ax_colorbar" title="wyrm.plot.ax_colorbar"><tt class="xref py py-obj docutils literal"><span class="pre">ax_colorbar</span></tt></a>(vmin,&nbsp;vmax[,&nbsp;ax,&nbsp;label,&nbsp;ticks])</td>
+<td>Draw a color bar</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.ax_scalp" title="wyrm.plot.ax_scalp"><tt class="xref py py-obj docutils literal"><span class="pre">ax_scalp</span></tt></a>(v,&nbsp;channels[,&nbsp;ax,&nbsp;annotate,&nbsp;vmin,&nbsp;vmax])</td>
+<td>Draw a scalp plot.</td>
+</tr>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.beautify" title="wyrm.plot.beautify"><tt class="xref py py-obj docutils literal"><span class="pre">beautify</span></tt></a>()</td>
 <td>Set reasonable defaults matplotlib.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.calc_centered_grid" title="wyrm.plot.calc_centered_grid"><tt class="xref py py-obj docutils literal"><span class="pre">calc_centered_grid</span></tt></a>(cols_list[,&nbsp;hpad,&nbsp;vpad])</td>
 <td>Calculates a centered grid of Rectangles and their positions.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.calc_grid" title="wyrm.plot.calc_grid"><tt class="xref py py-obj docutils literal"><span class="pre">calc_grid</span></tt></a>(rows,&nbsp;cols[,&nbsp;hpad,&nbsp;vpad])</td>
-<td>Calculates a grid of Rectangles and their positions.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.create_colormap" title="wyrm.plot.create_colormap"><tt class="xref py py-obj docutils literal"><span class="pre">create_colormap</span></tt></a>([scheme])</td>
-<td>Creates a linear segmented colormap.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.get_channelpos" title="wyrm.plot.get_channelpos"><tt class="xref py py-obj docutils literal"><span class="pre">get_channelpos</span></tt></a>(channame)</td>
 <td>Return the x/y position of a channel.</td>
@@ -102,7 +104,7 @@ method here.</p>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_channels" title="wyrm.plot.plot_channels"><tt class="xref py py-obj docutils literal"><span class="pre">plot_channels</span></tt></a>(dat[,&nbsp;chanaxis,&nbsp;otheraxis])</td>
 <td>Plot all channels for a continuous.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_scalp" title="wyrm.plot.plot_scalp"><tt class="xref py py-obj docutils literal"><span class="pre">plot_scalp</span></tt></a>(v,&nbsp;channels[,&nbsp;levels,&nbsp;colormap,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_scalp" title="wyrm.plot.plot_scalp"><tt class="xref py py-obj docutils literal"><span class="pre">plot_scalp</span></tt></a>(v,&nbsp;channels[,&nbsp;levels,&nbsp;norm,&nbsp;...])</td>
 <td>Plots the values &#8216;v&#8217; for channels &#8216;channels&#8217; on a scalp.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_scalp_ti" title="wyrm.plot.plot_scalp_ti"><tt class="xref py py-obj docutils literal"><span class="pre">plot_scalp_ti</span></tt></a>(v,&nbsp;channels,&nbsp;data,&nbsp;interval[,&nbsp;...])</td>
@@ -114,20 +116,14 @@ method here.</p>
 <tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_spectrogram" title="wyrm.plot.plot_spectrogram"><tt class="xref py py-obj docutils literal"><span class="pre">plot_spectrogram</span></tt></a>(spectrogram,&nbsp;freqs)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_spectrum" title="wyrm.plot.plot_spectrum"><tt class="xref py py-obj docutils literal"><span class="pre">plot_spectrum</span></tt></a>(spectrum,&nbsp;freqs)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_tenten" title="wyrm.plot.plot_tenten"><tt class="xref py py-obj docutils literal"><span class="pre">plot_tenten</span></tt></a>(data[,&nbsp;highlights,&nbsp;hcolors,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_tenten" title="wyrm.plot.plot_tenten"><tt class="xref py py-obj docutils literal"><span class="pre">plot_tenten</span></tt></a>(data[,&nbsp;highlights,&nbsp;hcolors,&nbsp;...])</td>
 <td>Plots channels on a grid system.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_timeinterval" title="wyrm.plot.plot_timeinterval"><tt class="xref py py-obj docutils literal"><span class="pre">plot_timeinterval</span></tt></a>(data[,&nbsp;r_square,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.plot_timeinterval" title="wyrm.plot.plot_timeinterval"><tt class="xref py py-obj docutils literal"><span class="pre">plot_timeinterval</span></tt></a>(data[,&nbsp;r_square,&nbsp;...])</td>
 <td>Plots a simple time interval.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="wyrm.html#wyrm.plot.set_highlights" title="wyrm.plot.set_highlights"><tt class="xref py py-obj docutils literal"><span class="pre">set_highlights</span></tt></a>(highlights[,&nbsp;hcolors,&nbsp;set_axes])</td>
+<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.set_highlights" title="wyrm.plot.set_highlights"><tt class="xref py py-obj docutils literal"><span class="pre">set_highlights</span></tt></a>(highlights[,&nbsp;hcolors,&nbsp;set_axes])</td>
 <td>Sets highlights in form of vertical boxes to axes.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="wyrm.html#wyrm.plot.set_labels" title="wyrm.plot.set_labels"><tt class="xref py py-obj docutils literal"><span class="pre">set_labels</span></tt></a>(xlabel,&nbsp;ylabel[,&nbsp;set_axes,&nbsp;draw])</td>
-<td>Sets the labels of x- and y-axis of axes.</td>
 </tr>
 </tbody>
 </table>
@@ -138,13 +134,16 @@ method here.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">Data</span></tt>(data,&nbsp;axes,&nbsp;names,&nbsp;units)</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">ColorbarBase</span></tt>(ax[,&nbsp;cmap,&nbsp;norm,&nbsp;alpha,&nbsp;...])</td>
+<td>Draw a colorbar in an existing axes.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">Data</span></tt>(data,&nbsp;axes,&nbsp;names,&nbsp;units)</td>
 <td>Generic, self-describing data container.</td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">Path</span></tt>(vertices[,&nbsp;codes,&nbsp;...])</td>
-<td><tt class="xref py py-class docutils literal"><span class="pre">Path</span></tt> represents a series of possibly disconnected,</td>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">Normalize</span></tt>([vmin,&nbsp;vmax,&nbsp;clip])</td>
+<td>A class which, when called, can normalize data into the <tt class="docutils literal"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></tt> interval.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">Rectangle</span></tt>(xy,&nbsp;width,&nbsp;height[,&nbsp;angle])</td>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">Rectangle</span></tt>(xy,&nbsp;width,&nbsp;height[,&nbsp;angle])</td>
 <td>Draw a rectangle with lower left at <em>xy</em> = (<em>x</em>, <em>y</em>) with specified <em>width</em> and <em>height</em>.</td>
 </tr>
 </tbody>

@@ -9,10 +9,10 @@ wyrm.plot
 
    .. autosummary::
    
+      ax_colorbar
+      ax_scalp
       beautify
       calc_centered_grid
-      calc_grid
-      create_colormap
       get_channelpos
       interpolate_2d
       plot_channels
@@ -20,11 +20,9 @@ wyrm.plot
       plot_scalp_ti
       plot_spatio_temporal_r2_values
       plot_spectrogram
-      plot_spectrum
       plot_tenten
       plot_timeinterval
       set_highlights
-      set_labels
    
    
 
@@ -34,8 +32,9 @@ wyrm.plot
 
    .. autosummary::
    
+      ColorbarBase
       Data
-      Path
+      Normalize
       Rectangle
    
    
