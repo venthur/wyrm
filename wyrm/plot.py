@@ -1153,7 +1153,7 @@ def beautify():
     cyan    = to_mpl_format( 42, 161, 152)
     green   = to_mpl_format(133, 153,   0)
 
-    white   = base3
+    white   = (1, 1, 1)#base3
     black   = base03
 
     # Tverwrite the default color values with our new ones. Those
