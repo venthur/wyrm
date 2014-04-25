@@ -1005,6 +1005,11 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     -------
     ax : Axes
         the axes on which the plot was drawn
+
+    See Also
+    --------
+    ax_colorbar
+
     """
     if ax is None:
         ax = plt.gca()
@@ -1042,6 +1047,36 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     return ax
 
 def ax_colorbar(vmin, vmax, ax=None, label=None, ticks=None):
+    """Draw a color bar
+
+    Draws a color bar on an existing axes. The range of the colors is
+    defined by ``vmin`` and ``vmax``.
+
+    .. note::
+
+        Unlike the colorbar method from matplotlib, this method does not
+        automatically create a new axis for the colorbar. It will paint
+        in the currently active axis instead, overwriting any existing
+        plots in that axis. Make sure to create a new axis for the
+        colorbar.
+
+    Parameters
+    ----------
+    vmin, vmax : float
+        The minimum and maximum values for the colorbar.
+    ax : Axes, optional
+        The axes to draw the scalp plot on. If not provided, the
+        currently activated axes (i.e. ``gca()``) will be taken
+    label : string, optional
+        The label for the colorbar
+    ticks : list, optional
+        The tick positions
+
+    Returns
+    -------
+    ax : Axes
+        the axes on which the plot was drawn
+    """
     if ax is None:
         ax = plt.gca()
     ColorbarBase(ax, norm=Normalize(vmin, vmax), label=label, ticks=ticks)
