@@ -11,6 +11,12 @@ representations.
 The primitive plots are those whose name begin with ``ax_``, (e.g.
 ``ax_scalp``).
 
+In order to get more reasonable defaults for colors etc. you can call
+the modules :func:`beautify` method::
+
+    from wyrm import plot
+    plot.beautify()
+
 .. warning::
 
     This module needs heavy reworking! We have yet to find a consistent
