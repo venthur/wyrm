@@ -55,20 +55,6 @@ class TestPlot(unittest.TestCase):
     def test_plot_spectrogram(self):
         plot.plot_spectrogram(np.random.random((10, 100)), np.arange(100))
 
-    def test_interpolate2d(self):
-        """Make sure the interpolation does not lead to interpolated
-        values bigger than the maximum provided by the points.
-
-        This particularly happens when doing interpolation with splines.
-
-        """
-        x = [1, 2, 1, 2, 3]
-        y = [1, 1, 2, 2, 3]
-        z = [10, 10, 10, 10, 2]
-        _, _, Z = plot.interpolate_2d(x, y, z)
-        self.assertAlmostEqual(np.nanmax(Z), 10.)
-
-
 ###############################################################################
 
     def test_plot_timeinterval(self):

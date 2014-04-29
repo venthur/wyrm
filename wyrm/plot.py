@@ -257,28 +257,6 @@ def plot_spectrogram(spectrogram, freqs):
     plt.xlabel('Time')
 
 
-def interpolate_2d(x, y, z):
-    """Interpolate missing points on a plane.
-
-    Parameters
-    ----------
-    x, y, z : equally long lists of floats
-        1d arrays defining points like ``p[x, y] = z``
-
-    Returns
-    -------
-    X, Y, Z : 1d array, 1d array, 2d array
-        ``Z`` is a 2d array ``[min(x)..max(x), [min(y)..max(y)]`` with
-        the interpolated values as values.
-
-    """
-    xx = np.linspace(min(x), max(x), 500)
-    yy = np.linspace(min(y), max(y), 500)
-    xx, yy = np.meshgrid(xx, yy)
-    f = interpolate.LinearNDInterpolator(zip(x, y), z)
-    zz = f(xx, yy)
-    return xx, yy, zz
-
 # ############# COMPOSITE PLOTS ##########################################
 
 
@@ -1022,7 +1000,12 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     x = [i[0] for i in points]
     y = [i[1] for i in points]
     z = v
-    xx, yy, zz = interpolate_2d(x, y, z)
+    # interplolate the in-between values
+    xx = np.linspace(min(x), max(x), 500)
+    yy = np.linspace(min(y), max(y), 500)
+    xx, yy = np.meshgrid(xx, yy)
+    f = interpolate.LinearNDInterpolator(zip(x, y), z)
+    zz = f(xx, yy)
     # draw the contour map
     ctr = ax.contourf(xx, yy, zz, 20, vmin=vmin, vmax=vmax)
     ax.contour(xx, yy, zz, 5, colors="k", vmin=vmin, vmax=vmax, linewidths=.1)
