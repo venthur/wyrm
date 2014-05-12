@@ -75,6 +75,154 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
+<span class="c"># the angles here are given in (90 / 4)th degrees - so multiply it with</span>
+<span class="c"># (90 / 4) to get the actual angles</span>
+<span class="n">CHANNEL_10_20</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s">&#39;Fpz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Fp1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AFp1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AFp2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Fp2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AFz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;AF8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FAF6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Fz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;F10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FFC10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FCz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FC6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;FT10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CFC10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Cz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;C6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;T10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;A1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CCP8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;A2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CPz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;CP6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;TP10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PCP10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Pz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;P10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PPO8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO7&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO3&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;POz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO4&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO6&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;PO10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.6</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OPO1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OPO2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O9&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;O10&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Oz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OI1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;OI2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;I1&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;Iz&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;I2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">))</span>
+<span class="p">)</span>
+
+
 <div class="viewcode-block" id="lda_train"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.lda_train">[docs]</a><span class="k">def</span> <span class="nf">lda_train</span><span class="p">(</span><span class="n">fv</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Train the LDA classifier.</span>
 
@@ -194,6 +342,99 @@
     <span class="n">names</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">names</span><span class="p">[:]</span>
     <span class="n">names</span><span class="p">[</span><span class="n">ax1</span><span class="p">],</span> <span class="n">names</span><span class="p">[</span><span class="n">ax2</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">ax2</span><span class="p">],</span> <span class="n">names</span><span class="p">[</span><span class="n">ax1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="sort_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.sort_channels">[docs]</a><span class="k">def</span> <span class="nf">sort_channels</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">chanaxis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sort channels.</span>
+
+<span class="sd">    This method sorts the channels in the ``dat`` according to the 10-20</span>
+<span class="sd">    system, from frontal to occipital and within the rows from left to</span>
+<span class="sd">    right. The method uses the ``CHANNEL_10_20`` list and relies on the</span>
+<span class="sd">    elements in that list to be sorted correctly. This method will put</span>
+<span class="sd">    unknown channel names to the back of the resulting list.</span>
+
+<span class="sd">    The channel matching is case agnostic.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat : ``Data`` object</span>
+<span class="sd">    chanaxis : int, optional</span>
+<span class="sd">        the index of the channel axis in ``dat``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dat : ``Data`` object</span>
+<span class="sd">        a copy of the ``dat`` parameter with the channels and data</span>
+<span class="sd">        sorted.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; dat.axes[-1]</span>
+<span class="sd">    array([&#39;PPO4&#39; &#39;CP4&#39; &#39;PCP1&#39; &#39;F5&#39; &#39;C3&#39; &#39;C4&#39; &#39;O1&#39; &#39;PPO2&#39; &#39;FFC2&#39; &#39;FAF5&#39;</span>
+<span class="sd">        &#39;PO1&#39; &#39;TP10&#39; &#39;FAF1&#39; &#39;FFC6&#39; &#39;FFC1&#39; &#39;PO10&#39; &#39;O10&#39; &#39;C1&#39; &#39;Cz&#39; &#39;F2&#39;</span>
+<span class="sd">        &#39;CFC1&#39; &#39;CCP2&#39; &#39;F4&#39; &#39;PO9&#39; &#39;CFC6&#39; &#39;TP7&#39; &#39;FC6&#39; &#39;AF8&#39; &#39;Fz&#39; &#39;AF4&#39;</span>
+<span class="sd">        &#39;PCP9&#39; &#39;F6&#39; &#39;FT10&#39; &#39;FAF6&#39; &#39;PO5&#39; &#39;O2&#39; &#39;OPO2&#39; &#39;AF5&#39; &#39;C2&#39; &#39;P4&#39;</span>
+<span class="sd">        &#39;TP9&#39; &#39;PCP7&#39; &#39;FT8&#39; &#39;A2&#39; &#39;PO6&#39; &#39;FC3&#39; &#39;PPO1&#39; &#39;CCP8&#39; &#39;OPO1&#39; &#39;AFp2&#39;</span>
+<span class="sd">        &#39;OI2&#39; &#39;OI1&#39; &#39;FCz&#39; &#39;CCP6&#39; &#39;CCP1&#39; &#39;CPz&#39; &#39;POz&#39; &#39;FFC3&#39; &#39;FFC7&#39; &#39;FC2&#39;</span>
+<span class="sd">        &#39;F1&#39; &#39;FT9&#39; &#39;P2&#39; &#39;P10&#39; &#39;T9&#39; &#39;FC1&#39; &#39;C5&#39; &#39;T7&#39; &#39;CFC4&#39; &#39;P6&#39; &#39;F8&#39;</span>
+<span class="sd">        &#39;TP8&#39; &#39;CFC5&#39; &#39;PCP8&#39; &#39;CFC9&#39; &#39;AF7&#39; &#39;FC5&#39; &#39;I1&#39; &#39;CFC8&#39; &#39;FFC8&#39; &#39;Oz&#39;</span>
+<span class="sd">        &#39;Pz&#39; &#39;PCP4&#39; &#39;FAF2&#39; &#39;PCP5&#39; &#39;CP1&#39; &#39;PCP3&#39; &#39;P1&#39; &#39;Iz&#39; &#39;CCP5&#39; &#39;PO2&#39;</span>
+<span class="sd">        &#39;PCP2&#39; &#39;PO4&#39; &#39;Fpz&#39; &#39;F7&#39; &#39;PO8&#39; &#39;AFz&#39; &#39;F10&#39; &#39;FFC10&#39; &#39;CCP3&#39; &#39;PPO8&#39;</span>
+<span class="sd">        &#39;T10&#39; &#39;AF6&#39; &#39;F9&#39; &#39;PPO5&#39; &#39;CP6&#39; &#39;I2&#39; &#39;PPO7&#39; &#39;FC4&#39; &#39;CCP4&#39; &#39;PO7&#39;</span>
+<span class="sd">        &#39;A1&#39; &#39;CP2&#39; &#39;CFC3&#39; &#39;T8&#39; &#39;PPO3&#39; &#39;Fp2&#39; &#39;PCP6&#39; &#39;AFp1&#39; &#39;C6&#39; &#39;FFC9&#39;</span>
+<span class="sd">        &#39;FT7&#39; &#39;AF3&#39; &#39;Fp1&#39; &#39;CFC10&#39; &#39;CCP7&#39; &#39;CFC7&#39; &#39;PO3&#39; &#39;P7&#39; &#39;P9&#39; &#39;FFC4&#39;</span>
+<span class="sd">        &#39;P5&#39; &#39;CFC2&#39; &#39;F3&#39; &#39;CP3&#39; &#39;PPO6&#39; &#39;P3&#39; &#39;O9&#39; &#39;PCP10&#39; &#39;P8&#39; &#39;CP5&#39;</span>
+<span class="sd">        &#39;FFC5&#39;], dtype=&#39;|S5&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; dat = sort_channels(dat)</span>
+<span class="sd">    &gt;&gt;&gt; dat.axes[-1]</span>
+<span class="sd">    array([&#39;Fpz&#39;, &#39;Fp1&#39;, &#39;AFp1&#39;, &#39;AFp2&#39;, &#39;Fp2&#39;, &#39;AF7&#39;, &#39;AF5&#39;, &#39;AF3&#39;,</span>
+<span class="sd">        &#39;AFz&#39;, &#39;AF4&#39;, &#39;AF6&#39;, &#39;AF8&#39;, &#39;FAF5&#39;, &#39;FAF1&#39;, &#39;FAF2&#39;, &#39;FAF6&#39;,</span>
+<span class="sd">        &#39;F9&#39;, &#39;F7&#39;, &#39;F5&#39;, &#39;F3&#39;, &#39;F1&#39;, &#39;Fz&#39;, &#39;F2&#39;, &#39;F4&#39;, &#39;F6&#39;, &#39;F8&#39;,</span>
+<span class="sd">        &#39;F10&#39;, &#39;FFC9&#39;, &#39;FFC7&#39;, &#39;FFC5&#39;, &#39;FFC3&#39;, &#39;FFC1&#39;, &#39;FFC2&#39;, &#39;FFC4&#39;,</span>
+<span class="sd">        &#39;FFC6&#39;, &#39;FFC8&#39;, &#39;FFC10&#39;, &#39;FT9&#39;, &#39;FT7&#39;, &#39;FC5&#39;, &#39;FC3&#39;, &#39;FC1&#39;,</span>
+<span class="sd">        &#39;FCz&#39;, &#39;FC2&#39;, &#39;FC4&#39;, &#39;FC6&#39;, &#39;FT8&#39;, &#39;FT10&#39;, &#39;CFC9&#39;, &#39;CFC7&#39;,</span>
+<span class="sd">        &#39;CFC5&#39;, &#39;CFC3&#39;, &#39;CFC1&#39;, &#39;CFC2&#39;, &#39;CFC4&#39;, &#39;CFC6&#39;, &#39;CFC8&#39;, &#39;CFC10&#39;,</span>
+<span class="sd">        &#39;T9&#39;, &#39;T7&#39;, &#39;C5&#39;, &#39;C3&#39;, &#39;C1&#39;, &#39;Cz&#39;, &#39;C2&#39;, &#39;C4&#39;, &#39;C6&#39;, &#39;T8&#39;,</span>
+<span class="sd">        &#39;T10&#39;, &#39;A1&#39;, &#39;CCP7&#39;, &#39;CCP5&#39;, &#39;CCP3&#39;, &#39;CCP1&#39;, &#39;CCP2&#39;, &#39;CCP4&#39;,</span>
+<span class="sd">        &#39;CCP6&#39;, &#39;CCP8&#39;, &#39;A2&#39;, &#39;TP9&#39;, &#39;TP7&#39;, &#39;CP5&#39;, &#39;CP3&#39;, &#39;CP1&#39;, &#39;CPz&#39;,</span>
+<span class="sd">        &#39;CP2&#39;, &#39;CP4&#39;, &#39;CP6&#39;, &#39;TP8&#39;, &#39;TP10&#39;, &#39;PCP9&#39;, &#39;PCP7&#39;, &#39;PCP5&#39;,</span>
+<span class="sd">        &#39;PCP3&#39;, &#39;PCP1&#39;, &#39;PCP2&#39;, &#39;PCP4&#39;, &#39;PCP6&#39;, &#39;PCP8&#39;, &#39;PCP10&#39;, &#39;P9&#39;,</span>
+<span class="sd">        &#39;P7&#39;, &#39;P5&#39;, &#39;P3&#39;, &#39;P1&#39;, &#39;Pz&#39;, &#39;P2&#39;, &#39;P4&#39;, &#39;P6&#39;, &#39;P8&#39;, &#39;P10&#39;,</span>
+<span class="sd">        &#39;PPO7&#39;, &#39;PPO5&#39;, &#39;PPO3&#39;, &#39;PPO1&#39;, &#39;PPO2&#39;, &#39;PPO4&#39;, &#39;PPO6&#39;, &#39;PPO8&#39;,</span>
+<span class="sd">        &#39;PO9&#39;, &#39;PO7&#39;, &#39;PO5&#39;, &#39;PO3&#39;, &#39;PO1&#39;, &#39;POz&#39;, &#39;PO2&#39;, &#39;PO4&#39;, &#39;PO6&#39;,</span>
+<span class="sd">        &#39;PO8&#39;, &#39;PO10&#39;, &#39;OPO1&#39;, &#39;OPO2&#39;, &#39;O9&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;O10&#39;, &#39;Oz&#39;,</span>
+<span class="sd">        &#39;OI1&#39;, &#39;OI2&#39;, &#39;I1&#39;, &#39;Iz&#39;, &#39;I2&#39;], dtype=&#39;|S5&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c"># create the reference list of channel names in lower case</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">CHANNEL_10_20</span><span class="p">]</span>
+    <span class="c"># convert our channel names to lower case</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">chanaxis</span><span class="p">]]</span>
+    <span class="c"># re-order the channels according to our 10-20 list:</span>
+    <span class="c"># iterate through all channel names in our list, put the known ones</span>
+    <span class="c"># into the `found` list along with their index in our list and the</span>
+    <span class="c"># index in the reference list. put all unknown channels into the</span>
+    <span class="c"># `notfound` list</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">notfound</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx_our</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">idx_ref</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">idx_ref</span><span class="p">,</span> <span class="n">idx_our</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c"># not in reference!</span>
+            <span class="n">notfound</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_our</span><span class="p">)</span>
+    <span class="c"># sort the `found` list wrt the indices of the reference list</span>
+    <span class="n">found</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="c"># remove the reference indices again</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">found</span><span class="p">]</span>
+    <span class="c"># append found and notfound</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">found</span> <span class="o">+</span> <span class="n">notfound</span>
+    <span class="c"># do the actual re-ordering according to the indices</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">chanaxis</span><span class="p">)</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">chanaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">chanaxis</span><span class="p">][</span><span class="n">indices</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dat</span>
 
 </div>
 <div class="viewcode-block" id="select_channels"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.select_channels">[docs]</a><span class="k">def</span> <span class="nf">select_channels</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">regexp_list</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">chanaxis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>

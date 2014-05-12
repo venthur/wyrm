@@ -144,6 +144,12 @@ Composites are composed of several primitives and offer more complex
 representations.</p>
 <p>The primitive plots are those whose name begin with <tt class="docutils literal"><span class="pre">ax_</span></tt>, (e.g.
 <tt class="docutils literal"><span class="pre">ax_scalp</span></tt>).</p>
+<p>In order to get more reasonable defaults for colors etc. you can call
+the modules <a class="reference internal" href="#wyrm.plot.beautify" title="wyrm.plot.beautify"><tt class="xref py py-func docutils literal"><span class="pre">beautify()</span></tt></a> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">wyrm</span> <span class="kn">import</span> <span class="n">plot</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">beautify</span><span class="p">()</span>
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>This module needs heavy reworking! We have yet to find a consistent
@@ -358,31 +364,6 @@ otherwise <tt class="docutils literal"><span class="pre">None</span></tt></p>
 <span class="go">None</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="function">
-<dt id="wyrm.plot.interpolate_2d">
-<tt class="descclassname">wyrm.plot.</tt><tt class="descname">interpolate_2d</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="reference internal" href="../_modules/wyrm/plot.html#interpolate_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.plot.interpolate_2d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate missing points on a plane.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x, y, z</strong> : equally long lists of floats</p>
-<blockquote>
-<div><p>1d arrays defining points like <tt class="docutils literal"><span class="pre">p[x,</span> <span class="pre">y]</span> <span class="pre">=</span> <span class="pre">z</span></tt></p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X, Y, Z</strong> : 1d array, 1d array, 2d array</p>
-<blockquote class="last">
-<div><p><tt class="docutils literal"><span class="pre">Z</span></tt> is a 2d array <tt class="docutils literal"><span class="pre">[min(x)..max(x),</span> <span class="pre">[min(y)..max(y)]</span></tt> with
-the interpolated values as values.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="function">
@@ -2156,6 +2137,76 @@ or <tt class="docutils literal"><span class="pre">ival[0]</span> <span class="pr
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dat2</span> <span class="o">=</span> <span class="n">select_ival</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">dat2</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dat2</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 <span class="go">0. 199.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.sort_channels">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">sort_channels</tt><big>(</big><em>dat</em>, <em>chanaxis=-1</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#sort_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.sort_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort channels.</p>
+<p>This method sorts the channels in the <tt class="docutils literal"><span class="pre">dat</span></tt> according to the 10-20
+system, from frontal to occipital and within the rows from left to
+right. The method uses the <tt class="docutils literal"><span class="pre">CHANNEL_10_20</span></tt> list and relies on the
+elements in that list to be sorted correctly. This method will put
+unknown channel names to the back of the resulting list.</p>
+<p>The channel matching is case agnostic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
+<p><strong>chanaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the index of the channel axis in <tt class="docutils literal"><span class="pre">dat</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
+<blockquote class="last">
+<div><p>a copy of the <tt class="docutils literal"><span class="pre">dat</span></tt> parameter with the channels and data
+sorted.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">array([&#39;PPO4&#39; &#39;CP4&#39; &#39;PCP1&#39; &#39;F5&#39; &#39;C3&#39; &#39;C4&#39; &#39;O1&#39; &#39;PPO2&#39; &#39;FFC2&#39; &#39;FAF5&#39;</span>
+<span class="go">    &#39;PO1&#39; &#39;TP10&#39; &#39;FAF1&#39; &#39;FFC6&#39; &#39;FFC1&#39; &#39;PO10&#39; &#39;O10&#39; &#39;C1&#39; &#39;Cz&#39; &#39;F2&#39;</span>
+<span class="go">    &#39;CFC1&#39; &#39;CCP2&#39; &#39;F4&#39; &#39;PO9&#39; &#39;CFC6&#39; &#39;TP7&#39; &#39;FC6&#39; &#39;AF8&#39; &#39;Fz&#39; &#39;AF4&#39;</span>
+<span class="go">    &#39;PCP9&#39; &#39;F6&#39; &#39;FT10&#39; &#39;FAF6&#39; &#39;PO5&#39; &#39;O2&#39; &#39;OPO2&#39; &#39;AF5&#39; &#39;C2&#39; &#39;P4&#39;</span>
+<span class="go">    &#39;TP9&#39; &#39;PCP7&#39; &#39;FT8&#39; &#39;A2&#39; &#39;PO6&#39; &#39;FC3&#39; &#39;PPO1&#39; &#39;CCP8&#39; &#39;OPO1&#39; &#39;AFp2&#39;</span>
+<span class="go">    &#39;OI2&#39; &#39;OI1&#39; &#39;FCz&#39; &#39;CCP6&#39; &#39;CCP1&#39; &#39;CPz&#39; &#39;POz&#39; &#39;FFC3&#39; &#39;FFC7&#39; &#39;FC2&#39;</span>
+<span class="go">    &#39;F1&#39; &#39;FT9&#39; &#39;P2&#39; &#39;P10&#39; &#39;T9&#39; &#39;FC1&#39; &#39;C5&#39; &#39;T7&#39; &#39;CFC4&#39; &#39;P6&#39; &#39;F8&#39;</span>
+<span class="go">    &#39;TP8&#39; &#39;CFC5&#39; &#39;PCP8&#39; &#39;CFC9&#39; &#39;AF7&#39; &#39;FC5&#39; &#39;I1&#39; &#39;CFC8&#39; &#39;FFC8&#39; &#39;Oz&#39;</span>
+<span class="go">    &#39;Pz&#39; &#39;PCP4&#39; &#39;FAF2&#39; &#39;PCP5&#39; &#39;CP1&#39; &#39;PCP3&#39; &#39;P1&#39; &#39;Iz&#39; &#39;CCP5&#39; &#39;PO2&#39;</span>
+<span class="go">    &#39;PCP2&#39; &#39;PO4&#39; &#39;Fpz&#39; &#39;F7&#39; &#39;PO8&#39; &#39;AFz&#39; &#39;F10&#39; &#39;FFC10&#39; &#39;CCP3&#39; &#39;PPO8&#39;</span>
+<span class="go">    &#39;T10&#39; &#39;AF6&#39; &#39;F9&#39; &#39;PPO5&#39; &#39;CP6&#39; &#39;I2&#39; &#39;PPO7&#39; &#39;FC4&#39; &#39;CCP4&#39; &#39;PO7&#39;</span>
+<span class="go">    &#39;A1&#39; &#39;CP2&#39; &#39;CFC3&#39; &#39;T8&#39; &#39;PPO3&#39; &#39;Fp2&#39; &#39;PCP6&#39; &#39;AFp1&#39; &#39;C6&#39; &#39;FFC9&#39;</span>
+<span class="go">    &#39;FT7&#39; &#39;AF3&#39; &#39;Fp1&#39; &#39;CFC10&#39; &#39;CCP7&#39; &#39;CFC7&#39; &#39;PO3&#39; &#39;P7&#39; &#39;P9&#39; &#39;FFC4&#39;</span>
+<span class="go">    &#39;P5&#39; &#39;CFC2&#39; &#39;F3&#39; &#39;CP3&#39; &#39;PPO6&#39; &#39;P3&#39; &#39;O9&#39; &#39;PCP10&#39; &#39;P8&#39; &#39;CP5&#39;</span>
+<span class="go">    &#39;FFC5&#39;], dtype=&#39;|S5&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">sort_channels</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">array([&#39;Fpz&#39;, &#39;Fp1&#39;, &#39;AFp1&#39;, &#39;AFp2&#39;, &#39;Fp2&#39;, &#39;AF7&#39;, &#39;AF5&#39;, &#39;AF3&#39;,</span>
+<span class="go">    &#39;AFz&#39;, &#39;AF4&#39;, &#39;AF6&#39;, &#39;AF8&#39;, &#39;FAF5&#39;, &#39;FAF1&#39;, &#39;FAF2&#39;, &#39;FAF6&#39;,</span>
+<span class="go">    &#39;F9&#39;, &#39;F7&#39;, &#39;F5&#39;, &#39;F3&#39;, &#39;F1&#39;, &#39;Fz&#39;, &#39;F2&#39;, &#39;F4&#39;, &#39;F6&#39;, &#39;F8&#39;,</span>
+<span class="go">    &#39;F10&#39;, &#39;FFC9&#39;, &#39;FFC7&#39;, &#39;FFC5&#39;, &#39;FFC3&#39;, &#39;FFC1&#39;, &#39;FFC2&#39;, &#39;FFC4&#39;,</span>
+<span class="go">    &#39;FFC6&#39;, &#39;FFC8&#39;, &#39;FFC10&#39;, &#39;FT9&#39;, &#39;FT7&#39;, &#39;FC5&#39;, &#39;FC3&#39;, &#39;FC1&#39;,</span>
+<span class="go">    &#39;FCz&#39;, &#39;FC2&#39;, &#39;FC4&#39;, &#39;FC6&#39;, &#39;FT8&#39;, &#39;FT10&#39;, &#39;CFC9&#39;, &#39;CFC7&#39;,</span>
+<span class="go">    &#39;CFC5&#39;, &#39;CFC3&#39;, &#39;CFC1&#39;, &#39;CFC2&#39;, &#39;CFC4&#39;, &#39;CFC6&#39;, &#39;CFC8&#39;, &#39;CFC10&#39;,</span>
+<span class="go">    &#39;T9&#39;, &#39;T7&#39;, &#39;C5&#39;, &#39;C3&#39;, &#39;C1&#39;, &#39;Cz&#39;, &#39;C2&#39;, &#39;C4&#39;, &#39;C6&#39;, &#39;T8&#39;,</span>
+<span class="go">    &#39;T10&#39;, &#39;A1&#39;, &#39;CCP7&#39;, &#39;CCP5&#39;, &#39;CCP3&#39;, &#39;CCP1&#39;, &#39;CCP2&#39;, &#39;CCP4&#39;,</span>
+<span class="go">    &#39;CCP6&#39;, &#39;CCP8&#39;, &#39;A2&#39;, &#39;TP9&#39;, &#39;TP7&#39;, &#39;CP5&#39;, &#39;CP3&#39;, &#39;CP1&#39;, &#39;CPz&#39;,</span>
+<span class="go">    &#39;CP2&#39;, &#39;CP4&#39;, &#39;CP6&#39;, &#39;TP8&#39;, &#39;TP10&#39;, &#39;PCP9&#39;, &#39;PCP7&#39;, &#39;PCP5&#39;,</span>
+<span class="go">    &#39;PCP3&#39;, &#39;PCP1&#39;, &#39;PCP2&#39;, &#39;PCP4&#39;, &#39;PCP6&#39;, &#39;PCP8&#39;, &#39;PCP10&#39;, &#39;P9&#39;,</span>
+<span class="go">    &#39;P7&#39;, &#39;P5&#39;, &#39;P3&#39;, &#39;P1&#39;, &#39;Pz&#39;, &#39;P2&#39;, &#39;P4&#39;, &#39;P6&#39;, &#39;P8&#39;, &#39;P10&#39;,</span>
+<span class="go">    &#39;PPO7&#39;, &#39;PPO5&#39;, &#39;PPO3&#39;, &#39;PPO1&#39;, &#39;PPO2&#39;, &#39;PPO4&#39;, &#39;PPO6&#39;, &#39;PPO8&#39;,</span>
+<span class="go">    &#39;PO9&#39;, &#39;PO7&#39;, &#39;PO5&#39;, &#39;PO3&#39;, &#39;PO1&#39;, &#39;POz&#39;, &#39;PO2&#39;, &#39;PO4&#39;, &#39;PO6&#39;,</span>
+<span class="go">    &#39;PO8&#39;, &#39;PO10&#39;, &#39;OPO1&#39;, &#39;OPO2&#39;, &#39;O9&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;O10&#39;, &#39;Oz&#39;,</span>
+<span class="go">    &#39;OI1&#39;, &#39;OI2&#39;, &#39;I1&#39;, &#39;Iz&#39;, &#39;I2&#39;], dtype=&#39;|S5&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -14,7 +14,6 @@ wyrm.plot
       beautify
       calc_centered_grid
       get_channelpos
-      interpolate_2d
       plot_channels
       plot_scalp
       plot_scalp_ti

@@ -35,6 +35,7 @@ wyrm.processing
       select_classes
       select_epochs
       select_ival
+      sort_channels
       spectrogram
       spectrum
       square
