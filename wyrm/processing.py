@@ -291,6 +291,99 @@ def swapaxes(dat, ax1, ax2):
     return dat.copy(data=data, axes=axes, units=units, names=names)
 
 
+def sort_channels(dat, chanaxis=-1):
+    """Sort channels.
+
+    This method sorts the channels in the ``dat`` according to the 10-20
+    system, from frontal to occipital and within the rows from left to
+    right. The method uses the ``CHANNEL_10_20`` list and relies on the
+    elements in that list to be sorted correctly. This method will put
+    unknown channel names to the back of the resulting list.
+
+    The channel matching is case agnostic.
+
+    Parameters
+    ----------
+    dat : ``Data`` object
+    chanaxis : int, optional
+        the index of the channel axis in ``dat``
+
+    Returns
+    -------
+    dat : ``Data`` object
+        a copy of the ``dat`` parameter with the channels and data
+        sorted.
+
+    Examples
+    --------
+
+    >>> dat.axes[-1]
+    array(['PPO4' 'CP4' 'PCP1' 'F5' 'C3' 'C4' 'O1' 'PPO2' 'FFC2' 'FAF5'
+        'PO1' 'TP10' 'FAF1' 'FFC6' 'FFC1' 'PO10' 'O10' 'C1' 'Cz' 'F2'
+        'CFC1' 'CCP2' 'F4' 'PO9' 'CFC6' 'TP7' 'FC6' 'AF8' 'Fz' 'AF4'
+        'PCP9' 'F6' 'FT10' 'FAF6' 'PO5' 'O2' 'OPO2' 'AF5' 'C2' 'P4'
+        'TP9' 'PCP7' 'FT8' 'A2' 'PO6' 'FC3' 'PPO1' 'CCP8' 'OPO1' 'AFp2'
+        'OI2' 'OI1' 'FCz' 'CCP6' 'CCP1' 'CPz' 'POz' 'FFC3' 'FFC7' 'FC2'
+        'F1' 'FT9' 'P2' 'P10' 'T9' 'FC1' 'C5' 'T7' 'CFC4' 'P6' 'F8'
+        'TP8' 'CFC5' 'PCP8' 'CFC9' 'AF7' 'FC5' 'I1' 'CFC8' 'FFC8' 'Oz'
+        'Pz' 'PCP4' 'FAF2' 'PCP5' 'CP1' 'PCP3' 'P1' 'Iz' 'CCP5' 'PO2'
+        'PCP2' 'PO4' 'Fpz' 'F7' 'PO8' 'AFz' 'F10' 'FFC10' 'CCP3' 'PPO8'
+        'T10' 'AF6' 'F9' 'PPO5' 'CP6' 'I2' 'PPO7' 'FC4' 'CCP4' 'PO7'
+        'A1' 'CP2' 'CFC3' 'T8' 'PPO3' 'Fp2' 'PCP6' 'AFp1' 'C6' 'FFC9'
+        'FT7' 'AF3' 'Fp1' 'CFC10' 'CCP7' 'CFC7' 'PO3' 'P7' 'P9' 'FFC4'
+        'P5' 'CFC2' 'F3' 'CP3' 'PPO6' 'P3' 'O9' 'PCP10' 'P8' 'CP5'
+        'FFC5'], dtype='|S5')
+    >>> dat = sort_channels(dat)
+    >>> dat.axes[-1]
+    array(['Fpz', 'Fp1', 'AFp1', 'AFp2', 'Fp2', 'AF7', 'AF5', 'AF3',
+        'AFz', 'AF4', 'AF6', 'AF8', 'FAF5', 'FAF1', 'FAF2', 'FAF6',
+        'F9', 'F7', 'F5', 'F3', 'F1', 'Fz', 'F2', 'F4', 'F6', 'F8',
+        'F10', 'FFC9', 'FFC7', 'FFC5', 'FFC3', 'FFC1', 'FFC2', 'FFC4',
+        'FFC6', 'FFC8', 'FFC10', 'FT9', 'FT7', 'FC5', 'FC3', 'FC1',
+        'FCz', 'FC2', 'FC4', 'FC6', 'FT8', 'FT10', 'CFC9', 'CFC7',
+        'CFC5', 'CFC3', 'CFC1', 'CFC2', 'CFC4', 'CFC6', 'CFC8', 'CFC10',
+        'T9', 'T7', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'T8',
+        'T10', 'A1', 'CCP7', 'CCP5', 'CCP3', 'CCP1', 'CCP2', 'CCP4',
+        'CCP6', 'CCP8', 'A2', 'TP9', 'TP7', 'CP5', 'CP3', 'CP1', 'CPz',
+        'CP2', 'CP4', 'CP6', 'TP8', 'TP10', 'PCP9', 'PCP7', 'PCP5',
+        'PCP3', 'PCP1', 'PCP2', 'PCP4', 'PCP6', 'PCP8', 'PCP10', 'P9',
+        'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'P10',
+        'PPO7', 'PPO5', 'PPO3', 'PPO1', 'PPO2', 'PPO4', 'PPO6', 'PPO8',
+        'PO9', 'PO7', 'PO5', 'PO3', 'PO1', 'POz', 'PO2', 'PO4', 'PO6',
+        'PO8', 'PO10', 'OPO1', 'OPO2', 'O9', 'O1', 'O2', 'O10', 'Oz',
+        'OI1', 'OI2', 'I1', 'Iz', 'I2'], dtype='|S5')
+    """
+    dat = dat.copy()
+    # create the reference list of channel names in lower case
+    ref = [name.lower() for name, _ in CHANNEL_10_20]
+    # convert our channel names to lower case
+    channels = [chan.lower() for chan in dat.axes[chanaxis]]
+    # re-order the channels according to our 10-20 list:
+    # iterate through all channel names in our list, put the known ones
+    # into the `found` list along with their index in our list and the
+    # index in the reference list. put all unknown channels into the
+    # `notfound` list
+    found = []
+    notfound = []
+    for idx_our, val in enumerate(channels):
+        try:
+            idx_ref = ref.index(val)
+            found.append((idx_ref, idx_our))
+        except ValueError:
+            # not in reference!
+            notfound.append(idx_our)
+    # sort the `found` list wrt the indices of the reference list
+    found.sort()
+    # remove the reference indices again
+    found = [i for _, i in found]
+    # append found and notfound
+    indices = found + notfound
+    # do the actual re-ordering according to the indices
+    dat.data = dat.data.take(indices, chanaxis)
+    dat.axes[chanaxis] = dat.axes[chanaxis][indices]
+    return dat
+
+
 def select_channels(dat, regexp_list, invert=False, chanaxis=-1):
     """Select channels from data.
 
