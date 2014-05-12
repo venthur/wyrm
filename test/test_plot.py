@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 
 from wyrm.types import Data
 from wyrm import plot
+from wyrm.processing import CHANNEL_10_20
 
 
 class TestPlot(unittest.TestCase):
@@ -19,16 +20,16 @@ class TestPlot(unittest.TestCase):
     def setUpClass(cls):
         x = np.linspace(0, 1000, 1000, endpoint=False)
         y = 5 * np.sin(2 * np.pi * x)
-        data = np.tile(y[:, None], (1, len(plot.CHANNEL_10_20)))
+        data = np.tile(y[:, None], (1, len(CHANNEL_10_20)))
         data += np.random.normal(size=data.shape)
-        axes = [x, [i[0] for i in plot.CHANNEL_10_20]]
+        axes = [x, [i[0] for i in CHANNEL_10_20]]
         cls.cnt = Data(data=data, axes=axes, names=['time', 'channel'], units=['ms', '#'])
         cls.cnt.fs = 1000
 
         classes = [0, 1] * 5
         data = np.array([data]*10)
         data[::2] *= 0.5
-        axes = [classes, x, [i[0] for i in plot.CHANNEL_10_20]]
+        axes = [classes, x, [i[0] for i in CHANNEL_10_20]]
         cls.epo = Data(data=data, axes=axes, names=['class', 'time', 'channel'], units=['#', 'ms', '#'])
         cls.epo.fs = 1000
         cls.epo.class_names = ['class 1', 'class 2']
