@@ -56,3 +56,4 @@ clean:
 	rm -rf dist
 	rm -rf MANIFEST
 	find . -name "*.pyc" -delete
+	find . -name "__pycache__" -delete
