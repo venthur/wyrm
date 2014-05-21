@@ -1,8 +1,8 @@
 
-"""Input/Output methods.
+"""Various input/output methods.
 
-This module provides methods for loading and saving data into various
-formats.
+This module provides methods for loading and saving data from- and into
+various formats.
 
 """
 
@@ -14,6 +14,7 @@ import re
 import json
 
 import numpy as np
+from scipy.io import loadmat
 
 from wyrm.types import Data
 
@@ -242,4 +243,121 @@ def convert_mushu_data(data, markers, fs, channels):
     cnt.markers = markers[:]
     cnt.fs = fs
     return cnt
+
+
+
+def load_bcicomp3_ds2(filename):
+    """Load the BCI Competition III Data Set 2.
+
+    This method loads the data set and converts it into Wyrm's ``Data``
+    format. Before you use it, you have to download the data set in
+    Matlab format and unpack it. The directory with the extracted files
+    must contain the ``Subject_*.mat``- and the ``eloc64.txt`` files.
+
+    .. note::
+
+        If you need the true labels of the test sets, you'll have to
+        download them separately from
+        http://bbci.de/competition/iii/results/index.html#labels
+
+    Parameters
+    ----------
+    filename : str
+        The path to the matlab file to load
+
+    Returns
+    -------
+    cnt : continuous `Data` object
+
+
+    Examples
+    --------
+
+    >>> dat = load_bcicomp3_ds2('/home/foo/data/Subject_A_Train.mat')
+
+    """
+    STIMULUS_CODE = {
+        # cols from left to right
+        1 : "agmsy5",
+        2 : "bhntz6",
+        3 : "ciou17",
+        4 : "djpv28",
+        5 : "ekqw39",
+        6 : "flrx4_",
+        # rows from top to bottom
+        7 : "abcdef",
+        8 : "ghijkl",
+        9 : "mnopqr",
+        10: "stuvwx",
+        11: "yz1234",
+        12: "56789_"
+        }
+
+    # load the matlab data
+    data_mat = loadmat(filename)
+    # load the channel names (the same for all datasets
+    eloc_file = path.sep.join([path.dirname(filename), 'eloc64.txt'])
+    with open(eloc_file) as fh:
+        data = fh.read()
+    channels = []
+    for line in data.splitlines():
+        if line:
+            chan = line.split()[-1]
+            chan = chan.replace('.', '')
+            channels.append(chan)
+    # fix the channel names, some letters have the wrong capitalization
+    for i, s in enumerate(channels):
+        s2 = s.upper()
+        s2 = s2.replace('Z', 'z')
+        s2 = s2.replace('FP', 'Fp')
+        channels[i] = s2
+    # The signal is recorded with 64 channels, bandpass filtered
+    # 0.1-60Hz and digitized at 240Hz. The format is Character Epoch x
+    # Samples x Channels
+    data = data_mat['Signal']
+    data = data.astype('double')
+    # For each sample: 1 if a row/colum was flashed, 0 otherwise
+    flashing = data_mat['Flashing'].reshape(-1)
+    #flashing = np.flatnonzero((np.diff(a) == 1)) + 1
+    tmp = []
+    for i, _ in enumerate(flashing):
+        if i == 0:
+            tmp.append(flashing[i])
+            continue
+        if flashing[i] == flashing[i-1] == 1:
+            tmp.append(0)
+            continue
+        tmp.append(flashing[i])
+    flashing = np.array(tmp)
+    # For each sample: 0 when no row/colum was intensified,
+    # 1..6 for intensified columns, 7..12 for intensified rows
+    stimulus_code = data_mat['StimulusCode'].reshape(-1)
+    stimulus_code = stimulus_code[flashing == 1]
+    # 0 if no row/col was intensified or the intensified did not contain
+    # the target character, 1 otherwise
+    stimulus_type = data_mat.get('StimulusType', np.array([])).reshape(-1)
+    # The target characters
+    target_chars = data_mat.get('TargetChar', np.array([])).reshape(-1)
+    fs = 240
+    data = data.reshape(-1, 64)
+    timeaxis = np.linspace(0, data.shape[0] / fs * 1000, data.shape[0], endpoint=False)
+    dat = Data(data=data, axes=[timeaxis, channels], names=['time', 'channel'], units=['ms', '#'])
+    dat.fs = fs
+    # preparing the markers
+    target_mask = np.logical_and((flashing == 1), (stimulus_type == 1)) if len(stimulus_type) > 0 else []
+    nontarget_mask = np.logical_and((flashing == 1), (stimulus_type == 0)) if len(stimulus_type) > 0 else []
+    flashing = (flashing == 1)
+    flashing = [[i, 'flashing'] for i in timeaxis[flashing]]
+    targets = [[i, 'target'] for i in timeaxis[target_mask]]
+    nontargets = [[i, 'nontarget'] for i in timeaxis[nontarget_mask]]
+    dat.stimulus_code = stimulus_code[:]
+    stimulus_code = zip([t for t, _ in flashing], [STIMULUS_CODE[i] for i in stimulus_code])
+    markers = flashing[:]
+    markers.extend(targets)
+    markers.extend(nontargets)
+    markers.extend(stimulus_code)
+    markers.sort()
+    dat.markers = markers[:]
+    return dat
+
 
