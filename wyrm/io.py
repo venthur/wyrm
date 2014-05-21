@@ -182,3 +182,64 @@ def load_mushu_data(meta):
     dat.markers = markers
     return dat
 
+
+def convert_mushu_data(data, markers, fs, channels):
+    """Convert mushu data into wyrm's ``Data`` format.
+
+    This convenience method creates a continuous ``Data`` object from
+    the parameters given. The timeaxis always starts from zero and its
+    values are calculated from the sampling frequency ``fs`` and the
+    length of ``data``. The ``names`` and ``units`` attributes are
+    filled with default vaules.
+
+    Parameters
+    ----------
+    data : 2d array
+        an 2 dimensional numpy array with the axes: (time, channel)
+    markers : list of tuples: (float, str)
+        a list of markers. Each element is a tuple of timestamp and
+        string. The timestamp is the time in ms relative to the onset of
+        the block of data. Note that negative values are *allowed* as
+        well as values bigger than the length of the block of data
+        returned. That is to be interpreted as a marker from the last
+        block and a marker for a future block respectively.
+    fs : float
+        the sampling frequency, this number is used to calculate the
+        timeaxis for the data
+    channels : list or 1d array of strings
+        the channel names
+
+    Returns
+    -------
+    cnt : continuous ``Data`` object
+
+    Examples
+    --------
+
+    Assuming that ``amp`` is an Amplifier instance from ``libmushu``,
+    already configured but not started yet:
+
+    >>> amp_fs = amp.get_sampling_frequency()
+    >>> amp_channels = amp.get_channels()
+    >>> amp.start()
+    >>> while True:
+    ...     data, markers = amp.get_data()
+    ...     cnt = convert_mushu_data(data, markers, amp_fs, amp_channels)
+    ...     # some more code
+    >>> amp.stop()
+
+    References
+    ----------
+    https://github.com/venthur/mushu
+
+    """
+    time_axis = np.linspace(0, 1000 * data.shape[0] / fs, data.shape[0], endpoint=False)
+    chan_axis = channels[:]
+    axes = [time_axis, chan_axis]
+    names = ['time', 'channel']
+    units = ['uV', '#']
+    cnt = Data(data=data.copy(), axes=axes, names=names, units=units)
+    cnt.markers = markers[:]
+    cnt.fs = fs
+    return cnt
+
