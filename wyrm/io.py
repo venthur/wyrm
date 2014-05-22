@@ -245,6 +245,72 @@ def convert_mushu_data(data, markers, fs, channels):
     return cnt
 
 
+def load_bcicomp3_ds1(dirname):
+    """Load the BCI Competition III Data Set 1.
+
+    This method loads the data set and converts it into Wyrm's ``Data``
+    format. Before you use it, you have to download the training- and
+    test data in Matlab format and unpack it into a directory.
+
+    .. note::
+
+        If you need the true labels of the test sets, you'll have to
+        download them separately from
+        http://bbci.de/competition/iii/results/index.html#labels
+
+    Parameters
+    ----------
+    dirname : str
+        the directory where the ``Competition_train.mat`` and
+        ``Competition_test.mat`` are located
+
+    Returns
+    -------
+    epo_train, epo_test : epoched ``Data`` objects
+
+    Examples
+    --------
+
+    >>> epo_test, epo_train = load_bcicomp3_ds1('/home/foo/bcicomp3_dataset1/')
+
+    """
+    # construct the filenames from the dirname
+    training_file = path.sep.join([dirname, 'Competition_train.mat'])
+    test_file = path.sep.join([dirname, 'Competition_test.mat'])
+
+    # load the training data
+    training_data_mat = loadmat(training_file)
+    data = training_data_mat['X'].astype('double')
+    data = data.swapaxes(-1, -2)
+    labels = training_data_mat['Y'].astype('int').ravel()
+    # convert into wyrm Data
+    axes = [np.arange(i) for i in data.shape]
+    axes[0] = labels
+    axes[2] = [str(i) for i in range(data.shape[2])]
+    names = ['Class', 'Time', 'Channel']
+    units = ['#', 'ms', '#']
+    dat_train = Data(data=data, axes=axes, names=names, units=units)
+    dat_train.fs = 1000
+    dat_train.class_names = ['pinky', 'tongue']
+
+    # load the test data
+    test_data_mat = loadmat(test_file)
+    data = test_data_mat['X'].astype('double')
+    data = data.swapaxes(-1, -2)
+    # convert into wyrm Data
+    axes = [np.arange(i) for i in data.shape]
+    axes[2] = [str(i) for i in range(data.shape[2])]
+    names = ['Epoch', 'Time', 'Channel']
+    units = ['#', 'ms', '#']
+    dat_test = Data(data=data, axes=axes, names=names, units=units)
+    dat_test.fs = 1000
+
+    # map labels -1 -> 0
+    dat_test.axes[0][dat_test.axes[0] == -1] = 0
+    dat_train.axes[0][dat_train.axes[0] == -1] = 0
+
+    return dat_train, dat_test
+
 
 def load_bcicomp3_ds2(filename):
     """Load the BCI Competition III Data Set 2.
@@ -359,5 +425,4 @@ def load_bcicomp3_ds2(filename):
     markers.sort()
     dat.markers = markers[:]
     return dat
-
 
