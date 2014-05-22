@@ -55,9 +55,138 @@
 </div>
 <div class="section" id="module-wyrm.io">
 <span id="wyrm-io-module"></span><h2>wyrm.io module<a class="headerlink" href="#module-wyrm.io" title="Permalink to this headline">¶</a></h2>
-<p>Input/Output methods.</p>
-<p>This module provides methods for loading and saving data into various
-formats.</p>
+<p>Various input/output methods.</p>
+<p>This module provides methods for loading and saving data from- and into
+various formats.</p>
+<dl class="function">
+<dt id="wyrm.io.convert_mushu_data">
+<tt class="descclassname">wyrm.io.</tt><tt class="descname">convert_mushu_data</tt><big>(</big><em>data</em>, <em>markers</em>, <em>fs</em>, <em>channels</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#convert_mushu_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.convert_mushu_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert mushu data into wyrm&#8217;s <tt class="docutils literal"><span class="pre">Data</span></tt> format.</p>
+<p>This convenience method creates a continuous <tt class="docutils literal"><span class="pre">Data</span></tt> object from
+the parameters given. The timeaxis always starts from zero and its
+values are calculated from the sampling frequency <tt class="docutils literal"><span class="pre">fs</span></tt> and the
+length of <tt class="docutils literal"><span class="pre">data</span></tt>. The <tt class="docutils literal"><span class="pre">names</span></tt> and <tt class="docutils literal"><span class="pre">units</span></tt> attributes are
+filled with default vaules.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : 2d array</p>
+<blockquote>
+<div><p>an 2 dimensional numpy array with the axes: (time, channel)</p>
+</div></blockquote>
+<p><strong>markers</strong> : list of tuples: (float, str)</p>
+<blockquote>
+<div><p>a list of markers. Each element is a tuple of timestamp and
+string. The timestamp is the time in ms relative to the onset of
+the block of data. Note that negative values are <em>allowed</em> as
+well as values bigger than the length of the block of data
+returned. That is to be interpreted as a marker from the last
+block and a marker for a future block respectively.</p>
+</div></blockquote>
+<p><strong>fs</strong> : float</p>
+<blockquote>
+<div><p>the sampling frequency, this number is used to calculate the
+timeaxis for the data</p>
+</div></blockquote>
+<p><strong>channels</strong> : list or 1d array of strings</p>
+<blockquote>
+<div><p>the channel names</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>cnt</strong> : continuous <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://github.com/venthur/mushu">https://github.com/venthur/mushu</a></p>
+<p class="rubric">Examples</p>
+<p>Assuming that <tt class="docutils literal"><span class="pre">amp</span></tt> is an Amplifier instance from <tt class="docutils literal"><span class="pre">libmushu</span></tt>,
+already configured but not started yet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">amp_fs</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">get_sampling_frequency</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">amp_channels</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">amp</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">data</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">cnt</span> <span class="o">=</span> <span class="n">convert_mushu_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">markers</span><span class="p">,</span> <span class="n">amp_fs</span><span class="p">,</span> <span class="n">amp_channels</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c"># some more code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">amp</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.io.load_bcicomp3_ds1">
+<tt class="descclassname">wyrm.io.</tt><tt class="descname">load_bcicomp3_ds1</tt><big>(</big><em>dirname</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#load_bcicomp3_ds1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.load_bcicomp3_ds1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the BCI Competition III Data Set 1.</p>
+<p>This method loads the data set and converts it into Wyrm&#8217;s <tt class="docutils literal"><span class="pre">Data</span></tt>
+format. Before you use it, you have to download the training- and
+test data in Matlab format and unpack it into a directory.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you need the true labels of the test sets, you&#8217;ll have to
+download them separately from
+<a class="reference external" href="http://bbci.de/competition/iii/results/index.html#labels">http://bbci.de/competition/iii/results/index.html#labels</a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dirname</strong> : str</p>
+<blockquote>
+<div><p>the directory where the <tt class="docutils literal"><span class="pre">Competition_train.mat</span></tt> and
+<tt class="docutils literal"><span class="pre">Competition_test.mat</span></tt> are located</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>epo_train, epo_test</strong> : epoched <tt class="docutils literal"><span class="pre">Data</span></tt> objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">epo_test</span><span class="p">,</span> <span class="n">epo_train</span> <span class="o">=</span> <span class="n">load_bcicomp3_ds1</span><span class="p">(</span><span class="s">&#39;/home/foo/bcicomp3_dataset1/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.io.load_bcicomp3_ds2">
+<tt class="descclassname">wyrm.io.</tt><tt class="descname">load_bcicomp3_ds2</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#load_bcicomp3_ds2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.load_bcicomp3_ds2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the BCI Competition III Data Set 2.</p>
+<p>This method loads the data set and converts it into Wyrm&#8217;s <tt class="docutils literal"><span class="pre">Data</span></tt>
+format. Before you use it, you have to download the data set in
+Matlab format and unpack it. The directory with the extracted files
+must contain the <tt class="docutils literal"><span class="pre">Subject_*.mat</span></tt>- and the <tt class="docutils literal"><span class="pre">eloc64.txt</span></tt> files.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you need the true labels of the test sets, you&#8217;ll have to
+download them separately from
+<a class="reference external" href="http://bbci.de/competition/iii/results/index.html#labels">http://bbci.de/competition/iii/results/index.html#labels</a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filename</strong> : str</p>
+<blockquote>
+<div><p>The path to the matlab file to load</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>cnt</strong> : continuous <cite>Data</cite> object</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">load_bcicomp3_ds2</span><span class="p">(</span><span class="s">&#39;/home/foo/data/Subject_A_Train.mat&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="function">
 <dt id="wyrm.io.load_brain_vision_data">
 <tt class="descclassname">wyrm.io.</tt><tt class="descname">load_brain_vision_data</tt><big>(</big><em>vhdr</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#load_brain_vision_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.load_brain_vision_data" title="Permalink to this definition">¶</a></dt>

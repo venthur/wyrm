@@ -51,10 +51,10 @@
           <div class="body">
             
   <h1>Source code for wyrm.io</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot;Input/Output methods.</span>
+<span class="sd">&quot;&quot;&quot;Various input/output methods.</span>
 
-<span class="sd">This module provides methods for loading and saving data into various</span>
-<span class="sd">formats.</span>
+<span class="sd">This module provides methods for loading and saving data from- and into</span>
+<span class="sd">various formats.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -66,6 +66,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
 
 <span class="kn">from</span> <span class="nn">wyrm.types</span> <span class="kn">import</span> <span class="n">Data</span>
 
@@ -232,6 +233,249 @@
     <span class="n">dat</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
     <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
     <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span>
+    <span class="k">return</span> <span class="n">dat</span>
+
+
+<span class="k">def</span> <span class="nf">convert_mushu_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">markers</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">channels</span><span class="p">):</span></div>
+<div class="viewcode-block" id="convert_mushu_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.convert_mushu_data">[docs]</a>    <span class="sd">&quot;&quot;&quot;Convert mushu data into wyrm&#39;s ``Data`` format.</span>
+
+<span class="sd">    This convenience method creates a continuous ``Data`` object from</span>
+<span class="sd">    the parameters given. The timeaxis always starts from zero and its</span>
+<span class="sd">    values are calculated from the sampling frequency ``fs`` and the</span>
+<span class="sd">    length of ``data``. The ``names`` and ``units`` attributes are</span>
+<span class="sd">    filled with default vaules.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : 2d array</span>
+<span class="sd">        an 2 dimensional numpy array with the axes: (time, channel)</span>
+<span class="sd">    markers : list of tuples: (float, str)</span>
+<span class="sd">        a list of markers. Each element is a tuple of timestamp and</span>
+<span class="sd">        string. The timestamp is the time in ms relative to the onset of</span>
+<span class="sd">        the block of data. Note that negative values are *allowed* as</span>
+<span class="sd">        well as values bigger than the length of the block of data</span>
+<span class="sd">        returned. That is to be interpreted as a marker from the last</span>
+<span class="sd">        block and a marker for a future block respectively.</span>
+<span class="sd">    fs : float</span>
+<span class="sd">        the sampling frequency, this number is used to calculate the</span>
+<span class="sd">        timeaxis for the data</span>
+<span class="sd">    channels : list or 1d array of strings</span>
+<span class="sd">        the channel names</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cnt : continuous ``Data`` object</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Assuming that ``amp`` is an Amplifier instance from ``libmushu``,</span>
+<span class="sd">    already configured but not started yet:</span>
+
+<span class="sd">    &gt;&gt;&gt; amp_fs = amp.get_sampling_frequency()</span>
+<span class="sd">    &gt;&gt;&gt; amp_channels = amp.get_channels()</span>
+<span class="sd">    &gt;&gt;&gt; amp.start()</span>
+<span class="sd">    &gt;&gt;&gt; while True:</span>
+<span class="sd">    ...     data, markers = amp.get_data()</span>
+<span class="sd">    ...     cnt = convert_mushu_data(data, markers, amp_fs, amp_channels)</span>
+<span class="sd">    ...     # some more code</span>
+<span class="sd">    &gt;&gt;&gt; amp.stop()</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    https://github.com/venthur/mushu</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">chan_axis</span> <span class="o">=</span> <span class="n">channels</span><span class="p">[:]</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">time_axis</span><span class="p">,</span> <span class="n">chan_axis</span><span class="p">]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;channel&#39;</span><span class="p">]</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;uV&#39;</span><span class="p">,</span> <span class="s">&#39;#&#39;</span><span class="p">]</span>
+    <span class="n">cnt</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
+    <span class="n">cnt</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span><span class="p">[:]</span>
+    <span class="n">cnt</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+    <span class="k">return</span> <span class="n">cnt</span>
+
+
+<span class="k">def</span> <span class="nf">load_bcicomp3_ds1</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span></div>
+<div class="viewcode-block" id="load_bcicomp3_ds1"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_bcicomp3_ds1">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load the BCI Competition III Data Set 1.</span>
+
+<span class="sd">    This method loads the data set and converts it into Wyrm&#39;s ``Data``</span>
+<span class="sd">    format. Before you use it, you have to download the training- and</span>
+<span class="sd">    test data in Matlab format and unpack it into a directory.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        If you need the true labels of the test sets, you&#39;ll have to</span>
+<span class="sd">        download them separately from</span>
+<span class="sd">        http://bbci.de/competition/iii/results/index.html#labels</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dirname : str</span>
+<span class="sd">        the directory where the ``Competition_train.mat`` and</span>
+<span class="sd">        ``Competition_test.mat`` are located</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epo_train, epo_test : epoched ``Data`` objects</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; epo_test, epo_train = load_bcicomp3_ds1(&#39;/home/foo/bcicomp3_dataset1/&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># construct the filenames from the dirname</span>
+    <span class="n">training_file</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">dirname</span><span class="p">,</span> <span class="s">&#39;Competition_train.mat&#39;</span><span class="p">])</span>
+    <span class="n">test_file</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">dirname</span><span class="p">,</span> <span class="s">&#39;Competition_test.mat&#39;</span><span class="p">])</span>
+
+    <span class="c"># load the training data</span>
+    <span class="n">training_data_mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">training_file</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">training_data_mat</span><span class="p">[</span><span class="s">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">training_data_mat</span><span class="p">[</span><span class="s">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;int&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="c"># convert into wyrm Data</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Class&#39;</span><span class="p">,</span> <span class="s">&#39;Time&#39;</span><span class="p">,</span> <span class="s">&#39;Channel&#39;</span><span class="p">]</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;#&#39;</span><span class="p">,</span> <span class="s">&#39;ms&#39;</span><span class="p">,</span> <span class="s">&#39;#&#39;</span><span class="p">]</span>
+    <span class="n">dat_train</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
+    <span class="n">dat_train</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">dat_train</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;pinky&#39;</span><span class="p">,</span> <span class="s">&#39;tongue&#39;</span><span class="p">]</span>
+
+    <span class="c"># load the test data</span>
+    <span class="n">test_data_mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">test_file</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">test_data_mat</span><span class="p">[</span><span class="s">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;double&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c"># convert into wyrm Data</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">]</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Epoch&#39;</span><span class="p">,</span> <span class="s">&#39;Time&#39;</span><span class="p">,</span> <span class="s">&#39;Channel&#39;</span><span class="p">]</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;#&#39;</span><span class="p">,</span> <span class="s">&#39;ms&#39;</span><span class="p">,</span> <span class="s">&#39;#&#39;</span><span class="p">]</span>
+    <span class="n">dat_test</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
+    <span class="n">dat_test</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="mi">1000</span>
+
+    <span class="c"># map labels -1 -&gt; 0</span>
+    <span class="n">dat_test</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">dat_test</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dat_train</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">dat_train</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">dat_train</span><span class="p">,</span> <span class="n">dat_test</span>
+
+
+<span class="k">def</span> <span class="nf">load_bcicomp3_ds2</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span></div>
+<div class="viewcode-block" id="load_bcicomp3_ds2"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_bcicomp3_ds2">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load the BCI Competition III Data Set 2.</span>
+
+<span class="sd">    This method loads the data set and converts it into Wyrm&#39;s ``Data``</span>
+<span class="sd">    format. Before you use it, you have to download the data set in</span>
+<span class="sd">    Matlab format and unpack it. The directory with the extracted files</span>
+<span class="sd">    must contain the ``Subject_*.mat``- and the ``eloc64.txt`` files.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        If you need the true labels of the test sets, you&#39;ll have to</span>
+<span class="sd">        download them separately from</span>
+<span class="sd">        http://bbci.de/competition/iii/results/index.html#labels</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        The path to the matlab file to load</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cnt : continuous `Data` object</span>
+
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; dat = load_bcicomp3_ds2(&#39;/home/foo/data/Subject_A_Train.mat&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">STIMULUS_CODE</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c"># cols from left to right</span>
+        <span class="mi">1</span> <span class="p">:</span> <span class="s">&quot;agmsy5&quot;</span><span class="p">,</span>
+        <span class="mi">2</span> <span class="p">:</span> <span class="s">&quot;bhntz6&quot;</span><span class="p">,</span>
+        <span class="mi">3</span> <span class="p">:</span> <span class="s">&quot;ciou17&quot;</span><span class="p">,</span>
+        <span class="mi">4</span> <span class="p">:</span> <span class="s">&quot;djpv28&quot;</span><span class="p">,</span>
+        <span class="mi">5</span> <span class="p">:</span> <span class="s">&quot;ekqw39&quot;</span><span class="p">,</span>
+        <span class="mi">6</span> <span class="p">:</span> <span class="s">&quot;flrx4_&quot;</span><span class="p">,</span>
+        <span class="c"># rows from top to bottom</span>
+        <span class="mi">7</span> <span class="p">:</span> <span class="s">&quot;abcdef&quot;</span><span class="p">,</span>
+        <span class="mi">8</span> <span class="p">:</span> <span class="s">&quot;ghijkl&quot;</span><span class="p">,</span>
+        <span class="mi">9</span> <span class="p">:</span> <span class="s">&quot;mnopqr&quot;</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="s">&quot;stuvwx&quot;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="s">&quot;yz1234&quot;</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="s">&quot;56789_&quot;</span>
+        <span class="p">}</span>
+
+    <span class="c"># load the matlab data</span>
+    <span class="n">data_mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="c"># load the channel names (the same for all datasets</span>
+    <span class="n">eloc_file</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s">&#39;eloc64.txt&#39;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">eloc_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">chan</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">chan</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+    <span class="c"># fix the channel names, some letters have the wrong capitalization</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;Z&#39;</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">)</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;FP&#39;</span><span class="p">,</span> <span class="s">&#39;Fp&#39;</span><span class="p">)</span>
+        <span class="n">channels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s2</span>
+    <span class="c"># The signal is recorded with 64 channels, bandpass filtered</span>
+    <span class="c"># 0.1-60Hz and digitized at 240Hz. The format is Character Epoch x</span>
+    <span class="c"># Samples x Channels</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data_mat</span><span class="p">[</span><span class="s">&#39;Signal&#39;</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;double&#39;</span><span class="p">)</span>
+    <span class="c"># For each sample: 1 if a row/colum was flashed, 0 otherwise</span>
+    <span class="n">flashing</span> <span class="o">=</span> <span class="n">data_mat</span><span class="p">[</span><span class="s">&#39;Flashing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c">#flashing = np.flatnonzero((np.diff(a) == 1)) + 1</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flashing</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flashing</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">flashing</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">flashing</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flashing</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">flashing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+    <span class="c"># For each sample: 0 when no row/colum was intensified,</span>
+    <span class="c"># 1..6 for intensified columns, 7..12 for intensified rows</span>
+    <span class="n">stimulus_code</span> <span class="o">=</span> <span class="n">data_mat</span><span class="p">[</span><span class="s">&#39;StimulusCode&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">stimulus_code</span> <span class="o">=</span> <span class="n">stimulus_code</span><span class="p">[</span><span class="n">flashing</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="c"># 0 if no row/col was intensified or the intensified did not contain</span>
+    <span class="c"># the target character, 1 otherwise</span>
+    <span class="n">stimulus_type</span> <span class="o">=</span> <span class="n">data_mat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;StimulusType&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c"># The target characters</span>
+    <span class="n">target_chars</span> <span class="o">=</span> <span class="n">data_mat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;TargetChar&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="mi">240</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">timeaxis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">fs</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">,</span> <span class="n">channels</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;channel&#39;</span><span class="p">],</span> <span class="n">units</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;ms&#39;</span><span class="p">,</span> <span class="s">&#39;#&#39;</span><span class="p">])</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
+    <span class="c"># preparing the markers</span>
+    <span class="n">target_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">((</span><span class="n">flashing</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">stimulus_type</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stimulus_type</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">nontarget_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">((</span><span class="n">flashing</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">stimulus_type</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stimulus_type</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">flashing</span> <span class="o">=</span> <span class="p">(</span><span class="n">flashing</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">flashing</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="p">,</span> <span class="s">&#39;flashing&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">timeaxis</span><span class="p">[</span><span class="n">flashing</span><span class="p">]]</span>
+    <span class="n">targets</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="p">,</span> <span class="s">&#39;target&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">timeaxis</span><span class="p">[</span><span class="n">target_mask</span><span class="p">]]</span>
+    <span class="n">nontargets</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="p">,</span> <span class="s">&#39;nontarget&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">timeaxis</span><span class="p">[</span><span class="n">nontarget_mask</span><span class="p">]]</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">stimulus_code</span> <span class="o">=</span> <span class="n">stimulus_code</span><span class="p">[:]</span>
+    <span class="n">stimulus_code</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">([</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">flashing</span><span class="p">],</span> <span class="p">[</span><span class="n">STIMULUS_CODE</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">stimulus_code</span><span class="p">])</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="n">flashing</span><span class="p">[:]</span>
+    <span class="n">markers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+    <span class="n">markers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">nontargets</span><span class="p">)</span>
+    <span class="n">markers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">stimulus_code</span><span class="p">)</span>
+    <span class="n">markers</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span><span class="p">[:]</span>
     <span class="k">return</span> <span class="n">dat</span>
 </pre></div></div>
 
