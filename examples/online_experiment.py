@@ -62,11 +62,8 @@ def online_experiment(amp, clf):
     # docs dammit!
     # I assume it should be 12 = 240 / 20 (i.e. for subsampling)
     buf = BlockBuffer(50)
-
     rb = RingBuffer(5000)
 
-    data = None
-    markers = []
     fn = amp.get_sampling_frequency() / 2
     b_low, a_low = proc.signal.butter(16, [30 / fn], btype='low')
     b_high, a_high = proc.signal.butter(5, [.4 / fn], btype='high')
@@ -81,7 +78,7 @@ def online_experiment(amp, clf):
 
     letter_prob = {i : 0 for i in 'abcdefghijklmnopqrstuvwxyz123456789_'}
     endresult = []
-    while 1:
+    while True:
         # turn on for 'real time'
         #time.sleep(0.01)
 
