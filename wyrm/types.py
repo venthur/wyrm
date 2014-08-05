@@ -356,7 +356,8 @@ class RingBuffer(object):
         markers : list of (float, str)
 
         """
-        return map(lambda x: [x[0] + steps / self.fs * 1000, x[1]], markers)
+        return [[x[0] + steps / self.fs * 1000, x[1]] for x in markers]
+
 
     def append(self, dat):
         """Append data to the Ringbuffer, overwriting old data if necessary.

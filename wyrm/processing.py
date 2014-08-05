@@ -795,7 +795,7 @@ def append_cnt(dat, dat2, timeaxis=-2, extra=None):
         # move the markers from dat2 to the right by dat-milliseconds
         ms = dat.data.shape[timeaxis] / dat.fs * 1000
         markers1 = dat.markers[:]
-        markers2 = map(lambda x: [x[0]+ms, x[1]], dat2.markers)
+        markers2 = [[x[0]+ms, x[1]] for x in dat2.markers]
         markers1.extend(markers2)
         cnt.markers = markers1
     # fix the timeaxis from 0, 1, 2, 0, 1, 2 -> 0, 1, 2, 3, 4, 5
@@ -1028,7 +1028,7 @@ def clear_markers(dat, timeaxis=-2):
     sample_len = 1000 / dat.fs
     markers = dat.markers[:]
     min, max = dat.axes[timeaxis][0], dat.axes[timeaxis][-1] + sample_len
-    markers = filter(lambda x: min <= x[0] < max, markers)
+    markers = [x for x in markers if min <= x[0] < max]
     return dat.copy(markers=markers)
 
 
