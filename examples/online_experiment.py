@@ -51,7 +51,8 @@ STIMULUS_CODE = {
 
 MARKER_DEF_TRAIN = {'target': ['target'], 'nontarget': ['nontarget']}
 MARKER_DEF_TEST = {i : [i] for i in STIMULUS_CODE.values()}
-SEG_IVAL = [0, 600]
+JUMPING_MEANS_IVALS = [220, 320], [350, 400], [600, 700]
+SEG_IVAL = [0, 800]
 
 
 def online_experiment(amp, clf):
@@ -61,13 +62,18 @@ def online_experiment(amp, clf):
     # docs dammit!
     # I assume it should be 12 = 240 / 20 (i.e. for subsampling)
     buf = BlockBuffer(50)
-    rb = RingBuffer(2000)
+
+    rb = RingBuffer(5000)
+
     data = None
     markers = []
     fn = amp.get_sampling_frequency() / 2
-    b, a = proc.signal.butter(5, [10 / fn], btype='low')
-    filter_state = proc.signal.lfilter_zi(b, a)
-    filter_state = np.array([filter_state for i in range(len(amp_channels))]).T
+    b_low, a_low = proc.signal.butter(16, [30 / fn], btype='low')
+    b_high, a_high = proc.signal.butter(5, [.4 / fn], btype='high')
+    filter_state_low = proc.signal.lfilter_zi(b_low, a_low)
+    filter_state_low = np.array([filter_state_low for i in range(len(amp_channels))]).T
+    filter_state_high = proc.signal.lfilter_zi(b_high, a_high)
+    filter_state_high = np.array([filter_state_high for i in range(len(amp_channels))]).T
     amp.start()
     markers_processed = 0
     current_letter_idx = 0
@@ -76,9 +82,15 @@ def online_experiment(amp, clf):
     letter_prob = {i : 0 for i in 'abcdefghijklmnopqrstuvwxyz123456789_'}
     endresult = []
     while 1:
-        time.sleep(0.01)
+        # turn on for 'real time'
+        #time.sleep(0.01)
+
         # get fresh data from the amp
         data, markers = amp.get_data()
+
+        # we should rather wait for a specific end-of-experiment marker
+        if len(data) == 0:
+            break
 
         # convert to cnt
         cnt = io.convert_mushu_data(data, markers, amp_fs, amp_channels)
@@ -90,8 +102,11 @@ def online_experiment(amp, clf):
             continue
 
         # band-pass and subsample
-        cnt, filter_state = proc.lfilter(cnt, b, a, timeaxis=-2, zi=filter_state)
-        cnt = proc.subsample(cnt, 20)
+        cnt, filter_state_low = proc.lfilter(cnt, b_low, a_low, zi=filter_state_low)
+        cnt, filter_state_high = proc.lfilter(cnt, b_high, a_high, zi=filter_state_high)
+
+        cnt = proc.subsample(cnt, 60)
+
         newsamples = cnt.data.shape[0]
 
         # enter the ringbuffer
@@ -102,7 +117,9 @@ def online_experiment(amp, clf):
         epo = proc.segment_dat(cnt, MARKER_DEF_TEST, SEG_IVAL, newsamples=newsamples)
         if not epo:
             continue
-        fv = proc.create_feature_vectors(epo)
+
+        fv = proc.jumping_means(epo, JUMPING_MEANS_IVALS)
+        fv = proc.create_feature_vectors(fv)
         logger.debug(markers_processed)
 
         lda_out = proc.lda_apply(fv, clf)
@@ -121,14 +138,15 @@ def online_experiment(amp, clf):
         logger.debug("".join([i[0] for i in sorted(letter_prob.items(), key=lambda x: x[1], reverse=True)]).replace(current_letter, " %s " % current_letter))
         logger.debug(TRUE_LABELS)
         logger.debug("".join(endresult))
+        # calculate the current accuracy
+        if len(endresult) > 0:
+            acc = np.count_nonzero(np.array(endresult) == np.array(list(TRUE_LABELS.lower()[:len(endresult)]))) / len(endresult)
+            print "Current accuracy:", acc * 100
         if len(endresult) == len(TRUE_LABELS):
             break
         #logger.debug("Result: %s" % result)
 
-    endresult = np.array(endresult)
-    true_labels = np.array(TRUE_LABELS)
-
-    acc = np.count_nonzero(endresult == true_labels) / len(true_labels)
+    acc = np.count_nonzero(np.array(endresult) == np.array(list(TRUE_LABELS.lower()[:len(endresult)]))) / len(endresult)
     print "Accuracy:", acc * 100
 
     amp.stop()
@@ -136,12 +154,28 @@ def online_experiment(amp, clf):
 
 def train(filename):
     dat = io.load_bcicomp3_ds2(filename)
-    b, a = proc.signal.butter(5, [10 / (dat.fs / 2)], btype='low')
+
+    fs_n = dat.fs / 2
+
+    b, a = proc.signal.butter(16, [30 / fs_n], btype='low')
     dat = proc.lfilter(dat, b, a)
-    dat = proc.subsample(dat, 20)
-    dat = proc.segment_dat(dat, MARKER_DEF_TRAIN, SEG_IVAL)
-    dat = proc.create_feature_vectors(dat)
-    clf = proc.lda_train(dat)
+
+    b, a = proc.signal.butter(5, [.4 / fs_n], btype='high')
+    dat = proc.lfilter(dat, b, a)
+
+    dat = proc.subsample(dat, 60)
+
+    epo = proc.segment_dat(dat, MARKER_DEF_TRAIN, SEG_IVAL)
+
+    #from wyrm import plot
+    #plot.plot_spatio_temporal_r2_values(proc.sort_channels(epo))
+    #print JUMPING_MEANS_IVALS
+    #plot.plt.show()
+
+    fv = proc.jumping_means(epo, JUMPING_MEANS_IVALS)
+    fv = proc.create_feature_vectors(fv)
+
+    clf = proc.lda_train(fv)
     return clf
 
 
@@ -152,6 +186,9 @@ if __name__ == '__main__':
     logger.debug('Starting Online experiment...')
     cnt = io.load_bcicomp3_ds2(TEST_DATA)
     amp = libmushu.get_amp('replayamp')
-    amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs)
+    # fast (non-realtime)
+    amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs, realtime=False, samples=1000)
+    # slow (realtime)
+    #amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs)
     online_experiment(amp, clf)
 
