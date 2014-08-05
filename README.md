@@ -9,9 +9,6 @@ Online documentation is available [here][wyrmdoc].
   [wyrmdoc]: http://venthur.github.io/wyrm
 
 
-[![Build Status](https://travis-ci.org/venthur/wyrm.png)](https://travis-ci.org/venthur/wyrm)
-
-
 ## Installation
 
 ### Using git
