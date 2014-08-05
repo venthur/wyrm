@@ -21,7 +21,6 @@ install:
 
 matrix:
     allow_failures:
-        - python: 3.4
         - python: pypy
 
 script: make test
