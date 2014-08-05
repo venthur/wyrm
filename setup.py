@@ -31,6 +31,7 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Education',
         'Topic :: Scientific/Engineering :: Human Machine Interfaces',
         'Topic :: Scientific/Engineering :: Medical Science Apps.',
