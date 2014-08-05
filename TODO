@@ -1,7 +1,6 @@
 Todo
 ====
 
-* plot r2 from top to botton left to right
 * firls (least squares filter)? anstatt butterworth
 * remove dead/noisy channels methods
 * Make sphinx document Data.__ne__, __nonzero__, etc.
@@ -9,6 +8,7 @@ Todo
 Done
 ====
 
+* plot r2 from top to botton left to right
 * LDA + lda shrink
 * check csp for correctness
 * check if all methods deal with emtpy data correctly and use truthy value of
