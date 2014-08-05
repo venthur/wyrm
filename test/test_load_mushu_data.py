@@ -22,7 +22,7 @@ class TestLoadMushuData(unittest.TestCase):
             fh.write('0.0 Marker 0\n')
             fh.write('500.0 Marker 500\n')
             fh.write('666.666 Marker 666.666\n')
-        with open('foo.eeg', 'w') as fh:
+        with open('foo.eeg', 'wb') as fh:
             for i in (0, 1, 33, 66, .1, .2):
                 fh.write(struct.pack('f', i))
 
