@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>wyrm.processing &mdash; Wyrm 0.7.beta documentation</title>
+    <title>wyrm.processing &mdash; Wyrm 0.8.beta documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.7.beta',
+        VERSION:     '0.8.beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/sidebar.js"></script>
-    <link rel="top" title="Wyrm 0.7.beta documentation" href="../../index.html" />
+    <link rel="top" title="Wyrm 0.8.beta documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Wyrm 0.7.beta documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Wyrm 0.8.beta documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -848,7 +848,7 @@
         <span class="c"># move the markers from dat2 to the right by dat-milliseconds</span>
         <span class="n">ms</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">/</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">*</span> <span class="mi">1000</span>
         <span class="n">markers1</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">markers</span><span class="p">[:]</span>
-        <span class="n">markers2</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">ms</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">dat2</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span>
+        <span class="n">markers2</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">ms</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dat2</span><span class="o">.</span><span class="n">markers</span><span class="p">]</span>
         <span class="n">markers1</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">markers2</span><span class="p">)</span>
         <span class="n">cnt</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers1</span>
     <span class="c"># fix the timeaxis from 0, 1, 2, 0, 1, 2 -&gt; 0, 1, 2, 3, 4, 5</span>
@@ -1081,7 +1081,7 @@
     <span class="n">sample_len</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span>
     <span class="n">markers</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">markers</span><span class="p">[:]</span>
     <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">sample_len</span>
-    <span class="n">markers</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">min</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">markers</span> <span class="k">if</span> <span class="nb">min</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">markers</span><span class="o">=</span><span class="n">markers</span><span class="p">)</span>
 
 </div>
@@ -1388,6 +1388,11 @@
     <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span>
     <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="n">factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="n">freq</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">%</span> <span class="n">factor</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c"># TODO: calculate the minimum blockbuffer size and output it</span>
+        <span class="c"># with an appropriate hint</span>
+        <span class="k">print</span> <span class="s">&#39;warning&#39;</span>
+        <span class="k">print</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span>
     <span class="n">idxmask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">factor</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">idxmask</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
     <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
@@ -2174,7 +2179,7 @@
         <li class="right" >
           <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Wyrm 0.7.beta documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Wyrm 0.8.beta documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
