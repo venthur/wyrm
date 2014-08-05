@@ -33,17 +33,17 @@ class TestAppend(unittest.TestCase):
 
     def test_append_with_extra(self):
         """append with extra must work with list and ndarrays."""
-        self.dat.a = range(10)
+        self.dat.a = list(range(10))
         self.dat.b = np.arange(10)
         dat = append(self.dat, self.dat, extra=['a', 'b'])
-        self.assertEqual(dat.a, range(10) + range(10))
+        self.assertEqual(dat.a, list(range(10)) + list(range(10)))
         np.testing.assert_array_equal(dat.b, np.concatenate([np.arange(10), np.arange(10)]))
 
     def test_append_with_different_extra_types(self):
         """append must throw a TypeError if extra-types don't match."""
         a = self.dat.copy()
         b = self.dat.copy()
-        a.a = range(10)
+        a.a = list(range(10))
         b.a = np.arange(10)
         with self.assertRaises(TypeError):
             append(a, b, extra=['a'])

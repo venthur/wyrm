@@ -35,7 +35,7 @@ class TestSelectEpochs(unittest.TestCase):
         np.testing.assert_array_equal(dat.data, self.dat.data[::2])
         np.testing.assert_array_equal(dat.axes[0], self.dat.axes[0][::2])
         # the full epo
-        dat = select_epochs(self.dat, range(self.dat.data.shape[0]))
+        dat = select_epochs(self.dat, list(range(self.dat.data.shape[0])))
         np.testing.assert_array_equal(dat.data, self.dat.data)
         np.testing.assert_array_equal(dat.axes[0], self.dat.axes[0])
         # remove one

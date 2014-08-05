@@ -6,6 +6,7 @@ import numpy as np
 
 from wyrm.types import Data, BlockBuffer
 from wyrm.processing import append_cnt
+from functools import reduce
 
 
 class TestBlockBuffer(unittest.TestCase):

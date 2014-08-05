@@ -35,10 +35,10 @@ class TestAppendEpo(unittest.TestCase):
 
     def test_append_epo_with_extra(self):
         """append_epo with extra must work with list and ndarrays."""
-        self.dat.a = range(10)
+        self.dat.a = list(range(10))
         self.dat.b = np.arange(10)
         dat = append_epo(self.dat, self.dat, extra=['a', 'b'])
-        self.assertEqual(dat.a, range(10) + range(10))
+        self.assertEqual(dat.a, list(range(10)) + list(range(10)))
         np.testing.assert_array_equal(dat.b, np.concatenate([np.arange(10), np.arange(10)]))
 
     def test_append_epo_with_different_class_names(self):

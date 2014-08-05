@@ -33,7 +33,7 @@ class TestRemoveEpochs(unittest.TestCase):
         self.assertEqual(dat.data.shape[0], 2)
         np.testing.assert_array_equal(dat.data, self.dat.data[1::2])
         # the full epo
-        dat = remove_epochs(self.dat, range(self.dat.data.shape[0]))
+        dat = remove_epochs(self.dat, list(range(self.dat.data.shape[0])))
         np.testing.assert_array_equal(dat.data.shape[0], 0)
 
     def test_remove_epochs_with_cnt(self):

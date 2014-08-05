@@ -319,7 +319,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
         l.sort(key=lambda c_list: c_list[1])
 
     # calculate the needed dimensions of the grid
-    columns = map(len, channel_lists)
+    columns = list(map(len, channel_lists))
     columns = [value for value in columns if value != 0]
 
     # add another axes to the first row for the scale
@@ -862,7 +862,7 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     xx = np.linspace(min(x), max(x), 500)
     yy = np.linspace(min(y), max(y), 500)
     xx, yy = np.meshgrid(xx, yy)
-    f = interpolate.LinearNDInterpolator(zip(x, y), z)
+    f = interpolate.LinearNDInterpolator(list(zip(x, y)), z)
     zz = f(xx, yy)
     # draw the contour map
     ctr = ax.contourf(xx, yy, zz, 20, vmin=vmin, vmax=vmax)
@@ -884,7 +884,7 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     ax.get_yaxis().set_visible(False)
     # draw the channel names
     if annotate:
-        for i in zip(channels, zip(x, y)):
+        for i in zip(channels, list(zip(x, y))):
             ax.annotate(" " + i[0], i[1])
     ax.set_aspect(1)
     plt.sci(ctr)

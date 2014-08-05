@@ -15,7 +15,7 @@ FS = 10
 class TestConvertMushuData(unittest.TestCase):
 
     def setUp(self):
-        xv, yv = np.meshgrid(range(CHANNELS), range(SAMPLES))
+        xv, yv = np.meshgrid(list(range(CHANNELS)), list(range(SAMPLES)))
         self.data = xv * 10 + yv
         self.channels = ['ch %i' % i for i in range(CHANNELS)]
         self.time = np.linspace(0, SAMPLES / FS * 1000, SAMPLES, endpoint=False)

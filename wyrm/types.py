@@ -210,6 +210,25 @@ class Data(object):
         """
         return self.data.size
 
+    # This method was added for Python3 compatibility
+    def __bool__(self):
+        """Return truth value of the object instance.
+
+        This method returns False if the __nonzero__ value is 0 else
+        True.
+
+        Returns
+        -------
+        truth : Bool
+            ``False`` if :func:`__nonzero__` was ``0``, else ``True``.
+
+        See Also
+        --------
+        :func:`__nonzero__`
+
+        """
+        return False if self.__nonzero__() == 0 else True
+
     def __str__(self):
         """Human readable representation for a data object.
 
@@ -259,7 +278,7 @@ class Data(object):
 
         """
         obj = copy.copy(self)
-        for name, value in kwargs.items():
+        for name, value in list(kwargs.items()):
             setattr(obj, name, value)
         return copy.deepcopy(obj)
 
@@ -357,7 +376,6 @@ class RingBuffer(object):
 
         """
         return [[x[0] + steps / self.fs * 1000, x[1]] for x in markers]
-
 
     def append(self, dat):
         """Append data to the Ringbuffer, overwriting old data if necessary.
@@ -562,7 +580,7 @@ class BlockBuffer(object):
             dat2.axes[0] = dat2.axes[0][-remaining:]
             t0 = dat2.axes[0][0]
             dat2.axes[0] -= t0
-            dat2.markers = map(lambda x: [x[0] - t0, x[1]], dat2.markers)
+            dat2.markers = [[x[0] - t0, x[1]] for x in dat2.markers]
             dat2 = clear_markers(dat2)
             # Security check
             if len(dat1.markers) + len(dat2.markers) != len(marker_orig):

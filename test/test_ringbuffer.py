@@ -126,12 +126,12 @@ class TestRingBuffer(unittest.TestCase):
         self.rb = RingBuffer(100)
         self.rb.append(d0_w_markers)
         data = self.rb.get()
-        self.assertEqual(data.markers, map(lambda x: [x[0]-10, x[1]], m0[-10:]))
+        self.assertEqual(data.markers, [[x[0]-10, x[1]] for x in m0[-10:]])
         # test full add on full buffer
         self.rb = RingBuffer(100)
         m0 = [[i, i] for i in range(10)]
         self.rb.append(data_factory(np.arange(30).reshape(10, 3), markers=m0))
-        m0 = map(lambda x: [x[0], x[1]+10], m0)
+        m0 = [[x[0], x[1]+10] for x in m0]
         self.rb.append(data_factory(np.arange(30).reshape(10, 3), markers=m0))
         data = self.rb.get()
         self.assertEqual(data.markers, m0)
