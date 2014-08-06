@@ -67,10 +67,10 @@ def online_experiment(amp, clf):
     fn = amp.get_sampling_frequency() / 2
     b_low, a_low = proc.signal.butter(16, [30 / fn], btype='low')
     b_high, a_high = proc.signal.butter(5, [.4 / fn], btype='high')
-    filter_state_low = proc.signal.lfilter_zi(b_low, a_low)
-    filter_state_low = np.array([filter_state_low for i in range(len(amp_channels))]).T
-    filter_state_high = proc.signal.lfilter_zi(b_high, a_high)
-    filter_state_high = np.array([filter_state_high for i in range(len(amp_channels))]).T
+
+    zi_low = proc.lfilter_zi(b_low, a_low, len(amp_channels))
+    zi_high = proc.lfilter_zi(b_high, a_high, len(amp_channels))
+
     amp.start()
     markers_processed = 0
     current_letter_idx = 0
@@ -99,8 +99,8 @@ def online_experiment(amp, clf):
             continue
 
         # band-pass and subsample
-        cnt, filter_state_low = proc.lfilter(cnt, b_low, a_low, zi=filter_state_low)
-        cnt, filter_state_high = proc.lfilter(cnt, b_high, a_high, zi=filter_state_high)
+        cnt, zi_low = proc.lfilter(cnt, b_low, a_low, zi=zi_low)
+        cnt, zi_high = proc.lfilter(cnt, b_high, a_high, zi=zi_high)
 
         cnt = proc.subsample(cnt, 60)
 

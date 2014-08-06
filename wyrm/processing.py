@@ -871,7 +871,7 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
 
     See Also
     --------
-    :func:`filtfilt`, :func:`scipy.signal.lfilter`,
+    :func:`lfilter_zi`, :func:`filtfilt`, :func:`scipy.signal.lfilter`,
     :func:`scipy.signal.butter`, :func:`scipy.signal.butterord`
 
     Examples
@@ -898,11 +898,7 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
     >>> # pre-calculate the filter coefficients and the initial filter
     >>> # state
     >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
-    >>> filter_state = proc.signal.lfilter_zi(b, a)
-    >>> # Our input will be N-dimensional (N == number of channels), so
-    >>> # we have to create the state for each dimension of the input
-    >>> # data
-    >>> filter_state = np.array([filter_state for in range(CHANNELS)])
+    >>> zi = proc.lfilter_zi(b, a, len(CHANNELS))
     >>> while 1:
     ...     data, markers = amp.get_data()
     ...     # convert incoming data into ``Data`` object
@@ -910,7 +906,7 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
     ...     # filter the data, note how filter now also returns the
     ...     # filter state which we feed back into the next call of
     ...     # ``filter``
-    ...     cnt, filter_state = lfilter(cnt, b, a, zi=filter_state)
+    ...     cnt, zi = lfilter(cnt, b, a, zi=zi)
     ...     ...
 
     """
@@ -974,6 +970,56 @@ def filtfilt(dat, b, a, timeaxis=-2):
     # TODO: should we use padlen and padtype?
     data = signal.filtfilt(b, a, dat.data, axis=timeaxis)
     return dat.copy(data=data)
+
+
+def lfilter_zi(b, a, n=1):
+    """Compute an initial state ``zi`` for the :func:`lfilter` function.
+
+    When ``n == 1`` (default), this method mainly delegates the call to
+    :func:`scipy.signal.lfilter_zi` and returns the result ``zi``. If
+    ``n > 1``, ``zi``  is repeated ``n`` times. This is useful if you
+    want to filter n-dimensional data like multi channel EEG.
+
+    Parameters
+    ----------
+    b, a : 1-d array
+        The IIR filter coefficients
+    n : int, optional
+        The desired width of the output vector. If ``n == 1`` the output
+        is simply the 1d zi vector. For ``n > 1``, the zi vector is
+        repeated ``n`` times.
+
+    Returns
+    -------
+    zi : n-d array
+        The initial state of the filter.
+
+    See Also
+    --------
+    :func:`lfilter`, :func:`scipy.signal.lfilter_zi`
+
+    Examples
+    --------
+
+    >>> # pre-calculate the filter coefficients and the initial filter
+    >>> # state
+    >>> b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype='band')
+    >>> zi = proc.lfilter_zi(b, a, len(CHANNELS))
+    >>> while 1:
+    ...     data, markers = amp.get_data()
+    ...     # convert incoming data into ``Data`` object
+    ...     cnt = Data(data, ...)
+    ...     # filter the data, note how filter now also returns the
+    ...     # filter state which we feed back into the next call of
+    ...     # ``filter``
+    ...     cnt, zi = lfilter(cnt, b, a, zi=zi)
+    ...     ...
+
+    """
+    zi = signal.lfilter_zi(b, a)
+    if n > 1:
+        zi = np.tile(zi, (n, 1)).T
+    return zi
 
 
 def clear_markers(dat, timeaxis=-2):
