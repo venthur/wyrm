@@ -14,7 +14,7 @@ import logging
 
 import numpy as np
 
-from wyrm.processing import append_cnt, clear_markers
+from wyrm.processing import append_cnt
 
 
 logging.basicConfig(level=logging.NOTSET)
@@ -565,27 +565,19 @@ class BlockBuffer(object):
             n = (self.dat.data.shape[0] // self.samples) * self.samples
             # first part
             dat1 = self.dat.copy()
-            dat1 = clear_markers(dat1)
             dat1.data = dat1.data[:n]
             dat1.axes[0] = dat1.axes[0][:n]
             # remaining (incomplete) part
             dat2 = self.dat.copy()
             dat2.data = dat2.data[n:]
             dat2.axes[0] = dat2.axes[0][n:]
+            # split the markers
             t0 = dat2.axes[0][0]
+            dat1.markers = [x for x in self.dat.markers if x[0] < t0]
+            dat2.markers = [x for x in self.dat.markers if x[0] >= t0]
+            # align the second part to t0
             dat2.axes[0] -= t0
             dat2.markers = [[x[0] - t0, x[1]] for x in dat2.markers]
-            dat2 = clear_markers(dat2)
-            # Security check
-            if len(dat1.markers) + len(dat2.markers) != len(marker_orig):
-                logger.error('Lost marker during data split.')
-                logger.error('Original Marker:')
-                logger.error(marker_orig)
-                logger.error('First Part (until %f):' % dat1.axes[0][-1])
-                logger.error(dat1.markers)
-                logger.error('Second Pard (from %f):' % t0)
-                logger.error(dat2.markers)
-                logger.error('Original Range: %f - %f' % (self.dat.axes[0][0], self.dat.axes[0][-1]))
             self.dat = dat2
             return dat1
 
