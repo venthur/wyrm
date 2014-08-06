@@ -486,12 +486,12 @@ class BlockBuffer(object):
 
     This buffer is a first-in-first-out (FIFO) buffer that returns data
     in multiples of a desired block length. The block length is defined
-    in milliseconds.
+    in samples.
 
     Parameters
     ----------
-    block_legnth : int, optional
-        the desired block length in ms
+    samples : int, optional
+        the desired block length in samples
 
     Examples
     --------
@@ -505,20 +505,20 @@ class BlockBuffer(object):
     ... cnt = bbuffer.get()
     ... if not cnt:
     ...     continue
-    ... # after here cnt is guaranteed to be in multiples of 10ms
+    ... # after here cnt is guaranteed to be in multiples of 10 samples
 
     """
 
-    def __init__(self, block_length=50):
+    def __init__(self, samples=50):
         """Initialize the Block Buffer.
 
         Parameters
         ----------
-        block_length : int, optional
-            the desired block length in ms
+        samples : int, optional
+            the desired block length in samples
 
         """
-        self.block_length = block_length
+        self.samples = samples
         self.dat = Data(np.array([]), [], [], [])
 
     def append(self, dat):
@@ -542,10 +542,10 @@ class BlockBuffer(object):
     def get(self):
         """Pop the contents of the Block Buffer.
 
-        The data returned has a length of multiples of ``block_length``.
-        If there is a fraction of ``block_length`` data more in the
-        buffer, that data is kept and future :meth:`append` operations
-        will append new data to it.
+        The data returned has a length of multiples of ``samples``. If
+        there is a fraction of ``samples`` data more in the buffer, that
+        data is kept and future :meth:`append` operations will append
+        new data to it.
 
         Returns
         -------
@@ -556,19 +556,15 @@ class BlockBuffer(object):
         empty = Data(np.array([]), [], [], [])
         if not self.dat:
             return empty
-        samples = self.block_length * self.dat.fs / 1000
-        if not samples.is_integer():
-            logger.error('Samples is not an integer, pleas check your block_length and sampling frequency. Rounding errors will lead to loss of samples.')
-        samples = int(samples)
-        if self.dat.data.shape[0] < samples:
+        if self.dat.data.shape[0] < self.samples:
             return empty
-        if self.dat.data.shape[0] % samples == 0:
+        if self.dat.data.shape[0] % self.samples == 0:
             ret = self.dat.copy()
             self.dat = empty
             return ret
         else:
             marker_orig = self.dat.markers[:]
-            remaining = self.dat.data.shape[0] % samples
+            remaining = self.dat.data.shape[0] % self.samples
             # first part
             dat1 = self.dat.copy()
             dat1.data = dat1.data[:-remaining]

@@ -58,10 +58,8 @@ SEG_IVAL = [0, 800]
 def online_experiment(amp, clf):
     amp_fs = amp.get_sampling_frequency()
     amp_channels = amp.get_channels()
-    # TODO: check the correct block buffer size (and write it in the
-    # docs dammit!
-    # I assume it should be 12 = 240 / 20 (i.e. for subsampling)
-    buf = BlockBuffer(50)
+
+    buf = BlockBuffer(4)
     rb = RingBuffer(5000)
 
     fn = amp.get_sampling_frequency() / 2
