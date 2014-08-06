@@ -561,16 +561,17 @@ class BlockBuffer(object):
             return ret
         else:
             marker_orig = self.dat.markers[:]
-            remaining = self.dat.data.shape[0] % self.samples
+            # number of samples to return
+            n = (self.dat.data.shape[0] // self.samples) * self.samples
             # first part
             dat1 = self.dat.copy()
-            dat1.data = dat1.data[:-remaining]
-            dat1.axes[0] = dat1.axes[0][:-remaining]
             dat1 = clear_markers(dat1)
+            dat1.data = dat1.data[:n]
+            dat1.axes[0] = dat1.axes[0][:n]
             # remaining (incomplete) part
             dat2 = self.dat.copy()
-            dat2.data = dat2.data[-remaining:]
-            dat2.axes[0] = dat2.axes[0][-remaining:]
+            dat2.data = dat2.data[n:]
+            dat2.axes[0] = dat2.axes[0][n:]
             t0 = dat2.axes[0][0]
             dat2.axes[0] -= t0
             dat2.markers = [[x[0] - t0, x[1]] for x in dat2.markers]
