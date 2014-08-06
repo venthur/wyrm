@@ -1123,7 +1123,8 @@ def select_ival(dat, ival, timeaxis=-2):
     axes = dat.axes[:]
     axes[timeaxis] = dat.axes[timeaxis].compress(mask)
     dat = dat.copy(data=data, axes=axes)
-    dat = clear_markers(dat)
+    if hasattr(dat, 'markers'):
+        dat.markers = [x for x in dat.markers if ival[0] <= x[0] < ival[1]]
     return dat
 
 
