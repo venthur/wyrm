@@ -519,7 +519,7 @@ class BlockBuffer(object):
 
         """
         self.samples = samples
-        self.dat = Data(np.array([]), [], [], [])
+        self.dat = None
 
     def append(self, dat):
         """Append data to the Block Buffer.
@@ -532,7 +532,7 @@ class BlockBuffer(object):
             continuous Data object
 
         """
-        if not self.dat:
+        if self.dat is None:
             self.dat = dat.copy()
         elif not dat:
             pass
@@ -553,14 +553,11 @@ class BlockBuffer(object):
             continuous Data object
 
         """
-        empty = Data(np.array([]), [], [], [])
-        if not self.dat:
-            return empty
-        if self.dat.data.shape[0] < self.samples:
-            return empty
+        if self.dat is None or self.dat.data.shape[0] < self.samples:
+            return Data(np.array([]), [], [], [])
         if self.dat.data.shape[0] % self.samples == 0:
             ret = self.dat.copy()
-            self.dat = empty
+            self.dat = None
             return ret
         else:
             marker_orig = self.dat.markers[:]
