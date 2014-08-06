@@ -436,6 +436,7 @@ class RingBuffer(object):
         if size + len(data) > self.length:
             move = self.length - (size + len(data))
             self.markers = self._move_markers(self.markers, move)
+        self.markers = [x for x in self.markers if x[0] >= 0]
         # /end of markers
         # we can write without wrapping around the buffer's end
         if self.idx + len(data) < self.length:
@@ -477,7 +478,6 @@ class RingBuffer(object):
         d = Data(data=data, axes=axes, names=self.names[:], units=self.units[:])
         d.markers = self.markers[:]
         d.fs = self.fs
-        d = clear_markers(d)
         return d
 
 
