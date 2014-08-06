@@ -1382,6 +1382,8 @@ def subsample(dat, freq, timeaxis=-2):
     assert dat.data.shape[timeaxis] == len(dat.axes[timeaxis])
     assert dat.fs % freq == 0
     factor = int(dat.fs / freq)
+    if dat.data.shape[timeaxis] % factor != 0:
+        logger.warning('Subsampling led to loss of %i samples, in an online setting consider using a BlockBuffer with a buffer size of a multiple of %i samples.' % (dat.data.shape[timeaxis] % factor, factor))
     idxmask = np.arange(dat.data.shape[timeaxis], step=factor)
     data = dat.data.take(idxmask, timeaxis)
     axes = dat.axes[:]
