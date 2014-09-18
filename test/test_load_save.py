@@ -33,7 +33,6 @@ class TestLoadMushuData(unittest.TestCase):
     def test_load_save(self):
         save(self.dat, FILENAME)
         dat = load(FILENAME)
-        print type(dat), dat
         self.assertTrue(isinstance(dat, Data))
         self.assertEqual(self.dat, dat)
 
