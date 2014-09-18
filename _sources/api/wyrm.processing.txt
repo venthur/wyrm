@@ -25,6 +25,7 @@ wyrm.processing
       lda_apply
       lda_train
       lfilter
+      lfilter_zi
       logarithm
       rectify_channels
       remove_channels

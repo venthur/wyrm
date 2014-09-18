@@ -66,7 +66,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">wyrm.processing</span> <span class="kn">import</span> <span class="n">append_cnt</span><span class="p">,</span> <span class="n">clear_markers</span>
+<span class="kn">from</span> <span class="nn">wyrm.processing</span> <span class="kn">import</span> <span class="n">append_cnt</span>
 
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">)</span>
@@ -427,7 +427,8 @@
 <span class="sd">        markers : list of (float, str)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">steps</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">]</span>
+        <span class="n">shift_ms</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">*</span> <span class="n">steps</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">shift_ms</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dat</span><span class="p">):</span>
 <div class="viewcode-block" id="RingBuffer.append"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.types.RingBuffer.append">[docs]</a>        <span class="sd">&quot;&quot;&quot;Append data to the Ringbuffer, overwriting old data if necessary.</span>
@@ -488,6 +489,7 @@
         <span class="k">if</span> <span class="n">size</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
             <span class="n">move</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="p">(</span><span class="n">size</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_move_markers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">,</span> <span class="n">move</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markers</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span>
         <span class="c"># /end of markers</span>
         <span class="c"># we can write without wrapping around the buffer&#39;s end</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
@@ -529,7 +531,6 @@
         <span class="n">d</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[:],</span> <span class="n">units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">[:])</span>
         <span class="n">d</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">markers</span><span class="p">[:]</span>
         <span class="n">d</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">clear_markers</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
 
 
@@ -538,12 +539,12 @@
 
 <span class="sd">    This buffer is a first-in-first-out (FIFO) buffer that returns data</span>
 <span class="sd">    in multiples of a desired block length. The block length is defined</span>
-<span class="sd">    in milliseconds.</span>
+<span class="sd">    in samples.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    block_legnth : int, optional</span>
-<span class="sd">        the desired block length in ms</span>
+<span class="sd">    samples : int, optional</span>
+<span class="sd">        the desired block length in samples</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -557,21 +558,21 @@
 <span class="sd">    ... cnt = bbuffer.get()</span>
 <span class="sd">    ... if not cnt:</span>
 <span class="sd">    ...     continue</span>
-<span class="sd">    ... # after here cnt is guaranteed to be in multiples of 10ms</span>
+<span class="sd">    ... # after here cnt is guaranteed to be in multiples of 10 samples</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_length</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize the Block Buffer.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        block_length : int, optional</span>
-<span class="sd">            the desired block length in ms</span>
+<span class="sd">        samples : int, optional</span>
+<span class="sd">            the desired block length in samples</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block_length</span> <span class="o">=</span> <span class="n">block_length</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="o">=</span> <span class="bp">None</span>
 
     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dat</span><span class="p">):</span>
 <div class="viewcode-block" id="BlockBuffer.append"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.types.BlockBuffer.append">[docs]</a>        <span class="sd">&quot;&quot;&quot;Append data to the Block Buffer.</span>
@@ -584,7 +585,7 @@
 <span class="sd">            continuous Data object</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">dat</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -594,10 +595,10 @@
     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
 <div class="viewcode-block" id="BlockBuffer.get"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.types.BlockBuffer.get">[docs]</a>        <span class="sd">&quot;&quot;&quot;Pop the contents of the Block Buffer.</span>
 
-<span class="sd">        The data returned has a length of multiples of ``block_length``.</span>
-<span class="sd">        If there is a fraction of ``block_length`` data more in the</span>
-<span class="sd">        buffer, that data is kept and future :meth:`append` operations</span>
-<span class="sd">        will append new data to it.</span>
+<span class="sd">        The data returned has a length of multiples of ``samples``. If</span>
+<span class="sd">        there is a fraction of ``samples`` data more in the buffer, that</span>
+<span class="sd">        data is kept and future :meth:`append` operations will append</span>
+<span class="sd">        new data to it.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -605,45 +606,31 @@
 <span class="sd">            continuous Data object</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">empty</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">empty</span>
-        <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="mi">1000</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">samples</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Samples is not an integer, pleas check your block_length and sampling frequency. Rounding errors will lead to loss of samples.&#39;</span><span class="p">)</span>
-        <span class="n">samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">samples</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">empty</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]),</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="o">=</span> <span class="n">empty</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="k">return</span> <span class="n">ret</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">marker_orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">markers</span><span class="p">[:]</span>
-            <span class="n">remaining</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">samples</span>
+            <span class="c"># number of samples to return</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span>
             <span class="c"># first part</span>
             <span class="n">dat1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">dat1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dat1</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="n">remaining</span><span class="p">]</span>
-            <span class="n">dat1</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat1</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="o">-</span><span class="n">remaining</span><span class="p">]</span>
-            <span class="n">dat1</span> <span class="o">=</span> <span class="n">clear_markers</span><span class="p">(</span><span class="n">dat1</span><span class="p">)</span>
+            <span class="n">dat1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dat1</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">dat1</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat1</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="n">n</span><span class="p">]</span>
             <span class="c"># remaining (incomplete) part</span>
             <span class="n">dat2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">dat2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dat2</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">remaining</span><span class="p">:]</span>
-            <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="n">remaining</span><span class="p">:]</span>
+            <span class="n">dat2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dat2</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span>
+            <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">n</span><span class="p">:]</span>
+            <span class="c"># split the markers</span>
             <span class="n">t0</span> <span class="o">=</span> <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dat1</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">t0</span><span class="p">]</span>
+            <span class="n">dat2</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">t0</span><span class="p">]</span>
+            <span class="c"># align the second part to t0</span>
             <span class="n">dat2</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">t0</span>
             <span class="n">dat2</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dat2</span><span class="o">.</span><span class="n">markers</span><span class="p">]</span>
-            <span class="n">dat2</span> <span class="o">=</span> <span class="n">clear_markers</span><span class="p">(</span><span class="n">dat2</span><span class="p">)</span>
-            <span class="c"># Security check</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat1</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat2</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">marker_orig</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Lost marker during data split.&#39;</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Original Marker:&#39;</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">marker_orig</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;First Part (until </span><span class="si">%f</span><span class="s">):&#39;</span> <span class="o">%</span> <span class="n">dat1</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">dat1</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Second Pard (from </span><span class="si">%f</span><span class="s">):&#39;</span> <span class="o">%</span> <span class="n">t0</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">dat2</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Original Range: </span><span class="si">%f</span><span class="s"> - </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dat</span> <span class="o">=</span> <span class="n">dat2</span>
             <span class="k">return</span> <span class="n">dat1</span>
 </pre></div></div></div>
@@ -688,7 +675,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2013, Bastian Venthur.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

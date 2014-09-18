@@ -924,7 +924,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`filtfilt`, :func:`scipy.signal.lfilter`,</span>
+<span class="sd">    :func:`lfilter_zi`, :func:`filtfilt`, :func:`scipy.signal.lfilter`,</span>
 <span class="sd">    :func:`scipy.signal.butter`, :func:`scipy.signal.butterord`</span>
 
 <span class="sd">    Examples</span>
@@ -951,11 +951,7 @@
 <span class="sd">    &gt;&gt;&gt; # pre-calculate the filter coefficients and the initial filter</span>
 <span class="sd">    &gt;&gt;&gt; # state</span>
 <span class="sd">    &gt;&gt;&gt; b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype=&#39;band&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; filter_state = proc.signal.lfilter_zi(b, a)</span>
-<span class="sd">    &gt;&gt;&gt; # Our input will be N-dimensional (N == number of channels), so</span>
-<span class="sd">    &gt;&gt;&gt; # we have to create the state for each dimension of the input</span>
-<span class="sd">    &gt;&gt;&gt; # data</span>
-<span class="sd">    &gt;&gt;&gt; filter_state = np.array([filter_state for in range(CHANNELS)])</span>
+<span class="sd">    &gt;&gt;&gt; zi = proc.lfilter_zi(b, a, len(CHANNELS))</span>
 <span class="sd">    &gt;&gt;&gt; while 1:</span>
 <span class="sd">    ...     data, markers = amp.get_data()</span>
 <span class="sd">    ...     # convert incoming data into ``Data`` object</span>
@@ -963,7 +959,7 @@
 <span class="sd">    ...     # filter the data, note how filter now also returns the</span>
 <span class="sd">    ...     # filter state which we feed back into the next call of</span>
 <span class="sd">    ...     # ``filter``</span>
-<span class="sd">    ...     cnt, filter_state = lfilter(cnt, b, a, zi=filter_state)</span>
+<span class="sd">    ...     cnt, zi = lfilter(cnt, b, a, zi=zi)</span>
 <span class="sd">    ...     ...</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1027,6 +1023,56 @@
     <span class="c"># TODO: should we use padlen and padtype?</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">timeaxis</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="lfilter_zi"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.lfilter_zi">[docs]</a><span class="k">def</span> <span class="nf">lfilter_zi</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute an initial state ``zi`` for the :func:`lfilter` function.</span>
+
+<span class="sd">    When ``n == 1`` (default), this method mainly delegates the call to</span>
+<span class="sd">    :func:`scipy.signal.lfilter_zi` and returns the result ``zi``. If</span>
+<span class="sd">    ``n &gt; 1``, ``zi``  is repeated ``n`` times. This is useful if you</span>
+<span class="sd">    want to filter n-dimensional data like multi channel EEG.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    b, a : 1-d array</span>
+<span class="sd">        The IIR filter coefficients</span>
+<span class="sd">    n : int, optional</span>
+<span class="sd">        The desired width of the output vector. If ``n == 1`` the output</span>
+<span class="sd">        is simply the 1d zi vector. For ``n &gt; 1``, the zi vector is</span>
+<span class="sd">        repeated ``n`` times.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zi : n-d array</span>
+<span class="sd">        The initial state of the filter.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`lfilter`, :func:`scipy.signal.lfilter_zi`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; # pre-calculate the filter coefficients and the initial filter</span>
+<span class="sd">    &gt;&gt;&gt; # state</span>
+<span class="sd">    &gt;&gt;&gt; b, a = signal.butter(butter_ord, [f_low / fn, f_high / fn], btype=&#39;band&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; zi = proc.lfilter_zi(b, a, len(CHANNELS))</span>
+<span class="sd">    &gt;&gt;&gt; while 1:</span>
+<span class="sd">    ...     data, markers = amp.get_data()</span>
+<span class="sd">    ...     # convert incoming data into ``Data`` object</span>
+<span class="sd">    ...     cnt = Data(data, ...)</span>
+<span class="sd">    ...     # filter the data, note how filter now also returns the</span>
+<span class="sd">    ...     # filter state which we feed back into the next call of</span>
+<span class="sd">    ...     # ``filter``</span>
+<span class="sd">    ...     cnt, zi = lfilter(cnt, b, a, zi=zi)</span>
+<span class="sd">    ...     ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zi</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter_zi</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">zi</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">zi</span>
 
 </div>
 <div class="viewcode-block" id="clear_markers"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.clear_markers">[docs]</a><span class="k">def</span> <span class="nf">clear_markers</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
@@ -1130,7 +1176,8 @@
     <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
     <span class="n">dat</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
-    <span class="n">dat</span> <span class="o">=</span> <span class="n">clear_markers</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;markers&#39;</span><span class="p">):</span>
+        <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="k">if</span> <span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">dat</span>
 
 </div>
@@ -1389,10 +1436,7 @@
     <span class="k">assert</span> <span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="n">factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">fs</span> <span class="o">/</span> <span class="n">freq</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">%</span> <span class="n">factor</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c"># TODO: calculate the minimum blockbuffer size and output it</span>
-        <span class="c"># with an appropriate hint</span>
-        <span class="k">print</span> <span class="s">&#39;warning&#39;</span>
-        <span class="k">print</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;Subsampling led to loss of </span><span class="si">%i</span><span class="s"> samples, in an online setting consider using a BlockBuffer with a buffer size of a multiple of </span><span class="si">%i</span><span class="s"> samples.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">%</span> <span class="n">factor</span><span class="p">,</span> <span class="n">factor</span><span class="p">))</span>
     <span class="n">idxmask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">factor</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">idxmask</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
     <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
@@ -2185,7 +2229,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2013, Bastian Venthur.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

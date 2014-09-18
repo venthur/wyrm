@@ -10,11 +10,13 @@ wyrm.io
    .. autosummary::
    
       convert_mushu_data
+      load
       load_bcicomp3_ds1
       load_bcicomp3_ds2
       load_brain_vision_data
       load_mushu_data
       loadmat
+      save
    
    
 

@@ -118,6 +118,33 @@ already configured but not started yet:</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.io.load">
+<tt class="descclassname">wyrm.io.</tt><tt class="descname">load</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a <tt class="docutils literal"><span class="pre">Data</span></tt> object from a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote class="last">
+<div><p>the data loaded from the file</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.io.save" title="wyrm.io.save"><tt class="xref py py-func docutils literal"><span class="pre">save()</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">io</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;foo.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;foo.npy&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.io.load_bcicomp3_ds1">
 <tt class="descclassname">wyrm.io.</tt><tt class="descname">load_bcicomp3_ds1</tt><big>(</big><em>dirname</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#load_bcicomp3_ds1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.load_bcicomp3_ds1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load the BCI Competition III Data Set 1.</p>
@@ -258,6 +285,39 @@ different files: <cite>.eeg</cite>, <cite>.marker</cite>, and <cite>.meta</cite>
 </table>
 <p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">load_mushu_data</span><span class="p">(</span><span class="s">&#39;testrecording.meta&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.io.save">
+<tt class="descclassname">wyrm.io.</tt><tt class="descname">save</tt><big>(</big><em>dat</em>, <em>filename</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a <tt class="docutils literal"><span class="pre">Data</span></tt> object into a NumPy .npy file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<blockquote>
+<div><p><cite>Data</cite> object</p>
+</div></blockquote>
+<p><strong>filename</strong> : str</p>
+<blockquote class="last">
+<div><p>Filename of the file to save to. If the filename does not end
+with <tt class="docutils literal"><span class="pre">.npy</span></tt>, the <tt class="docutils literal"><span class="pre">.npy</span></tt> extension will be automatically
+appended.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.io.load" title="wyrm.io.load"><tt class="xref py py-func docutils literal"><span class="pre">load()</span></tt></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">io</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s">&#39;foo.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat2</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;foo.npy&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1734,7 +1794,7 @@ or not given, initial rest is assumed.</p>
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#wyrm.processing.filtfilt" title="wyrm.processing.filtfilt"><tt class="xref py py-func docutils literal"><span class="pre">filtfilt()</span></tt></a>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butterord()</span></tt></p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.lfilter_zi" title="wyrm.processing.lfilter_zi"><tt class="xref py py-func docutils literal"><span class="pre">lfilter_zi()</span></tt></a>, <a class="reference internal" href="#wyrm.processing.filtfilt" title="wyrm.processing.filtfilt"><tt class="xref py py-func docutils literal"><span class="pre">filtfilt()</span></tt></a>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butter()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.butterord()</span></tt></p>
 </div>
 <p class="rubric">Examples</p>
 <p>Generate and use a Butterworth bandpass filter for complete
@@ -1757,11 +1817,7 @@ or not given, initial rest is assumed.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># pre-calculate the filter coefficients and the initial filter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># state</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">f_low</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">/</span> <span class="n">fn</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">filter_state</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">lfilter_zi</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># Our input will be N-dimensional (N == number of channels), so</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># we have to create the state for each dimension of the input</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">filter_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_state</span> <span class="k">for</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">CHANNELS</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zi</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">lfilter_zi</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">CHANNELS</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">data</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
 <span class="gp">... </span>    <span class="c"># convert incoming data into ``Data`` object</span>
@@ -1769,7 +1825,61 @@ or not given, initial rest is assumed.</p>
 <span class="gp">... </span>    <span class="c"># filter the data, note how filter now also returns the</span>
 <span class="gp">... </span>    <span class="c"># filter state which we feed back into the next call of</span>
 <span class="gp">... </span>    <span class="c"># ``filter``</span>
-<span class="gp">... </span>    <span class="n">cnt</span><span class="p">,</span> <span class="n">filter_state</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">filter_state</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">cnt</span><span class="p">,</span> <span class="n">zi</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="wyrm.processing.lfilter_zi">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">lfilter_zi</tt><big>(</big><em>b</em>, <em>a</em>, <em>n=1</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#lfilter_zi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.lfilter_zi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute an initial state <tt class="docutils literal"><span class="pre">zi</span></tt> for the <a class="reference internal" href="#wyrm.processing.lfilter" title="wyrm.processing.lfilter"><tt class="xref py py-func docutils literal"><span class="pre">lfilter()</span></tt></a> function.</p>
+<p>When <tt class="docutils literal"><span class="pre">n</span> <span class="pre">==</span> <span class="pre">1</span></tt> (default), this method mainly delegates the call to
+<tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter_zi()</span></tt> and returns the result <tt class="docutils literal"><span class="pre">zi</span></tt>. If
+<tt class="docutils literal"><span class="pre">n</span> <span class="pre">&gt;</span> <span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">zi</span></tt>  is repeated <tt class="docutils literal"><span class="pre">n</span></tt> times. This is useful if you
+want to filter n-dimensional data like multi channel EEG.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>b, a</strong> : 1-d array</p>
+<blockquote>
+<div><p>The IIR filter coefficients</p>
+</div></blockquote>
+<p><strong>n</strong> : int, optional</p>
+<blockquote>
+<div><p>The desired width of the output vector. If <tt class="docutils literal"><span class="pre">n</span> <span class="pre">==</span> <span class="pre">1</span></tt> the output
+is simply the 1d zi vector. For <tt class="docutils literal"><span class="pre">n</span> <span class="pre">&gt;</span> <span class="pre">1</span></tt>, the zi vector is
+repeated <tt class="docutils literal"><span class="pre">n</span></tt> times.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>zi</strong> : n-d array</p>
+<blockquote class="last">
+<div><p>The initial state of the filter.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#wyrm.processing.lfilter" title="wyrm.processing.lfilter"><tt class="xref py py-func docutils literal"><span class="pre">lfilter()</span></tt></a>, <tt class="xref py py-func docutils literal"><span class="pre">scipy.signal.lfilter_zi()</span></tt></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># pre-calculate the filter coefficients and the initial filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># state</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="n">butter_ord</span><span class="p">,</span> <span class="p">[</span><span class="n">f_low</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">/</span> <span class="n">fn</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s">&#39;band&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zi</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">lfilter_zi</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">CHANNELS</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">data</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="n">amp</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="c"># convert incoming data into ``Data`` object</span>
+<span class="gp">... </span>    <span class="n">cnt</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="c"># filter the data, note how filter now also returns the</span>
+<span class="gp">... </span>    <span class="c"># filter state which we feed back into the next call of</span>
+<span class="gp">... </span>    <span class="c"># ``filter``</span>
+<span class="gp">... </span>    <span class="n">cnt</span><span class="p">,</span> <span class="n">zi</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">)</span>
 <span class="gp">... </span>    <span class="o">...</span>
 </pre></div>
 </div>
@@ -2650,19 +2760,19 @@ removed and <tt class="docutils literal"><span class="pre">timeaxis</span></tt> 
 <a class="reference internal" href="#wyrm.types.Data" title="wyrm.types.Data"><tt class="xref py py-class docutils literal"><span class="pre">Data</span></tt></a> and <a class="reference internal" href="#wyrm.types.RingBuffer" title="wyrm.types.RingBuffer"><tt class="xref py py-class docutils literal"><span class="pre">RingBuffer</span></tt></a> classes.</p>
 <dl class="class">
 <dt id="wyrm.types.BlockBuffer">
-<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">BlockBuffer</tt><big>(</big><em>block_length=50</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#BlockBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.BlockBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wyrm.types.</tt><tt class="descname">BlockBuffer</tt><big>(</big><em>samples=50</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#BlockBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.BlockBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>A buffer that returns data chunks in multiples of a block length.</p>
 <p>This buffer is a first-in-first-out (FIFO) buffer that returns data
 in multiples of a desired block length. The block length is defined
-in milliseconds.</p>
+in samples.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>block_legnth</strong> : int, optional</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>samples</strong> : int, optional</p>
 <blockquote class="last">
-<div><p>the desired block length in ms</p>
+<div><p>the desired block length in samples</p>
 </div></blockquote>
 </td>
 </tr>
@@ -2678,7 +2788,7 @@ in milliseconds.</p>
 <span class="gp">... </span><span class="n">cnt</span> <span class="o">=</span> <span class="n">bbuffer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 <span class="gp">... </span><span class="k">if</span> <span class="ow">not</span> <span class="n">cnt</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">continue</span>
-<span class="gp">... </span><span class="c"># after here cnt is guaranteed to be in multiples of 10ms</span>
+<span class="gp">... </span><span class="c"># after here cnt is guaranteed to be in multiples of 10 samples</span>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
@@ -2719,10 +2829,10 @@ in milliseconds.</p>
 <dt id="wyrm.types.BlockBuffer.get">
 <tt class="descname">get</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#BlockBuffer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.BlockBuffer.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pop the contents of the Block Buffer.</p>
-<p>The data returned has a length of multiples of <tt class="docutils literal"><span class="pre">block_length</span></tt>.
-If there is a fraction of <tt class="docutils literal"><span class="pre">block_length</span></tt> data more in the
-buffer, that data is kept and future <a class="reference internal" href="#wyrm.types.BlockBuffer.append" title="wyrm.types.BlockBuffer.append"><tt class="xref py py-meth docutils literal"><span class="pre">append()</span></tt></a> operations
-will append new data to it.</p>
+<p>The data returned has a length of multiples of <tt class="docutils literal"><span class="pre">samples</span></tt>. If
+there is a fraction of <tt class="docutils literal"><span class="pre">samples</span></tt> data more in the buffer, that
+data is kept and future <a class="reference internal" href="#wyrm.types.BlockBuffer.append" title="wyrm.types.BlockBuffer.append"><tt class="xref py py-meth docutils literal"><span class="pre">append()</span></tt></a> operations will append
+new data to it.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3074,7 +3184,7 @@ does not match the ring buffer dimensions</p>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Bastian Venthur.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>
