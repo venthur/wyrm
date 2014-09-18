@@ -23,6 +23,67 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
 
+def save(dat, filename):
+    """Save a ``Data`` object into a NumPy .npy file.
+
+
+    Parameters
+    ----------
+    dat : Data
+        `Data` object
+    filename : str
+        Filename of the file to save to. If the filename does not end
+        with ``.npy``, the ``.npy`` extension will be automatically
+        appended.
+
+
+    See Also
+    --------
+    :func:`load`
+
+
+    Examples
+    --------
+
+    >>> io.save(dat, 'foo.npy')
+    >>> dat2 = io.load('foo.npy')
+
+    """
+    np.save(filename, dat)
+
+
+def load(filename):
+    """Load a ``Data`` object from a file.
+
+    Paramters
+    ---------
+    filename : str
+        the file to load the data from
+
+    Returns
+    -------
+    dat : Data
+        the data loaded from the file
+
+    See Also
+    --------
+    :func:`save`
+
+    Examples
+    --------
+
+    >>> io.save(dat, 'foo.npy')
+    >>> dat2 = io.load('foo.npy')
+
+    """
+    dat = np.load(filename)
+    # this is truly disgusting, apparently np.load returns a numpy array
+    # that contains the pickled ``Data`` object but the array has no
+    # elements, shape or whatever. The workaround is to flatten it and
+    # return the first (i.e. only) element...
+    dat = dat.flatten()[0]
+    return dat
+
 
 def load_brain_vision_data(vhdr):
     """Load Brain Vision data from a file.
