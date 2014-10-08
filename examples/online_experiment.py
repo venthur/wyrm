@@ -51,9 +51,9 @@ STIMULUS_CODE = {
 
 MARKER_DEF_TRAIN = {'target': ['target'], 'nontarget': ['nontarget']}
 MARKER_DEF_TEST = {i : [i] for i in STIMULUS_CODE.values()}
-JUMPING_MEANS_IVALS = [220, 320], [350, 400], [600, 700]
-SEG_IVAL = [0, 800]
 
+JUMPING_MEANS_IVALS = [180, 250], [230, 280], [310, 450], [600, 690] # 90%
+SEG_IVAL = [0, 700]
 
 
 def online_experiment(amp, cfy):
