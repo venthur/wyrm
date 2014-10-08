@@ -55,7 +55,8 @@ JUMPING_MEANS_IVALS = [220, 320], [350, 400], [600, 700]
 SEG_IVAL = [0, 800]
 
 
-def online_experiment(amp, clf):
+
+def online_experiment(amp, cfy):
     amp_fs = amp.get_sampling_frequency()
     amp_channels = amp.get_channels()
 
@@ -117,7 +118,7 @@ def online_experiment(amp, clf):
         fv = proc.create_feature_vectors(fv)
         logger.debug(markers_processed)
 
-        lda_out = proc.lda_apply(fv, clf)
+        lda_out = proc.lda_apply(fv, cfy)
         markers = [fv.class_names[cls_idx] for cls_idx in fv.axes[0]]
         result = zip(markers, lda_out)
         for s, score in result:
@@ -170,13 +171,13 @@ def train(filename):
     fv = proc.jumping_means(epo, JUMPING_MEANS_IVALS)
     fv = proc.create_feature_vectors(fv)
 
-    clf = proc.lda_train(fv)
-    return clf
+    cfy = proc.lda_train(fv)
+    return cfy
 
 
 if __name__ == '__main__':
     logger.debug('Training...')
-    clf = train(TRAIN_DATA)
+    cfy = train(TRAIN_DATA)
 
     logger.debug('Starting Online experiment...')
     cnt = io.load_bcicomp3_ds2(TEST_DATA)
@@ -186,4 +187,5 @@ if __name__ == '__main__':
     # slow (realtime)
     #amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs)
     online_experiment(amp, clf)
+    online_experiment(amp, cfy)
 
