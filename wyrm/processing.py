@@ -170,7 +170,7 @@ CHANNEL_10_20 = (
 )
 
 
-def lda_train(fv, shrink=True):
+def lda_train(fv, shrink=False):
     """Train the LDA classifier.
 
     Parameters
