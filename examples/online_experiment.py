@@ -18,11 +18,14 @@ import libmushu
 from wyrm.types import RingBuffer, BlockBuffer
 import wyrm.processing as proc
 from wyrm import io
+from wyrm import plot
 
 
 logging.basicConfig(format='%(relativeCreated)10.0f %(threadName)-10s %(name)-10s %(levelname)8s %(message)s', level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
+# replay the experiment in real time?
+REALTIME = False
 
 
 TRAIN_DATA = 'data/BCI_Comp_III_Wads_2004/Subject_A_Train.mat'
@@ -77,12 +80,14 @@ def online_experiment(amp, cfy):
 
     letter_prob = {i : 0 for i in 'abcdefghijklmnopqrstuvwxyz123456789_'}
     endresult = []
+    t0 = time.time()
     while True:
-        # turn on for 'real time'
-        #time.sleep(0.01)
+        t0 = time.time()
 
         # get fresh data from the amp
         data, markers = amp.get_data()
+        if len(data) == 0:
+            continue
 
         # we should rather wait for a specific end-of-experiment marker
         if len(data) == 0:
@@ -141,6 +146,7 @@ def online_experiment(amp, cfy):
         if len(endresult) == len(TRUE_LABELS):
             break
         #logger.debug("Result: %s" % result)
+        print 1000 * (time.time() - t0)
 
     acc = np.count_nonzero(np.array(endresult) == np.array(list(TRUE_LABELS.lower()[:len(endresult)]))) / len(endresult)
     print "Accuracy:", acc * 100
