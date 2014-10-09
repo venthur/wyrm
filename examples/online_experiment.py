@@ -60,7 +60,7 @@ def online_experiment(amp, cfy):
     amp_fs = amp.get_sampling_frequency()
     amp_channels = amp.get_channels()
 
-    buf = BlockBuffer(4)
+    #buf = BlockBuffer(4)
     rb = RingBuffer(5000)
 
     fn = amp.get_sampling_frequency() / 2
@@ -91,11 +91,11 @@ def online_experiment(amp, cfy):
         # convert to cnt
         cnt = io.convert_mushu_data(data, markers, amp_fs, amp_channels)
 
-        # enter the block buffer
-        buf.append(cnt)
-        cnt = buf.get()
-        if not cnt:
-            continue
+        ## enter the block buffer
+        #buf.append(cnt)
+        #cnt = buf.get()
+        #if not cnt:
+        #    continue
 
         # band-pass and subsample
         cnt, zi_low = proc.lfilter(cnt, b_low, a_low, zi=zi_low)
@@ -182,10 +182,9 @@ if __name__ == '__main__':
     logger.debug('Starting Online experiment...')
     cnt = io.load_bcicomp3_ds2(TEST_DATA)
     amp = libmushu.get_amp('replayamp')
-    # fast (non-realtime)
-    amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs, realtime=False, samples=1000)
-    # slow (realtime)
-    #amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs)
-    online_experiment(amp, clf)
+    if REALTIME:
+        amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs, blocksize_samples=4)
+    else:
+        amp.configure(data=cnt.data, marker=cnt.markers, channels=cnt.axes[-1], fs=cnt.fs, realtime=False, blocksize_samples=40)
     online_experiment(amp, cfy)
 
