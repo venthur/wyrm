@@ -15,10 +15,9 @@ sys.path.append('../../mushu')
 sys.path.append('../')
 
 import libmushu
-from wyrm.types import RingBuffer, BlockBuffer
+from wyrm.types import RingBuffer
 import wyrm.processing as proc
 from wyrm import io
-from wyrm import plot
 
 
 logging.basicConfig(format='%(relativeCreated)10.0f %(threadName)-10s %(name)-10s %(levelname)8s %(message)s', level=logging.NOTSET)
