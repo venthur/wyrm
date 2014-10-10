@@ -25,7 +25,7 @@ logging.basicConfig(format='%(relativeCreated)10.0f %(threadName)-10s %(name)-10
 logger = logging.getLogger(__name__)
 
 # replay the experiment in real time?
-REALTIME = True
+REALTIME = False
 
 
 TRAIN_DATA = 'data/BCI_Comp_III_Wads_2004/Subject_A_Train.mat'
@@ -156,19 +156,19 @@ def online_experiment(amp, cfy):
 
 
 def train(filename):
-    dat = io.load_bcicomp3_ds2(filename)
+    cnt = io.load_bcicomp3_ds2(filename)
 
-    fs_n = dat.fs / 2
+    fs_n = cnt.fs / 2
 
     b, a = proc.signal.butter(5, [30 / fs_n], btype='low')
-    dat = proc.lfilter(dat, b, a)
+    cnt = proc.lfilter(cnt, b, a)
 
     b, a = proc.signal.butter(5, [.4 / fs_n], btype='high')
-    dat = proc.lfilter(dat, b, a)
+    cnt = proc.lfilter(cnt, b, a)
 
-    dat = proc.subsample(dat, 60)
+    cnt = proc.subsample(cnt, 60)
 
-    epo = proc.segment_dat(dat, MARKER_DEF_TRAIN, SEG_IVAL)
+    epo = proc.segment_dat(cnt, MARKER_DEF_TRAIN, SEG_IVAL)
 
     #from wyrm import plot
     #plot.plot_spatio_temporal_r2_values(proc.sort_channels(epo))
