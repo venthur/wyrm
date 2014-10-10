@@ -25,7 +25,7 @@ logging.basicConfig(format='%(relativeCreated)10.0f %(threadName)-10s %(name)-10
 logger = logging.getLogger(__name__)
 
 # replay the experiment in real time?
-REALTIME = False
+REALTIME = True
 
 
 TRAIN_DATA = 'data/BCI_Comp_III_Wads_2004/Subject_A_Train.mat'
@@ -55,7 +55,8 @@ STIMULUS_CODE = {
 MARKER_DEF_TRAIN = {'target': ['target'], 'nontarget': ['nontarget']}
 MARKER_DEF_TEST = {i : [i] for i in STIMULUS_CODE.values()}
 
-JUMPING_MEANS_IVALS = [180, 250], [230, 280], [310, 450], [600, 690] # 90%
+JUMPING_MEANS_IVALS = [150, 220], [200, 260], [310, 360], [550, 660] # 91%
+
 SEG_IVAL = [0, 700]
 
 
@@ -67,7 +68,7 @@ def online_experiment(amp, cfy):
     rb = RingBuffer(5000)
 
     fn = amp.get_sampling_frequency() / 2
-    b_low, a_low = proc.signal.butter(16, [30 / fn], btype='low')
+    b_low, a_low = proc.signal.butter(5, [30 / fn], btype='low')
     b_high, a_high = proc.signal.butter(5, [.4 / fn], btype='high')
 
     zi_low = proc.lfilter_zi(b_low, a_low, len(amp_channels))
@@ -159,7 +160,7 @@ def train(filename):
 
     fs_n = dat.fs / 2
 
-    b, a = proc.signal.butter(16, [30 / fs_n], btype='low')
+    b, a = proc.signal.butter(5, [30 / fs_n], btype='low')
     dat = proc.lfilter(dat, b, a)
 
     b, a = proc.signal.butter(5, [.4 / fs_n], btype='high')
