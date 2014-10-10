@@ -2042,8 +2042,7 @@ def calculate_signed_r_square(dat, classaxis=0):
     b = dat.data.std(axis=classaxis) * (l1 + l2)
     r = a / b
     # return signed r**2
-    s = np.sign(r)
-    return s * r * r
+    return np.sign(r) * np.square(r)
 
 
 def logarithm(dat):

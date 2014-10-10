@@ -65,7 +65,12 @@ class TestSelectClasses(unittest.TestCase):
         # calculate_signed_r_square, so axis 2 becomes axis 1
         dat = dat.swapaxes(0, 1)
         dat2 = calculate_signed_r_square(self.dat)
-        np.testing.assert_array_equal(dat, dat2)
+        # this used to work with numpy 1.8, but with 1.9 the arrays
+        # differ slightly after e-15, I don't see why this change
+        # happened, but it is barely noticeable wo we check for almost
+        # equality
+        # np.testing.assert_array_equal(dat, dat2)
+        np.testing.assert_array_almost_equal(dat, dat2)
 
     def test_calculate_signed_r_square_copy(self):
         """caluclate_r_square must not modify argument."""
