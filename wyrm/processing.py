@@ -177,7 +177,8 @@ def lda_train(fv, shrink=False):
     ----------
     fv : ``Data`` object
         the feature vector must have 2 dimensional data, the first
-        dimension being the class axis.
+        dimension being the class axis. The unique class labels must be
+        0 and 1 otherwise a ``ValueError`` will be raised.
     shrink : Boolean, optional
         use shrinkage
 
@@ -185,6 +186,10 @@ def lda_train(fv, shrink=False):
     -------
     w : 1d array
     b : float
+
+    Raises
+    ------
+    ValueError : if the class labels are not exactly 0s and 1s
 
     Examples
     --------
@@ -199,7 +204,10 @@ def lda_train(fv, shrink=False):
     """
     x = fv.data
     y = fv.axes[0]
-    assert len(np.unique(y)) == 2
+    # TODO: this code should be trivially fixed to allow for two unique
+    # values instead of 0, 1 hardcoded
+    if not np.all(np.unique(y) == [0, 1]):
+        raise ValueError('Unique class labels are {labels}, should be [0, 1]'.format(labels=np.unique(y)))
     mu1 = np.mean(x[y == 0], axis=0)
     mu2 = np.mean(x[y == 1], axis=0)
     # x' = x - m
