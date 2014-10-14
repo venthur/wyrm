@@ -230,7 +230,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    fv : ``Data`` object</span>
 <span class="sd">        the feature vector must have 2 dimensional data, the first</span>
-<span class="sd">        dimension being the class axis.</span>
+<span class="sd">        dimension being the class axis. The unique class labels must be</span>
+<span class="sd">        0 and 1 otherwise a ``ValueError`` will be raised.</span>
 <span class="sd">    shrink : Boolean, optional</span>
 <span class="sd">        use shrinkage</span>
 
@@ -238,6 +239,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    w : 1d array</span>
 <span class="sd">    b : float</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError : if the class labels are not exactly 0s and 1s</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -252,7 +257,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">fv</span><span class="o">.</span><span class="n">data</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">fv</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="c"># TODO: this code should be trivially fixed to allow for two unique</span>
+    <span class="c"># values instead of 0, 1 hardcoded</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unique class labels are {labels}, should be [0, 1]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)))</span>
     <span class="n">mu1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">mu2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="c"># x&#39; = x - m</span>
@@ -2095,8 +2103,7 @@
     <span class="n">b</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">classaxis</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">l1</span> <span class="o">+</span> <span class="n">l2</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
     <span class="c"># return signed r**2</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">r</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="logarithm"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.logarithm">[docs]</a><span class="k">def</span> <span class="nf">logarithm</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>

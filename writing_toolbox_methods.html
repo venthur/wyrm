@@ -155,7 +155,7 @@ use <tt class="xref py py-func docutils literal"><span class="pre">numpy.take()<
 <p>Be careful not to apply boolean indexing Arrays with <tt class="xref py py-func docutils literal"><span class="pre">numpy.take()</span></tt>, for
 that use <tt class="xref py py-func docutils literal"><span class="pre">numpy.compress()</span></tt>, which does the same like <cite>take</cite> just with
 boolean arrays.</p>
-<p>Another way to achieve the same is to use <a class="reference external" href="http://docs.python.org/library/functions.html#slice" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">slice()</span></tt></a> and create tuples for
+<p>Another way to achieve the same is to use <tt class="xref py py-func docutils literal"><span class="pre">slice()</span></tt> and create tuples for
 indexing dynamically:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">ndims</span><span class="p">]</span>
 <span class="n">idx</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -261,7 +261,7 @@ original data</li>
     </div>
     <div class="footer">
         &copy; Copyright 2013, Bastian Venthur.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

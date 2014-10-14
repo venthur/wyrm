@@ -1726,7 +1726,8 @@ dimension being the class axis.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fv</strong> : <tt class="docutils literal"><span class="pre">Data</span></tt> object</p>
 <blockquote>
 <div><p>the feature vector must have 2 dimensional data, the first
-dimension being the class axis.</p>
+dimension being the class axis. The unique class labels must be
+0 and 1 otherwise a <tt class="docutils literal"><span class="pre">ValueError</span></tt> will be raised.</p>
 </div></blockquote>
 <p><strong>shrink</strong> : Boolean, optional</p>
 <blockquote>
@@ -1735,7 +1736,10 @@ dimension being the class axis.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>w</strong> : 1d array</p>
-<p class="last"><strong>b</strong> : float</p>
+<p><strong>b</strong> : float</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>ValueError</strong> : if the class labels are not exactly 0s and 1s</p>
 </td>
 </tr>
 </tbody>
