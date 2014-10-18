@@ -55,8 +55,8 @@ def save(dat, filename):
 def load(filename):
     """Load a ``Data`` object from a file.
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     filename : str
         the file to load the data from
 
