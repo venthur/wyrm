@@ -1,3 +1,4 @@
+# encoding: utf8
 
 """Various input/output methods.
 
@@ -12,6 +13,7 @@ from os import path
 import logging
 import re
 import json
+import socket
 
 import numpy as np
 from scipy.io import loadmat
@@ -486,4 +488,142 @@ def load_bcicomp3_ds2(filename):
     markers.sort()
     dat.markers = markers[:]
     return dat
+
+
+class PyffComm(object):
+    """Pyff communication object.
+
+    This class allows for communication with a running Pyff [1]_
+    instance. It uses the json protocol, so you have to start Pyff with
+    the ``--protocol=json`` parameter.
+
+    Receiving data from Pyff (i.e. the available feedbacks and
+    variables) is not supported for now.
+
+    Examples
+    --------
+
+    This is an example session, demonstrating how to load a feedback
+    application, set a variable, start it, quit it and closing Pyff in
+    the end.
+
+    >>> pyff = PyffComm()
+    >>> pyff.send_init('TrivialPong')
+    >>> pyff.set_variables({'FPS': 30})
+    >>> pyff.play()
+    >>> pyff.quit()
+    >>> pyff.quit_pyff()
+
+    References
+    ----------
+
+    .. [1] Bastian Venthur, Simon Scholler, John Williamson, Sven Dähne,
+        Matthias S Treder, Maria T Kramarek, Klaus-Robert Müller and
+        Benjamin Blankertz. Pyff---A Pythonic Framework for Feedback
+        Applications and Stimulus Presentation in Neuroscience.
+        Frontiers in Neuroscience. 2010. doi: 10.3389/fnins.2010.00179.
+
+    """
+
+    def __init__(self, host='localhost', port=12345):
+        """Initialize the Pyff Communicator object.
+
+        Parameters
+        ----------
+        host : str, optional
+            hostname or IP of the machine running Pyff
+        port : int, optional
+            port on which Pyff is listening on.
+
+        """
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.host = host
+        self.port = port
+
+    def send_interaction_signal(self, cmd, data=None):
+        """Send interaction signal to Pyff.
+
+        .. warning::
+            This method is used internally to send low level JSON
+            messages to Pyff. You should not use this method directly.
+
+        Parameters
+        ----------
+        cmd : str
+        data : dict
+
+        """
+        data = {'type' : 'interaction-signal',
+                'data' : data,
+                'commands' : [[cmd, dict()]]}
+        json_str = json.dumps(data)
+        self.socket.sendto(json_str, (self.host, self.port))
+
+    # not sure if control signals are in use still, everything seems to
+    # work with interaction signals as well
+    #def send_control_signal(self, variables):
+    #    data = {'type' : 'control-signal',
+    #            'data' : variables,
+    #            'commands' : None}
+    #    json_str = json.dumps(data)
+    #    self.send(json_str)
+
+    def send_init(self, fb):
+        """Load a Feedback.
+
+        This method sends Pyff the ``send_init(feedback)`` command which
+        loads a feedback.
+
+        Parameters
+        ----------
+        fb : string
+            The name of the feedback.
+
+        """
+        self.send_interaction_signal('sendinit', {'_feedback': fb})
+
+    def play(self):
+        """Start the feedback.
+
+        """
+        self.send_interaction_signal('play')
+
+    def pause(self):
+        """Pause the feedback.
+
+        """
+        self.send_interaction_signal('pause')
+
+    def stop(self):
+        """Stop the feedback.
+
+        """
+        self.send_interaction_signal('stop')
+
+    def quit(self):
+        """Quit the feedback.
+
+        """
+        self.send_interaction_signal('quit')
+
+    def quit_pyff(self):
+        """Quit Pyff.
+
+        """
+        self.send_interaction_signal('quitfeedbackcontroller')
+
+    def set_variables(self, variables):
+        """Set internal variables in the feedback.
+
+        Use this method to create or modify instance variables of the
+        currently running feedback.
+
+        Parameters
+        ----------
+        variables : dict
+            The variable names are the keys, the values are the values
+            of the variables.
+
+        """
+        self.send_interaction_signal(None, variables)
 
