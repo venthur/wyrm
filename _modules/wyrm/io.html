@@ -51,6 +51,8 @@
           <div class="body">
             
   <h1>Source code for wyrm.io</h1><div class="highlight"><pre>
+<span class="c"># encoding: utf8</span>
+
 <span class="sd">&quot;&quot;&quot;Various input/output methods.</span>
 
 <span class="sd">This module provides methods for loading and saving data from- and into</span>
@@ -64,6 +66,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
@@ -75,8 +78,8 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.save">[docs]</a>    <span class="sd">&quot;&quot;&quot;Save a ``Data`` object into a NumPy .npy file.</span>
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save a ``Data`` object into a NumPy .npy file.</span>
 
 
 <span class="sd">    Parameters</span>
@@ -103,12 +106,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span>
 
+</div>
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load a ``Data`` object from a file.</span>
 
-<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span></div>
-<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load a ``Data`` object from a file.</span>
-
-<span class="sd">    Paramters</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    filename : str</span>
 <span class="sd">        the file to load the data from</span>
 
@@ -136,9 +139,9 @@
     <span class="n">dat</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">dat</span>
 
-
-<span class="k">def</span> <span class="nf">load_brain_vision_data</span><span class="p">(</span><span class="n">vhdr</span><span class="p">):</span></div>
-<div class="viewcode-block" id="load_brain_vision_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_brain_vision_data">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load Brain Vision data from a file.</span>
+</div>
+<div class="viewcode-block" id="load_brain_vision_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_brain_vision_data">[docs]</a><span class="k">def</span> <span class="nf">load_brain_vision_data</span><span class="p">(</span><span class="n">vhdr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load Brain Vision data from a file.</span>
 
 <span class="sd">    This methods loads the continuous EEG data, and returns a ``Data``</span>
 <span class="sd">    object of continuous data ``[time, channel]``, along with the</span>
@@ -243,9 +246,9 @@
     <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">mrk</span>
     <span class="k">return</span> <span class="n">dat</span>
 
-
-<span class="k">def</span> <span class="nf">load_mushu_data</span><span class="p">(</span><span class="n">meta</span><span class="p">):</span></div>
-<div class="viewcode-block" id="load_mushu_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_mushu_data">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load saved EEG data in Mushu&#39;s format.</span>
+</div>
+<div class="viewcode-block" id="load_mushu_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_mushu_data">[docs]</a><span class="k">def</span> <span class="nf">load_mushu_data</span><span class="p">(</span><span class="n">meta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load saved EEG data in Mushu&#39;s format.</span>
 
 <span class="sd">    This method loads saved data in Mushu&#39;s format and returns a</span>
 <span class="sd">    continuous ``Data`` object.</span>
@@ -296,9 +299,9 @@
     <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span>
     <span class="k">return</span> <span class="n">dat</span>
 
-
-<span class="k">def</span> <span class="nf">convert_mushu_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">markers</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">channels</span><span class="p">):</span></div>
-<div class="viewcode-block" id="convert_mushu_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.convert_mushu_data">[docs]</a>    <span class="sd">&quot;&quot;&quot;Convert mushu data into wyrm&#39;s ``Data`` format.</span>
+</div>
+<div class="viewcode-block" id="convert_mushu_data"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.convert_mushu_data">[docs]</a><span class="k">def</span> <span class="nf">convert_mushu_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">markers</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">channels</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert mushu data into wyrm&#39;s ``Data`` format.</span>
 
 <span class="sd">    This convenience method creates a continuous ``Data`` object from</span>
 <span class="sd">    the parameters given. The timeaxis always starts from zero and its</span>
@@ -357,9 +360,9 @@
     <span class="n">cnt</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
     <span class="k">return</span> <span class="n">cnt</span>
 
-
-<span class="k">def</span> <span class="nf">load_bcicomp3_ds1</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span></div>
-<div class="viewcode-block" id="load_bcicomp3_ds1"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_bcicomp3_ds1">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load the BCI Competition III Data Set 1.</span>
+</div>
+<div class="viewcode-block" id="load_bcicomp3_ds1"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_bcicomp3_ds1">[docs]</a><span class="k">def</span> <span class="nf">load_bcicomp3_ds1</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load the BCI Competition III Data Set 1.</span>
 
 <span class="sd">    This method loads the data set and converts it into Wyrm&#39;s ``Data``</span>
 <span class="sd">    format. Before you use it, you have to download the training- and</span>
@@ -424,9 +427,9 @@
 
     <span class="k">return</span> <span class="n">dat_train</span><span class="p">,</span> <span class="n">dat_test</span>
 
-
-<span class="k">def</span> <span class="nf">load_bcicomp3_ds2</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span></div>
-<div class="viewcode-block" id="load_bcicomp3_ds2"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_bcicomp3_ds2">[docs]</a>    <span class="sd">&quot;&quot;&quot;Load the BCI Competition III Data Set 2.</span>
+</div>
+<div class="viewcode-block" id="load_bcicomp3_ds2"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.load_bcicomp3_ds2">[docs]</a><span class="k">def</span> <span class="nf">load_bcicomp3_ds2</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load the BCI Competition III Data Set 2.</span>
 
 <span class="sd">    This method loads the data set and converts it into Wyrm&#39;s ``Data``</span>
 <span class="sd">    format. Before you use it, you have to download the data set in</span>
@@ -538,7 +541,157 @@
     <span class="n">markers</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
     <span class="n">dat</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span><span class="p">[:]</span>
     <span class="k">return</span> <span class="n">dat</span>
-</pre></div></div>
+
+</div>
+<div class="viewcode-block" id="PyffComm"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm">[docs]</a><span class="k">class</span> <span class="nc">PyffComm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pyff communication object.</span>
+
+<span class="sd">    This class allows for communication with a running Pyff [1]_</span>
+<span class="sd">    instance. It uses the json protocol, so you have to start Pyff with</span>
+<span class="sd">    the ``--protocol=json`` parameter.</span>
+
+<span class="sd">    Receiving data from Pyff (i.e. the available feedbacks and</span>
+<span class="sd">    variables) is not supported for now.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    This is an example session, demonstrating how to load a feedback</span>
+<span class="sd">    application, set a variable, start it, quit it and closing Pyff in</span>
+<span class="sd">    the end.</span>
+
+<span class="sd">    &gt;&gt;&gt; pyff = PyffComm()</span>
+<span class="sd">    &gt;&gt;&gt; pyff.send_init(&#39;TrivialPong&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; pyff.set_variables({&#39;FPS&#39;: 30})</span>
+<span class="sd">    &gt;&gt;&gt; pyff.play()</span>
+<span class="sd">    &gt;&gt;&gt; pyff.quit()</span>
+<span class="sd">    &gt;&gt;&gt; pyff.quit_pyff()</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] Bastian Venthur, Simon Scholler, John Williamson, Sven Dähne,</span>
+<span class="sd">        Matthias S Treder, Maria T Kramarek, Klaus-Robert Müller and</span>
+<span class="sd">        Benjamin Blankertz. Pyff---A Pythonic Framework for Feedback</span>
+<span class="sd">        Applications and Stimulus Presentation in Neuroscience.</span>
+<span class="sd">        Frontiers in Neuroscience. 2010. doi: 10.3389/fnins.2010.00179.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Pyff Communicator object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        host : str, optional</span>
+<span class="sd">            hostname or IP of the machine running Pyff</span>
+<span class="sd">        port : int, optional</span>
+<span class="sd">            port on which Pyff is listening on.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+
+<div class="viewcode-block" id="PyffComm.send_interaction_signal"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.send_interaction_signal">[docs]</a>    <span class="k">def</span> <span class="nf">send_interaction_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Send interaction signal to Pyff.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            This method is used internally to send low level JSON</span>
+<span class="sd">            messages to Pyff. You should not use this method directly.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cmd : str</span>
+<span class="sd">        data : dict</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;type&#39;</span> <span class="p">:</span> <span class="s">&#39;interaction-signal&#39;</span><span class="p">,</span>
+                <span class="s">&#39;data&#39;</span> <span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+                <span class="s">&#39;commands&#39;</span> <span class="p">:</span> <span class="p">[[</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">dict</span><span class="p">()]]}</span>
+        <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">json_str</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="PyffComm.send_control_signal"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.send_control_signal">[docs]</a>    <span class="k">def</span> <span class="nf">send_control_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Send a control signal to the running feedback.</span>
+
+<span class="sd">        This method is used to send events to the feedback like a new</span>
+<span class="sd">        classifier output.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        variables : dict</span>
+<span class="sd">            the keys are the variable names and the values the values.</span>
+<span class="sd">            Those variables sent by the control signal are not set</span>
+<span class="sd">            directly in the feedback. If you want this behave use</span>
+<span class="sd">            :func:`set_variables`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;type&#39;</span> <span class="p">:</span> <span class="s">&#39;control-signal&#39;</span><span class="p">,</span>
+                <span class="s">&#39;data&#39;</span> <span class="p">:</span> <span class="n">variables</span><span class="p">,</span>
+                <span class="s">&#39;commands&#39;</span> <span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+        <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">json_str</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="PyffComm.send_init"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.send_init">[docs]</a>    <span class="k">def</span> <span class="nf">send_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load a Feedback.</span>
+
+<span class="sd">        This method sends Pyff the ``send_init(feedback)`` command which</span>
+<span class="sd">        loads a feedback.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fb : string</span>
+<span class="sd">            The name of the feedback.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_interaction_signal</span><span class="p">(</span><span class="s">&#39;sendinit&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;_feedback&#39;</span><span class="p">:</span> <span class="n">fb</span><span class="p">})</span>
+</div>
+<div class="viewcode-block" id="PyffComm.play"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start the feedback.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_interaction_signal</span><span class="p">(</span><span class="s">&#39;play&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PyffComm.pause"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pause the feedback.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_interaction_signal</span><span class="p">(</span><span class="s">&#39;pause&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PyffComm.stop"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop the feedback.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_interaction_signal</span><span class="p">(</span><span class="s">&#39;stop&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PyffComm.quit"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.quit">[docs]</a>    <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Quit the feedback.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_interaction_signal</span><span class="p">(</span><span class="s">&#39;quit&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PyffComm.quit_pyff"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.quit_pyff">[docs]</a>    <span class="k">def</span> <span class="nf">quit_pyff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Quit Pyff.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_interaction_signal</span><span class="p">(</span><span class="s">&#39;quitfeedbackcontroller&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PyffComm.set_variables"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.io.PyffComm.set_variables">[docs]</a>    <span class="k">def</span> <span class="nf">set_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set internal variables in the feedback.</span>
+
+<span class="sd">        Use this method to create or modify instance variables of the</span>
+<span class="sd">        currently running feedback.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        variables : dict</span>
+<span class="sd">            The variable names are the keys, the values are the values</span>
+<span class="sd">            of the variables.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_interaction_signal</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+</pre></div></div></div>
 
           </div>
         </div>

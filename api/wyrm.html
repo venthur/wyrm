@@ -58,6 +58,156 @@
 <p>Various input/output methods.</p>
 <p>This module provides methods for loading and saving data from- and into
 various formats.</p>
+<dl class="class">
+<dt id="wyrm.io.PyffComm">
+<em class="property">class </em><tt class="descclassname">wyrm.io.</tt><tt class="descname">PyffComm</tt><big>(</big><em>host='localhost'</em>, <em>port=12345</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<p>Pyff communication object.</p>
+<p>This class allows for communication with a running Pyff <a class="reference internal" href="#r1" id="id1">[R1]</a>
+instance. It uses the json protocol, so you have to start Pyff with
+the <tt class="docutils literal"><span class="pre">--protocol=json</span></tt> parameter.</p>
+<p>Receiving data from Pyff (i.e. the available feedbacks and
+variables) is not supported for now.</p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> Bastian Venthur, Simon Scholler, John Williamson, Sven Dähne,
+Matthias S Treder, Maria T Kramarek, Klaus-Robert Müller and
+Benjamin Blankertz. Pyff&#8212;A Pythonic Framework for Feedback
+Applications and Stimulus Presentation in Neuroscience.
+Frontiers in Neuroscience. 2010. doi: 10.3389/fnins.2010.00179.</td></tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>This is an example session, demonstrating how to load a feedback
+application, set a variable, start it, quit it and closing Pyff in
+the end.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pyff</span> <span class="o">=</span> <span class="n">PyffComm</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyff</span><span class="o">.</span><span class="n">send_init</span><span class="p">(</span><span class="s">&#39;TrivialPong&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyff</span><span class="o">.</span><span class="n">set_variables</span><span class="p">({</span><span class="s">&#39;FPS&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyff</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyff</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyff</span><span class="o">.</span><span class="n">quit_pyff</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="wyrm.io.PyffComm.pause">
+<tt class="descname">pause</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pause the feedback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.play">
+<tt class="descname">play</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.play" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the feedback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.quit">
+<tt class="descname">quit</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.quit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quit the feedback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.quit_pyff">
+<tt class="descname">quit_pyff</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.quit_pyff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.quit_pyff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quit Pyff.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.send_control_signal">
+<tt class="descname">send_control_signal</tt><big>(</big><em>variables</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.send_control_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.send_control_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a control signal to the running feedback.</p>
+<p>This method is used to send events to the feedback like a new
+classifier output.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>variables</strong> : dict</p>
+<blockquote class="last">
+<div><p>the keys are the variable names and the values the values.
+Those variables sent by the control signal are not set
+directly in the feedback. If you want this behave use
+<a class="reference internal" href="#wyrm.io.PyffComm.set_variables" title="wyrm.io.PyffComm.set_variables"><tt class="xref py py-func docutils literal"><span class="pre">set_variables()</span></tt></a></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.send_init">
+<tt class="descname">send_init</tt><big>(</big><em>fb</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.send_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.send_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a Feedback.</p>
+<p>This method sends Pyff the <tt class="docutils literal"><span class="pre">send_init(feedback)</span></tt> command which
+loads a feedback.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fb</strong> : string</p>
+<blockquote class="last">
+<div><p>The name of the feedback.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.send_interaction_signal">
+<tt class="descname">send_interaction_signal</tt><big>(</big><em>cmd</em>, <em>data=None</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.send_interaction_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.send_interaction_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send interaction signal to Pyff.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This method is used internally to send low level JSON
+messages to Pyff. You should not use this method directly.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cmd</strong> : str</p>
+<p class="last"><strong>data</strong> : dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.set_variables">
+<tt class="descname">set_variables</tt><big>(</big><em>variables</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.set_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.set_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set internal variables in the feedback.</p>
+<p>Use this method to create or modify instance variables of the
+currently running feedback.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>variables</strong> : dict</p>
+<blockquote class="last">
+<div><p>The variable names are the keys, the values are the values
+of the variables.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wyrm.io.PyffComm.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#PyffComm.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.PyffComm.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the feedback.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="wyrm.io.convert_mushu_data">
 <tt class="descclassname">wyrm.io.</tt><tt class="descname">convert_mushu_data</tt><big>(</big><em>data</em>, <em>markers</em>, <em>fs</em>, <em>channels</em><big>)</big><a class="reference internal" href="../_modules/wyrm/io.html#convert_mushu_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.io.convert_mushu_data" title="Permalink to this definition">¶</a></dt>
@@ -125,7 +275,13 @@ already configured but not started yet:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filename</strong> : str</p>
+<blockquote>
+<div><p>the file to load the data from</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dat</strong> : Data</p>
 <blockquote class="last">
 <div><p>the data loaded from the file</p>
 </div></blockquote>
@@ -1376,7 +1532,7 @@ Each column in the matrix is a filter.</p>
 <div><p>The spatial activation patterns that correspond to the filters
 in <tt class="docutils literal"><span class="pre">v</span></tt>. Each column is a spatial pattern. when visualizing the
 SPoC components as scalp maps, plot the spatial patterns and not
-the filters. See also <a class="reference internal" href="#r2" id="id1">[R2]</a>.</p>
+the filters. See also <a class="reference internal" href="#r3" id="id3">[R3]</a>.</p>
 </div></blockquote>
 <p><strong>d</strong> : 1d array</p>
 <blockquote class="last">
@@ -1404,24 +1560,24 @@ across small time segments (epochs). Thus, if the power of a
 specific frequency band is investigated, the input signals must be
 band-passed filtered before they are segmented into epochs and given
 to this function. This method implements <tt class="docutils literal"><span class="pre">SPoC_lambda</span></tt>, presented
-in <a class="reference internal" href="#r1" id="id2">[R1]</a>. Thus, source activity is extracted from the input data via
+in <a class="reference internal" href="#r2" id="id4">[R2]</a>. Thus, source activity is extracted from the input data via
 spatial filtering. The spatial filters are optimized such that the
 epoch-wise variance maximally covaries with the given target signal
 <tt class="docutils literal"><span class="pre">z</span></tt>.</p>
 <p class="rubric">References</p>
-<table class="docutils citation" frame="void" id="r1" rules="none">
+<table class="docutils citation" frame="void" id="r2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R1]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> S. Dähne, F. C. Meinecke, S. Haufe, J. Höhne, M. Tangermann,
+<tr><td class="label">[R2]</td><td><em>(<a class="fn-backref" href="#id4">1</a>, <a class="fn-backref" href="#id5">2</a>)</em> S. Dähne, F. C. Meinecke, S. Haufe, J. Höhne, M. Tangermann,
 K. R. Müller, V. V. Nikulin &#8220;SPoC: a novel framework for
 relating the amplitude of neuronal oscillations to behaviorally
 relevant parameters&#8221;, NeuroImage, 86(0):111-122, 2014</td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="r2" rules="none">
+<table class="docutils citation" frame="void" id="r3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[R2]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> S. Haufe, F. Meinecke, K. Görgen, S. Dähne, J. Haynes, B.
+<tr><td class="label">[R3]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id6">2</a>)</em> S. Haufe, F. Meinecke, K. Görgen, S. Dähne, J. Haynes, B.
 Blankertz, F. Biessmann, &#8220;On the interpretation of weight
 vectors of linear models in multivariate neuroimaging&#8221;,
 NeuroImage, 87:96-110, 2014</td></tr>
@@ -2795,21 +2951,6 @@ in samples.</p>
 <span class="gp">... </span><span class="c"># after here cnt is guaranteed to be in multiples of 10 samples</span>
 </pre></div>
 </div>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.BlockBuffer.append" title="wyrm.types.BlockBuffer.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>(dat)</td>
-<td>Append data to the Block Buffer.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#wyrm.types.BlockBuffer.get" title="wyrm.types.BlockBuffer.get"><tt class="xref py py-obj docutils literal"><span class="pre">get</span></tt></a>()</td>
-<td>Pop the contents of the Block Buffer.</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="wyrm.types.BlockBuffer.append">
 <tt class="descname">append</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#BlockBuffer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.BlockBuffer.append" title="Permalink to this definition">¶</a></dt>
@@ -2936,18 +3077,6 @@ an array of timesteps and <tt class="docutils literal"><span class="pre">.axes[1
 </tr>
 </tbody>
 </table>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.Data.copy" title="wyrm.types.Data.copy"><tt class="xref py py-obj docutils literal"><span class="pre">copy</span></tt></a>(**kwargs)</td>
-<td>Return a memory efficient deep copy of <tt class="docutils literal"><span class="pre">self</span></tt>.</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="wyrm.types.Data.copy">
 <tt class="descname">copy</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#Data.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.Data.copy" title="Permalink to this definition">¶</a></dt>
@@ -3064,21 +3193,6 @@ this attribute directly but via the <a class="reference internal" href="#wyrm.ty
 </tr>
 </tbody>
 </table>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wyrm.types.RingBuffer.append" title="wyrm.types.RingBuffer.append"><tt class="xref py py-obj docutils literal"><span class="pre">append</span></tt></a>(dat)</td>
-<td>Append data to the Ringbuffer, overwriting old data if necessary.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#wyrm.types.RingBuffer.get" title="wyrm.types.RingBuffer.get"><tt class="xref py py-obj docutils literal"><span class="pre">get</span></tt></a>()</td>
-<td>Get all buffered data.</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="wyrm.types.RingBuffer.append">
 <tt class="descname">append</tt><big>(</big><em>dat</em><big>)</big><a class="reference internal" href="../_modules/wyrm/types.html#RingBuffer.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.types.RingBuffer.append" title="Permalink to this definition">¶</a></dt>
@@ -3146,9 +3260,7 @@ does not match the ring buffer dimensions</p>
 <li><a class="reference internal" href="#module-wyrm.io">wyrm.io module</a></li>
 <li><a class="reference internal" href="#module-wyrm.plot">wyrm.plot module</a></li>
 <li><a class="reference internal" href="#module-wyrm.processing">wyrm.processing module</a></li>
-<li><a class="reference internal" href="#module-wyrm.types">wyrm.types module</a><ul>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-wyrm.types">wyrm.types module</a></li>
 <li><a class="reference internal" href="#module-wyrm">Module contents</a></li>
 </ul>
 </li>
