@@ -559,14 +559,26 @@ class PyffComm(object):
         json_str = json.dumps(data)
         self.socket.sendto(json_str, (self.host, self.port))
 
-    # not sure if control signals are in use still, everything seems to
-    # work with interaction signals as well
-    #def send_control_signal(self, variables):
-    #    data = {'type' : 'control-signal',
-    #            'data' : variables,
-    #            'commands' : None}
-    #    json_str = json.dumps(data)
-    #    self.send(json_str)
+    def send_control_signal(self, variables):
+        """Send a control signal to the running feedback.
+
+        This method is used to send events to the feedback like a new
+        classifier output.
+
+        Parameters
+        ----------
+        variables : dict
+            the keys are the variable names and the values the values.
+            Those variables sent by the control signal are not set
+            directly in the feedback. If you want this behave use
+            :func:`set_variables`
+
+        """
+        data = {'type' : 'control-signal',
+                'data' : variables,
+                'commands' : None}
+        json_str = json.dumps(data)
+        self.socket.sendto(json_str, (self.host, self.port))
 
     def send_init(self, fb):
         """Load a Feedback.
