@@ -19,13 +19,15 @@ API Documentation
 
 Wyrm's methods are grouped into several modules:
 
+.. currentmodule:: wyrm
+
 .. autosummary::
    :toctree: api
 
-   wyrm.processing
-   wyrm.plot
-   wyrm.types
-   wyrm.io
+   processing
+   plot
+   types
+   io
 
 Indices and tables
 ==================
