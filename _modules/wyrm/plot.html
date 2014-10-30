@@ -366,7 +366,7 @@
 
     <span class="c"># distribute the channels to the lists by their y-position</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dcopy</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">system</span><span class="p">:</span>
             <span class="c"># entries in channel_lists: [&lt;channel_name&gt;, &lt;x-position&gt;, &lt;position in Data&gt;]</span>
             <span class="n">channel_lists</span><span class="p">[</span><span class="n">ordering</span><span class="p">[</span><span class="n">system</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">1</span><span class="p">]]]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">count</span><span class="p">))</span>
@@ -1163,7 +1163,7 @@
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Bastian Venthur.
+        &copy; Copyright 2012 - 2014, Bastian Venthur.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
