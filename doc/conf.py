@@ -42,6 +42,7 @@ extensions = [
 autosummary_generate = True
 numpydoc_show_class_members = False
 
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -56,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Wyrm'
-copyright = u'2013, Bastian Venthur'
+copyright = u'2012 - 2014, Bastian Venthur'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
