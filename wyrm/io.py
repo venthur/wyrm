@@ -223,7 +223,7 @@ def load_mushu_data(meta):
     markerfile = meta[::-1].replace('atem.', 'rekram.', 1)[::-1]
     assert path.exists(meta) and path.exists(datafile) and path.exists(markerfile)
     # load meta data
-    with open(meta) as fh:
+    with open(meta, 'r') as fh:
         metadata = json.load(fh)
     fs = metadata['Sampling Frequency']
     channels = np.array(metadata['Channels'])
@@ -232,7 +232,7 @@ def load_mushu_data(meta):
     data = data.reshape((-1, len(channels)))
     # load markers
     markers = []
-    with open(markerfile) as fh:
+    with open(markerfile, 'r') as fh:
         for line in fh:
             ts, m = line.split(' ', 1)
             markers.append([float(ts), str(m).strip()])
