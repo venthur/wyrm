@@ -1838,6 +1838,74 @@ def calculate_classwise_average(dat, classaxis=0):
     return dat.copy(data=data, axes=axes)
 
 
+def calculate_cca(dat_x, dat_y, timeaxis=-2):
+    """Calculate the Canonical Correlation Analysis (CCA) of specified data.
+
+    This method calculates the canonical correlation and the corresponding weights.
+
+    Examples
+    --------
+    Calculate the CCA for the specified multivariable signals.
+
+    >>> rho, w_x, w_y = calculate_cca(dat_x, dat_y)
+    >>> # Obtain canonical variables
+    >>> cv_x = np.dot(dat_x, w_x)
+    >>> cv_y = np.dot(dat_y, w_y)
+
+    Parameters
+    ----------
+    dat_x, dat_y : continuous Data object
+        these data should have the same length on the time axis.
+    timeaxis : int, optional
+        the index of the time axis in ``dat_x`` and ``dat_y``.
+
+    Returns
+    -------
+    rho : float
+        the canonical correlation.
+    w_x, w_y : 1d array
+        the weights corresponding to each canonical variable.
+
+    Raises
+    ------
+    AssertionError :
+        If:
+          * ``dat_x`` and ``dat_y`` is not continuous Data object
+          * the length of ``dat_x`` and ``dat_y`` is different on the ``timeaxis``
+
+    References
+    ----------
+    http://en.wikipedia.org/wiki/Canonical_correlation
+
+    """
+    assert (len(dat_x.data.shape) == len(dat_y.data.shape) == 2 and
+        dat_x.data.shape[timeaxis] == dat_y.data.shape[timeaxis])
+
+    if timeaxis == 0 or timeaxis == -2:
+        x = dat_x.data
+        y = dat_y.data
+    else:
+        x = dat_x.data.T
+        y = dat_y.data.T
+
+    c_xx = np.dot(x.T, x)
+    c_yy = np.dot(y.T, y)
+    c_xy = np.dot(x.T, y)
+    c_yx = np.dot(y.T, x)
+    ic_xx = np.linalg.pinv(c_xx)
+    ic_yy = np.linalg.pinv(c_yy)
+
+    w, v = np.linalg.eigh(np.dot(np.dot(ic_xx, c_xy), np.dot(ic_yy, c_yx)))
+    max_idx = np.argmax(w)
+    rho = np.sqrt(w[max_idx])
+    w_x = v[:, max_idx]
+
+    w, v = np.linalg.eigh(np.dot(np.dot(ic_yy, c_yx), np.dot(ic_xx, c_xy)))
+    w_y = v[:, np.argmax(w)]
+
+    return rho, w_x, w_y
+
+
 def correct_for_baseline(dat, ival, timeaxis=-2):
     """Subtract the baseline.
 
