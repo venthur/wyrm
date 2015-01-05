@@ -46,7 +46,7 @@ class TestCalculateCCA(unittest.TestCase):
         with self.assertRaises(AssertionError):
             calculate_cca(dat, self.dat_y)
 
-    def test_calculate_csp_swapaxes(self):
+    def test_calculate_cca_swapaxes(self):
         """caluclate_cca must work with nonstandard timeaxis."""
         res1 = calculate_cca(swapaxes(self.dat_x, 0, 1), swapaxes(self.dat_y, 0, 1), timeaxis=1)
         res2 = calculate_cca(self.dat_x, self.dat_y)
