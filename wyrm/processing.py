@@ -1839,18 +1839,11 @@ def calculate_classwise_average(dat, classaxis=0):
 
 
 def calculate_cca(dat_x, dat_y, timeaxis=-2):
-    """Calculate the Canonical Correlation Analysis (CCA) of specified data.
+    """Calculate the Canonical Correlation Analysis (CCA).
 
-    This method calculates the canonical correlation and the corresponding weights.
-
-    Examples
-    --------
-    Calculate the CCA for the specified multivariable signals.
-
-    >>> rho, w_x, w_y = calculate_cca(dat_x, dat_y)
-    >>> # Obtain canonical variables
-    >>> cv_x = np.dot(dat_x, w_x)
-    >>> cv_y = np.dot(dat_y, w_y)
+    This method calculates the canonical correlation coefficient and
+    corresponding weights which maximize a correlation coefficient
+    between linear combinations of the two specified multivariable signals.
 
     Parameters
     ----------
@@ -1862,9 +1855,10 @@ def calculate_cca(dat_x, dat_y, timeaxis=-2):
     Returns
     -------
     rho : float
-        the canonical correlation.
+        the canonical correlation coefficient.
     w_x, w_y : 1d array
-        the weights corresponding to each canonical variable.
+        the weights for mapping from the specified multivariable signals to
+        canonical variables.
 
     Raises
     ------
@@ -1872,6 +1866,15 @@ def calculate_cca(dat_x, dat_y, timeaxis=-2):
         If:
           * ``dat_x`` and ``dat_y`` is not continuous Data object
           * the length of ``dat_x`` and ``dat_y`` is different on the ``timeaxis``
+
+    Examples
+    --------
+    Calculate the CCA of the specified multivariable signals.
+
+    >>> rho, w_x, w_y = calculate_cca(dat_x, dat_y)
+    >>> # Calculate canonical variables via obtained weights
+    >>> cv_x = np.dot(dat_x, w_x)
+    >>> cv_y = np.dot(dat_y, w_y)
 
     References
     ----------
