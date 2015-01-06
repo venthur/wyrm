@@ -18,7 +18,7 @@ Use distutils to install Wyrm into your `PYTHONPATH`:
 ```bash
 $ git clone http://github.com/venthur/wyrm
 $ cd wyrm
-$ python setyp.py install --user
+$ python setup.py install --user
 ```
 
 this will always give you the latest development version of Wyrm.
