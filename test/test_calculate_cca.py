@@ -3,6 +3,7 @@ from __future__ import division
 import unittest
 
 import numpy as np
+from numpy.random import randn
 np.random.seed(42)
 
 from wyrm.types import Data
@@ -11,29 +12,45 @@ from wyrm.processing import append, swapaxes, calculate_cca
 
 class TestCalculateCCA(unittest.TestCase):
 
-    SAMPLES = 100
+    FREQUENCY = 4
+    SAMPLES = 1000
     CHANNELS_X = 10
     CHANNELS_Y = 5
 
     def setUp(self):
-        # create a random noise signals with
-        # X: 100 samplse and 10 channels
-        # Y: 100 samples and 5 channels
-        self.X = np.random.randn(self.SAMPLES, self.CHANNELS_X)
-        self.Y = np.random.randn(self.SAMPLES, self.CHANNELS_Y)
+        # create random multivariable signals
+        self.X = randn(self.SAMPLES, self.CHANNELS_X)
+        self.Y = randn(self.SAMPLES, self.CHANNELS_Y)
+        # the first signal of X is a sinusoid wave which has a random baseline and phase
+        n = 2 * np.pi * self.FREQUENCY * np.arange(self.SAMPLES) / self.SAMPLES
+        self.X[:, 0] = randn() * np.sin(n + randn() * np.pi) + randn()
+        # Y includes orthonormal basis
+        self.Y[:, 0] = np.sin(n)
+        self.Y[:, 1] = np.cos(n)
+        # generate Data object
         axes_x = [np.arange(self.X.shape[0]), np.arange(self.X.shape[1])]
         axes_y = [np.arange(self.Y.shape[0]), np.arange(self.Y.shape[1])]
         self.dat_x = Data(self.X, axes=axes_x, names=['time', 'channel'], units=['ms', '#'])
         self.dat_y = Data(self.Y, axes=axes_y, names=['time', 'channel'], units=['ms', '#'])
 
     def test_rho(self):
-        """Test if the canonical correlation is between 0 and 1."""
+        """Test if the canonical correlation coefficient almost equals 1."""
         rho, w_x, w_y = calculate_cca(self.dat_x, self.dat_y)
-        self.assertTrue(0 < rho <1)
+        self.assertAlmostEqual(rho, 1.0, delta=0.01)
+
+    def test_diff_between_source_and_canonical_variable(self):
+        """Test if the canonical variable of Y almost equals the first signal of X."""
+        rho, w_x, w_y = calculate_cca(self.dat_x, self.dat_y)
+        cv_y = np.dot(self.Y, w_y)
+
+        X = self.X[:, 0] - self.X[:, 0].mean()
+        diff = np.abs(X / X.std()) - np.abs(cv_y)
+        diff = np.sum(diff) / self.X.shape[0]
+        self.assertTrue(diff < 0.01)
 
     def test_raise_error_with_non_continuous_data(self):
         """Raise error if ``dat_x`` is not continuous Data object."""
-        dat = Data(np.random.randn(2, self.SAMPLES, self.CHANNELS_X),
+        dat = Data(randn(2, self.SAMPLES, self.CHANNELS_X),
                    axes=[[0, 1], self.dat_x.axes[0], self.dat_x.axes[1]],
                    names=['class', 'time', 'channel'],
                    units=['#', 'ms', '#'])
