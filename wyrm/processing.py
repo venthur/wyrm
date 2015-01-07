@@ -1885,27 +1885,32 @@ def calculate_cca(dat_x, dat_y, timeaxis=-2):
         dat_x.data.shape[timeaxis] == dat_y.data.shape[timeaxis])
 
     if timeaxis == 0 or timeaxis == -2:
-        x = dat_x.data
-        y = dat_y.data
+        x = dat_x.data.copy()
+        y = dat_y.data.copy()
     else:
-        x = dat_x.data.T
-        y = dat_y.data.T
+        x = dat_x.data.T.copy()
+        y = dat_y.data.T.copy()
 
-    c_xx = np.dot(x.T, x)
-    c_yy = np.dot(y.T, y)
-    c_xy = np.dot(x.T, y)
-    c_yx = np.dot(y.T, x)
+    # calculate covariances and it's inverses
+    x -= x.mean(axis=0)
+    y -= y.mean(axis=0)
+    N = x.shape[0]
+    c_xx = np.dot(x.T, x) / N
+    c_yy = np.dot(y.T, y) / N
+    c_xy = np.dot(x.T, y) / N
+    c_yx = np.dot(y.T, x) / N
     ic_xx = np.linalg.pinv(c_xx)
     ic_yy = np.linalg.pinv(c_yy)
-
-    w, v = np.linalg.eigh(np.dot(np.dot(ic_xx, c_xy), np.dot(ic_yy, c_yx)))
-    max_idx = np.argmax(w)
-    rho = np.sqrt(w[max_idx])
-    w_x = v[:, max_idx]
-
-    w, v = np.linalg.eigh(np.dot(np.dot(ic_yy, c_yx), np.dot(ic_xx, c_xy)))
+    # calculate w_x
+    w, v = np.linalg.eigh(reduce(np.dot, [ic_xx, c_xy, ic_yy, c_yx]))
+    w_x = v[:, np.argmax(w)]
+    w_x = w_x / np.sqrt(reduce(np.dot, [w_x.T, c_xx, w_x]))
+    # calculate w_y
+    w, v = np.linalg.eigh(reduce(np.dot, [ic_yy, c_yx, ic_xx, c_xy]))
     w_y = v[:, np.argmax(w)]
-
+    w_y = w_y / np.sqrt(reduce(np.dot, [w_y.T, c_yy, w_y]))
+    # calculate rho
+    rho = abs(np.dot(w_x.T, np.dot(c_xy, w_y)))
     return rho, w_x, w_y
 
 
