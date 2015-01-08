@@ -13,6 +13,7 @@ wyrm.processing
       append_cnt
       append_epo
       apply_csp
+      calculate_cca
       calculate_classwise_average
       calculate_csp
       calculate_signed_r_square

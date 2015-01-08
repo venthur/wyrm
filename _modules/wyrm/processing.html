@@ -63,6 +63,7 @@
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
 
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
@@ -1889,6 +1890,84 @@
     <span class="n">axes</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">axes</span><span class="p">[:]</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">classaxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">classes</span>
     <span class="k">return</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="calculate_cca"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.calculate_cca">[docs]</a><span class="k">def</span> <span class="nf">calculate_cca</span><span class="p">(</span><span class="n">dat_x</span><span class="p">,</span> <span class="n">dat_y</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the Canonical Correlation Analysis (CCA).</span>
+
+<span class="sd">    This method calculates the canonical correlation coefficient and</span>
+<span class="sd">    corresponding weights which maximize a correlation coefficient</span>
+<span class="sd">    between linear combinations of the two specified multivariable</span>
+<span class="sd">    signals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dat_x, dat_y : continuous Data object</span>
+<span class="sd">        these data should have the same length on the time axis.</span>
+<span class="sd">    timeaxis : int, optional</span>
+<span class="sd">        the index of the time axis in ``dat_x`` and ``dat_y``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rho : float</span>
+<span class="sd">        the canonical correlation coefficient.</span>
+<span class="sd">    w_x, w_y : 1d array</span>
+<span class="sd">        the weights for mapping from the specified multivariable signals</span>
+<span class="sd">        to canonical variables.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError :</span>
+<span class="sd">        If:</span>
+<span class="sd">          * ``dat_x`` and ``dat_y`` is not continuous Data object</span>
+<span class="sd">          * the length of ``dat_x`` and ``dat_y`` is different on the</span>
+<span class="sd">            ``timeaxis``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate the CCA of the specified multivariable signals.</span>
+
+<span class="sd">    &gt;&gt;&gt; rho, w_x, w_y = calculate_cca(dat_x, dat_y)</span>
+<span class="sd">    &gt;&gt;&gt; # Calculate canonical variables via obtained weights</span>
+<span class="sd">    &gt;&gt;&gt; cv_x = np.dot(dat_x, w_x)</span>
+<span class="sd">    &gt;&gt;&gt; cv_y = np.dot(dat_y, w_y)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://en.wikipedia.org/wiki/Canonical_correlation</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dat_x</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat_y</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span>
+        <span class="n">dat_x</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">==</span> <span class="n">dat_y</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">timeaxis</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">timeaxis</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dat_x</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">dat_y</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dat_x</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">dat_y</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c"># calculate covariances and it&#39;s inverses</span>
+    <span class="n">x</span> <span class="o">-=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">-=</span> <span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">c_xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">c_yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">c_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">c_yx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">ic_xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">c_xx</span><span class="p">)</span>
+    <span class="n">ic_yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">c_yy</span><span class="p">)</span>
+    <span class="c"># calculate w_x</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">[</span><span class="n">ic_xx</span><span class="p">,</span> <span class="n">c_xy</span><span class="p">,</span> <span class="n">ic_yy</span><span class="p">,</span> <span class="n">c_yx</span><span class="p">]))</span>
+    <span class="n">w_x</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">w</span><span class="p">)]</span><span class="o">.</span><span class="n">real</span>
+    <span class="n">w_x</span> <span class="o">=</span> <span class="n">w_x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">[</span><span class="n">w_x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">c_xx</span><span class="p">,</span> <span class="n">w_x</span><span class="p">]))</span>
+    <span class="c"># calculate w_y</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">[</span><span class="n">ic_yy</span><span class="p">,</span> <span class="n">c_yx</span><span class="p">,</span> <span class="n">ic_xx</span><span class="p">,</span> <span class="n">c_xy</span><span class="p">]))</span>
+    <span class="n">w_y</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">w</span><span class="p">)]</span><span class="o">.</span><span class="n">real</span>
+    <span class="n">w_y</span> <span class="o">=</span> <span class="n">w_y</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">[</span><span class="n">w_y</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">c_yy</span><span class="p">,</span> <span class="n">w_y</span><span class="p">]))</span>
+    <span class="c"># calculate rho</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="p">[</span><span class="n">w_x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">c_xy</span><span class="p">,</span> <span class="n">w_y</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">rho</span><span class="p">,</span> <span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span>
 
 </div>
 <div class="viewcode-block" id="correct_for_baseline"><a class="viewcode-back" href="../../api/wyrm.html#wyrm.processing.correct_for_baseline">[docs]</a><span class="k">def</span> <span class="nf">correct_for_baseline</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">ival</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>

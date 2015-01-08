@@ -1321,6 +1321,67 @@ virtual CSP channels.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wyrm.processing.calculate_cca">
+<tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_cca</tt><big>(</big><em>dat_x</em>, <em>dat_y</em>, <em>timeaxis=-2</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_cca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_cca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Canonical Correlation Analysis (CCA).</p>
+<p>This method calculates the canonical correlation coefficient and
+corresponding weights which maximize a correlation coefficient
+between linear combinations of the two specified multivariable
+signals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dat_x, dat_y</strong> : continuous Data object</p>
+<blockquote>
+<div><p>these data should have the same length on the time axis.</p>
+</div></blockquote>
+<p><strong>timeaxis</strong> : int, optional</p>
+<blockquote>
+<div><p>the index of the time axis in <tt class="docutils literal"><span class="pre">dat_x</span></tt> and <tt class="docutils literal"><span class="pre">dat_y</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>rho</strong> : float</p>
+<blockquote>
+<div><p>the canonical correlation coefficient.</p>
+</div></blockquote>
+<p><strong>w_x, w_y</strong> : 1d array</p>
+<blockquote>
+<div><p>the weights for mapping from the specified multivariable signals
+to canonical variables.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>AssertionError :</strong> :</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>If:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">dat_x</span></tt> and <tt class="docutils literal"><span class="pre">dat_y</span></tt> is not continuous Data object</li>
+<li>the length of <tt class="docutils literal"><span class="pre">dat_x</span></tt> and <tt class="docutils literal"><span class="pre">dat_y</span></tt> is different on the
+<tt class="docutils literal"><span class="pre">timeaxis</span></tt></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Canonical_correlation">http://en.wikipedia.org/wiki/Canonical_correlation</a></p>
+<p class="rubric">Examples</p>
+<p>Calculate the CCA of the specified multivariable signals.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">rho</span><span class="p">,</span> <span class="n">w_x</span><span class="p">,</span> <span class="n">w_y</span> <span class="o">=</span> <span class="n">calculate_cca</span><span class="p">(</span><span class="n">dat_x</span><span class="p">,</span> <span class="n">dat_y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Calculate canonical variables via obtained weights</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cv_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dat_x</span><span class="p">,</span> <span class="n">w_x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cv_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dat_y</span><span class="p">,</span> <span class="n">w_y</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="wyrm.processing.calculate_classwise_average">
 <tt class="descclassname">wyrm.processing.</tt><tt class="descname">calculate_classwise_average</tt><big>(</big><em>dat</em>, <em>classaxis=0</em><big>)</big><a class="reference internal" href="../_modules/wyrm/processing.html#calculate_classwise_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wyrm.processing.calculate_classwise_average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the classwise average.</p>
