@@ -1904,11 +1904,11 @@ def calculate_cca(dat_x, dat_y, timeaxis=-2):
     ic_yy = np.linalg.pinv(c_yy)
     # calculate w_x
     w, v = np.linalg.eig(functools.reduce(np.dot, [ic_xx, c_xy, ic_yy, c_yx]))
-    w_x = v[:, np.argmax(w)]
+    w_x = v[:, np.argmax(w)].real
     w_x = w_x / np.sqrt(functools.reduce(np.dot, [w_x.T, c_xx, w_x]))
     # calculate w_y
     w, v = np.linalg.eig(functools.reduce(np.dot, [ic_yy, c_yx, ic_xx, c_xy]))
-    w_y = v[:, np.argmax(w)]
+    w_y = v[:, np.argmax(w)].real
     w_y = w_y / np.sqrt(functools.reduce(np.dot, [w_y.T, c_yy, w_y]))
     # calculate rho
     rho = abs(functools.reduce(np.dot, [w_x.T, c_xy, w_y]))
