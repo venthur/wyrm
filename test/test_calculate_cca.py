@@ -12,21 +12,21 @@ from wyrm.processing import append, swapaxes, calculate_cca
 
 class TestCalculateCCA(unittest.TestCase):
 
-    FREQUENCY = 4
     SAMPLES = 1000
     CHANNELS_X = 10
     CHANNELS_Y = 5
+    NOISE_LEVEL = 0.1
 
     def setUp(self):
-        # create random multivariable signals
-        self.X = randn(self.SAMPLES, self.CHANNELS_X)
-        self.Y = randn(self.SAMPLES, self.CHANNELS_Y)
-        # the first signal of X is a sinusoid wave which has a random baseline and phase
-        n = 2 * np.pi * self.FREQUENCY * np.arange(self.SAMPLES) / self.SAMPLES
-        self.X[:, 0] = randn() * np.sin(n + randn() * np.pi) + randn()
-        # Y includes orthonormal basis
-        self.Y[:, 0] = np.sin(n)
-        self.Y[:, 1] = np.cos(n)
+        # X is a random mixture matrix of random variables
+        Sx = randn(self.SAMPLES, self.CHANNELS_X)
+        Ax = randn(self.CHANNELS_X, self.CHANNELS_X)
+        self.X = np.dot(Sx, Ax)
+        # Y is a random mixture matrix of random variables except the first component
+        Sy = randn(self.SAMPLES, self.CHANNELS_Y)
+        Sy[:, 0] = Sx[:, 0] + self.NOISE_LEVEL * randn(self.SAMPLES)
+        Ay = randn(self.CHANNELS_Y, self.CHANNELS_Y)
+        self.Y = np.dot(Sy, Ay)
         # generate Data object
         axes_x = [np.arange(self.X.shape[0]), np.arange(self.X.shape[1])]
         axes_y = [np.arange(self.Y.shape[0]), np.arange(self.Y.shape[1])]
@@ -38,15 +38,19 @@ class TestCalculateCCA(unittest.TestCase):
         rho, w_x, w_y = calculate_cca(self.dat_x, self.dat_y)
         self.assertAlmostEqual(rho, 1.0, delta=0.01)
 
-    def test_diff_between_source_and_canonical_variable(self):
-        """Test if the canonical variable of Y almost equals the first signal of X."""
+    def test_diff_between_canonical_variables(self):
+        """Test if the scaled canonical variables are almost same."""
         rho, w_x, w_y = calculate_cca(self.dat_x, self.dat_y)
+        cv_x = np.dot(self.X, w_x)
         cv_y = np.dot(self.Y, w_y)
 
-        X = self.X[:, 0] - self.X[:, 0].mean()
-        diff = np.abs(X / X.std()) - np.abs(cv_y)
-        diff = np.sum(diff) / self.X.shape[0]
-        self.assertTrue(diff < 0.01)
+        def scale(x):
+            tmp = x - x.mean()
+            return tmp / tmp[np.argmax(np.abs(tmp))]
+
+        diff = scale(cv_x) - scale(cv_y)
+        diff = np.sum(np.abs(diff)) / self.SAMPLES
+        self.assertTrue(diff < 0.1)
 
     def test_raise_error_with_non_continuous_data(self):
         """Raise error if ``dat_x`` is not continuous Data object."""
