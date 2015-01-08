@@ -10,6 +10,7 @@ This module contains the processing methods.
 
 from __future__ import division
 
+import functools
 import logging
 import re
 
@@ -1836,6 +1837,82 @@ def calculate_classwise_average(dat, classaxis=0):
     axes = dat.axes[:]
     axes[classaxis] = classes
     return dat.copy(data=data, axes=axes)
+
+
+def calculate_cca(dat_x, dat_y, timeaxis=-2):
+    """Calculate the Canonical Correlation Analysis (CCA).
+
+    This method calculates the canonical correlation coefficient and
+    corresponding weights which maximize a correlation coefficient
+    between linear combinations of the two specified multivariable signals.
+
+    Parameters
+    ----------
+    dat_x, dat_y : continuous Data object
+        these data should have the same length on the time axis.
+    timeaxis : int, optional
+        the index of the time axis in ``dat_x`` and ``dat_y``.
+
+    Returns
+    -------
+    rho : float
+        the canonical correlation coefficient.
+    w_x, w_y : 1d array
+        the weights for mapping from the specified multivariable signals to
+        canonical variables.
+
+    Raises
+    ------
+    AssertionError :
+        If:
+          * ``dat_x`` and ``dat_y`` is not continuous Data object
+          * the length of ``dat_x`` and ``dat_y`` is different on the ``timeaxis``
+
+    Examples
+    --------
+    Calculate the CCA of the specified multivariable signals.
+
+    >>> rho, w_x, w_y = calculate_cca(dat_x, dat_y)
+    >>> # Calculate canonical variables via obtained weights
+    >>> cv_x = np.dot(dat_x, w_x)
+    >>> cv_y = np.dot(dat_y, w_y)
+
+    References
+    ----------
+    http://en.wikipedia.org/wiki/Canonical_correlation
+
+    """
+    assert (len(dat_x.data.shape) == len(dat_y.data.shape) == 2 and
+        dat_x.data.shape[timeaxis] == dat_y.data.shape[timeaxis])
+
+    if timeaxis == 0 or timeaxis == -2:
+        x = dat_x.data.copy()
+        y = dat_y.data.copy()
+    else:
+        x = dat_x.data.T.copy()
+        y = dat_y.data.T.copy()
+
+    # calculate covariances and it's inverses
+    x -= x.mean(axis=0)
+    y -= y.mean(axis=0)
+    N = x.shape[0]
+    c_xx = np.dot(x.T, x) / N
+    c_yy = np.dot(y.T, y) / N
+    c_xy = np.dot(x.T, y) / N
+    c_yx = np.dot(y.T, x) / N
+    ic_xx = np.linalg.pinv(c_xx)
+    ic_yy = np.linalg.pinv(c_yy)
+    # calculate w_x
+    w, v = np.linalg.eig(functools.reduce(np.dot, [ic_xx, c_xy, ic_yy, c_yx]))
+    w_x = v[:, np.argmax(w)].real
+    w_x = w_x / np.sqrt(functools.reduce(np.dot, [w_x.T, c_xx, w_x]))
+    # calculate w_y
+    w, v = np.linalg.eig(functools.reduce(np.dot, [ic_yy, c_yx, ic_xx, c_xy]))
+    w_y = v[:, np.argmax(w)].real
+    w_y = w_y / np.sqrt(functools.reduce(np.dot, [w_y.T, c_yy, w_y]))
+    # calculate rho
+    rho = abs(functools.reduce(np.dot, [w_x.T, c_xy, w_y]))
+    return rho, w_x, w_y
 
 
 def correct_for_baseline(dat, ival, timeaxis=-2):
