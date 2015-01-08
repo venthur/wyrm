@@ -22,7 +22,8 @@ class TestCalculateCCA(unittest.TestCase):
         Sx = randn(self.SAMPLES, self.CHANNELS_X)
         Ax = randn(self.CHANNELS_X, self.CHANNELS_X)
         self.X = np.dot(Sx, Ax)
-        # Y is a random mixture matrix of random variables except the first component
+        # Y is a random mixture matrix of random variables except the
+        # first component
         Sy = randn(self.SAMPLES, self.CHANNELS_Y)
         Sy[:, 0] = Sx[:, 0] + self.NOISE_LEVEL * randn(self.SAMPLES)
         Ay = randn(self.CHANNELS_Y, self.CHANNELS_Y)

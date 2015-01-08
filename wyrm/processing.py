@@ -1844,7 +1844,8 @@ def calculate_cca(dat_x, dat_y, timeaxis=-2):
 
     This method calculates the canonical correlation coefficient and
     corresponding weights which maximize a correlation coefficient
-    between linear combinations of the two specified multivariable signals.
+    between linear combinations of the two specified multivariable
+    signals.
 
     Parameters
     ----------
@@ -1858,15 +1859,16 @@ def calculate_cca(dat_x, dat_y, timeaxis=-2):
     rho : float
         the canonical correlation coefficient.
     w_x, w_y : 1d array
-        the weights for mapping from the specified multivariable signals to
-        canonical variables.
+        the weights for mapping from the specified multivariable signals
+        to canonical variables.
 
     Raises
     ------
     AssertionError :
         If:
           * ``dat_x`` and ``dat_y`` is not continuous Data object
-          * the length of ``dat_x`` and ``dat_y`` is different on the ``timeaxis``
+          * the length of ``dat_x`` and ``dat_y`` is different on the
+            ``timeaxis``
 
     Examples
     --------
