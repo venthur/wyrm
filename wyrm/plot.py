@@ -367,7 +367,7 @@ def plot_tenten(data, highlights=None, hcolors=None, legend=False, scale=True,
     return ax, sc
 
 
-def plot_scalp(v, channels, levels=25, norm=None, ticks=None,
+def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
                annotate=True, position=None):
     """Plots the values 'v' for channels 'channels' on a scalp.
 
@@ -440,11 +440,14 @@ def plot_scalp(v, channels, levels=25, norm=None, ticks=None,
         norm = Normalize(vmin, vmax, clip=False)
     if ticks is None:
         ticks = np.linspace(norm.vmin, norm.vmax, 3)
+    if colormap is None:
+        colormap = plt.get_cmap('bwr')
 
     a = fig.add_axes(pos_scalp)
-    ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=norm.vmin, vmax=norm.vmax)
+    ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=norm.vmin, vmax=norm.vmax,
+                   colormap=colormap)
     a = fig.add_axes(pos_colorbar)
-    ax1 = ax_colorbar(norm.vmin, norm.vmax, ax=a, ticks=ticks)
+    ax1 = ax_colorbar(norm.vmin, norm.vmax, ax=a, ticks=ticks, colormap=colormap)
 
     return ax0, ax1
 
@@ -812,7 +815,7 @@ def _transform_rect(rect, template):
 # Primitives
 ###############################################################################
 
-def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
+def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None, colormap=None):
     """Draw a scalp plot.
 
     Draws a scalp plot on an existing axes. The method takes an array of
@@ -839,6 +842,8 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
         to -1 and 1, all values smaller than -1 and bigger than 1 will
         appear the same as -1 and 1. If not set, the maximum absolute
         value in ``v`` is taken to calculate both values.
+    colormap : matplotlib.colors.colormap, optional
+        A colormap to define the color transitions.
 
     Returns
     -------
@@ -865,7 +870,7 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     f = interpolate.LinearNDInterpolator(list(zip(x, y)), z)
     zz = f(xx, yy)
     # draw the contour map
-    ctr = ax.contourf(xx, yy, zz, 20, vmin=vmin, vmax=vmax)
+    ctr = ax.contourf(xx, yy, zz, 20, vmin=vmin, vmax=vmax, cmap=colormap)
     ax.contour(xx, yy, zz, 5, colors="k", vmin=vmin, vmax=vmax, linewidths=.1)
     # paint the head
     ax.add_artist(plt.Circle((0, 0), 1, linestyle='solid', linewidth=2, fill=False))
@@ -890,7 +895,7 @@ def ax_scalp(v, channels, ax=None, annotate=False, vmin=None, vmax=None):
     plt.sci(ctr)
     return ax
 
-def ax_colorbar(vmin, vmax, ax=None, label=None, ticks=None):
+def ax_colorbar(vmin, vmax, ax=None, label=None, ticks=None, colormap=None):
     """Draw a color bar
 
     Draws a color bar on an existing axes. The range of the colors is
@@ -915,6 +920,8 @@ def ax_colorbar(vmin, vmax, ax=None, label=None, ticks=None):
         The label for the colorbar
     ticks : list, optional
         The tick positions
+    colormap : matplotlib.colors.colormap, optional
+        A colormap to define the color transitions.
 
     Returns
     -------
@@ -923,7 +930,7 @@ def ax_colorbar(vmin, vmax, ax=None, label=None, ticks=None):
     """
     if ax is None:
         ax = plt.gca()
-    ColorbarBase(ax, norm=Normalize(vmin, vmax), label=label, ticks=ticks)
+    ColorbarBase(ax, norm=Normalize(vmin, vmax), label=label, ticks=ticks, cmap=colormap)
 
 ###############################################################################
 # Utility Functions
