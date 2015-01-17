@@ -434,17 +434,17 @@ def plot_scalp(v, channels, levels=25, norm=None, ticks=None,
         pos_scalp = _transform_rect(position, rect_scalp)
         pos_colorbar = _transform_rect(position, rect_colorbar)
 
-    vmax = np.abs(v).max()
-    vmin = -vmax
     if norm is None:
+        vmax = np.abs(v).max()
+        vmin = -vmax
         norm = Normalize(vmin, vmax, clip=False)
     if ticks is None:
-        ticks = np.linspace(vmin, vmax, 3)
+        ticks = np.linspace(norm.vmin, norm.vmax, 3)
 
     a = fig.add_axes(pos_scalp)
-    ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=vmin, vmax=vmax)
+    ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=norm.vmin, vmax=norm.vmax)
     a = fig.add_axes(pos_colorbar)
-    ax1 = ax_colorbar(vmin, vmax, ax=a, ticks=ticks)
+    ax1 = ax_colorbar(norm.vmin, norm.vmax, ax=a, ticks=ticks)
 
     return ax0, ax1
 
