@@ -447,7 +447,8 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
     ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=norm.vmin, vmax=norm.vmax,
                    colormap=colormap)
     a = fig.add_axes(pos_colorbar)
-    ax1 = ax_colorbar(norm.vmin, norm.vmax, ax=a, ticks=ticks, colormap=colormap)
+    ax1 = ax_colorbar(norm.vmin, norm.vmax, ax=a, ticks=ticks, colormap=colormap,
+                      label='')
 
     return ax0, ax1
 
