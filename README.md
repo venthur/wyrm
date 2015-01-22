@@ -1,3 +1,11 @@
+# The official repository has moved!
+
+The official Wyrm repository has a new home at the [BBCI github account][bbci].
+Please use the new one for forks, issues, etc.
+
+  [bbci] https://github.com/bbci/wyrm
+
+
 # Wyrm
 
 Wyrm is a Brain Computer Interface (BCI) toolbox written in Python. Wyrm is
