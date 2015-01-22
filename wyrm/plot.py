@@ -440,8 +440,6 @@ def plot_scalp(v, channels, levels=25, colormap=None, norm=None, ticks=None,
         norm = Normalize(vmin, vmax, clip=False)
     if ticks is None:
         ticks = np.linspace(norm.vmin, norm.vmax, 3)
-    if colormap is None:
-        colormap = plt.get_cmap('bwr')
 
     a = fig.add_axes(pos_scalp)
     ax0 = ax_scalp(v, channels, ax=a, annotate=annotate, vmin=norm.vmin, vmax=norm.vmax,
