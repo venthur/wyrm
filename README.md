@@ -3,7 +3,7 @@
 The official Wyrm repository has a new home at the [BBCI github account][bbci].
 Please use the new one for forks, issues, etc.
 
-  [bbci] https://github.com/bbci/wyrm
+  [bbci]: https://github.com/bbci/wyrm
 
 
 # Wyrm
