@@ -6,7 +6,7 @@ data.
 
 Online documentation is available [here][wyrmdoc].
 
-  [wyrmdoc]: http://venthur.github.io/wyrm
+  [wyrmdoc]: http://bbci.github.io/wyrm
 
 
 ## Installation
@@ -16,7 +16,7 @@ Online documentation is available [here][wyrmdoc].
 Use distutils to install Wyrm into your `PYTHONPATH`:
 
 ```bash
-$ git clone http://github.com/venthur/wyrm
+$ git clone http://github.com/bbci/wyrm
 $ cd wyrm
 $ python setup.py install --user
 ```
