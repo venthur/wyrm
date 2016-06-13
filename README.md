@@ -89,3 +89,24 @@ BCI feedback and -stimulus framework.
   [pyff]: http://github.com/venthur/pyff
   [mushu]: http://github.com/venthur/mushu
 
+
+Citing Us
+=========
+
+If you use Wyrm for anything that results in a publication, We humbly ask you to
+cite us:
+
+```bibtex
+@Article{venthur2015,
+    author={Venthur, Bastian and Dähne, Sven and Höhne, Johannes and Heller, Hendrik and Blankertz, Benjamin},
+    title={Wyrm: A Brain-Computer Interface Toolbox in Python},
+    journal={Neuroinformatics},
+    year={2015},
+    volume={13},
+    number={4},
+    pages={471--486},
+    issn={1559-0089},
+    doi={10.1007/s12021-015-9271-8},
+    url={http://dx.doi.org/10.1007/s12021-015-9271-8}
+}
+```
